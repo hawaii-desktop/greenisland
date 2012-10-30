@@ -22,7 +22,9 @@ set(SOURCES
     desktopshell.cpp
 )
 
-add_library(desktop SHARED ${SOURCES})
+qt5_add_resources(RESOURCES desktop-shell.qrc)
+
+add_library(desktop SHARED ${SOURCES} ${RESOURCES})
 target_link_libraries(desktop
     ${Qt5Quick_LIBRARIES}
     ${Qt5Widgets_LIBRARIES}
