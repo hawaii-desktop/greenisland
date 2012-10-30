@@ -218,7 +218,7 @@ function windowAdded(root, window) {
     var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
     var windowChrome = windowChromeComponent.createObject(window);
 
-    CompositorLogic.addWindow(windowContainer);
+    addWindow(windowContainer);
 
     windowContainer.opacity = 1.0;
     windowContainer.chrome = windowChrome;
@@ -230,7 +230,7 @@ function windowResized(window) {
     windowContainer.height = window.height;
 
     // Recalculate the layout
-    CompositorLogic.relayout();
+    relayout();
 }
 
 function windowDestroyed(window) {
@@ -242,7 +242,7 @@ function windowRemoved(shell, window) {
     var windowContainer = window.parent;
 
     // Don't take this window into account anymore
-    CompositorLogic.removeWindow(windowContainer);
+    removeWindow(windowContainer);
 
     // Destroy
     windowContainer.chrome.destroy();
