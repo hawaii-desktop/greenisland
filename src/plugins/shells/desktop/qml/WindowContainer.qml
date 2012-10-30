@@ -56,6 +56,7 @@ Item {
     property variant child: null
     property variant chrome: null
     property int index
+    property bool animationsEnabled: true
 
     x: targetX
     y: targetY
@@ -115,7 +116,7 @@ Item {
             SequentialAnimation {
                 ScriptAction {
                     script: {
-                        compositor.currentSurface = null
+                        shell.currentSurface = null
                     }
                 }
                 ScriptAction {
@@ -132,7 +133,7 @@ Item {
                     }
                 }
                 ScriptAction {
-                    script: compositor.currentSurface = child.surface
+                    script: shell.currentSurface = child.surface
                 }
             }
         }
