@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>qml/DateTimeView.qml</file>
+        <file>qml/PowerView.qml</file>
+    </qresource>
+</RCC>

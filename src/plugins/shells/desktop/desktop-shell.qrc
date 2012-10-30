@@ -1,0 +1,18 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+	<file>qml/CompositorLogic.js</file>
+	<file>qml/Shell.qml</file>
+	<file>qml/ContrastEffect.qml</file>
+	<file>qml/WindowChrome.qml</file>
+	<file>qml/WindowContainer.qml</file>
+	<file>qml/PanelIndicator.qml</file>
+	<file>qml/PanelView.qml</file>
+	<file>qml/Panel.qml</file>
+	<file>qml/Launcher.qml</file>
+	<file>qml/LauncherView.qml</file>
+	<file>qml/AppChooser.qml</file>
+	<file>qml/AppChooserItem.qml</file>
+	<file>qml/AppChooserDelegate.qml</file>
+ 	<file>images/launcher_dot.png</file>
+</qresource>
+</RCC>
