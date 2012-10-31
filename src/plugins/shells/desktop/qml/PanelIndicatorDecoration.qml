@@ -25,32 +25,22 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import GreenIsland 1.0
 import FluidCore 1.0
 
-Item {
-    id: root
+FrameSvgItem {
+    id: decorator
+    width: 320
+    height: 240
+    imagePath: "widgets/translucentbackground"
 
-    // TODO: Define margins and padding in Fluid::Theme
-    property real padding: 8
-
-    Row {
+    Item {
+        id: content
         anchors {
-            fill: parent
-            verticalCenter: parent.verticalCenter
-            leftMargin: padding
-            rightMargin: padding
-        }
-        spacing: padding
-
-        Repeater {
-            model: IndicatorsModel {}
-
-            PanelIndicator {
-                panel: root.parent
-                label: indicator.label
-                iconName: indicator.iconName
-            }
+            fill: decorator
+            leftMargin: decorator.margins.left
+            topMargin: decorator.margins.top
+            rightMargin: decorator.margins.right
+            bottomMargin: decorator.margins.bottom
         }
     }
 }

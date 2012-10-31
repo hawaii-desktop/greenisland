@@ -41,8 +41,7 @@ public:
     explicit PowerIndicator();
     ~PowerIndicator();
 
-    Q_INVOKABLE void showView();
-    Q_INVOKABLE void hideView();
+    QQuickItem *item() const;
 
 public slots:
     void updateLabel();

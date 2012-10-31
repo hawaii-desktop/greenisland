@@ -56,14 +56,9 @@ PowerIndicator::~PowerIndicator()
     delete m_window;
 }
 
-void PowerIndicator::showView()
+QQuickItem *PowerIndicator::item() const
 {
-    m_view->show();
-}
-
-void PowerIndicator::hideView()
-{
-    m_view->hide();
+    return m_view->rootObject();
 }
 
 void PowerIndicator::updateLabel()

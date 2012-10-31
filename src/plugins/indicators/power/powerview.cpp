@@ -38,6 +38,7 @@ PowerView::PowerView(QWindow *window)
     surfaceFormat.setAlphaBufferSize(8);
     setFormat(surfaceFormat);
     setClearBeforeRendering(true);
+    setColor(Qt::transparent);
 
     // Load the QML file
     setSource(QUrl("qrc:///qml/PowerView.qml"));

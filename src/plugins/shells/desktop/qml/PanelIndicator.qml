@@ -29,6 +29,11 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
+    id: root
+
+    // Top panel object
+    property variant panel: null
+
     // Label text and icon name from the C++ indicator
     property string label: null
     property string iconName: null
@@ -45,14 +50,39 @@ Item {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
 
         onClicked: {
+            // No fun without an indicator!
             if (!indicator)
                 return;
 
+            // Indicators must have a "decorator" property which we set to
+            // the decoration object the first time it's created
+            if (!("decorator" in indicator.item))
+                return;
+
+            // Reuse existing decoration if available
+            if (indicator.item.decorator) {
+                indicator.item.decorator.x = root.x;
+                indicator.item.decorator.y = panel.panelHeight;
+            } else {
+                // Create a decoration for the indicator's item
+                var itemDecorationComponent = Qt.createComponent("PanelIndicatorDecoration.qml");
+                indicator.item.decorator = itemDecorationComponent.createObject(root, {"x": root.x, "y": panel.panelHeight});
+
+                // Decorate the indicator's item
+                indicator.item.parent = indicator.item.decorator.children[0];
+                indicator.item.x = indicator.item.y = 0;
+            }
+
+            // Avoid indicator's item overflow
+            // FIXME: This doesn't work because width and height can't be set
+            if (indicator.item.width > indicator.item.decorator.width)
+                indicator.item.width = indicator.item.decorator.width;
+            if (indicator.item.height > indicator.item.decorator.height)
+                indicator.item.height = indicator.item.decorator.height;
+
+            // Show or hide the indicator's item
             checked = !checked;
-            if (checked)
-                indicator.showView();
-            else
-                indicator.hideView();
+            indicator.item.decorator.visible = checked;
         }
     }
 

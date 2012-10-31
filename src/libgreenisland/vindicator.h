@@ -32,6 +32,7 @@
 #include <VGreenIslandGlobal>
 
 class QQuickView;
+class QQuickItem;
 
 class VIndicatorPrivate;
 
@@ -41,15 +42,14 @@ class GREENISLAND_EXPORT VIndicator : public QObject
     Q_PROPERTY(QString name READ name NOTIFY nameChanged)
     Q_PROPERTY(QString label READ label NOTIFY labelChanged)
     Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
+    Q_PROPERTY(QQuickItem *item READ item)
 public:
     explicit VIndicator(const QString &name = QString());
 
     QString name() const;
     QString label() const;
     QString iconName() const;
-
-    Q_INVOKABLE virtual void showView();
-    Q_INVOKABLE virtual void hideView();
+    virtual QQuickItem *item() const;
 
 protected:
     void setLabel(const QString &label);

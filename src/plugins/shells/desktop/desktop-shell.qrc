@@ -6,6 +6,7 @@
 	<file>qml/WindowChrome.qml</file>
 	<file>qml/WindowContainer.qml</file>
 	<file>qml/PanelIndicator.qml</file>
+	<file>qml/PanelIndicatorDecoration.qml</file>
 	<file>qml/PanelView.qml</file>
 	<file>qml/Panel.qml</file>
 	<file>qml/Launcher.qml</file>

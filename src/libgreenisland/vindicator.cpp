@@ -26,6 +26,7 @@
 
 #include <QGuiApplication>
 #include <QQuickView>
+#include <QQuickItem>
 
 #include "vindicator.h"
 #include "vindicator_p.h"
@@ -67,12 +68,9 @@ QString VIndicator::iconName() const
     return d->iconName;
 }
 
-void VIndicator::showView()
+QQuickItem *VIndicator::item() const
 {
-}
-
-void VIndicator::hideView()
-{
+    return 0;
 }
 
 void VIndicator::setLabel(const QString &label)

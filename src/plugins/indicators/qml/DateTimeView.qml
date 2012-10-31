@@ -25,9 +25,10 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import FluidUi 1.0
 
-Rectangle {
-    color: "black"
-    width: 320
-    height: 240
+Item {
+    property variant decorator: null
+
+    Button { text: "Click me!" }
 }

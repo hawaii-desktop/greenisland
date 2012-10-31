@@ -68,14 +68,9 @@ void DateTimeIndicator::stopTimer()
     m_timer.stop();
 }
 
-void DateTimeIndicator::showView()
+QQuickItem *DateTimeIndicator::item() const
 {
-    m_view->show();
-}
-
-void DateTimeIndicator::hideView()
-{
-    m_view->hide();
+    return m_view->rootObject();
 }
 
 void DateTimeIndicator::updateLabel()
