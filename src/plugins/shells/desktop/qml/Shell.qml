@@ -26,6 +26,7 @@
 
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
+import GreenIsland 1.0
 import "CompositorLogic.js" as CompositorLogic
 
 Item {
@@ -88,32 +89,14 @@ Item {
         source: "Launcher.qml"
         asynchronous: true
         onLoaded: {
-            // TODO: From the settings
-            item.orientation = ListView.Horizontal;
-
             // Recalculate geometry
             calculateGeometry();
         }
 
         states: [
             State {
-                name: "horizontal"
-                when: launcherComponent.item.orientation == ListView.Horizontal
-
-                AnchorChanges {
-                    target: launcherComponent
-                    anchors.bottom: root.bottom
-                    anchors.horizontalCenter: root.horizontalCenter
-                }
-                PropertyChanges {
-                    target: launcherComponent
-                    width: root.width
-                    height: item.launcherSize
-                }
-            },
-            State {
-                name: "vertical"
-                when: launcherComponent.item.orientation == ListView.Vertical
+                name: "left"
+                when: launcherComponent.item.alignment == LauncherAlignment.Left
 
                 AnchorChanges {
                     target: launcherComponent
@@ -124,6 +107,36 @@ Item {
                     target: launcherComponent
                     width: item.launcherSize
                     height: root.height - panelComponent.item.height
+                }
+            },
+            State {
+                name: "right"
+                when: launcherComponent.item.alignment == LauncherAlignment.Right
+
+                AnchorChanges {
+                    target: launcherComponent
+                    anchors.right: root.right
+                    anchors.verticalCenter: root.verticalCenter
+                }
+                PropertyChanges {
+                    target: launcherComponent
+                    width: item.launcherSize
+                    height: root.height - panelComponent.item.height
+                }
+            },
+            State {
+                name: "bottom"
+                when: launcherComponent.item.alignment == LauncherAlignment.Bottom
+
+                AnchorChanges {
+                    target: launcherComponent
+                    anchors.bottom: root.bottom
+                    anchors.horizontalCenter: root.horizontalCenter
+                }
+                PropertyChanges {
+                    target: launcherComponent
+                    width: root.width
+                    height: item.launcherSize
                 }
             }
         ]
@@ -168,12 +181,18 @@ Item {
 
         // ...or the launcher is
         if (launcherComponent.status == Loader.Ready) {
-            // FIXME: Also check the alignment
-            if (launcherComponent.item.orientation == ListView.Horizontal) {
-                availableGeometry.height -= launcherComponent.item.launcherSize;
-            } else if (launcherComponent.item.orientation == ListView.Vertical) {
+            switch (launcherComponent.item.alignment) {
+            case LauncherAlignment.Left:
                 availableGeometry.x += launcherComponent.item.launcherSize;
                 availableGeometry.width -= launcherComponent.item.launcherSize;
+                break;
+            case LauncherAlignment.Right:
+                availableGeometry.x = availableGeometry.width - launcherComponent.item.launcherSize;
+                availableGeometry.width -= launcherComponent.item.launcherSize;
+                break;
+            case LauncherAlignment.Bottom:
+                availableGeometry.height -= launcherComponent.item.launcherSize;
+                break;
             }
         }
 

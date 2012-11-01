@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-
+import GreenIsland 1.0
 import FluidCore 1.0
 
 Item {
@@ -34,84 +34,118 @@ Item {
     // TODO: Define margins and padding in Fluid::Theme
     property real padding: 8
 
-    // Size: width when orientation is vertical otherwise height
-    property real launcherSize: launcher.tileSize + frame.margins.top + padding
+    // Size
+    property real launcherSize: 0
 
     // Tile size
     property alias tileSize: launcher.tileSize
 
-    // Orientation
-    property alias orientation: launcher.orientation
+    // Alignment
+    // TODO: From settings
+    property int alignment: LauncherAlignment.Bottom
 
     // Number of items
     property alias count: launcher.count
-
-    // TODO: Add an alignment (Left, Right, Bottom)
 
     FrameSvgItem {
         id: frame
         anchors.fill: parent
         enabledBorders: {
-            // TODO: Handle alignment
-            if (orientation == ListView.Horizontal)
+            switch (alignment) {
+            case LauncherAlignment.Left:
+                return FrameSvgItem.RightBorder;
+            case LauncherAlignment.Right:
+                return FrameSvgItem.LeftBorder;
+            case LauncherAlignment.Bottom:
                 return FrameSvgItem.TopBorder;
-            return FrameSvgItem.RightBorder;
+            }
         }
         imagePath: "widgets/background"
     }
 
     LauncherView {
         id: launcher
-        anchors.fill: parent
-
-        states: [
-            State {
-                name: "horizontal"
-                when: orientation == ListView.Horizontal
-
-                AnchorChanges {
-                    target: launcher
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                PropertyChanges {
-                    target: launcher
-                    anchors.topMargin: frame.margins.top
-                    anchors.leftMargin: padding
-                    anchors.rightMargin: padding
-                }
-            },
-            State {
-                name: "vertical"
-                when: orientation == ListView.Vertical
-
-                AnchorChanges {
-                    target: launcher
-                    anchors.horizontalCenter: parent.horizontalCenter
-                }
-                PropertyChanges {
-                    target: launcher
-                    anchors.rightMargin: frame.margins.right
-                    anchors.topMargin: padding
-                    anchors.bottomMargin: padding
-                }
-            }
-        ]
+        anchors.fill: frame
     }
 
-    // Animate width when the launcher is created
-    // (only if its orientation is vertical)
+    states: [
+        State {
+            name: "left"
+            when: alignment == LauncherAlignment.Left
+
+            PropertyChanges {
+                target: launcherContainer
+                launcherSize: tileSize + frame.margins.right + (padding * 2)
+            }
+            AnchorChanges {
+                target: launcher
+                anchors.horizontalCenter: frame.horizontalCenter
+            }
+            PropertyChanges {
+                target: launcher
+                anchors.leftMargin: padding
+                anchors.topMargin: padding
+                anchors.rightMargin: frame.margins.right + padding
+                anchors.bottomMargin: padding
+                orientation: ListView.Vertical
+            }
+        },
+        State {
+            name: "right"
+            when: alignment == LauncherAlignment.Right
+
+            PropertyChanges {
+                target: launcherContainer
+                launcherSize: tileSize + frame.margins.left + (padding * 2)
+            }
+            AnchorChanges {
+                target: launcher
+                anchors.horizontalCenter: frame.horizontalCenter
+            }
+            PropertyChanges {
+                target: launcher
+                anchors.leftMargin: frame.margins.left + padding
+                anchors.topMargin: padding
+                anchors.rightMargin: padding
+                anchors.bottomMargin: padding
+                orientation: ListView.Vertical
+            }
+        },
+        State {
+            name: "bottom"
+            when: alignment == LauncherAlignment.Bottom
+
+            PropertyChanges {
+                target: launcherContainer
+                launcherSize: tileSize + frame.margins.top + (padding * 2)
+            }
+            AnchorChanges {
+                target: launcher
+                anchors.verticalCenter: frame.verticalCenter
+            }
+            PropertyChanges {
+                target: launcher
+                anchors.leftMargin: padding
+                anchors.topMargin: frame.margins.top + padding
+                anchors.rightMargin: padding
+                anchors.bottomMargin: padding
+                orientation: ListView.Horizontal
+            }
+        }
+    ]
+
+    // Animate width when the launcher is created (when aligned left or right)
     NumberAnimation on width {
-        running: opacity > 0 && orientation == ListView.Vertical
+        running: opacity > 0 && (alignment == LauncherAlignment.Left || alignment == LauncherAlignment.Right)
         easing.type: Easing.InQuad
         duration: 400
         from: 0
         to: launcherSize
     }
 
-    // Animate height when the launcher is created
-    // (only if its orientation is horizontal)
+    // Animate height when the launcher is created (when laid down to the bottom)
     NumberAnimation on height {
-        running: opacity > 0 && orientation == ListView.Horizontal
+        running: opacity > 0 && alignment == LauncherAlignment.Bottom
         easing.type: Easing.InQuad
         duration: 400
         from: 0

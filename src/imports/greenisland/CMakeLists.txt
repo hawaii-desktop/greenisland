@@ -17,6 +17,7 @@ add_definitions(
 
 set(SOURCES
     main.cpp
+    enums.cpp
     appsmodel.cpp
     indicatorsmodel.cpp
     launcherapplication.cpp

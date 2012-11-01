@@ -29,6 +29,7 @@
 
 #include <VIndicator>
 
+#include "enums.h"
 #include "indicatorsmodel.h"
 #include "launcherdropitem.h"
 #include "listaggregatormodel.h"
@@ -65,6 +66,9 @@ public:
         qmlRegisterType<LauncherApplication>(uri, 1, 0, "LauncherApplication");
         qmlRegisterType<LauncherUrl>(uri, 1, 0, "LauncherUrl");
         qmlRegisterType<LauncherAppChooser>(uri, 1, 0, "LauncherAppChooser");
+
+        // Enums
+        qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");
     }
 
     void initializeEngine(QQmlEngine *engine, const char *uri) {
