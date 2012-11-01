@@ -67,11 +67,23 @@ The installation is easy-peasy, it's just a matter of typing:
 
 from the build directory.
 
+Environment variables
+=====================
+
+Remember to set the environment variable before running Green Island:
+
+```sh
+export XDG_RUNTIME_DIR=/tmp
+```
+
 Run as a X window
 =================
 
 You can run Green Island in a X11 window for development and debugging purpose.
-Remember to set the environment variable before running it:
+The QPA platform plugin should be detected automatically if the DISPLAY environment
+variable is set.
+
+If it's not detected automatically, run Green Island like this:
 
 ```sh
 export XDG_RUNTIME_DIR=/tmp
@@ -81,7 +93,10 @@ greenisland -platform xcb
 Run from KMS
 ============
 
-On production systems you can run Green Island under KMS as root:
+You can run Green Island under KMS (as root), this will be the default
+on production systems.
+
+Run Green Island like this:
 
 ```sh
 export XDG_RUNTIME_DIR=/tmp
@@ -93,6 +108,9 @@ greenisland -platform kms -plugin EvdevMouse -plugin EvdevKeyboard -plugin Evdev
 
 Run on RaspberryPi
 ==================
+
+The RaspberryPi platform is **not** automatically detected, you have to run
+Green Island with the -platform argument:
 
 ```sh
 export XDG_RUNTIME_DIR=/tmp
