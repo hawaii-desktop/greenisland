@@ -37,11 +37,9 @@ public:
         return QStringList() << "desktop";
     }
 
-    VShell *create(const QString &key, const QString &socketName) {
-        if (key.toLower() == "desktop") {
-            const char *name = socketName.isEmpty() ? 0 : socketName.toUtf8().constData();
-            return new DesktopShell(name);
-        }
+    VShell *create(const QString &key) {
+        if (key.toLower() == "desktop")
+            return new DesktopShell();
 
         return 0;
     }

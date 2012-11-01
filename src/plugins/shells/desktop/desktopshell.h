@@ -36,7 +36,7 @@ class DesktopShell : public QQuickView, public VShell
     Q_OBJECT
     Q_PROPERTY(WaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
-    DesktopShell(const char *socketName = 0);
+    DesktopShell();
 
     WaylandSurface *currentSurface() const {
         return m_currentSurface;

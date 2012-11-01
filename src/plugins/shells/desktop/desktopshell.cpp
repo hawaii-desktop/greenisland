@@ -35,8 +35,8 @@
 #include "desktopshell.h"
 #include "cmakedirs.h"
 
-DesktopShell::DesktopShell(const char *socketName)
-    : VShell(this, socketName)
+DesktopShell::DesktopShell()
+    : VShell(this)
     , m_currentSurface(0)
 {
     // Load the shell

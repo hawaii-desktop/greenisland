@@ -26,8 +26,8 @@
 
 #include "vshell.h"
 
-VShell::VShell(QWindow *window, const char *socketName)
-    : WaylandCompositor(window, socketName)
+VShell::VShell(QWindow *window)
+    : WaylandCompositor(window)
 {
 }
 

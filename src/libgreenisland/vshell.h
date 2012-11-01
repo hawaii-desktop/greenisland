@@ -34,7 +34,7 @@
 class GREENISLAND_EXPORT VShell : public WaylandCompositor
 {
 public:
-    VShell(QWindow *window = 0, const char *socketName = 0);
+    VShell(QWindow *window = 0);
 
     virtual void setupCompositor();
     virtual void startShell();

@@ -30,7 +30,6 @@
 #include <QStringList>
 
 #include <VShellPlugin>
-#include <VibeCore/VCommandOptions>
 
 #include "cmakedirs.h"
 
@@ -45,13 +44,9 @@ public:
         setApplicationVersion("0.1.0");
         setOrganizationName("Maui Project");
         setOrganizationDomain("maui-project.org");
-
-        // Synthesize touch events from mouse input
-        if (arguments().contains(QStringLiteral("-synthesizetouch")))
-            setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
     }
 
-    VShell *loadShell(const QString &name, const QString &socketName) {
+    VShell *loadShell(const QString &name) {
         // Load plugins
         QDir pluginsDir(QStringLiteral("%1/greenisland/shells").arg(INSTALL_PLUGINSDIR));
         foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
@@ -63,7 +58,7 @@ public:
 
             foreach(QString key, plugin->keys()) {
                 if (key == name)
-                    return plugin->create(key, socketName);
+                    return plugin->create(key);
             }
         }
 
@@ -81,33 +76,20 @@ int main(int argc, char *argv[])
     // Shell plugin (defaults to desktop for the moment)
     QString pluginName = QLatin1String("desktop");
 
-    // Parse command line
-    VCommandOptions options;
-    options.add("socketname", "set the socket name", VCommandOptions::Required);
-    options.add("plugin", "set the shell plugin to use", VCommandOptions::Required);
-    options.add("synthesizetouch", "synthesize touch for unhandled mouse events");
-    options.add("help", "show this help text");
-    options.alias("help", "h");
-    options.parse(QCoreApplication::arguments());
-    if (options.count("help") || options.showUnrecognizedWarning()) {
-        options.showUsage();
-        return 1;
-    }
+    // Command line arguments
+    QStringList arguments = QCoreApplication::instance()->arguments();
 
     // Synthesize touch for unhandled mouse events
-    if (options.count("synthesizetouch"))
+    if (arguments.contains(QStringLiteral("--synthesize-touch")))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
-    // Socket argument
-    if (options.count("socketname"))
-        socketName = options.value("socketname").toString();
-
     // Shell plugin argument
-    if (options.count("plugin"))
-        pluginName = options.value("plugin").toString();
+    int pluginArg = arguments.indexOf(QLatin1String("--plugin"));
+    if (pluginArg != -1 && pluginArg + 1 < arguments.size())
+        pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
 
     // Load the shell plugin
-    VShell *shell = app.loadShell(pluginName, socketName);
+    VShell *shell = app.loadShell(pluginName);
     if (!shell)
         qFatal("Unable to run the shell, aborting...");
 

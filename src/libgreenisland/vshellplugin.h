@@ -34,7 +34,7 @@
 
 struct GREENISLAND_EXPORT VShellFactoryInterface {
     virtual QStringList keys() const = 0;
-    virtual VShell *create(const QString &key, const QString &socketName) = 0;
+    virtual VShell *create(const QString &key) = 0;
 };
 
 #define VShellFactoryInterface_iid "org.maui.GreenIsland.VShellFactoryInterface"
@@ -65,7 +65,7 @@ public:
 
         \sa keys()
     */
-    virtual VShell *create(const QString &key, const QString &socketName) = 0;
+    virtual VShell *create(const QString &key) = 0;
 };
 
 #endif // VSHELLPLUGIN_H
