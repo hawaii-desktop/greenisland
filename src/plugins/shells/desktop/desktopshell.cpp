@@ -77,6 +77,9 @@ void DesktopShell::startShell()
 
     // Force QPA to wayland
     setenv("QT_QPA_PLATFORM", "wayland", 1);
+
+    // Force GTK+ backend to wayland
+    setenv("GDK_BACKEND", "wayland", 1);
 }
 
 void DesktopShell::surfaceCreated(WaylandSurface *surface)
