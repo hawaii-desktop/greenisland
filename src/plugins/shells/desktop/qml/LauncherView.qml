@@ -120,6 +120,16 @@ LauncherDropItem {
                     scale: 1.0
                 }
 
+                BusyIndicator {
+                    id: busyIndicator
+                    anchors {
+                        fill: parent
+                        margins: tileSize / 4
+                    }
+                    running: item.running && !item.active
+                    visible: item.running && !item.active
+                }
+
                 Image {
                     id: runningIndicator
 
