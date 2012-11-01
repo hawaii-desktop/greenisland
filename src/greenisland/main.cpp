@@ -69,6 +69,13 @@ public:
 
 int main(int argc, char *argv[])
 {
+    // Assume the xcb platform if the DISPLAY environment variable is defined,
+    // otherwise go for kms
+    if (!qgetenv("DISPLAY").isEmpty())
+        setenv("QT_QPA_PLATFORM", "xcb", 0);
+    else
+        setenv("QT_QPA_PLATFORM", "kms", 0);
+
     GreenIsland app(argc, argv);
 
     // Shell plugin (defaults to desktop for the moment)
