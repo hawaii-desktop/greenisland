@@ -38,7 +38,7 @@ QString LauncherAppChooser::label() const
 
 QString LauncherAppChooser::iconName() const
 {
-    return "appchooser";
+    return "view-grid-symbolic";
 }
 
 QUrl LauncherAppChooser::url() const
