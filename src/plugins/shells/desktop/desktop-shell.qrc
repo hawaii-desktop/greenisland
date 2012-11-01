@@ -11,6 +11,7 @@
 	<file>qml/Panel.qml</file>
 	<file>qml/Launcher.qml</file>
 	<file>qml/LauncherView.qml</file>
+	<file>qml/LauncherViewItem.qml</file>
 	<file>qml/AppChooser.qml</file>
 	<file>qml/AppChooserItem.qml</file>
 	<file>qml/AppChooserDelegate.qml</file>
