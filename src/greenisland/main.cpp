@@ -26,6 +26,7 @@
 
 #include <QApplication>
 #include <QDir>
+#include <QDebug>
 #include <QPluginLoader>
 #include <QStringList>
 
@@ -75,6 +76,15 @@ int main(int argc, char *argv[])
 
     // Command line arguments
     QStringList arguments = QCoreApplication::instance()->arguments();
+
+    // Usage instructions
+    if (arguments.contains(QStringLiteral("-h")) || arguments.contains(QStringLiteral("--help"))) {
+        qDebug() << "Usage: greenisland [options]";
+        qDebug() << "Arguments are:";
+        qDebug() << "\t--synthesize-touch\tsynthesize touch for unhandled mouse events";
+        qDebug() << "\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')";
+        return 0;
+    }
 
     // Synthesize touch for unhandled mouse events
     if (arguments.contains(QStringLiteral("--synthesize-touch")))
