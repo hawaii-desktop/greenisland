@@ -91,7 +91,8 @@ int main(int argc, char *argv[])
     // Load the shell plugin
     VShell *shell = app.loadShell(pluginName);
     if (!shell)
-        qFatal("Unable to run the shell, aborting...");
+        qFatal("Unable to run the shell because the '%s' plugin was not found",
+               pluginName.toLocal8Bit().constData());
 
     // Setup compositor and start the shell
     shell->setupCompositor();
