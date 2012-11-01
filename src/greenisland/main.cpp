@@ -70,9 +70,6 @@ int main(int argc, char *argv[])
 {
     GreenIsland app(argc, argv);
 
-    // Wayland socket from the environment
-    QString socketName = QLatin1String(qgetenv("GREENISLAND_SOCKET_NAME"));
-
     // Shell plugin (defaults to desktop for the moment)
     QString pluginName = QLatin1String("desktop");
 
