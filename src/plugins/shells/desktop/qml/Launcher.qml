@@ -31,8 +31,11 @@ import FluidCore 1.0
 Item {
     id: launcherContainer
 
-    // Size
-    property alias launcherSize: launcher.launcherSize
+    // TODO: Define margins and padding in Fluid::Theme
+    property real padding: 8
+
+    // Size: width when orientation is vertical otherwise height
+    property real launcherSize: launcher.tileSize + frame.margins.top + padding
 
     // Tile size
     property alias tileSize: launcher.tileSize
@@ -59,7 +62,40 @@ Item {
 
     LauncherView {
         id: launcher
-        anchors { fill: frame; margins: 4 }
+        anchors.fill: parent
+
+        states: [
+            State {
+                name: "horizontal"
+                when: orientation == ListView.Horizontal
+
+                AnchorChanges {
+                    target: launcher
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                PropertyChanges {
+                    target: launcher
+                    anchors.topMargin: frame.margins.top
+                    anchors.leftMargin: padding
+                    anchors.rightMargin: padding
+                }
+            },
+            State {
+                name: "vertical"
+                when: orientation == ListView.Vertical
+
+                AnchorChanges {
+                    target: launcher
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+                PropertyChanges {
+                    target: launcher
+                    anchors.rightMargin: frame.margins.right
+                    anchors.topMargin: padding
+                    anchors.bottomMargin: padding
+                }
+            }
+        ]
     }
 
     // Animate width when the launcher is created

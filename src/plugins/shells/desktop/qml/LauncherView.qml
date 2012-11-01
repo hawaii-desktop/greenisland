@@ -36,13 +36,10 @@ LauncherDropItem {
     property real iconSize: 48
 
     // Tile size
-    property real tileSize: 60
+    property real tileSize: iconSize + 12
 
     // Margins
     property real launcherMargins: 10
-
-    // Size: width when orientation is vertical otherwise height
-    property real launcherSize: tileSize + launcherMargins
 
     // Available screen space (filled by the loader when the orientation changes)
     //property real availableSpace
