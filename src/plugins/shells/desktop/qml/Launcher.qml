@@ -47,6 +47,9 @@ Item {
     // Number of items
     property alias count: launcher.count
 
+    // The AppChooser object from Shell.qml
+    property alias appChooserObject: launcher.appChooserObject
+
     FrameSvgItem {
         id: frame
         anchors.fill: parent

@@ -23,69 +23,30 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "launcherappchooser.h"
+#ifndef APPCHOOSERCATEGORIES_H
+#define APPCHOOSERCATEGORIES_H
 
-LauncherAppChooser::LauncherAppChooser()
-    : LauncherItem()
-    , m_isActive(false)
+#include <QAbstractListModel>
+
+class AppChooserCategories : public QAbstractListModel
 {
-}
+    Q_OBJECT
+public:
+    enum {
+        NameRole = Qt::UserRole + 1,
+        LabelRole
+    };
 
-QString LauncherAppChooser::label() const
-{
-    return tr("AppChooser");
-}
+    explicit AppChooserCategories(QObject *parent = 0);
 
-QString LauncherAppChooser::iconName() const
-{
-    return "view-grid-symbolic";
-}
+    QHash<int, QByteArray> roleNames() const;
 
-QUrl LauncherAppChooser::url() const
-{
-    return QUrl();
-}
+    QVariant data(const QModelIndex &index, int role) const;
+    int rowCount(const QModelIndex &parent) const;
 
-bool LauncherAppChooser::isActive() const
-{
-    return m_isActive;
-}
+private:
+    typedef QPair<QString, QString> AppChooserCategoryPair;
+    QList<AppChooserCategoryPair> m_categories;
+};
 
-bool LauncherAppChooser::isRunning() const
-{
-    return false;
-}
-
-bool LauncherAppChooser::isUrgent() const
-{
-    return false;
-}
-
-bool LauncherAppChooser::isDraggable() const
-{
-    return false;
-}
-
-bool LauncherAppChooser::isEditable() const
-{
-    return false;
-}
-
-bool LauncherAppChooser::isRemovable() const
-{
-    return false;
-}
-
-void LauncherAppChooser::activate()
-{
-}
-
-void LauncherAppChooser::launchNewInstance()
-{
-}
-
-void LauncherAppChooser::createMenuActions()
-{
-}
-
-#include "moc_launcherappchooser.cpp"
+#endif // APPCHOOSERCATEGORIES_H

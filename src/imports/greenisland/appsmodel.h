@@ -41,8 +41,9 @@ class AppsModel : public QAbstractListModel
 public:
     enum Roles {
         NameRole = Qt::UserRole + 1,
-        CommentRole = Qt::UserRole + 2,
-        IconNameRole = Qt::UserRole + 3
+        CommentRole,
+        IconNameRole,
+        CategoriesRole
     };
 
     AppsModel(QObject *parent = 0);

@@ -34,11 +34,10 @@
 #include "launcherdropitem.h"
 #include "listaggregatormodel.h"
 #include "appsmodel.h"
+#include "appchoosercategories.h"
 #include "launchermodel.h"
-#include "launcherappchoosermodel.h"
 #include "launcherapplication.h"
 #include "launcherurl.h"
-#include "launcherappchooser.h"
 
 class GreenIslandQmlPlugin : public QQmlExtensionPlugin
 {
@@ -55,17 +54,16 @@ public:
 
         // Models
         qmlRegisterType<ListAggregatorModel>(uri, 1, 0, "ListAggregatorModel");
+        qmlRegisterType<AppChooserCategories>(uri, 1, 0, "AppChooserCategoriesModel");
         qmlRegisterType<AppsModel>(uri, 1, 0, "AvailableApplicationsModel");
         qmlRegisterType<AppsModelSorted>(uri, 1, 0, "AvailableApplicationsModelSorted");
 
-        // Launcher models
+        // Launcher model
         qmlRegisterType<LauncherModel>(uri, 1, 0, "LauncherModel");
-        qmlRegisterType<LauncherAppChooserModel>(uri, 1, 0, "LauncherAppChooserModel");
 
         // Launcher item types
         qmlRegisterType<LauncherApplication>(uri, 1, 0, "LauncherApplication");
         qmlRegisterType<LauncherUrl>(uri, 1, 0, "LauncherUrl");
-        qmlRegisterType<LauncherAppChooser>(uri, 1, 0, "LauncherAppChooser");
 
         // Enums
         qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");

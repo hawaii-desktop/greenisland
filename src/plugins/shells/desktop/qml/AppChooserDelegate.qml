@@ -52,7 +52,6 @@ MouseArea {
  
         AppChooserItem {
             id: content
-
             anchors.fill: parent
         }
 
@@ -69,7 +68,6 @@ MouseArea {
                     target: theItem
                     parent: grid
                 }
-
                 AnchorChanges {
                     target: theItem
                     anchors.horizontalCenter: undefined

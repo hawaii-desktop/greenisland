@@ -45,12 +45,11 @@ LauncherDropItem {
     // Number of items
     property alias count: view.count
 
+    // The AppChooser object from Shell.qml
+    property variant appChooserObject: null
+
     onApplicationDropped: visualModel.model.pinApplication(path)
     onUrlDropped: visualModel.model.pinUrl(url)
-
-    LauncherAppChooserModel {
-        id: appchooserModel
-    }
 
     LauncherModel {
         id: launcherModel
@@ -278,6 +277,21 @@ LauncherDropItem {
         delegate: dragDelegate
     }
 
+    Component {
+        id: appChooserIcon
+
+        Button {
+            checkable: true
+            iconSource: "view-grid-symbolic"
+            width: tileSize
+            height: width
+            onClicked: {
+                if (appChooserObject)
+                    appChooserObject.visible = checked;
+            }
+        }
+    }
+
     ListView {
         id: view
         anchors.fill: parent
@@ -286,6 +300,7 @@ LauncherDropItem {
         model: visualModel
         cacheBuffer: 10000
         interactive: false
+        header: appChooserIcon
 
         add: Transition {
             NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 400 }
@@ -298,7 +313,6 @@ LauncherDropItem {
     }
 
     Component.onCompleted: {
-        items.appendModel(appchooserModel);
         items.appendModel(launcherModel);
     }
 }

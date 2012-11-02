@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import GreenIsland 1.0
+import FluidUi 1.0
 
 Column {
     property alias icon: icon.source
@@ -33,16 +33,14 @@ Column {
 
     Image {
         id: icon
-
         anchors.horizontalCenter: parent.horizontalCenter
         sourceSize.width: 64
         sourceSize.height: 64
         smooth: true
     }
 
-    Text {
+    Label {
         id: label
-
         color: "white"
         font.bold: true
         style: Text.Raised

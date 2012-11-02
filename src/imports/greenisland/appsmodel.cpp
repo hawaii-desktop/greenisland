@@ -61,6 +61,7 @@ QHash<int, QByteArray> AppsModel::roleNames() const
     names[NameRole] = "name";
     names[CommentRole] = "comment";
     names[IconNameRole] = "iconName";
+    names[CategoriesRole] = "categories";
     return names;
 }
 
@@ -78,6 +79,8 @@ QVariant AppsModel::data(const QModelIndex &index, int role) const
             return info->comment();
         case IconNameRole:
             return info->iconName();
+        case CategoriesRole:
+            return info->categories();
         default:
             break;
     }

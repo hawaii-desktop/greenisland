@@ -19,13 +19,12 @@ set(SOURCES
     main.cpp
     enums.cpp
     appsmodel.cpp
+    appchoosercategories.cpp
     indicatorsmodel.cpp
     launcherapplication.cpp
     launcherdropitem.cpp
     launcheritem.cpp
     launchermodel.cpp
-    launcherappchooser.cpp
-    launcherappchoosermodel.cpp
     launcherurl.cpp
     listaggregatormodel.cpp
 )

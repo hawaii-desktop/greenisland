@@ -91,6 +91,9 @@ Item {
         onLoaded: {
             // Recalculate geometry
             calculateGeometry();
+
+            // Set a pointer to the AppChooser object
+            launcherComponent.item.appChooserObject = appChooser;
         }
 
         states: [
@@ -140,6 +143,17 @@ Item {
                 }
             }
         ]
+    }
+
+    // Application chooser
+    AppChooser {
+        id: appChooser
+        x: 10
+        y: panelComponent.height
+        z: 3
+        width: availableGeometry.width / 1.2
+        height: availableGeometry.height / 1.2
+        visible: false
     }
 
     // Windows loose their focus when clicking an empty spot on the desktop,

@@ -25,43 +25,113 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import FluidCore 1.0
 import FluidUi 1.0
 import GreenIsland 1.0
 
-Rectangle {
+Item {
     id: appchooser
 
-    color: "black"
-    opacity: 0.90
-
-    border {
-        color: "#f1f1f1"
-        width: 4
-    }
-    radius: 6
-
-    GridView {
-        id: grid
-
+    FrameSvgItem {
+        id: frame
         anchors.fill: parent
-        anchors.margins: 4
+        imagePath: "widgets/frame"
+        prefix: "plain"
+    }
 
-        cacheBuffer: 1000
-        cellWidth: 128
-        cellHeight: 128
+    Row {
+        anchors.fill: frame
+        spacing: 8
 
-        displaced: Transition {
-            NumberAnimation { properties: "x,y"; easing.type: Easing.OutQuad }
+        Item {
+            id: leftColumn
+            width: parent.width / 4
+            height: parent.height
+
+            TextField {
+                id: searchField
+                anchors {
+                    left: parent.left
+                    top: parent.top
+                    right: parent.right
+                }
+                placeholderText: qsTr("Type to search...")
+            }
+
+            Component {
+                id: itemDelegate
+
+                ListItem {
+                    id: wrapper
+                    checked: ListView.isCurrentItem
+                    enabled: true
+
+                    Label {
+                        text: label
+                        font.weight: Font.Bold
+                    }
+                }
+            }
+
+            ListView {
+                id: categoriesList
+                anchors {
+                    left: searchField.left
+                    top: searchField.bottom
+                    right: categoriesScrollBar.visible ? categoriesScrollBar.left : parent.right
+                    bottom: parent.bottom
+                }
+                orientation: ListView.Vertical
+                focus: true
+                model: AppChooserCategoriesModel {}
+                delegate: itemDelegate
+                highlight: Highlight{}
+                highlightRangeMode: ListView.StrictlyEnforceRange
+
+                Connections {
+                    target: searchField
+                    onTextChanged: {
+                        // TODO: Put searchField.text somewhere => categoriesList.model.setQuery(searchField.text);
+                    }
+                }
+            }
+
+            ScrollBar {
+                id: categoriesScrollBar
+                anchors {
+                    top: searchField.bottom
+                    right: parent.right
+                    bottom: parent.bottom
+                }
+                flickableItem: categoriesList
+            }
         }
 
-        model: VisualDataModel {
-            id: visualModel
+        Item {
+            id: rightColumn
+            width: parent.width - leftColumn.width
+            height: parent.height
 
-            model: AvailableApplicationsModel {}
-            delegate: AppChooserDelegate {
-                visualIndex: VisualDataModel.itemsIndex
-                icon: "image://desktoptheme/" + (iconName ? iconName : "unknown")
-                label: name
+            GridView {
+                id: grid
+                anchors.fill: parent
+                cacheBuffer: 1000
+                cellWidth: 128
+                cellHeight: 128
+                model: VisualDataModel {
+                    id: visualModel
+
+                    model: AvailableApplicationsModel {}
+                    delegate: AppChooserDelegate {
+                        visualIndex: VisualDataModel.itemsIndex
+                        icon: "image://desktoptheme/" + (iconName ? iconName : "unknown")
+                        label: name
+                    }
+                }
+
+                displaced: Transition {
+                    NumberAnimation { properties: "x,y"; easing.type: Easing.OutQuad }
+                }
             }
         }
     }
