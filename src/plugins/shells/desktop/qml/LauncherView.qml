@@ -32,8 +32,7 @@ LauncherDropItem {
     id: launcher
 
     // Icon size
-    // TODO: From settings
-    property real iconSize: 48
+    property real iconSize: theme.largeIconSize
 
     // Tile size
     // TODO: Where this 12 comes from? Need a parameter here
