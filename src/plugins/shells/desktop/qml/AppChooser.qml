@@ -25,9 +25,10 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
+import GreenIsland 1.0
 import FluidCore 1.0
 import FluidUi 1.0
-import GreenIsland 1.0
 
 Item {
     id: appchooser
@@ -35,104 +36,124 @@ Item {
     FrameSvgItem {
         id: frame
         anchors.fill: parent
-        imagePath: "widgets/frame"
-        prefix: "plain"
+        imagePath: "opaque/dialogs/background"
+        visible: true
     }
 
-    Row {
-        anchors.fill: frame
-        spacing: 8
+    Item {
+        id: leftColumn
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+            margins: 8
+        }
+        width: parent.width / 4
 
-        Item {
-            id: leftColumn
-            width: parent.width / 4
-            height: parent.height
-
-            TextField {
-                id: searchField
-                anchors {
-                    left: parent.left
-                    top: parent.top
-                    right: parent.right
-                }
-                placeholderText: qsTr("Type to search...")
+        TextField {
+            id: searchField
+            anchors {
+                left: parent.left
+                top: parent.top
+                right: parent.right
             }
+            placeholderText: qsTr("Type to search...")
+        }
 
-            Component {
-                id: itemDelegate
+        Component {
+            id: itemDelegate
 
-                ListItem {
-                    id: wrapper
-                    checked: ListView.isCurrentItem
-                    enabled: true
+            ListItem {
+                id: wrapper
+                checked: ListView.isCurrentItem
+                enabled: true
 
-                    Label {
-                        text: label
-                        font.weight: Font.Bold
-                    }
+                Label {
+                    text: label
+                    font.weight: Font.Bold
                 }
-            }
-
-            ListView {
-                id: categoriesList
-                anchors {
-                    left: searchField.left
-                    top: searchField.bottom
-                    right: categoriesScrollBar.visible ? categoriesScrollBar.left : parent.right
-                    bottom: parent.bottom
-                }
-                orientation: ListView.Vertical
-                focus: true
-                model: AppChooserCategoriesModel {}
-                delegate: itemDelegate
-                highlight: Highlight{}
-                highlightRangeMode: ListView.StrictlyEnforceRange
-
-                Connections {
-                    target: searchField
-                    onTextChanged: {
-                        // TODO: Put searchField.text somewhere => categoriesList.model.setQuery(searchField.text);
-                    }
-                }
-            }
-
-            ScrollBar {
-                id: categoriesScrollBar
-                anchors {
-                    top: searchField.bottom
-                    right: parent.right
-                    bottom: parent.bottom
-                }
-                flickableItem: categoriesList
             }
         }
 
-        Item {
-            id: rightColumn
-            width: parent.width - leftColumn.width
-            height: parent.height
+        ListView {
+            id: categoriesList
+            anchors {
+                left: searchField.left
+                top: searchField.bottom
+                right: categoriesScrollBar.visible ? categoriesScrollBar.left : parent.right
+                bottom: parent.bottom
+            }
+            orientation: ListView.Vertical
+            focus: true
+            model: AppChooserCategoriesModel {}
+            delegate: itemDelegate
+            highlight: Highlight{}
+            highlightRangeMode: ListView.StrictlyEnforceRange
 
-            GridView {
-                id: grid
-                anchors.fill: parent
-                cacheBuffer: 1000
-                cellWidth: 128
-                cellHeight: 128
-                model: VisualDataModel {
-                    id: visualModel
-
-                    model: AvailableApplicationsModel {}
-                    delegate: AppChooserDelegate {
-                        visualIndex: VisualDataModel.itemsIndex
-                        icon: "image://desktoptheme/" + (iconName ? iconName : "unknown")
-                        label: name
-                    }
-                }
-
-                displaced: Transition {
-                    NumberAnimation { properties: "x,y"; easing.type: Easing.OutQuad }
+            Connections {
+                target: searchField
+                onTextChanged: {
+                    // TODO: Put searchField.text somewhere => categoriesList.model.setQuery(searchField.text);
                 }
             }
+        }
+
+        ScrollBar {
+            id: categoriesScrollBar
+            anchors {
+                top: searchField.bottom
+                right: parent.right
+                bottom: parent.bottom
+            }
+            flickableItem: categoriesList
+        }
+    }
+
+    Item {
+        id: rightColumn
+        anchors {
+            left: leftColumn.right
+            top: parent.top
+            right: parent.right
+            bottom: parent.bottom
+            margins: 8
+        }
+
+        GridView {
+            id: grid
+            anchors {
+                left: parent.left
+                top: parent.top
+                right: gridScrollBar.visible ? gridScrollBar.left : parent.right
+                bottom: parent.bottom
+            }
+            cacheBuffer: 1000
+            cellWidth: 128
+            cellHeight: 128
+            model: VisualDataModel {
+                id: visualModel
+
+                model: AvailableApplicationsModel {}
+                delegate: AppChooserDelegate {
+                    visualIndex: VisualDataModel.itemsIndex
+                    icon: "image://desktoptheme/" + (iconName ? iconName : "unknown")
+                    label: name
+                }
+            }
+
+            displaced: Transition {
+                NumberAnimation { properties: "x,y"; easing.type: Easing.OutQuad }
+            }
+        }
+
+        ScrollBar {
+            id: gridScrollBar
+            anchors {
+                top: parent.top
+                right: parent.right
+                bottom: parent.bottom
+            }
+            flickableItem: grid
         }
     }
 }
