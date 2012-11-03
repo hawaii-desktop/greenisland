@@ -286,8 +286,13 @@ LauncherDropItem {
             width: tileSize
             height: width
             onClicked: {
-                if (appChooserObject)
+                if (appChooserObject) {
+                    var pos = mapFromItem(parent, x, y);
+                    appChooserObject.x = pos.x;
+                    appChooserObject.y = shell.availableGeometry.y +
+                            shell.availableGeometry.height - appChooserObject.height;
                     appChooserObject.visible = checked;
+                }
             }
         }
     }
