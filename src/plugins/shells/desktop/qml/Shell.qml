@@ -101,12 +101,12 @@ Item {
                 AnchorChanges {
                     target: launcherComponent
                     anchors.left: root.left
-                    anchors.verticalCenter: root.verticalCenter
                 }
                 PropertyChanges {
                     target: launcherComponent
+                    y: panelComponent.item.height
                     width: item.launcherSize
-                    height: root.height - panelComponent.item.height
+                    height: root.height - y
                 }
             },
             State {
@@ -116,12 +116,12 @@ Item {
                 AnchorChanges {
                     target: launcherComponent
                     anchors.right: root.right
-                    anchors.verticalCenter: root.verticalCenter
                 }
                 PropertyChanges {
                     target: launcherComponent
+                    y: panelComponent.item.height
                     width: item.launcherSize
-                    height: root.height - panelComponent.item.height
+                    height: root.height - y
                 }
             },
             State {
