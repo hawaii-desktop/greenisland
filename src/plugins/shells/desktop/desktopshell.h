@@ -34,9 +34,13 @@
 class DesktopShell : public QQuickView, public VShell
 {
     Q_OBJECT
+    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
     Q_PROPERTY(WaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
     DesktopShell();
+
+    QRectF availableGeometry() const;
+    void setAvailableGeometry(const QRectF &rect);
 
     WaylandSurface *currentSurface() const {
         return m_currentSurface;
@@ -52,6 +56,7 @@ signals:
     void windowAdded(QVariant window);
     void windowDestroyed(QVariant window);
     void windowResized(QVariant window);
+    void availableGeometryChanged();
     void currentSurfaceChanged();
 
 public slots:
@@ -70,6 +75,7 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    QRectF m_availableGeometry;
     WaylandSurface *m_currentSurface;
 };
 

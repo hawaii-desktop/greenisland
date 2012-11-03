@@ -35,9 +35,6 @@ Item {
     // Screen geometry
     property rect geometry
 
-    // Available geometry
-    property rect availableGeometry
-
     // Currently selected window
     property variant selectedWindow: null
 
@@ -148,21 +145,19 @@ Item {
     // Application chooser
     AppChooser {
         id: appChooser
-        x: 10
-        y: panelComponent.height
         z: 3
-        width: availableGeometry.width / 1.2
-        height: availableGeometry.height / 1.2
+        width: shell.availableGeometry.width / 1.1
+        height: shell.availableGeometry.height / 1.1
         visible: false
     }
 
     // Windows loose their focus when clicking an empty spot on the desktop,
     // however this happens only if the user clicks inside the available geometry
     MouseArea {
-        x: availableGeometry.x
-        y: availableGeometry.y
-        width: availableGeometry.width
-        height: availableGeometry.height
+        x: shell.availableGeometry.x
+        y: shell.availableGeometry.y
+        width: shell.availableGeometry.width
+        height: shell.availableGeometry.height
         onClicked: {
             root.selectedWindow = null;
             root.focus = true;
@@ -185,27 +180,27 @@ Item {
     function calculateGeometry() {
         // Available geometry equals screen geometry
         geometry = Qt.rect(x, y, width, height);
-        availableGeometry = geometry;
+        shell.availableGeometry = geometry;
 
         // ...unless the panel is loaded
         if (panelComponent.status == Loader.Ready) {
-            availableGeometry.y += panelComponent.item.panelHeight;
-            availableGeometry.height -= panelComponent.item.panelHeight;
+            shell.availableGeometry.y += panelComponent.item.panelHeight;
+            shell.availableGeometry.height -= panelComponent.item.panelHeight;
         }
 
         // ...or the launcher is
         if (launcherComponent.status == Loader.Ready) {
             switch (launcherComponent.item.alignment) {
             case LauncherAlignment.Left:
-                availableGeometry.x += launcherComponent.item.launcherSize;
-                availableGeometry.width -= launcherComponent.item.launcherSize;
+                shell.availableGeometry.x += launcherComponent.item.launcherSize;
+                shell.availableGeometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Right:
-                availableGeometry.x = availableGeometry.width - launcherComponent.item.launcherSize;
-                availableGeometry.width -= launcherComponent.item.launcherSize;
+                shell.availableGeometry.x = availableGeometry.width - launcherComponent.item.launcherSize;
+                shell.availableGeometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Bottom:
-                availableGeometry.height -= launcherComponent.item.launcherSize;
+                shell.availableGeometry.height -= launcherComponent.item.launcherSize;
                 break;
             }
         }

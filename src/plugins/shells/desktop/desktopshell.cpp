@@ -36,7 +36,7 @@
 #include "cmakedirs.h"
 
 DesktopShell::DesktopShell()
-    : VShell(this)
+    : VShell(this)    
     , m_currentSurface(0)
 {
     // Load the shell
@@ -45,6 +45,9 @@ DesktopShell::DesktopShell()
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
     winId();
+
+    // All the screen is available
+    m_availableGeometry = geometry();
 
     // Allow QML to access this shell
     rootContext()->setContextProperty("shell", this);
@@ -57,6 +60,17 @@ DesktopShell::DesktopShell()
         rootObject(), SLOT(windowResized(QVariant)));
     connect(this, SIGNAL(frameSwapped()),
         this, SLOT(frameSwapped()));
+}
+
+QRectF DesktopShell::availableGeometry() const
+{
+    return m_availableGeometry;
+}
+
+void DesktopShell::setAvailableGeometry(const QRectF &rect)
+{
+    m_availableGeometry = rect;
+    emit availableGeometryChanged();
 }
 
 void DesktopShell::setupCompositor()
