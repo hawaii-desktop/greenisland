@@ -96,7 +96,7 @@ Item {
         states: [
             State {
                 name: "left"
-                when: launcherComponent.item.alignment == LauncherAlignment.Left
+                when: launcherComponent.item.alignment === LauncherAlignment.Left
 
                 AnchorChanges {
                     target: launcherComponent
@@ -111,7 +111,7 @@ Item {
             },
             State {
                 name: "right"
-                when: launcherComponent.item.alignment == LauncherAlignment.Right
+                when: launcherComponent.item.alignment === LauncherAlignment.Right
 
                 AnchorChanges {
                     target: launcherComponent
@@ -126,7 +126,7 @@ Item {
             },
             State {
                 name: "bottom"
-                when: launcherComponent.item.alignment == LauncherAlignment.Bottom
+                when: launcherComponent.item.alignment === LauncherAlignment.Bottom
 
                 AnchorChanges {
                     target: launcherComponent
