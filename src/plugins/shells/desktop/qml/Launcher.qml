@@ -32,7 +32,7 @@ Item {
     id: launcherContainer
 
     // TODO: Define margins and padding in Fluid::Theme
-    property real padding: 8
+    property real padding: 4
 
     // Size
     property real launcherSize: 0
@@ -69,69 +69,47 @@ Item {
     LauncherView {
         id: launcher
         anchors.fill: frame
+        anchors.margins: padding
     }
 
     states: [
         State {
             name: "left"
-            when: alignment == LauncherAlignment.Left
+            when: alignment === LauncherAlignment.Left
 
             PropertyChanges {
                 target: launcherContainer
                 launcherSize: tileSize + frame.margins.right + (padding * 2)
             }
-            AnchorChanges {
-                target: launcher
-                anchors.horizontalCenter: frame.horizontalCenter
-            }
             PropertyChanges {
                 target: launcher
-                anchors.leftMargin: padding
-                anchors.topMargin: padding
-                anchors.rightMargin: frame.margins.right + padding
-                anchors.bottomMargin: padding
-                orientation: ListView.Vertical
+                anchors.rightMargin: frame.margins.right
             }
         },
         State {
             name: "right"
-            when: alignment == LauncherAlignment.Right
+            when: alignment === LauncherAlignment.Right
 
             PropertyChanges {
                 target: launcherContainer
                 launcherSize: tileSize + frame.margins.left + (padding * 2)
             }
-            AnchorChanges {
-                target: launcher
-                anchors.horizontalCenter: frame.horizontalCenter
-            }
             PropertyChanges {
                 target: launcher
-                anchors.leftMargin: frame.margins.left + padding
-                anchors.topMargin: padding
-                anchors.rightMargin: padding
-                anchors.bottomMargin: padding
-                orientation: ListView.Vertical
+                anchors.leftMargin: frame.margins.left
             }
         },
         State {
             name: "bottom"
-            when: alignment == LauncherAlignment.Bottom
+            when: alignment === LauncherAlignment.Bottom
 
             PropertyChanges {
                 target: launcherContainer
                 launcherSize: tileSize + frame.margins.top + (padding * 2)
             }
-            AnchorChanges {
-                target: launcher
-                anchors.verticalCenter: frame.verticalCenter
-            }
             PropertyChanges {
                 target: launcher
-                anchors.leftMargin: padding
-                anchors.topMargin: frame.margins.top + padding
-                anchors.rightMargin: padding
-                anchors.bottomMargin: padding
+                anchors.topMargin: frame.margins.top
                 orientation: ListView.Horizontal
             }
         }
