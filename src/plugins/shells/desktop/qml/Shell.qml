@@ -32,9 +32,6 @@ import "CompositorLogic.js" as CompositorLogic
 Item {
     id: root
 
-    // Screen geometry
-    property rect geometry
-
     // Currently selected window
     property variant selectedWindow: null
 
@@ -146,8 +143,6 @@ Item {
     AppChooser {
         id: appChooser
         z: 3
-        width: shell.availableGeometry.width / 1.1
-        height: shell.availableGeometry.height / 1.1
         visible: false
     }
 
@@ -166,8 +161,7 @@ Item {
 
     function calculateGeometry() {
         // Available geometry equals screen geometry
-        geometry = Qt.rect(x, y, width, height);
-        shell.availableGeometry = geometry;
+        shell.availableGeometry = Qt.rect(x, y, width, height);
 
         // ...unless the panel is loaded
         if (panelComponent.status == Loader.Ready) {
@@ -183,7 +177,7 @@ Item {
                 shell.availableGeometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Right:
-                shell.availableGeometry.x = availableGeometry.width - launcherComponent.item.launcherSize;
+                shell.availableGeometry.x = shell.availableGeometry.width - launcherComponent.item.launcherSize;
                 shell.availableGeometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Bottom:
@@ -191,6 +185,10 @@ Item {
                 break;
             }
         }
+
+        // Resize AppChooser
+        appChooser.width = shell.availableGeometry.width / 1.1;
+        appChooser.height = shell.availableGeometry.height / 1.1;
 
         // Recalculate the layout
         CompositorLogic.relayout();
