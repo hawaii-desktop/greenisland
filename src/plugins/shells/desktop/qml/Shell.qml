@@ -151,19 +151,6 @@ Item {
         visible: false
     }
 
-    // Windows loose their focus when clicking an empty spot on the desktop,
-    // however this happens only if the user clicks inside the available geometry
-    MouseArea {
-        x: shell.availableGeometry.x
-        y: shell.availableGeometry.y
-        width: shell.availableGeometry.width
-        height: shell.availableGeometry.height
-        onClicked: {
-            root.selectedWindow = null;
-            root.focus = true;
-        }
-    }
-
     // Top-right corner is sensible and exposes all the windows
     MouseArea {
         x: root.width - width
