@@ -45,7 +45,7 @@ Item {
     // Opacity will be set to 1.0 by the fade-in animation
     opacity: 0.0
 
-    // Fade-in animation
+    // Fade-in animation for the whole screen
     NumberAnimation on opacity {
         easing.type: Easing.Linear
         duration: 1500
@@ -88,6 +88,11 @@ Item {
 
             // Set a pointer to the AppChooser object
             launcherComponent.item.appChooserObject = appChooser;
+        }
+
+        // Animate Launcher when it shows up
+        Behavior on height {
+            NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
         }
 
         states: [
@@ -158,6 +163,19 @@ Item {
             CompositorLogic.relayout();
         }
     }
+
+    /*
+    MouseArea {
+        x: shell.availableGeometry.x
+        y: shell.availableGeometry.y
+        width: shell.availableGeometry.width
+        height: shell.availableGeometry.height
+        hoverEnabled: true
+        onEntered: {
+            console.log("ciao");
+        }
+    }
+    */
 
     function calculateGeometry() {
         // Available geometry equals screen geometry

@@ -115,22 +115,4 @@ Item {
             }
         }
     ]
-
-    // Animate width when the launcher is created (when aligned left or right)
-    NumberAnimation on width {
-        running: opacity > 0 && (alignment == LauncherAlignment.Left || alignment == LauncherAlignment.Right)
-        easing.type: Easing.InQuad
-        duration: 400
-        from: 0
-        to: launcherSize
-    }
-
-    // Animate height when the launcher is created (when laid down to the bottom)
-    NumberAnimation on height {
-        running: opacity > 0 && alignment == LauncherAlignment.Bottom
-        easing.type: Easing.InQuad
-        duration: 400
-        from: 0
-        to: launcherSize
-    }
 }
