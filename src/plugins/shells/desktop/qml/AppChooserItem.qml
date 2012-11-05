@@ -25,26 +25,43 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
+import FluidCore 1.0
 import FluidUi 1.0
 
-Column {
+Item {
     property alias icon: icon.source
     property alias label: label.text
 
     Image {
         id: icon
-        anchors.horizontalCenter: parent.horizontalCenter
-        sourceSize.width: 64
-        sourceSize.height: 64
+        anchors {
+            top: parent.top
+            horizontalCenter: parent.horizontalCenter
+        }
+        sourceSize: Qt.size(theme.largeIconSize, theme.largeIconSize)
+        width: theme.largeIconSize
+        height: theme.largeIconSize
         smooth: true
     }
 
+    /*
+    Glow {
+        anchors.fill: icon
+        radius: 8
+        samples: 16
+        color: theme.highlightColor
+        source: icon
+        visible: false
+    }
+    */
+
     Label {
         id: label
-        color: "white"
-        font.bold: true
-        style: Text.Raised
-        styleColor: "black"
+        anchors {
+            top: icon.bottom
+            horizontalCenter: icon.horizontalCenter
+        }
         wrapMode: Text.Wrap
         width: parent.width
         horizontalAlignment: Text.AlignHCenter
