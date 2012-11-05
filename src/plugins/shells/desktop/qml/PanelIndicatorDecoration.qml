@@ -31,7 +31,7 @@ FrameSvgItem {
     id: decorator
     width: 320
     height: 240
-    imagePath: "widgets/translucentbackground"
+    imagePath: "widgets/background"
 
     Item {
         id: content
