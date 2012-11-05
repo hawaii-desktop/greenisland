@@ -128,8 +128,8 @@ Item {
                 bottom: parent.bottom
             }
             cacheBuffer: 1000
-            cellWidth: 128
-            cellHeight: 128
+            cellWidth: theme.enormousIconSize
+            cellHeight: theme.enormousIconSize
             model: VisualDataModel {
                 id: visualModel
 
