@@ -29,7 +29,9 @@ import FluidCore 1.0
 
 Item {
     // Panel height
-    property real panelHeight: 28 + frame.margins.bottom
+    property real panelPadding: 2
+    property real panelRealHeight: theme.smallMediumIconSize + panelPadding
+    property real panelHeight: panelRealHeight + frame.margins.bottom
 
     Behavior on height {
         NumberAnimation { easing.type: Easing.InQuad; duration: 400 }
@@ -39,12 +41,15 @@ Item {
         id: frame
         anchors.fill: parent
         enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/translucentbackground"
+        imagePath: "widgets/panel-background"
+        prefix: "north-mini"
     }
 
     PanelView {
-        anchors.fill: frame
-        anchors.bottomMargin: frame.margins.bottom
+        anchors {
+            fill: frame
+            margins: panelPadding
+        }
     }
 
     // Animate height when the panel is created
