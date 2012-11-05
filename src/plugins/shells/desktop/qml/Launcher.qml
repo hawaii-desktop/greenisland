@@ -60,10 +60,11 @@ Item {
             case LauncherAlignment.Right:
                 return FrameSvgItem.LeftBorder;
             case LauncherAlignment.Bottom:
-                return FrameSvgItem.TopBorder;
+                return FrameSvgItem.LeftBorder | FrameSvgItem.TopBorder | FrameSvgItem.RightBorder;
             }
         }
-        imagePath: "widgets/background"
+        imagePath: "widgets/panel-background"
+        prefix: "south-mini"
     }
 
     LauncherView {
@@ -83,7 +84,7 @@ Item {
             }
             PropertyChanges {
                 target: launcher
-                anchors.rightMargin: frame.margins.right
+                anchors.rightMargin: frame.margins.right + padding
             }
         },
         State {
@@ -96,7 +97,7 @@ Item {
             }
             PropertyChanges {
                 target: launcher
-                anchors.leftMargin: frame.margins.left
+                anchors.leftMargin: frame.margins.left + padding
             }
         },
         State {
@@ -109,7 +110,7 @@ Item {
             }
             PropertyChanges {
                 target: launcher
-                anchors.topMargin: frame.margins.top
+                anchors.topMargin: frame.margins.top + padding
                 orientation: ListView.Horizontal
             }
         }
