@@ -46,7 +46,7 @@ public:
         return m_currentSurface;
     }
 
-    void setupCompositor();
+    void setupCompositor(bool fullscreen);
     void startShell();
 
     void surfaceCreated(WaylandSurface *surface);

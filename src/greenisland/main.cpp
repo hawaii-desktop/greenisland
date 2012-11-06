@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
     if (arguments.contains(QStringLiteral("-h")) || arguments.contains(QStringLiteral("--help"))) {
         qDebug() << "Usage: greenisland [options]";
         qDebug() << "Arguments are:";
+        qDebug() << "\t--fullscreen\t\trun in fullscreen mode";
         qDebug() << "\t--synthesize-touch\tsynthesize touch for unhandled mouse events";
         qDebug() << "\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')";
         return 0;
@@ -109,7 +110,7 @@ int main(int argc, char *argv[])
                pluginName.toLocal8Bit().constData());
 
     // Setup compositor and start the shell
-    shell->setupCompositor();
+    shell->setupCompositor(arguments.contains(QStringLiteral("--fullscreen")));
     shell->startShell();
 
     return app.exec();

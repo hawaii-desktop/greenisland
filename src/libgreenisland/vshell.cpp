@@ -31,7 +31,7 @@ VShell::VShell(QWindow *window)
 {
 }
 
-void VShell::setupCompositor()
+void VShell::setupCompositor(bool fullscreen)
 {
 }
 

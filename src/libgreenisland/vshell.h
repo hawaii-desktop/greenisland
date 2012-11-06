@@ -36,7 +36,7 @@ class GREENISLAND_EXPORT VShell : public WaylandCompositor
 public:
     VShell(QWindow *window = 0);
 
-    virtual void setupCompositor();
+    virtual void setupCompositor(bool fullscreen);
     virtual void startShell();
 };
 

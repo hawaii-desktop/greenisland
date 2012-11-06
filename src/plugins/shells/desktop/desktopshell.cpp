@@ -73,11 +73,16 @@ void DesktopShell::setAvailableGeometry(const QRectF &rect)
     emit availableGeometryChanged();
 }
 
-void DesktopShell::setupCompositor()
+void DesktopShell::setupCompositor(bool fullscreen)
 {
     setWindowTitle("Green Island");
-    setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-    showMaximized();
+    if (fullscreen) {
+        setGeometry(QGuiApplication::primaryScreen()->geometry());
+        showFullScreen();
+    } else {
+        setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+        showMaximized();
+    }
 }
 
 void DesktopShell::startShell()
