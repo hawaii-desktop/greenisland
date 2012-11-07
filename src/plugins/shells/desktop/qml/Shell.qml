@@ -74,6 +74,11 @@ Item {
         source: "Panel.qml"
         asynchronous: true
         onLoaded: calculateGeometry()
+
+        // Animate Panel when it shows up
+        Behavior on height {
+            NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
+        }
     }
 
     // Launcher
@@ -183,6 +188,7 @@ Item {
 
         // ...unless the panel is loaded
         if (panelComponent.status == Loader.Ready) {
+            panelComponent.height = panelComponent.item.panelHeight;
             shell.availableGeometry.y += panelComponent.item.panelHeight;
             shell.availableGeometry.height -= panelComponent.item.panelHeight;
         }
