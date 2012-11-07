@@ -25,27 +25,8 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import FluidCore 1.0
 
-Item {
-    // Panel height
-    property real padding: 2
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
-    property real panelHeight: panelRealHeight + frame.margins.bottom
-
-    FrameSvgItem {
-        id: frame
-        anchors.fill: parent
-        enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/panel-background"
-        prefix: "north-mini"
-    }
-
-    PanelView {
-        anchors {
-            fill: frame
-            verticalCenter: frame.verticalCenter
-            bottomMargin: frame.margins.bottom
-        }
-    }
+PanelIndicator {
+    iconName: "task-due-symbolic"
+    label: "AAAAAA"
 }

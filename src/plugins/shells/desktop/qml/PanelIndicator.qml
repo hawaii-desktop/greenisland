@@ -29,21 +29,61 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
-    id: root
+    id: indicator
 
-    // Top panel object
-    property variant panel: null
+    // Label text and icon name
+    property string label
+    property string iconName
 
-    // Label text and icon name from the C++ indicator
-    property string label: null
-    property string iconName: null
+    // Menu object
+    property variant menu
 
-    // Is it checked?
-    property bool checked: false
+    // Icon size
+    property real iconSize: theme.smallIconSize
 
-    width: row.width
-    height: row.height
+    // Spacing between icon and label
+    property real spacing: iconSize / 4
 
+    // PanelView objectName
+    property variant panelView
+
+    width: iconItem.width + labelItem.paintedWidth + (spacing * 4)
+
+    QtObject {
+        id: internal
+
+        property bool pressed: false
+        property bool hovered: false
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        hoverEnabled: true
+        onEntered: {
+            if (panelView.isMenuTriggered())
+                panelView.showMenu(indicator);
+
+            internal.hovered = true;
+        }
+        onExited: {
+            if (panelView.isMenuTriggered()) {
+                panelView.hideMenu();
+                internal.pressed = false;
+            }
+
+            internal.hovered = false;
+        }
+        onClicked: {
+            internal.pressed = !internal.pressed;
+
+            if (internal.pressed)
+                panelView.showMenu(indicator);
+            else
+                panelView.closeMenu();
+        }
+    }
+
+    /*
     MouseArea {
         anchors.fill: parent
 
@@ -85,29 +125,56 @@ Item {
             indicator.item.decorator.visible = checked;
         }
     }
+    */
 
-    Row {
-        id: row
-        // TODO: Load from Fluid::Theme
-        spacing: 4
+    Rectangle {
+        id: highlight
+        anchors.fill: parent
+        color: internal.hovered || internal.pressed ? theme.highlightColor : "transparent"
 
         Image {
             id: iconItem
-            anchors.verticalCenter: parent.verticalCenter
-            asynchronous: true
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+                leftMargin: spacing
+                rightMargin: spacing
+            }
             source: "image://desktoptheme/" + (iconName ? iconName : "unknown")
-            sourceSize.width: theme.smallMediumIconSize
-            sourceSize.height: theme.smallMediumIconSize
-            visible: iconName
+            sourceSize: Qt.size(iconSize, iconSize)
+            width: iconSize
+            height: iconSize
+            smooth: true
+            fillMode: Image.PreserveAspectFit
+            visible: iconName != ""
         }
 
         Label {
             id: labelItem
-            anchors.verticalCenter: iconItem.verticalCenter
+            anchors {
+                left: iconItem.right
+                verticalCenter: iconItem.verticalCenter
+                leftMargin: spacing
+                rightMargin: spacing
+            }
             text: label
             // TODO: Define a specific font in Fluid::Theme and use it here
             font.weight: Font.Bold
-            color: theme.brightTextColor
+            font.pointSize: 9
+            color: internal.hovered || internal.pressed ? theme.highlightedTextColor : theme.windowTextColor
+            visible: label != ""
         }
+    }
+
+    function showMenu(mouse) {
+        menu.parent = indicator.parent;
+        menu.x = indicator.x;
+        menu.y = indicator.parent.height + indicator.y;
+        menu.visible = true;
+    }
+
+    function hideMenu() {
+        menu.visible = false;
     }
 }

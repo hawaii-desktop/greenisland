@@ -26,31 +26,152 @@
 
 import QtQuick 2.0
 import GreenIsland 1.0
-import FluidCore 1.0
 
 Item {
     id: root
 
-    // TODO: Define margins and padding in Fluid::Theme
-    property real padding: 8
+    // Spacing between indicators
+    property real spacing: 8
 
-    Row {
-        anchors {
-            fill: parent
-            verticalCenter: parent.verticalCenter
-            leftMargin: padding
-            rightMargin: padding
+    QtObject {
+        id: internal
+
+        // Currently selected item
+        property variant currentItem: null
+
+        // Is a menu triggered?
+        property bool triggered: false
+    }
+
+    function showMenu(item) {
+        // Show the menu of the currently active indicator
+        internal.currentItem = item;
+        if (internal.currentItem && internal.currentItem.menu) {
+            internal.currentItem.menu.parent = internal.currentItem;
+            internal.currentItem.menu.x = internal.currentItem.x;
+            internal.currentItem.menu.y = root.height + internal.currentItem.y;
+            internal.currentItem.menu.visible = true;
+            internal.triggered = true;
         }
-        spacing: padding
+    }
 
-        Repeater {
-            model: IndicatorsModel {}
+    function hideMenu() {
+        if (internal.currentItem && internal.currentItem.menu)
+            internal.currentItem.menu.visible = false;
+    }
 
-            PanelIndicator {
-                panel: root.parent
-                label: indicator.label
-                iconName: indicator.iconName
+    function closeMenu() {
+        if (internal.currentItem && internal.currentItem.menu) {
+            internal.currentItem.menu.visible = false;
+            internal.triggered = false;
+        }
+    }
+
+    function isMenuTriggered() {
+        return internal.triggered;
+    }
+
+    Item {
+        id: leftBox
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: parent.bottom
+        }
+        width: parent.width / 3
+
+        WorkspaceIndicator {
+            id: workspaceIndicator
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+                rightMargin: spacing
             }
+            panelView: root
+        }
+    }
+
+    Item {
+        id: centerBox
+        anchors {
+            left: leftBox.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+        width: parent.width / 3
+
+        DateIndicator {
+            id: dateIndicator
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+                horizontalCenter: parent.horizontalCenter
+                rightMargin: spacing
+            }
+            panelView: root
+        }
+    }
+
+    Item {
+        id: rightBox
+        anchors {
+            left: centerBox.right
+            top: parent.top
+            bottom: parent.bottom
+        }
+        width: parent.width / 3
+
+        /*
+        Row {
+            id: trayArea
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+            }
+
+            Repeater {
+                model: IndicatorsModel {}
+
+                PanelIndicator {
+                    label: indicator.label
+                    iconName: indicator.iconName
+                    panelView: root
+                }
+            }
+        }
+        */
+
+        NetworkIndicator {
+            id: networkIndicator
+            anchors {
+                left: parent.left
+                top: parent.top
+                bottom: parent.bottom
+                rightMargin: spacing
+            }
+            panelView: root
+        }
+        UserIndicator {
+            id: userIndicator
+            anchors {
+                left: networkIndicator.right
+                top: parent.top
+                bottom: parent.bottom
+                rightMargin: spacing
+            }
+            panelView: root
+        }
+        NotificationsIndicator {
+            id: notificationsIndicator
+            anchors {
+                left: userIndicator.right
+                top: parent.top
+                bottom: parent.bottom
+                rightMargin: spacing
+            }
+            panelView: root
         }
     }
 }

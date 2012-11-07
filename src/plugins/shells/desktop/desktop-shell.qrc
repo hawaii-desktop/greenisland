@@ -14,6 +14,11 @@
 	<file>qml/AppChooser.qml</file>
 	<file>qml/AppChooserItem.qml</file>
 	<file>qml/AppChooserDelegate.qml</file>
+  	<file>qml/DateIndicator.qml</file>
+  	<file>qml/NetworkIndicator.qml</file>
+  	<file>qml/NotificationsIndicator.qml</file>
+  	<file>qml/UserIndicator.qml</file>
+  	<file>qml/WorkspaceIndicator.qml</file>
  	<file>images/launcher_dot.png</file>
 </qresource>
 </RCC>

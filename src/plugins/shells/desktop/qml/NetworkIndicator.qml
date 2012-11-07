@@ -25,27 +25,21 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import FluidCore 1.0
 
-Item {
-    // Panel height
-    property real padding: 2
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
-    property real panelHeight: panelRealHeight + frame.margins.bottom
+PanelIndicator {
+    iconName: "network-offline-symbolic"
+    label: "ciao"
 
-    FrameSvgItem {
-        id: frame
-        anchors.fill: parent
-        enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/panel-background"
-        prefix: "north-mini"
-    }
+    menu: Rectangle {
+        width: 100
+        height: 100
+        color: "#336699"
+        visible: false
 
-    PanelView {
-        anchors {
-            fill: frame
-            verticalCenter: frame.verticalCenter
-            bottomMargin: frame.margins.bottom
+        Column {
+            Rectangle { width: 100; height: 48; color: "red" }
+            Rectangle { width: 100; height: 48; color: "green" }
+            Rectangle { width: 100; height: 48; color: "yellow" }
         }
     }
 }
