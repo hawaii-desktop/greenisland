@@ -50,7 +50,6 @@ Item {
 
     Rectangle {
         id: container
-        //anchors.centerIn: parent
         anchors.fill: parent
         color: "transparent"
 
