@@ -33,6 +33,7 @@ Item {
 
     property alias text: label.text
     property alias font: label.font
+    property bool separator: false
 
     property real padding: 8
 
@@ -45,8 +46,37 @@ Item {
     implicitWidth: 150
     implicitHeight: 50
     width: Math.max(implicitWidth, parent.width)
+    enabled: !separator
 
     Keys.onReturnPressed: root.clicked()
+
+    onSeparatorChanged: {
+        if (separator)
+            internal.separatorItem = separatorComponent.createObject(root)
+        else
+            internal.separatorItem.destroy();
+    }
+
+    QtObject {
+        id: internal
+
+        property Item separatorItem
+    }
+
+    Component {
+        id: separatorComponent
+
+        FrameSvgItem {
+            anchors {
+                left: parent.left
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+            }
+            imagePath: "widgets/viewitem"
+            prefix: "normal"
+            height: text ? parent.height : margins.top + margins.bottom
+        }
+    }
 
     Rectangle {
         id: container
