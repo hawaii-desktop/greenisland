@@ -32,19 +32,40 @@ Item {
     id: root
 
     property alias text: label.text
+    property alias font: label.font
 
     property real padding: 8
 
     signal clicked
 
-    width: container.width
-    height: container.height
+    /*
+    implicitWidth: label.paintedWidth + padding
+    implicitHeight: label.paintedHeight + padding
+    */
+    implicitWidth: 150
+    implicitHeight: 50
+    width: Math.max(implicitWidth, parent.width)
 
     Keys.onReturnPressed: root.clicked()
 
+    Rectangle {
+        id: container
+        //anchors.centerIn: parent
+        anchors.fill: parent
+        color: "transparent"
+
+        Label {
+            id: label
+            anchors.fill: parent
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+        }
+    }
+
     MouseArea {
         id: mousearea
-        anchors.fill: container
+        anchors.fill: parent
         hoverEnabled: true
         onEntered: {
             label.color = theme.highlightedTextColor;
@@ -55,33 +76,5 @@ Item {
             container.color = "transparent";
         }
         onClicked: root.clicked()
-    }
-
-    Rectangle {
-        id: container
-        anchors {
-            left: parent.left
-            top: parent.top
-        }
-        color: "transparent"
-        x: 0
-        y: 0
-        width: label.painterWidth + 1920
-        height: label.paintedHeight + (padding * 2)
-        onWidthChanged: console.log("width", width)
-        onHeightChanged: console.log("height", height)
-
-        Label {
-            id: label
-            anchors {
-                left: parent.left
-                //right: parent.right
-                leftMargin: padding
-                rightMargin: padding
-                verticalCenter: parent.verticalCenter
-            }
-            horizontalAlignment: Text.AlignLeft
-            elide: Text.ElideRight
-        }
     }
 }

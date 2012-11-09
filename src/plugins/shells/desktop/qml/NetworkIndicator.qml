@@ -31,10 +31,13 @@ PanelIndicator {
     iconName: "network-offline-symbolic"
 
     menu: PanelMenu {
-        content: Column {
+        content: [
             PanelMenuItem {
                 text: qsTr("Wired Network")
+            },
+            PanelMenuItem {
+                text: qsTr("Wireless Network")
             }
-        }
+        ]
     }
 }

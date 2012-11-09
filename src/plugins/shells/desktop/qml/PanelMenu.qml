@@ -31,14 +31,11 @@ import FluidUi 1.0
 Item {
     id: root
 
-    //default property alias content: menu.content
-    default property alias content: menu.children
+    default property alias content: menuContents.children
     property int status: DialogStatus.Closed
 
-    property real paddingLarge: 16
-
-    width: menuContainer.width
-    height: menuContainer.height
+    width: 400
+    height: 400
     state: "hidden"
     enabled: status == DialogStatus.Open
     visible: status != DialogStatus.Closed
@@ -49,18 +46,53 @@ Item {
         height: menu.height
         imagePath: "widgets/menu-background"
 
-        PanelMenuContent {
-            id: menu
-            anchors {
-                left: parent.left
-                top: parent.top
-                leftMargin: menuContainer.margins.left
-                topMargin: menuContainer.margins.top
-                rightMargin: menuContainer.margins.right
+        Item {
+            id: contentItem
+            x: menuContainer.margins.left
+            y: menuContainer.margins.top
+            width: Math.max(menuContents.width, theme.defaultFont.mSize.width * 12)
+            height: Math.min(menuContents.height, theme.defaultFont.mSize.height * 25)
+
+            Flickable {
+                id: flickable
+                anchors.fill: parent
+                clip: true
+
+                Column {
+                    id: menuContents
+                    spacing: 4
+                    onChildrenChanged: {
+                        // Close the popup menu when a menu item is clicked
+                        connectClickedSignal();
+
+                        // Resize the popup menu accordingly to its items
+                        resizePopupMenu();
+                    }
+                    onChildrenRectChanged: resizePopupMenu()
+
+                    function connectClickedSignal() {
+                        for (var i = 0; i < children.length; ++i) {
+                            if (children[i].clicked != undefined)
+                                children[i].clicked.connect(root.close);
+                        }
+                    }
+
+                    function resizePopupMenu() {
+                        root.width = childrenRect.width + menuContainer.margins.left + menuContainer.margins.right;
+                        root.height = childrenRect.height + menuContainer.margins.top + menuContainer.margins.bottom;
+                    }
+                }
             }
-            onItemClicked: close()
-            width: 500
-            height: 500
+
+            ScrollBar {
+                id: scrollBar
+                flickableItem: flickable
+                visible: flickable.contentHeight > contentItem.height
+                anchors {
+                    top: flickable.top
+                    right: flickable.right
+                }
+            }
         }
     }
 
