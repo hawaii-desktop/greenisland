@@ -27,14 +27,24 @@
 import QtQuick 2.0
 import FluidUi 1.0
 
-PanelIndicator {
-    iconName: "network-offline-symbolic"
+Item {
+    id: root
 
-    menu: PanelMenu {
-        content: Column {
-            PanelMenuItem {
-                text: qsTr("Wired Network")
-            }
+    signal itemClicked()
+
+    width: children.legnth > 0 ? children[0].width : 50
+    height: children.length > 0 ? children[0].height : 30
+
+    onWidthChanged: console.log("content width", width)
+    onHeightChanged: console.log("content height", height)
+    onChildrenChanged: setupChildren()
+
+    function setupChildren() {
+        // Connect children to the itemClicked signal so that the menu
+        // can handle a single item being clicked
+        for (var i = 0; i < children.length; ++i) {
+            if (children[i].clicked != undefined)
+                children[i].clicked.connect(root.itemClicked);
         }
     }
 }

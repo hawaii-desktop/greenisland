@@ -28,5 +28,13 @@ import QtQuick 2.0
 
 PanelIndicator {
     iconName: "user-info-symbolic"
-    label: "aa"
+    label: "Pier Luigi Fiorini"
+
+    menu: PanelMenu {
+        content: Column {
+            PanelMenuItem {
+                text: qsTr("Prova")
+            }
+        }
+    }
 }

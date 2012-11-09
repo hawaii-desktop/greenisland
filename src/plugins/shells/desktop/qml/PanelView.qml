@@ -33,44 +33,6 @@ Item {
     // Spacing between indicators
     property real spacing: 8
 
-    QtObject {
-        id: internal
-
-        // Currently selected item
-        property variant currentItem: null
-
-        // Is a menu triggered?
-        property bool triggered: false
-    }
-
-    function showMenu(item) {
-        // Show the menu of the currently active indicator
-        internal.currentItem = item;
-        if (internal.currentItem && internal.currentItem.menu) {
-            internal.currentItem.menu.parent = internal.currentItem;
-            internal.currentItem.menu.x = internal.currentItem.x;
-            internal.currentItem.menu.y = root.height + internal.currentItem.y;
-            internal.currentItem.menu.visible = true;
-            internal.triggered = true;
-        }
-    }
-
-    function hideMenu() {
-        if (internal.currentItem && internal.currentItem.menu)
-            internal.currentItem.menu.visible = false;
-    }
-
-    function closeMenu() {
-        if (internal.currentItem && internal.currentItem.menu) {
-            internal.currentItem.menu.visible = false;
-            internal.triggered = false;
-        }
-    }
-
-    function isMenuTriggered() {
-        return internal.triggered;
-    }
-
     Item {
         id: leftBox
         anchors {
@@ -88,7 +50,6 @@ Item {
                 bottom: parent.bottom
                 rightMargin: spacing
             }
-            panelView: root
         }
     }
 
@@ -109,7 +70,6 @@ Item {
                 horizontalCenter: parent.horizontalCenter
                 rightMargin: spacing
             }
-            panelView: root
         }
     }
 
@@ -151,7 +111,6 @@ Item {
                 bottom: parent.bottom
                 rightMargin: spacing
             }
-            panelView: root
         }
         UserIndicator {
             id: userIndicator
@@ -161,7 +120,6 @@ Item {
                 bottom: parent.bottom
                 rightMargin: spacing
             }
-            panelView: root
         }
         NotificationsIndicator {
             id: notificationsIndicator
@@ -171,7 +129,6 @@ Item {
                 bottom: parent.bottom
                 rightMargin: spacing
             }
-            panelView: root
         }
     }
 }

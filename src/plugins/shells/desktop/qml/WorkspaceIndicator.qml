@@ -27,6 +27,5 @@
 import QtQuick 2.0
 
 PanelIndicator {
-    iconName: "task-due-symbolic"
-    label: "AAAAAA"
+    iconName: "window-close-symbolic"
 }

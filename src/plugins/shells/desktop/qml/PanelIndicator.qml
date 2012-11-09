@@ -27,6 +27,7 @@
 import QtQuick 2.0
 import FluidCore 1.0
 import FluidUi 1.0
+import "PanelMenuManager.js" as PanelMenuManager
 
 Item {
     id: indicator
@@ -36,7 +37,7 @@ Item {
     property string iconName
 
     // Menu object
-    property variant menu
+    property PanelMenu menu
 
     // Icon size
     property real iconSize: theme.smallIconSize
@@ -44,93 +45,59 @@ Item {
     // Spacing between icon and label
     property real spacing: iconSize / 4
 
-    // PanelView objectName
-    property variant panelView
+    // Selected and hovered
+    property bool selected: false
+    property bool hovered: false
 
     width: iconItem.width + labelItem.paintedWidth + (spacing * 4)
-
-    QtObject {
-        id: internal
-
-        property bool pressed: false
-        property bool hovered: false
-    }
 
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
         onEntered: {
-            if (panelView.isMenuTriggered())
-                panelView.showMenu(indicator);
+            hovered = menu != null;
 
-            internal.hovered = true;
+            if (menu && PanelMenuManager.triggered) {
+                if (PanelMenuManager.currentIndicator) {
+                    if (PanelMenuManager.currentIndicator.menu)
+                        PanelMenuManager.currentIndicator.menu.close();
+
+                    PanelMenuManager.currentIndicator.selected = false;
+                }
+
+                PanelMenuManager.currentIndicator = indicator;
+                selected = true;
+                menu.open();
+            }
         }
         onExited: {
-            if (panelView.isMenuTriggered()) {
-                panelView.hideMenu();
-                internal.pressed = false;
-            }
-
-            internal.hovered = false;
+            hovered = false;
         }
         onClicked: {
-            internal.pressed = !internal.pressed;
+            if (!menu)
+                return;
 
-            if (internal.pressed)
-                panelView.showMenu(indicator);
+            selected = !selected;
+
+            if (selected)
+                menu.open();
             else
-                panelView.closeMenu();
+                menu.close();
+
+            PanelMenuManager.triggered = selected;
+            PanelMenuManager.currentIndicator = indicator;
         }
     }
 
-    /*
-    MouseArea {
-        anchors.fill: parent
-
-        acceptedButtons: Qt.LeftButton | Qt.RightButton
-
-        onClicked: {
-            // No fun without an indicator!
-            if (!indicator)
-                return;
-
-            // Indicators must have a "decorator" property which we set to
-            // the decoration object the first time it's created
-            if (!("decorator" in indicator.item))
-                return;
-
-            // Reuse existing decoration if available
-            if (indicator.item.decorator) {
-                indicator.item.decorator.x = root.x;
-                indicator.item.decorator.y = panel.panelHeight;
-            } else {
-                // Create a decoration for the indicator's item
-                var itemDecorationComponent = Qt.createComponent("PanelIndicatorDecoration.qml");
-                indicator.item.decorator = itemDecorationComponent.createObject(root, {"x": root.x, "y": panel.panelHeight});
-
-                // Decorate the indicator's item
-                indicator.item.parent = indicator.item.decorator.children[0];
-                indicator.item.x = indicator.item.y = 0;
-            }
-
-            // Avoid indicator's item overflow
-            // FIXME: This doesn't work because width and height can't be set
-            if (indicator.item.width > indicator.item.decorator.width)
-                indicator.item.width = indicator.item.decorator.width;
-            if (indicator.item.height > indicator.item.decorator.height)
-                indicator.item.height = indicator.item.decorator.height;
-
-            // Show or hide the indicator's item
-            checked = !checked;
-            indicator.item.decorator.visible = checked;
-        }
+    onMenuChanged: {
+        if (menu)
+            menu.parent = indicator;
     }
-    */
 
     Rectangle {
         id: highlight
         anchors.fill: parent
-        color: internal.hovered || internal.pressed ? theme.highlightColor : "transparent"
+        color: hovered || selected ? theme.highlightColor : "transparent"
 
         Image {
             id: iconItem
@@ -162,19 +129,8 @@ Item {
             // TODO: Define a specific font in Fluid::Theme and use it here
             font.weight: Font.Bold
             font.pointSize: 9
-            color: internal.hovered || internal.pressed ? theme.highlightedTextColor : theme.windowTextColor
+            color: hovered || selected ? theme.highlightedTextColor : theme.windowTextColor
             visible: label != ""
         }
-    }
-
-    function showMenu(mouse) {
-        menu.parent = indicator.parent;
-        menu.x = indicator.x;
-        menu.y = indicator.parent.height + indicator.y;
-        menu.visible = true;
-    }
-
-    function hideMenu() {
-        menu.visible = false;
     }
 }
