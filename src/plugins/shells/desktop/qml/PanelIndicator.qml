@@ -94,10 +94,26 @@ Item {
             menu.parent = indicator;
     }
 
-    Rectangle {
+    FrameSvgItem {
         id: highlight
         anchors.fill: parent
-        color: hovered || selected ? theme.highlightColor : "transparent"
+        imagePath: "widgets/menuitem"
+        prefix: hovered || selected ? "selected" : ""
+        opacity: hovered || selected ? 1.0 : 0.0
+
+        Behavior on opacity {
+            NumberAnimation { duration: 200 }
+        }
+    }
+
+    Item {
+        anchors {
+            fill: highlight
+            leftMargin: highlight.margins.left
+            topMargin: highlight.margins.top
+            rightMargin: highlight.margins.right
+            bottomMargin: highlight.margins.bottom
+        }
 
         Image {
             id: iconItem

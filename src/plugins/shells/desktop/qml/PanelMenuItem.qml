@@ -35,7 +35,7 @@ Item {
     property alias font: label.font
     property bool separator: false
 
-    property real padding: 8
+    property real padding: 4
 
     signal clicked
 
@@ -44,7 +44,7 @@ Item {
     implicitHeight: label.paintedHeight + padding
     */
     implicitWidth: 150
-    implicitHeight: 50
+    implicitHeight: separator ? internal.separatorItem.height + (padding * 2) : 30
     width: Math.max(implicitWidth, parent.width)
     enabled: !separator
 
@@ -72,24 +72,37 @@ Item {
                 right: parent.right
                 verticalCenter: parent.verticalCenter
             }
-            imagePath: "widgets/viewitem"
-            prefix: "normal"
-            height: text ? parent.height : margins.top + margins.bottom
+            imagePath: "widgets/menuitem"
+            prefix: "separator"
+            height: margins.top + margins.bottom
         }
     }
 
-    Rectangle {
+    FrameSvgItem {
         id: container
         anchors.fill: parent
-        color: "transparent"
+        imagePath: "widgets/menuitem"
+        prefix: ""
+        opacity: separator ? 0.0 : prefix == "" ? 0.0 : 1.0
 
-        Label {
-            id: label
-            anchors.fill: parent
-            horizontalAlignment: Text.AlignLeft
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
+        Behavior on opacity {
+            NumberAnimation { duration: 200 }
         }
+    }
+
+    Label {
+        id: label
+        anchors {
+            fill: container
+            leftMargin: container.margins.left + padding
+            topMargin: container.margins.top
+            rightMargin: container.margins.right + padding
+            bottomMargin: container.margins.bottom
+        }
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+        visible: !separator
     }
 
     MouseArea {
@@ -98,11 +111,11 @@ Item {
         hoverEnabled: true
         onEntered: {
             label.color = theme.highlightedTextColor;
-            container.color = theme.highlightColor;
+            container.prefix = "selected";
         }
         onExited: {
             label.color = theme.windowTextColor;
-            container.color = "transparent";
+            container.prefix = "";
         }
         onClicked: root.clicked()
     }
