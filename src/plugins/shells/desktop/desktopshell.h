@@ -52,6 +52,8 @@ public:
     void surfaceCreated(WaylandSurface *surface);
     void surfaceAboutToBeDestroyed(WaylandSurface *surface);
 
+    Q_INVOKABLE void disconnectUser();
+
 signals:
     void windowAdded(QVariant window);
     void windowDestroyed(QVariant window);

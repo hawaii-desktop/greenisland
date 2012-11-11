@@ -67,6 +67,7 @@ public:
 
         // Enums
         qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");
+        qmlRegisterUncreatableType<UserStatus>(uri, 1, 0, "UserStatus", "");
     }
 
     void initializeEngine(QQmlEngine *engine, const char *uri) {

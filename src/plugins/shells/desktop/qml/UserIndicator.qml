@@ -25,16 +25,39 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import GreenIsland 1.0
 
 PanelIndicator {
-    iconName: "user-info-symbolic"
+    property int userStatus: UserStatus.Offline
+
+    iconName: {
+        switch (userStatus) {
+        case UserStatus.Offline:
+            return "user-offline-symbolic";
+        case UserStatus.Available:
+            return "user-available-symbolic";
+        case UserStatus.Busy:
+            return "user-busy-symbolic";
+        case UserStatus.Invisible:
+            return "user-invisible-symbolic";
+        case UserStatus.Away:
+            return "user-away-symbolic";
+        case UserStatus.Idle:
+            return "user-idle-symbolic";
+        case UserStatus.Pending:
+            return "user-status-pending-symbolic";
+        case UserStatus.Locked:
+            return "changes-prevent-symbolic";
+        }
+    }
     label: "Pier Luigi Fiorini"
 
     menu: PanelMenu {
-        content: Column {
+        content: [
             PanelMenuItem {
-                text: qsTr("Prova")
+                text: qsTr("Disconnect")
+                onClicked: shell.disconnectUser()
             }
-        }
+        ]
     }
 }

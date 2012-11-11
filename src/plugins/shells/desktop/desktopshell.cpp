@@ -122,6 +122,11 @@ void DesktopShell::surfaceAboutToBeDestroyed(WaylandSurface *surface)
     // TODO:
 }
 
+void DesktopShell::disconnectUser()
+{
+    close();
+}
+
 void DesktopShell::destroyWindow(QVariant window)
 {
     qvariant_cast<QObject *>(window)->deleteLater();
