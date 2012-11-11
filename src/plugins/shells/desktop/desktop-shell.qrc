@@ -11,6 +11,7 @@
         <file>qml/PanelIndicator.qml</file>
         <file>qml/PanelMenu.qml</file>
         <file>qml/PanelMenuItem.qml</file>
+        <file>qml/PanelContainerMenuItem.qml</file>
   	<file>qml/PanelMenuManager.js</file>
 
         <file>qml/DateIndicator.qml</file>
