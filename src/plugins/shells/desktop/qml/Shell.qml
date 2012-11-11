@@ -27,6 +27,7 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 import GreenIsland 1.0
+import FluidCore 1.0
 import "CompositorLogic.js" as CompositorLogic
 
 Item {
@@ -45,6 +46,16 @@ Item {
     // Opacity will be set to 1.0 by the fade-in animation
     opacity: 0.0
 
+    Settings {
+        id: bgSettings
+        schema: "org.hawaii.desktop"
+        group: "background"
+        onValueChanged: {
+            // Change wallpaper image
+            backgroundChangeAnim.start();
+        }
+    }
+
     // Fade-in animation for the whole screen
     NumberAnimation on opacity {
         easing.type: Easing.Linear
@@ -52,18 +63,35 @@ Item {
         to: 1.0
     }
 
+    SequentialAnimation {
+        id: backgroundChangeAnim
+
+        NumberAnimation {
+            target: background
+            property: "opacity"
+            duration: 250
+            easing.type: Easing.Linear
+            to: 0.0
+        }
+        ScriptAction {
+            script: background.source = bgSettings.value("wallpaper-uri")
+        }
+        NumberAnimation {
+            target: background
+            property: "opacity"
+            duration: 250
+            easing.type: Easing.Linear
+            to: 1.0
+        }
+    }
+
     // Desktop wallpaper
     Image {
         id: background
         anchors.fill: parent
         fillMode: Image.Tile
-        // TODO: From settings
-        source: "file:///opt/hawaii/share/wallpapers/Nature/Finally_Summer_in_Germany/contents/images/1920x1200.jpg"
+        source: bgSettings.value("wallpaper-uri")
         smooth: true
-
-        Behavior on opacity {
-            NumberAnimation { easing.type: Easing.Linear; duration: 500 }
-        }
     }
 
     // Panel
