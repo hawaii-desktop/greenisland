@@ -31,6 +31,7 @@ import FluidUi 1.0
 Item {
     id: root
 
+    default property alias items: contentsItem.children
     property alias text: label.text
     property alias font: label.font
     property bool separator: false
@@ -39,12 +40,8 @@ Item {
 
     signal clicked
 
-    /*
-    implicitWidth: label.paintedWidth + padding
-    implicitHeight: label.paintedHeight + padding
-    */
-    implicitWidth: 150
-    implicitHeight: separator ? internal.separatorItem.height + (padding * 2) : 30
+    implicitWidth: Math.max(label.paintedWidth + contentsItem.width, 150) + (padding * 3)
+    implicitHeight: separator ? internal.separatorItem.height + (padding * 2) : Math.max(Math.max(label.paintedHeight, contentsItem.height), 30)
     width: Math.max(implicitWidth, parent.width)
     enabled: !separator
 
@@ -90,8 +87,9 @@ Item {
         }
     }
 
-    Label {
-        id: label
+    Item {
+        id: item
+
         anchors {
             fill: container
             leftMargin: container.margins.left + padding
@@ -99,16 +97,40 @@ Item {
             rightMargin: container.margins.right + padding
             bottomMargin: container.margins.bottom
         }
-        horizontalAlignment: Text.AlignLeft
-        verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
-        visible: !separator
+
+        Label {
+            id: label
+            anchors {
+                left: parent.left
+                verticalCenter: parent.verticalCenter
+            }
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
+            visible: !separator
+        }
+
+        Row {
+            id: contentsItem
+            anchors {
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+            }
+            visible: children.length > 0
+            onChildrenChanged: {
+                // Trigger the clicked() signal for child items too
+                for (var i = 0; i < children.length; ++i) {
+                    if (children[i].clicked != undefined)
+                        children[i].clicked.connect(root.clicked)
+                }
+            }
+        }
     }
 
     MouseArea {
-        id: mousearea
-        anchors.fill: parent
+        anchors.fill: item
         hoverEnabled: true
+        preventStealing: true
         onEntered: {
             label.color = theme.highlightedTextColor;
             container.prefix = "selected";
