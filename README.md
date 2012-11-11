@@ -11,8 +11,7 @@ specific shells for different kind of workflows.  At the moment
 the focus is on the desktop shell, but in the future a tablet
 version is expected to see the light of the day.
 
-Dependencies
-============
+## Dependencies
 
 In order to build and install Green Island, you will need a complete
 and up to date Wayland, Qt 5 and Vibe development environment.
@@ -32,8 +31,7 @@ Continuous Integration tool, read the instructions here:
 
 The Continuous Integration tool builds the whole desktop.
 
-Build
-=====
+## Build
 
 Building Green Island is a piece of cake.
 
@@ -42,15 +40,20 @@ and run cmake:
 
     mkdir build
     cd build
-    cmake -DCMAKE_INSTALL_PREFIX=/system ..
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/hawaii ..
 
 To do a debug build the last command can be:
 
-    cmake -DCMAKE_INSTALL_PREFIX=/system -DCMAKE_BUILD_TYPE=Debug ..
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/hawaii -DCMAKE_BUILD_TYPE=Debug ..
 
 To do a release build instead it can be:
 
-    cmake -DCMAKE_INSTALL_PREFIX=/system -DCMAKE_BUILD_TYPE=Release ..
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/hawaii -DCMAKE_BUILD_TYPE=Release ..
+
+If not passed, the CMAKE_INSTALL_PREFIX parameter defaults to /usr/local.
+You have to specify a path that fits your needs, /opt/hawaii is just an example.
+
+Package maintainers would pass *-DCMAKE_INSTALL_PREFIX=/usr*.
 
 The CMAKE_BUILD_TYPE parameter allows the following values:
 
@@ -58,12 +61,11 @@ The CMAKE_BUILD_TYPE parameter allows the following values:
     Release: release build
     RelWithDebInfo: release build with debugging information
 
-Installation
-============
+## Installation
 
-The installation is easy-peasy, it's just a matter of typing:
+It's really, it's just a matter of typing:
 
-    sudo make install
+    make install
 
 from the build directory.
 
