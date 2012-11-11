@@ -26,12 +26,53 @@
 
 import QtQuick 2.0
 import GreenIsland 1.0
+import FluidUi 1.0
 
 PanelIndicator {
     property int userStatus: UserStatus.Offline
 
-    iconName: {
-        switch (userStatus) {
+    iconName: userStatusIcon(userStatus)
+    label: "Pier Luigi Fiorini"
+    menu: PanelMenu {
+        content: [
+            PanelContainerMenuItem {
+                items: [
+                    Image {
+                        id: avatarImage
+                        source: "image://desktoptheme/avatar-default-symbolic"
+                        sourceSize: Qt.size(theme.largeIconSize, theme.largeIconSize)
+                    },
+                    Column {
+                        Label {
+                            id: userLabel
+                            text: "Pier Luigi Fiorini"
+                            font.weight: Font.Bold
+                            font.pointSize: 16
+                        }
+
+                        Row {
+                            Image {
+                                source: "image://desktoptheme/" + iconName
+                                sourceSize: Qt.size(theme.smallIconSize, theme.smallIconSize)
+                            }
+                            Label {
+                                text: userStatusText(userStatus)
+                                horizontalAlignment: Text.AlignLeft
+                                verticalAlignment: Text.AlignVCenter
+                            }
+                        }
+                    }
+                ]
+            },
+            PanelMenuItem {
+                text: qsTr("Disconnect")
+                onClicked: shell.disconnectUser()
+            }
+        ]
+    }
+
+    function userStatusIcon(status) {
+        switch (status) {
         case UserStatus.Offline:
             return "user-offline-symbolic";
         case UserStatus.Available:
@@ -50,14 +91,25 @@ PanelIndicator {
             return "changes-prevent-symbolic";
         }
     }
-    label: "Pier Luigi Fiorini"
 
-    menu: PanelMenu {
-        content: [
-            PanelMenuItem {
-                text: qsTr("Disconnect")
-                onClicked: shell.disconnectUser()
-            }
-        ]
+    function userStatusText(status) {
+        switch (status) {
+        case UserStatus.Offline:
+            return qsTr("Offline");
+        case UserStatus.Available:
+            return qsTr("Available");
+        case UserStatus.Busy:
+            return qsTr("Busy");
+        case UserStatus.Invisible:
+            return qsTr("Invisible");
+        case UserStatus.Away:
+            return qsTr("Away");
+        case UserStatus.Idle:
+            return qsTr("Idle");
+        case UserStatus.Pending:
+            return qsTr("Pending");
+        case UserStatus.Locked:
+            return qsTr("Locked");
+        }
     }
 }
