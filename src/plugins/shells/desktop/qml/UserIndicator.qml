@@ -32,7 +32,7 @@ PanelIndicator {
     property int userStatus: UserStatus.Offline
 
     iconName: userStatusIcon(userStatus)
-    label: "Pier Luigi Fiorini"
+    label: accountsManager.defaultUser.displayName
     menu: PanelMenu {
         content: [
             PanelContainerMenuItem {
@@ -45,7 +45,7 @@ PanelIndicator {
                     Column {
                         Label {
                             id: userLabel
-                            text: "Pier Luigi Fiorini"
+                            text: accountsManager.defaultUser.displayName
                             font.weight: Font.Bold
                             font.pointSize: 16
                         }
