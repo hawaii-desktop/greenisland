@@ -33,10 +33,26 @@ PanelIndicator {
     menu: PanelMenu {
         content: [
             PanelMenuItem {
-                text: qsTr("Wired Network")
+                text: qsTr("Wired")
+                items: [
+                    Switch {
+                        id: wiredSwitch
+                    }
+                ]
             },
             PanelMenuItem {
-                text: qsTr("Wireless Network")
+                text: qsTr("Wireless")
+                items: [
+                    Switch {
+                        id: wirelessSwitch
+                    }
+                ]
+            },
+            PanelMenuItem {
+                separator: true
+            },
+            PanelMenuItem {
+                text: qsTr("Network Settings")
             }
         ]
     }
