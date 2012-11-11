@@ -42,6 +42,7 @@ Item {
 
     FrameSvgItem {
         id: menuContainer
+        x: root.parent.x - root.parent.width
         width: menu.width
         height: menu.height
         imagePath: "widgets/menu-background"
@@ -102,9 +103,8 @@ Item {
             when: status == DialogStatus.Opening || status == DialogStatus.Open
             PropertyChanges {
                 target: menuContainer
-                x: root.parent.x
                 y: root.parent.parent.height + root.parent.y
-                opacity: 1
+                opacity: 1.0
             }
         },
         State {
@@ -112,9 +112,8 @@ Item {
             when: status == DialogStatus.Closing || status == DialogStatus.Closed
             PropertyChanges {
                 target: menuContainer
-                x: root.parent.x
-                y: 0
-                opacity: 0
+                y: 0.0
+                opacity: 0.0
             }
         }
     ]
