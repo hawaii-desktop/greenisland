@@ -26,7 +26,10 @@
 #include <QQmlExtensionPlugin>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include <QQmlContext>
 
+#include <VibeCore/VAccountsManager>
+#include <VibeCore/VUserAccount>
 #include <VIndicator>
 
 #include "enums.h"
@@ -45,6 +48,8 @@ class GreenIslandQmlPlugin : public QQmlExtensionPlugin
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 public:
     void registerTypes(const char *uri) {
+        Q_ASSERT(uri == QLatin1String("GreenIsland"));
+
         // Indicators
         qmlRegisterType<IndicatorsModel>(uri, 1, 0, "IndicatorsModel");
         qmlRegisterType<VIndicator>(uri, 1, 0, "Indicator");
@@ -68,11 +73,20 @@ public:
         // Enums
         qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");
         qmlRegisterUncreatableType<UserStatus>(uri, 1, 0, "UserStatus", "");
+
+        // Register Vibe types
+        qmlRegisterUncreatableType<VAccountsManager>(uri, 1, 0, "AccountsManager", "");
+        qmlRegisterUncreatableType<VUserAccount>(uri, 1, 0, "UserAccount", "");
     }
 
     void initializeEngine(QQmlEngine *engine, const char *uri) {
-        Q_UNUSED(engine);
-        Q_UNUSED(uri);
+        Q_ASSERT(uri == QLatin1String("GreenIsland"));
+
+        QQmlContext *context = engine->rootContext();
+
+        // Register a global accounts manager object
+        VAccountsManager *accountsManager = new VAccountsManager();
+        context->setContextProperty("accountsManager", accountsManager);
     }
 };
 
