@@ -204,7 +204,7 @@ function windowAdded(root, window) {
     window.takeFocus();
 
     // Restrict windows coordinates to the available area
-    var availableGeometry = shell.availableGeometry;
+    var availableGeometry = compositor.availableGeometry;
     if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
         windowContainer.targetX += availableGeometry.x + 5;
     if (windowContainer.targetY < availableGeometry.y || windowContainer.targetY > availableGeometry.y + availableGeometry.height)
@@ -238,7 +238,7 @@ function windowDestroyed(window) {
     // TODO: Run an animation
 }
 
-function windowRemoved(shell, window) {
+function windowRemoved(compositor, window) {
     var windowContainer = window.parent;
 
     // Don't take this window into account anymore
@@ -247,5 +247,5 @@ function windowRemoved(shell, window) {
     // Destroy
     windowContainer.chrome.destroy();
     windowContainer.destroy();
-    shell.destroyWindow(window);
+    compositor.destroyWindow(window);
 }

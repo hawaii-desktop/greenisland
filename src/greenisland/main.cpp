@@ -24,22 +24,24 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QDir>
 #include <QDebug>
 #include <QPluginLoader>
 #include <QStringList>
+#include <QScreen>
 
 #include <VShellPlugin>
 
 #include "cmakedirs.h"
+#include "compositor.h"
 
-class GreenIsland : public QApplication
+class GreenIsland : public QGuiApplication
 {
     Q_OBJECT
 public:
     GreenIsland(int &argc, char **argv)
-        : QApplication(argc, argv) {
+        : QGuiApplication(argc, argv) {
         // Set application information
         setApplicationName("Green Island");
         setApplicationVersion("0.1.0");
@@ -103,15 +105,24 @@ int main(int argc, char *argv[])
     if (pluginArg != -1 && pluginArg + 1 < arguments.size())
         pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
 
+#if 0
     // Load the shell plugin
     VShell *shell = app.loadShell(pluginName);
     if (!shell)
         qFatal("Unable to run the shell because the '%s' plugin was not found",
                pluginName.toLocal8Bit().constData());
+#endif
 
-    // Setup compositor and start the shell
-    shell->setupCompositor(arguments.contains(QStringLiteral("--fullscreen")));
-    shell->startShell();
+    // Start the compositor and set it up
+    Compositor compositor;
+    compositor.setWindowTitle("Green Island");
+    if (arguments.contains(QStringLiteral("--fullscreen"))) {
+        compositor.setGeometry(QGuiApplication::primaryScreen()->geometry());
+        compositor.showFullScreen();
+    } else {
+        compositor.setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+        compositor.showMaximized();
+    }
 
     return app.exec();
 }

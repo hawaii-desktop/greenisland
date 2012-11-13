@@ -116,7 +116,7 @@ Item {
             SequentialAnimation {
                 ScriptAction {
                     script: {
-                        shell.currentSurface = null
+                        compositor.currentSurface = null
                     }
                 }
                 ScriptAction {
@@ -133,7 +133,7 @@ Item {
                     }
                 }
                 ScriptAction {
-                    script: shell.currentSurface = child.surface
+                    script: compositor.currentSurface = child.surface
                 }
             }
         }
