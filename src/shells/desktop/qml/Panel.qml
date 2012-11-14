@@ -31,7 +31,8 @@ Item {
     // Panel height
     property real padding: 2
     property real panelRealHeight: theme.smallIconSize + (padding * 2)
-    property real panelHeight: panelRealHeight + frame.margins.bottom
+
+    height: panelRealHeight + frame.margins.bottom
 
     FrameSvgItem {
         id: frame

@@ -31,6 +31,11 @@ import FluidCore 1.0
 Item {
     id: root
 
+    x: shell.screenGeometry.x
+    y: shell.screenGeometry.y
+    width: shell.screenGeometry.width
+    height: shell.screenGeometry.height
+
     // Panel
     Loader {
         id: panelComponent

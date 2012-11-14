@@ -27,21 +27,23 @@
 #ifndef DESKTOPSHELL_H
 #define DESKTOPSHELL_H
 
-#include <QQuickView>
-
 #include <VShell>
 
-class DesktopShell : public QQuickView, public VShell
+class DesktopShell : public VShell
 {
     Q_OBJECT
+    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
     Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
 public:
     DesktopShell();
+
+    QRectF screenGeometry() const;
 
     QRectF availableGeometry() const;
     void setAvailableGeometry(const QRectF &rect);
 
 signals:
+    void screenGeometryChanged();
     void availableGeometryChanged();
 
 private:

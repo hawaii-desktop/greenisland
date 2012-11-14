@@ -73,19 +73,24 @@ public:
 #else
     void runShell() {
         // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
-        QProcessEnvironment env;
+        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
         env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
         env.insert(QLatin1String("XDG_RUNTIME_DIR"), qgetenv("XDG_RUNTIME_DIR"));
 
         // Run the shell client process
-        QStringList arguments;
-        arguments << "-platform" << "wayland";
         m_shellProcess = new QProcess(this);
-        connect(m_shellProcess, SIGNAL(started()), this, SLOT(shellStarted()));
-        connect(m_shellProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(shellFailed(QProcess::ProcessError)));
+        connect(m_shellProcess, SIGNAL(started()),
+                this, SLOT(shellStarted()));
+        connect(m_shellProcess, SIGNAL(error(QProcess::ProcessError)),
+                this, SLOT(shellFailed(QProcess::ProcessError)));
+        connect(m_shellProcess, SIGNAL(readyReadStandardOutput()),
+                this, SLOT(shellReadyReadStandardOutput()));
+        connect(m_shellProcess, SIGNAL(readyReadStandardError()),
+                this, SLOT(shellReadyReadStandardError()));
         m_shellProcess->setProcessEnvironment(env);
-        m_shellProcess->start(QLatin1String(INSTALL_BINDIR "/greenisland-desktop-shell"), arguments, QIODevice::ReadOnly);
+        m_shellProcess->start(QLatin1String(INSTALL_BINDIR "/greenisland-desktop-shell"),
+            QStringList(), QIODevice::ReadOnly);
     }
 
 private:
@@ -129,6 +134,16 @@ private slots:
         // Don't need it anymore because it failed
         delete m_shellProcess;
         m_shellProcess = 0;
+    }
+
+    void shellReadyReadStandardOutput() {
+        if (m_shellProcess)
+            printf("shell: %s", m_shellProcess->readAllStandardOutput().constData());
+    }
+
+    void shellReadyReadStandardError() {
+        if (m_shellProcess)
+            fprintf(stderr, "shell: %s", m_shellProcess->readAllStandardError().constData());
     }
 #endif
 };

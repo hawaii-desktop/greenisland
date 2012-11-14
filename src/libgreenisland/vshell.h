@@ -27,12 +27,15 @@
 #ifndef VSHELL_H
 #define VSHELL_H
 
+#include <QQuickView>
+
 #include <VGreenIslandGlobal>
 
-class GREENISLAND_EXPORT VShell
+class GREENISLAND_EXPORT VShell : public QQuickView
 {
+    Q_OBJECT
 public:
-    VShell();
+    explicit VShell(QWindow *parent = 0);
 };
 
 #endif // VSHELL_H

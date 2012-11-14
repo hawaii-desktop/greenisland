@@ -27,30 +27,46 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QQmlContext>
-#include <QQuickItem>
-#include <QtCompositor/waylandsurface.h>
-#include <QtCompositor/waylandsurfaceitem.h>
-#include <QtCompositor/waylandinput.h>
 
 #include "desktopshell.h"
 #include "cmakedirs.h"
 
 DesktopShell::DesktopShell()
-    : VShell()
+    : VShell(new QWindow())
 {
-    // Load the shell
-    setSource(QUrl("qrc:///qml/Shell.qml"));
-    setResizeMode(QQuickView::SizeRootObjectToView);
-    setColor(Qt::transparent);
+    // Make it transparent
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setSamples(16);
+    surfaceFormat.setAlphaBufferSize(8);
+    setFormat(surfaceFormat);
+    setClearBeforeRendering(true);
+    setColor(QColor(Qt::transparent));
+    setResizeMode(QQuickView::SizeViewToRootObject);
+
+    // Set path so that programs will be found
+    QByteArray path = qgetenv("PATH");
+    if (!path.isEmpty())
+        path += ":";
+    path += INSTALL_BINDIR;
+    setenv("PATH", qPrintable(path), 1);
 
     // All the screen is available
-    m_availableGeometry = geometry();
+    m_availableGeometry = screenGeometry();
+
+    // Intercept screen geometry changes
+    connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
+            this, SIGNAL(screenGeometryChanged()));
 
     // Allow QML to access this shell
     rootContext()->setContextProperty("shell", this);
 
-    setGeometry(0, 0, 1024, 768);
-    show();
+    // Load the shell
+    setSource(QUrl("qrc:///qml/Shell.qml"));
+}
+
+QRectF DesktopShell::screenGeometry() const
+{
+    return screen()->availableGeometry();
 }
 
 QRectF DesktopShell::availableGeometry() const
@@ -63,23 +79,5 @@ void DesktopShell::setAvailableGeometry(const QRectF &rect)
     m_availableGeometry = rect;
     emit availableGeometryChanged();
 }
-
-#if 0
-void DesktopShell::startShell()
-{
-    // Set path so that programs will be found
-    QByteArray path = qgetenv("PATH");
-    if (!path.isEmpty())
-        path += ":";
-    path += INSTALL_BINDIR;
-    setenv("PATH", qPrintable(path), 1);
-
-    // Force QPA to wayland
-    setenv("QT_QPA_PLATFORM", "wayland", 1);
-
-    // Force GTK+ backend to wayland
-    setenv("GDK_BACKEND", "wayland", 1);
-}
-#endif
 
 #include "moc_desktopshell.cpp"

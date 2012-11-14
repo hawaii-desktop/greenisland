@@ -45,16 +45,25 @@ public:
         return 0;
     }
 };
+
+#include "main.moc"
 #else
 #include <QGuiApplication>
+
+#include "panelview.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
-    new DesktopShell();
+
+    DesktopShell *shell = new DesktopShell();
+    shell->showFullScreen();
+
+#if 0
+    PanelView *panel = new PanelView();
+    panel->show();
+#endif
 
     return app.exec();
 }
 #endif
-
-#include "main.moc"
