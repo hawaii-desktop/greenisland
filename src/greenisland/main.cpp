@@ -28,6 +28,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QPluginLoader>
+#include <QProcess>
 #include <QStringList>
 #include <QScreen>
 
@@ -41,7 +42,8 @@ class GreenIsland : public QGuiApplication
     Q_OBJECT
 public:
     GreenIsland(int &argc, char **argv)
-        : QGuiApplication(argc, argv) {
+        : QGuiApplication(argc, argv)
+        , m_shellProcess(0) {
         // Set application information
         setApplicationName("Green Island");
         setApplicationVersion("0.1.0");
@@ -49,6 +51,7 @@ public:
         setOrganizationDomain("maui-project.org");
     }
 
+#if 0
     VShell *loadShell(const QString &name) {
         // Load plugins
         QDir pluginsDir(QStringLiteral("%1/greenisland/shells").arg(INSTALL_PLUGINSDIR));
@@ -67,6 +70,67 @@ public:
 
         return 0;
     }
+#else
+    void runShell() {
+        // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
+        QProcessEnvironment env;
+        env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
+        env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
+        env.insert(QLatin1String("XDG_RUNTIME_DIR"), qgetenv("XDG_RUNTIME_DIR"));
+
+        // Run the shell client process
+        QStringList arguments;
+        arguments << "-platform" << "wayland";
+        m_shellProcess = new QProcess(this);
+        connect(m_shellProcess, SIGNAL(started()), this, SLOT(shellStarted()));
+        connect(m_shellProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(shellFailed(QProcess::ProcessError)));
+        m_shellProcess->setProcessEnvironment(env);
+        m_shellProcess->start(QLatin1String(INSTALL_BINDIR "/greenisland-desktop-shell"), arguments, QIODevice::ReadOnly);
+    }
+
+private:
+    QProcess *m_shellProcess;
+
+private slots:
+    void shellStarted() {
+        if (m_shellProcess)
+            qDebug() << "Shell is ready!";
+    }
+
+    void shellFailed(QProcess::ProcessError error) {
+        switch (error) {
+        case QProcess::FailedToStart:
+            qWarning("The shell process failed to start.\n"
+                     "Either the invoked program is missing, or you may have insufficient permissions to run it.\n");
+            break;
+        case QProcess::Crashed:
+            qWarning("The shell process crashed some time after starting successfully.\n");
+            break;
+        case QProcess::Timedout:
+            qWarning("The shell process timedout.\n");
+            break;
+        case QProcess::WriteError:
+            qWarning("An error occurred when attempting to write to the shell process.\n");
+            break;
+        case QProcess::ReadError:
+            qWarning("An error occurred when attempting to read from the shell process.\n");
+            break;
+        case QProcess::UnknownError:
+            qWarning("Unknown error starting the shell process!\n");
+            break;
+        }
+
+        // Print shell output
+        if (m_shellProcess) {
+            qDebug() << "Standard output:" << m_shellProcess->readAllStandardOutput();
+            qDebug() << "Standard error:" << m_shellProcess->readAllStandardError();
+        }
+
+        // Don't need it anymore because it failed
+        delete m_shellProcess;
+        m_shellProcess = 0;
+    }
+#endif
 };
 
 int main(int argc, char *argv[])
@@ -116,11 +180,15 @@ int main(int argc, char *argv[])
         compositor.showMaximized();
     }
 
+#if 0
     // Load the shell plugin
     VShell *shell = app.loadShell(pluginName);
     if (!shell)
         qFatal("Unable to run the shell because the '%s' plugin was not found",
                pluginName.toLocal8Bit().constData());
+#else
+    app.runShell();
+#endif
 
     return app.exec();
 }
