@@ -28,6 +28,7 @@
 
 #include "desktopshell.h"
 
+#if 0
 class DesktopShellPlugin : public VShellPlugin
 {
     Q_OBJECT
@@ -44,5 +45,16 @@ public:
         return 0;
     }
 };
+#else
+#include <QGuiApplication>
+
+int main(int argc, char *argv[])
+{
+    QGuiApplication app(argc, argv);
+    new DesktopShell();
+
+    return app.exec();
+}
+#endif
 
 #include "main.moc"

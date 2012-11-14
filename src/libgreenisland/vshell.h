@@ -27,17 +27,12 @@
 #ifndef VSHELL_H
 #define VSHELL_H
 
-#include <QtCompositor/waylandcompositor.h>
-
 #include <VGreenIslandGlobal>
 
-class GREENISLAND_EXPORT VShell : public WaylandCompositor
+class GREENISLAND_EXPORT VShell
 {
 public:
-    VShell(QWindow *window = 0);
-
-    virtual void setupCompositor(bool fullscreen);
-    virtual void startShell();
+    VShell();
 };
 
 #endif // VSHELL_H

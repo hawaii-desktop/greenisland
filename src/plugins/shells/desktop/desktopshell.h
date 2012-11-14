@@ -35,50 +35,17 @@ class DesktopShell : public QQuickView, public VShell
 {
     Q_OBJECT
     Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
-    Q_PROPERTY(WaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
     DesktopShell();
 
     QRectF availableGeometry() const;
     void setAvailableGeometry(const QRectF &rect);
 
-    WaylandSurface *currentSurface() const {
-        return m_currentSurface;
-    }
-
-    void setupCompositor(bool fullscreen);
-    void startShell();
-
-    void surfaceCreated(WaylandSurface *surface);
-    void surfaceAboutToBeDestroyed(WaylandSurface *surface);
-
-    Q_INVOKABLE void disconnectUser();
-
 signals:
-    void windowAdded(QVariant window);
-    void windowDestroyed(QVariant window);
-    void windowResized(QVariant window);
     void availableGeometryChanged();
-    void currentSurfaceChanged();
-
-public slots:
-    void destroyWindow(QVariant window);
-    void destroyClientForWindow(QVariant window);
-
-    void setCurrentSurface(WaylandSurface *surface);
-
-private slots:
-    void surfaceMapped();
-    void surfaceUnmapped();
-    void surfaceDestroyed(QObject *object);
-    void frameSwapped();
-
-protected:
-    void resizeEvent(QResizeEvent *event);
 
 private:
     QRectF m_availableGeometry;
-    WaylandSurface *m_currentSurface;
 };
 
 #endif // DESKTOPSHELL_H

@@ -1,8 +1,6 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5Compositor_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
@@ -10,11 +8,8 @@ include_directories(
 )
 
 add_definitions(
+    ${Qt5Gui_DEFINITIONS}
     ${Qt5Quick_DEFINITIONS}
-    ${Qt5Widgets_DEFINITIONS}
-    ${Qt5Compositor_DEFINITIONS}
-    -DQT_PLUGIN
-    -DQT_COMPOSITOR_QUICK
 )
 
 set(SOURCES
@@ -24,12 +19,15 @@ set(SOURCES
 
 qt5_add_resources(RESOURCES desktop-shell.qrc)
 
-add_library(desktop SHARED ${SOURCES} ${RESOURCES})
-target_link_libraries(desktop
+add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
+set_target_properties(greenisland-desktop-shell PROPERTIES
+    COMPILE_FLAGS ${Qt5Quick_EXECUTABLE_COMPILE_FLAGS}
+    LINK_FLAGS -L${GLESV2_LIBDIR}
+)
+target_link_libraries(greenisland-desktop-shell
     ${Qt5Quick_LIBRARIES}
-    ${Qt5Widgets_LIBRARIES}
     ${VibeCore_LIBRARIES}
     GreenIsland
 )
 
-install(TARGETS desktop DESTINATION ${CMAKE_INSTALL_PLUGINSDIR}/greenisland/shells)
+install(TARGETS greenisland-desktop-shell DESTINATION ${CMAKE_INSTALL_BINDIR})

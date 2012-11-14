@@ -26,15 +26,6 @@
 
 #include "vshell.h"
 
-VShell::VShell(QWindow *window)
-    : WaylandCompositor(window)
-{
-}
-
-void VShell::setupCompositor(bool fullscreen)
-{
-}
-
-void VShell::startShell()
+VShell::VShell()
 {
 }

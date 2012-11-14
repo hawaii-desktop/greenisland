@@ -105,14 +105,6 @@ int main(int argc, char *argv[])
     if (pluginArg != -1 && pluginArg + 1 < arguments.size())
         pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
 
-#if 0
-    // Load the shell plugin
-    VShell *shell = app.loadShell(pluginName);
-    if (!shell)
-        qFatal("Unable to run the shell because the '%s' plugin was not found",
-               pluginName.toLocal8Bit().constData());
-#endif
-
     // Start the compositor and set it up
     Compositor compositor;
     compositor.setWindowTitle("Green Island");
@@ -123,6 +115,12 @@ int main(int argc, char *argv[])
         compositor.setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
         compositor.showMaximized();
     }
+
+    // Load the shell plugin
+    VShell *shell = app.loadShell(pluginName);
+    if (!shell)
+        qFatal("Unable to run the shell because the '%s' plugin was not found",
+               pluginName.toLocal8Bit().constData());
 
     return app.exec();
 }

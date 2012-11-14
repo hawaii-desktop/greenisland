@@ -36,15 +36,12 @@
 #include "cmakedirs.h"
 
 DesktopShell::DesktopShell()
-    : VShell(this)    
-    , m_currentSurface(0)
+    : VShell()
 {
     // Load the shell
-    enableSubSurfaceExtension();
     setSource(QUrl("qrc:///qml/Shell.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
-    setColor(Qt::black);
-    winId();
+    setColor(Qt::transparent);
 
     // All the screen is available
     m_availableGeometry = geometry();
@@ -52,14 +49,8 @@ DesktopShell::DesktopShell()
     // Allow QML to access this shell
     rootContext()->setContextProperty("shell", this);
 
-    connect(this, SIGNAL(windowAdded(QVariant)),
-        rootObject(), SLOT(windowAdded(QVariant)));
-    connect(this, SIGNAL(windowDestroyed(QVariant)),
-        rootObject(), SLOT(windowDestroyed(QVariant)));
-    connect(this, SIGNAL(windowResized(QVariant)),
-        rootObject(), SLOT(windowResized(QVariant)));
-    connect(this, SIGNAL(frameSwapped()),
-        this, SLOT(frameSwapped()));
+    setGeometry(0, 0, 1024, 768);
+    show();
 }
 
 QRectF DesktopShell::availableGeometry() const
@@ -73,18 +64,7 @@ void DesktopShell::setAvailableGeometry(const QRectF &rect)
     emit availableGeometryChanged();
 }
 
-void DesktopShell::setupCompositor(bool fullscreen)
-{
-    setWindowTitle("Green Island");
-    if (fullscreen) {
-        setGeometry(QGuiApplication::primaryScreen()->geometry());
-        showFullScreen();
-    } else {
-        setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-        showMaximized();
-    }
-}
-
+#if 0
 void DesktopShell::startShell()
 {
     // Set path so that programs will be found
@@ -100,98 +80,6 @@ void DesktopShell::startShell()
     // Force GTK+ backend to wayland
     setenv("GDK_BACKEND", "wayland", 1);
 }
-
-void DesktopShell::surfaceCreated(WaylandSurface *surface)
-{
-    // Create a WaylandSurfaceItem from the surface
-    WaylandSurfaceItem *item = new WaylandSurfaceItem(surface, rootObject());
-    item->setClientRenderingEnabled(true);
-    item->setTouchEventsEnabled(true);
-
-    // Connect surface signals
-    connect(surface, SIGNAL(destroyed(QObject *)),
-        this, SLOT(surfaceDestroyed(QObject *)));
-    connect(surface, SIGNAL(mapped()),
-        this, SLOT(surfaceMapped()));
-    connect(surface, SIGNAL(unmapped()),
-        this, SLOT(surfaceUnmapped()));
-}
-
-void DesktopShell::surfaceAboutToBeDestroyed(WaylandSurface *surface)
-{
-    // TODO:
-}
-
-void DesktopShell::disconnectUser()
-{
-    close();
-}
-
-void DesktopShell::destroyWindow(QVariant window)
-{
-    qvariant_cast<QObject *>(window)->deleteLater();
-}
-
-void DesktopShell::destroyClientForWindow(QVariant window)
-{
-    WaylandSurface *surface = qobject_cast<WaylandSurfaceItem *>(
-        qvariant_cast<QObject *>(window))->surface();
-    destroyClientForSurface(surface);
-}
-
-void DesktopShell::setCurrentSurface(WaylandSurface *surface)
-{
-    if (surface == m_currentSurface)
-        return;
-    m_currentSurface = surface;
-    emit currentSurfaceChanged();
-}
-
-void DesktopShell::surfaceMapped()
-{
-    // Surface items gain focus right after they were mapped
-    WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
-    WaylandSurfaceItem *item = surface->surfaceItem();
-    item->takeFocus();
-
-    // Announce a window was added
-    emit windowAdded(QVariant::fromValue(static_cast<QQuickItem *>(item)));
-}
-
-void DesktopShell::surfaceUnmapped()
-{
-    // Set to 0 the current surface if it was unmapped
-    WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
-    if (surface == m_currentSurface)
-        m_currentSurface = 0;
-
-    // Announce this window was destroyed
-    QQuickItem *item = surface->surfaceItem();
-    emit windowDestroyed(QVariant::fromValue(item));
-}
-
-void DesktopShell::surfaceDestroyed(QObject *object)
-{
-    // Set to 0 the current surface if it was destroyed
-    WaylandSurface *surface = static_cast<WaylandSurface *>(object);
-    if (surface == m_currentSurface)
-        m_currentSurface = 0;
-
-    // Announce this window was destroyed
-    QQuickItem *item = surface->surfaceItem();
-    emit windowDestroyed(QVariant::fromValue(item));
-}
-
-void DesktopShell::frameSwapped()
-{
-    frameFinished(m_currentSurface);
-}
-
-void DesktopShell::resizeEvent(QResizeEvent *event)
-{
-    // Scale compositor output to window's size
-    QQuickView::resizeEvent(event);
-    WaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
-}
+#endif
 
 #include "moc_desktopshell.cpp"
