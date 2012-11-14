@@ -26,8 +26,8 @@
 
 #include "vshell.h"
 
-VShell::VShell(QWindow *parent)
-    : QQuickView(parent)
+VShell::VShell(QObject *parent)
+    : QObject(parent)
 {
 }
 

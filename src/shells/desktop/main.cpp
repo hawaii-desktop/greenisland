@@ -50,19 +50,12 @@ public:
 #else
 #include <QGuiApplication>
 
-#include "panelview.h"
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     DesktopShell *shell = new DesktopShell();
-    shell->showFullScreen();
-
-#if 0
-    PanelView *panel = new PanelView();
-    panel->show();
-#endif
+    shell->show();
 
     return app.exec();
 }

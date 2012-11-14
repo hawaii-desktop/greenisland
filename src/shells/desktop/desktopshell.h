@@ -27,27 +27,34 @@
 #ifndef DESKTOPSHELL_H
 #define DESKTOPSHELL_H
 
+#include <QRect>
+
 #include <VShell>
+
+class PanelView;
 
 class DesktopShell : public VShell
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
     Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
 public:
-    DesktopShell();
+    explicit DesktopShell();
+    ~DesktopShell();
 
     QRectF screenGeometry() const;
 
     QRectF availableGeometry() const;
     void setAvailableGeometry(const QRectF &rect);
 
+    void show();
+    void hide();
+
 signals:
-    void screenGeometryChanged();
     void availableGeometryChanged();
 
 private:
     QRectF m_availableGeometry;
+    PanelView *m_panelView;
 };
 
 #endif // DESKTOPSHELL_H

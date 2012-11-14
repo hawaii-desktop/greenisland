@@ -24,33 +24,22 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-import QtQuick 2.0
-import QtQuick.Window 2.0
-import FluidCore 1.0
+#ifndef SHELLQUICKVIEW_H
+#define SHELLQUICKVIEW_H
 
-Item {
-    // Panel height
-    property real padding: 2
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
+#include <QQuickView>
 
-    x: 0
-    y: 0
-    width: Screen.width
-    height: panelRealHeight + frame.margins.bottom
+class ShellQuickView : public QQuickView
+{
+    Q_OBJECT
+    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
+public:
+    explicit ShellQuickView();
 
-    FrameSvgItem {
-        id: frame
-        anchors.fill: parent
-        enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/panel-background"
-        prefix: "north-mini"
-    }
+    QRectF screenGeometry() const;
 
-    PanelView {
-        anchors {
-            fill: frame
-            verticalCenter: frame.verticalCenter
-            bottomMargin: frame.margins.bottom
-        }
-    }
-}
+signals:
+    void screenGeometryChanged();
+};
+
+#endif // SHELLQUICKVIEW_H

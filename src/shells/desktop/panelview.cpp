@@ -24,33 +24,27 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-import QtQuick 2.0
-import QtQuick.Window 2.0
-import FluidCore 1.0
+#include <QWindow>
 
-Item {
-    // Panel height
-    property real padding: 2
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
+#include "panelview.h"
 
-    x: 0
-    y: 0
-    width: Screen.width
-    height: panelRealHeight + frame.margins.bottom
+PanelView::PanelView()
+    : ShellQuickView()
+{
+    // This is a frameless window that stays on top of everything
+    parent()->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
-    FrameSvgItem {
-        id: frame
-        anchors.fill: parent
-        enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/panel-background"
-        prefix: "north-mini"
-    }
+    // Make it transparent
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setSamples(16);
+    surfaceFormat.setAlphaBufferSize(8);
+    setFormat(surfaceFormat);
+    setClearBeforeRendering(true);
+    setColor(QColor(Qt::transparent));
 
-    PanelView {
-        anchors {
-            fill: frame
-            verticalCenter: frame.verticalCenter
-            bottomMargin: frame.margins.bottom
-        }
-    }
+    // Load QML view
+    setSource(QUrl("qrc:///qml/Panel.qml"));
+    setResizeMode(QQuickView::SizeViewToRootObject);
 }
+
+#include "moc_panelview.cpp"

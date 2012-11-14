@@ -25,15 +25,16 @@
  ***************************************************************************/
 
 #include <QGuiApplication>
-#include <QScreen>
 #include <QQmlContext>
 
-#include "desktopshell.h"
 #include "cmakedirs.h"
+#include "desktopshell.h"
+#include "panelview.h"
 
 DesktopShell::DesktopShell()
-    : VShell(new QWindow())
+    : VShell()
 {
+#if 0
     // Make it transparent
     QSurfaceFormat surfaceFormat;
     surfaceFormat.setSamples(16);
@@ -42,6 +43,7 @@ DesktopShell::DesktopShell()
     setClearBeforeRendering(true);
     setColor(QColor(Qt::transparent));
     setResizeMode(QQuickView::SizeViewToRootObject);
+#endif
 
     // Set path so that programs will be found
     QByteArray path = qgetenv("PATH");
@@ -53,20 +55,21 @@ DesktopShell::DesktopShell()
     // All the screen is available
     m_availableGeometry = screenGeometry();
 
-    // Intercept screen geometry changes
-    connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
-            this, SIGNAL(screenGeometryChanged()));
+    // Panel
+    m_panelView = new PanelView();
+    m_panelView->rootContext()->setContextProperty("shell", this);
+}
 
-    // Allow QML to access this shell
-    rootContext()->setContextProperty("shell", this);
-
-    // Load the shell
-    setSource(QUrl("qrc:///qml/Shell.qml"));
+DesktopShell::~DesktopShell()
+{
+    delete m_panelView;
 }
 
 QRectF DesktopShell::screenGeometry() const
 {
-    return screen()->availableGeometry();
+#if 0
+    return m_screen->availableGeometry();
+#endif
 }
 
 QRectF DesktopShell::availableGeometry() const
@@ -78,6 +81,16 @@ void DesktopShell::setAvailableGeometry(const QRectF &rect)
 {
     m_availableGeometry = rect;
     emit availableGeometryChanged();
+}
+
+void DesktopShell::show()
+{
+    m_panelView->show();
+}
+
+void DesktopShell::hide()
+{
+    m_panelView->hide();
 }
 
 #include "moc_desktopshell.cpp"
