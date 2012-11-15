@@ -33,7 +33,7 @@ class LauncherView : public ShellQuickView
 {
     Q_OBJECT
 public:
-    explicit LauncherView();
+    explicit LauncherView(VShell *shell);
 };
 
 #endif // LAUNCHERVIEW_H

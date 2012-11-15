@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 #include <QGuiApplication>
-#include <QQmlContext>
 
 #include "cmakedirs.h"
 #include "desktopshell.h"
@@ -57,14 +56,10 @@ DesktopShell::DesktopShell()
     m_availableGeometry = screenGeometry();
 
     // Panel
-    m_panelView = new PanelView();
-    m_panelView->rootContext()->setContextProperty("shell", this);
-    m_panelView->rootContext()->setContextProperty("quickview", m_panelView);
+    m_panelView = new PanelView(this);
 
     // Launcher
-    m_launcherView = new LauncherView();
-    m_launcherView->rootContext()->setContextProperty("shell", this);
-    m_launcherView->rootContext()->setContextProperty("quickview", m_launcherView);
+    m_launcherView = new LauncherView(this);
 }
 
 DesktopShell::~DesktopShell()

@@ -33,7 +33,7 @@ class PanelView : public ShellQuickView
 {
     Q_OBJECT
 public:
-    explicit PanelView();
+    explicit PanelView(VShell *shell);
 };
 
 #endif // PANELVIEW_H

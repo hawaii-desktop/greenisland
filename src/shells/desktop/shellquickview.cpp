@@ -28,8 +28,9 @@
 
 #include "shellquickview.h"
 
-ShellQuickView::ShellQuickView()
+ShellQuickView::ShellQuickView(VShell *shell)
     : QQuickView(new QWindow())
+    , m_shell(shell)
 {
     // Intercept screen geometry changes
     connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),

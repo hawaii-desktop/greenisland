@@ -25,11 +25,12 @@
  ***************************************************************************/
 
 #include <QWindow>
+#include <QQmlContext>
 
 #include "launcherview.h"
 
-LauncherView::LauncherView()
-    : ShellQuickView()
+LauncherView::LauncherView(VShell *shell)
+    : ShellQuickView(shell)
 {
     // This is a frameless window that stays on top of everything
     parent()->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
@@ -41,6 +42,10 @@ LauncherView::LauncherView()
     setFormat(surfaceFormat);
     setClearBeforeRendering(true);
     setColor(QColor(Qt::transparent));
+
+    // Set context properties
+    rootContext()->setContextProperty("shell", shell);
+    rootContext()->setContextProperty("quickview", this);
 
     // Load QML view
     setSource(QUrl("qrc:///qml/Launcher.qml"));
