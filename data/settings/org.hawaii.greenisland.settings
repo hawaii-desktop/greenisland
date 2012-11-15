@@ -3,20 +3,21 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://www.maui-project.org/standards/settings/1.0
                               http://www.maui-project.org/standards/settings/1.0/settings.xsd">
-  <schema name="org.hawaii.greenisland.desktop"/>
+  <schema name="org.hawaii.greenisland"/>
   <group name="launcher">
     <key name="icon-size" type="UInt">
       <summary>Launcher Icon Size</summary>
       <description>Size of Launcher icons.</description>
       <default>64</default>
     </key>
-    <key name="orientation" type="Enum">
-      <summary>Launcher Orientation</summary>
-      <description>Determines the Launcher orientation. Possible values are "horizontal" or "vertical".</description>
-      <default>horizontal</default>
-      <choices name="LauncherOrientation">
-          <choice name="horizontal"/>
-          <choice name="vertical"/>
+    <key name="alignment" type="Enum">
+      <summary>Launcher Alignment</summary>
+      <description>Determines the Launcher alignment. Possible values are "left", "right" or "bottom"".</description>
+      <default>bottom</default>
+      <choices name="LauncherAlignment">
+          <choice name="left"/>
+          <choice name="right"/>
+          <choice name="bottom"/>
       </choices>
     </key>
   </group>

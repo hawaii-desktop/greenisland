@@ -60,6 +60,7 @@ DesktopShell::DesktopShell()
 
     // Launcher
     m_launcherView = new LauncherView(this);
+    m_launcherView->configure();
 }
 
 DesktopShell::~DesktopShell()

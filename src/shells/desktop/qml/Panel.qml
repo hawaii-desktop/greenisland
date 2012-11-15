@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import QtQuick.Window 2.0
 import FluidCore 1.0
 
 Item {
@@ -33,9 +32,9 @@ Item {
     property real padding: 2
     property real panelRealHeight: theme.smallIconSize + (padding * 2)
 
-    x: 0
-    y: 0
-    width: Screen.width
+    x: quickview.screenGeometry.x
+    y: quickview.screenGeometry.y
+    width: quickview.screenGeometry.width
     height: panelRealHeight + frame.margins.bottom
 
     FrameSvgItem {

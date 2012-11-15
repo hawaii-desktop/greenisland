@@ -31,11 +31,12 @@ import FluidCore 1.0
 Item {
     id: root
 
-    x: shell.screenGeometry.x
-    y: shell.screenGeometry.y
-    width: shell.screenGeometry.width
-    height: shell.screenGeometry.height
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 
+/*
     // Panel
     Loader {
         id: panelComponent
@@ -50,6 +51,7 @@ Item {
             NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
         }
     }
+*/
 
     // Launcher
     Loader {
@@ -59,7 +61,7 @@ Item {
         asynchronous: true
         onLoaded: {
             // Recalculate geometry
-            calculateGeometry();
+            //calculateGeometry();
 
             // Set a pointer to the AppChooser object
             launcherComponent.item.appChooserObject = appChooser;
@@ -101,6 +103,7 @@ Item {
                     height: root.height - y
                 }
             },
+/*
             State {
                 name: "bottom"
                 when: launcherComponent.item.alignment === LauncherAlignment.Bottom
@@ -116,6 +119,30 @@ Item {
                     height: item.launcherSize
                 }
             }
+*/
+
+       State {
+            name: "bottom"
+            when: item.alignment === LauncherAlignment.Bottom
+
+            PropertyChanges {
+                target: launcherComponent.item
+                launcherSize: tileSize + frame.margins.top + (padding * 2)
+            }
+            PropertyChanges {
+                target: launcherComponent.item
+                anchors.topMargin: frame.margins.top + padding
+                orientation: ListView.Horizontal
+            }
+            PropertyChanges {
+                target: launcherComponent
+                x: quickview.screenGeometry.x
+                y: quickview.screenGeometry.height - launcherSize
+                width: quickview.screenGeometry.width
+                height: item.launcherSize
+            }
+        }
+
         ]
     }
 
@@ -127,6 +154,7 @@ Item {
     }
 
     // Top-right corner is sensible and exposes all the windows
+/*
     MouseArea {
         x: root.width - width
         y: 0
@@ -138,6 +166,7 @@ Item {
             CompositorLogic.relayout();
         }
     }
+*/
 
     /*
     MouseArea {
@@ -153,6 +182,7 @@ Item {
     */
 
     function calculateGeometry() {
+return;
         // Available geometry equals screen geometry
         shell.availableGeometry = Qt.rect(x, y, width, height);
 

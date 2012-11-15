@@ -40,15 +40,30 @@ Item {
     // Tile size
     property alias tileSize: launcher.tileSize
 
-    // Alignment
-    // TODO: From settings
+    // Alignment and orientation
     property int alignment: LauncherAlignment.Bottom
+    property alias orientation: launcher.orientation
 
     // Number of items
     property alias count: launcher.count
 
     // The AppChooser object from Shell.qml
     property alias appChooserObject: launcher.appChooserObject
+
+    Settings {
+        id: settings
+        schema: "org.hawaii.greenisland"
+        group: "launcher"
+        onValueChanged: {
+            var val = settings.value("alignment");
+            if (val === "left")
+                alignment = LauncherAlignment.Left;
+            else if (val === "right")
+                alignment = LauncherAlignment.Right;
+            else
+                alignment = LauncherAlignment.Bottom;
+        }
+    }
 
     FrameSvgItem {
         id: frame
@@ -70,7 +85,14 @@ Item {
     LauncherView {
         id: launcher
         anchors.fill: frame
-        anchors.margins: padding
+        orientation: {
+            switch (alignment) {
+            case LauncherAlignment.Bottom:
+                return ListView.Horizontal;
+            default:
+                return ListView.Vertical;
+            }
+        }
     }
 
     states: [
@@ -85,6 +107,7 @@ Item {
             PropertyChanges {
                 target: launcher
                 anchors.rightMargin: frame.margins.right + padding
+                orientation: ListView.Vertical
             }
         },
         State {
@@ -98,6 +121,7 @@ Item {
             PropertyChanges {
                 target: launcher
                 anchors.leftMargin: frame.margins.left + padding
+                orientation: ListView.Vertical
             }
         },
         State {

@@ -72,24 +72,6 @@ void Compositor::setAvailableGeometry(const QRectF &rect)
     emit availableGeometryChanged();
 }
 
-#if 0
-void Compositor::startShell()
-{
-    // Set path so that programs will be found
-    QByteArray path = qgetenv("PATH");
-    if (!path.isEmpty())
-        path += ":";
-    path += INSTALL_BINDIR;
-    setenv("PATH", qPrintable(path), 1);
-
-    // Force QPA to wayland
-    setenv("QT_QPA_PLATFORM", "wayland", 1);
-
-    // Force GTK+ backend to wayland
-    setenv("GDK_BACKEND", "wayland", 1);
-}
-#endif
-
 void Compositor::surfaceCreated(WaylandSurface *surface)
 {
     // Create a WaylandSurfaceItem from the surface

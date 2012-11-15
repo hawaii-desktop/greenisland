@@ -27,6 +27,8 @@
 #ifndef LAUNCHERVIEW_H
 #define LAUNCHERVIEW_H
 
+#include <VSettings>
+
 #include "shellquickview.h"
 
 class LauncherView : public ShellQuickView
@@ -34,6 +36,14 @@ class LauncherView : public ShellQuickView
     Q_OBJECT
 public:
     explicit LauncherView(VShell *shell);
+
+    void configure();
+
+private:
+    VSettings *m_settings;
+
+private slots:
+    void settingsChanged();
 };
 
 #endif // LAUNCHERVIEW_H

@@ -33,7 +33,8 @@ PanelView::PanelView(VShell *shell)
     : ShellQuickView(shell)
 {
     // This is a frameless window that stays on top of everything
-    parent()->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    setTitle(QLatin1String("Panel"));
+    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
     // Make it transparent
     QSurfaceFormat surfaceFormat;

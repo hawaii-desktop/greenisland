@@ -24,8 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QWindow>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QQmlContext>
+#include <QQuickItem>
+#include <qpa/qplatformnativeinterface.h>
 
 #include "launcherview.h"
 
@@ -33,7 +36,8 @@ LauncherView::LauncherView(VShell *shell)
     : ShellQuickView(shell)
 {
     // This is a frameless window that stays on top of everything
-    parent()->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    setTitle(QLatin1String("Launcher"));
+    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
     // Make it transparent
     QSurfaceFormat surfaceFormat;
@@ -49,7 +53,43 @@ LauncherView::LauncherView(VShell *shell)
 
     // Load QML view
     setSource(QUrl("qrc:///qml/Launcher.qml"));
-    setResizeMode(QQuickView::SizeViewToRootObject);
+    setResizeMode(QQuickView::SizeRootObjectToView);
+
+    // Load settings
+    m_settings = new VSettings("org.hawaii.greenisland");
+    connect(m_settings, SIGNAL(changed()), this, SLOT(settingsChanged()));
+    settingsChanged();
+}
+
+void LauncherView::configure()
+{
+    QPlatformNativeInterface *native =
+            QGuiApplication::platformNativeInterface();
+    if (!native)
+        return;
+
+    // Make this window special for the compositor
+    native->setWindowProperty(handle(), "type", "launcher");
+
+    // Pass the coordinates to the compositor
+    native->setWindowProperty(handle(), "position", position());
+}
+
+void LauncherView::settingsChanged()
+{
+    QString alignment = m_settings->value("launcher/alignment").toString();
+    qreal launcherSize = rootObject()->property("launcherSize").toReal();
+    QRect rect = screen()->availableGeometry();
+
+    if (alignment == "left")
+        setGeometry(rect.x(), rect.y(),
+                    launcherSize, rect.height() - rect.y());
+    else if (alignment == "right")
+        setGeometry(rect.x(), rect.y(),
+                    launcherSize, rect.height() - rect.y());
+    else if (alignment == "bottom")
+        setGeometry(rect.x(), rect.height() - launcherSize,
+                    rect.width(), launcherSize);
 }
 
 #include "moc_launcherview.cpp"
