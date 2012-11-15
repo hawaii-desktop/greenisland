@@ -17,6 +17,7 @@ set(SOURCES
     desktopshell.cpp
     shellquickview.cpp
     panelview.cpp
+    launcherview.cpp
 )
 
 qt5_add_resources(RESOURCES desktop-shell.qrc)

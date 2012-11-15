@@ -24,39 +24,27 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef DESKTOPSHELL_H
-#define DESKTOPSHELL_H
+#include <QWindow>
 
-#include <QRect>
+#include "launcherview.h"
 
-#include <VShell>
-
-class PanelView;
-class LauncherView;
-
-class DesktopShell : public VShell
+LauncherView::LauncherView()
+    : ShellQuickView()
 {
-    Q_OBJECT
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
-public:
-    explicit DesktopShell();
-    ~DesktopShell();
+    // This is a frameless window that stays on top of everything
+    parent()->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
-    QRectF screenGeometry() const;
+    // Make it transparent
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setSamples(16);
+    surfaceFormat.setAlphaBufferSize(8);
+    setFormat(surfaceFormat);
+    setClearBeforeRendering(true);
+    setColor(QColor(Qt::transparent));
 
-    QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &rect);
+    // Load QML view
+    setSource(QUrl("qrc:///qml/Launcher.qml"));
+    setResizeMode(QQuickView::SizeViewToRootObject);
+}
 
-    void show();
-    void hide();
-
-signals:
-    void availableGeometryChanged();
-
-private:
-    QRectF m_availableGeometry;
-    PanelView *m_panelView;
-    LauncherView *m_launcherView;
-};
-
-#endif // DESKTOPSHELL_H
+#include "moc_launcherview.cpp"

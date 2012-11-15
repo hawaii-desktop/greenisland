@@ -24,39 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef DESKTOPSHELL_H
-#define DESKTOPSHELL_H
+#ifndef LAUNCHERVIEW_H
+#define LAUNCHERVIEW_H
 
-#include <QRect>
+#include "shellquickview.h"
 
-#include <VShell>
-
-class PanelView;
-class LauncherView;
-
-class DesktopShell : public VShell
+class LauncherView : public ShellQuickView
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
 public:
-    explicit DesktopShell();
-    ~DesktopShell();
-
-    QRectF screenGeometry() const;
-
-    QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &rect);
-
-    void show();
-    void hide();
-
-signals:
-    void availableGeometryChanged();
-
-private:
-    QRectF m_availableGeometry;
-    PanelView *m_panelView;
-    LauncherView *m_launcherView;
+    explicit LauncherView();
 };
 
-#endif // DESKTOPSHELL_H
+#endif // LAUNCHERVIEW_H

@@ -30,6 +30,7 @@
 #include "cmakedirs.h"
 #include "desktopshell.h"
 #include "panelview.h"
+#include "launcherview.h"
 
 DesktopShell::DesktopShell()
     : VShell()
@@ -58,10 +59,17 @@ DesktopShell::DesktopShell()
     // Panel
     m_panelView = new PanelView();
     m_panelView->rootContext()->setContextProperty("shell", this);
+    m_panelView->rootContext()->setContextProperty("quickview", m_panelView);
+
+    // Launcher
+    m_launcherView = new LauncherView();
+    m_launcherView->rootContext()->setContextProperty("shell", this);
+    m_launcherView->rootContext()->setContextProperty("quickview", m_launcherView);
 }
 
 DesktopShell::~DesktopShell()
 {
+    delete m_launcherView;
     delete m_panelView;
 }
 
@@ -86,10 +94,12 @@ void DesktopShell::setAvailableGeometry(const QRectF &rect)
 void DesktopShell::show()
 {
     m_panelView->show();
+    m_launcherView->show();
 }
 
 void DesktopShell::hide()
 {
+    m_launcherView->hide();
     m_panelView->hide();
 }
 
