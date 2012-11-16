@@ -30,6 +30,8 @@
 #include <QtCompositor/waylandcompositor.h>
 #include <QQuickView>
 
+class DesktopShellServer;
+
 class Compositor : public QQuickView, public WaylandCompositor
 {
     Q_OBJECT
@@ -73,6 +75,7 @@ protected:
 private:
     QRectF m_availableGeometry;
     WaylandSurface *m_currentSurface;
+    DesktopShellServer *m_desktopShell;
 };
 
 #endif // COMPOSITOR_H

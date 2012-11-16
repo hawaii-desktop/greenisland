@@ -90,7 +90,7 @@ public:
                 this, SLOT(shellReadyReadStandardError()));
         m_shellProcess->setProcessEnvironment(env);
         m_shellProcess->start(QLatin1String(INSTALL_BINDIR "/greenisland-desktop-shell"),
-            QStringList(), QIODevice::ReadOnly);
+                              QStringList(), QIODevice::ReadOnly);
     }
 
 private:
@@ -104,25 +104,25 @@ private slots:
 
     void shellFailed(QProcess::ProcessError error) {
         switch (error) {
-        case QProcess::FailedToStart:
-            qWarning("The shell process failed to start.\n"
-                     "Either the invoked program is missing, or you may have insufficient permissions to run it.\n");
-            break;
-        case QProcess::Crashed:
-            qWarning("The shell process crashed some time after starting successfully.\n");
-            break;
-        case QProcess::Timedout:
-            qWarning("The shell process timedout.\n");
-            break;
-        case QProcess::WriteError:
-            qWarning("An error occurred when attempting to write to the shell process.\n");
-            break;
-        case QProcess::ReadError:
-            qWarning("An error occurred when attempting to read from the shell process.\n");
-            break;
-        case QProcess::UnknownError:
-            qWarning("Unknown error starting the shell process!\n");
-            break;
+            case QProcess::FailedToStart:
+                qWarning("The shell process failed to start.\n"
+                         "Either the invoked program is missing, or you may have insufficient permissions to run it.\n");
+                break;
+            case QProcess::Crashed:
+                qWarning("The shell process crashed some time after starting successfully.\n");
+                break;
+            case QProcess::Timedout:
+                qWarning("The shell process timedout.\n");
+                break;
+            case QProcess::WriteError:
+                qWarning("An error occurred when attempting to write to the shell process.\n");
+                break;
+            case QProcess::ReadError:
+                qWarning("An error occurred when attempting to read from the shell process.\n");
+                break;
+            case QProcess::UnknownError:
+                qWarning("Unknown error starting the shell process!\n");
+                break;
         }
 
         // Print shell output

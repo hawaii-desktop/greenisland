@@ -24,31 +24,30 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SHELLQUICKVIEW_H
-#define SHELLQUICKVIEW_H
+#ifndef DESKTOPSHELLINTEGRATION_H
+#define DESKTOPSHELLINTEGRATION_H
 
-#include <QQuickView>
+#include "wayland-desktop-extension-client-protocol.h"
 
-#include <VShell>
-
-class ShellQuickView : public QQuickView
+class DesktopShellIntegration
 {
-    Q_OBJECT
-    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
 public:
-    explicit ShellQuickView(VShell *shell);
+    explicit DesktopShellIntegration();
 
-    VShell *shell() const {
-        return m_shell;
-    }
+    static DesktopShellIntegration *createInstance();
 
-    QRectF screenGeometry() const;
+    static DesktopShellIntegration *instance();
 
-signals:
-    void screenGeometryChanged();
+    static void handleGlobal(void *data,
+                             struct wl_registry *registry,
+                             uint32_t id,
+                             const char *interface,
+                             uint32_t version);
+
+    struct desktop_shell *shell;
 
 private:
-    VShell *m_shell;
+    static DesktopShellIntegration *m_instance;
 };
 
-#endif // SHELLQUICKVIEW_H
+#endif // DESKTOPSHELLINTEGRATION_H

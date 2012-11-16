@@ -33,12 +33,16 @@
 #include <QtCompositor/waylandinput.h>
 
 #include "compositor.h"
+#include "desktopshellserver.h"
 
 Compositor::Compositor()
-    : WaylandCompositor(this)    
+    : WaylandCompositor(this)
     , m_currentSurface(0)
 {
-    // Load the shell
+    // Desktop shell protocol
+    m_desktopShell = new DesktopShellServer(WaylandCompositor::handle());
+
+    // Load the QML code
     enableSubSurfaceExtension();
     setSource(QUrl("qrc:///qml/Compositor.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
@@ -52,13 +56,13 @@ Compositor::Compositor()
     rootContext()->setContextProperty("compositor", this);
 
     connect(this, SIGNAL(windowAdded(QVariant)),
-        rootObject(), SLOT(windowAdded(QVariant)));
+            rootObject(), SLOT(windowAdded(QVariant)));
     connect(this, SIGNAL(windowDestroyed(QVariant)),
-        rootObject(), SLOT(windowDestroyed(QVariant)));
+            rootObject(), SLOT(windowDestroyed(QVariant)));
     connect(this, SIGNAL(windowResized(QVariant)),
-        rootObject(), SLOT(windowResized(QVariant)));
+            rootObject(), SLOT(windowResized(QVariant)));
     connect(this, SIGNAL(frameSwapped()),
-        this, SLOT(frameSwapped()));
+            this, SLOT(frameSwapped()));
 }
 
 QRectF Compositor::availableGeometry() const
@@ -81,11 +85,11 @@ void Compositor::surfaceCreated(WaylandSurface *surface)
 
     // Connect surface signals
     connect(surface, SIGNAL(destroyed(QObject *)),
-        this, SLOT(surfaceDestroyed(QObject *)));
+            this, SLOT(surfaceDestroyed(QObject *)));
     connect(surface, SIGNAL(mapped()),
-        this, SLOT(surfaceMapped()));
+            this, SLOT(surfaceMapped()));
     connect(surface, SIGNAL(unmapped()),
-        this, SLOT(surfaceUnmapped()));
+            this, SLOT(surfaceUnmapped()));
 }
 
 void Compositor::surfaceAboutToBeDestroyed(WaylandSurface *surface)
@@ -101,7 +105,7 @@ void Compositor::destroyWindow(QVariant window)
 void Compositor::destroyClientForWindow(QVariant window)
 {
     WaylandSurface *surface = qobject_cast<WaylandSurfaceItem *>(
-        qvariant_cast<QObject *>(window))->surface();
+                                  qvariant_cast<QObject *>(window))->surface();
     destroyClientForSurface(surface);
 }
 

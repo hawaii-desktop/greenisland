@@ -15,8 +15,14 @@ set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSI
 # Installation directories
 include(HawaiiInstallDirs)
 
+# Our CMake modules
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 # Make CPack available to easy generate binary packages
 include(CPack)
+
+# Include Wayland macros
+include(Wayland)
 
 # Add custom uninstall target
 configure_file(
@@ -75,6 +81,10 @@ find_package(PkgConfig "0.22" REQUIRED)
 
 # Find GLESv2 library
 pkg_check_modules(GLESV2 glesv2 REQUIRED)
+
+# Find Wayland libraries
+pkg_check_modules(WAYLAND_CLIENT wayland-client REQUIRED)
+pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
 
 # Subdirectories
 add_subdirectory(data)

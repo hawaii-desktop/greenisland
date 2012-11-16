@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <QScreen>
 #include <QQmlContext>
@@ -31,6 +32,7 @@
 #include <qpa/qplatformnativeinterface.h>
 
 #include "launcherview.h"
+#include "desktopshellintegration.h"
 
 LauncherView::LauncherView(VShell *shell)
     : ShellQuickView(shell)
@@ -64,15 +66,17 @@ LauncherView::LauncherView(VShell *shell)
 void LauncherView::configure()
 {
     QPlatformNativeInterface *native =
-            QGuiApplication::platformNativeInterface();
+        QGuiApplication::platformNativeInterface();
     if (!native)
         return;
 
+#if 0
     // Make this window special for the compositor
     native->setWindowProperty(handle(), "type", "launcher");
 
     // Pass the coordinates to the compositor
     native->setWindowProperty(handle(), "position", position());
+#endif
 }
 
 void LauncherView::settingsChanged()
@@ -90,6 +94,18 @@ void LauncherView::settingsChanged()
     else if (alignment == "bottom")
         setGeometry(rect.x(), rect.height() - launcherSize,
                     rect.width(), launcherSize);
+
+    QPlatformNativeInterface *native =
+        QGuiApplication::platformNativeInterface();
+    Q_ASSERT(native);
+    struct wl_surface *surface = (struct wl_surface *)
+                                 native->nativeResourceForWindow("surface", this);
+    Q_ASSERT(surface);
+    Q_ASSERT(DesktopShellIntegration::instance()->shell);
+    desktop_shell_set_launcher(DesktopShellIntegration::instance()->shell,
+                               surface);
+    desktop_shell_set_launcher_pos(DesktopShellIntegration::instance()->shell,
+                                   geometry().x(), geometry().y());
 }
 
 #include "moc_launcherview.cpp"

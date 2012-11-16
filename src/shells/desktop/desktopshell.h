@@ -57,6 +57,8 @@ private:
     QRectF m_availableGeometry;
     PanelView *m_panelView;
     LauncherView *m_launcherView;
+
+    static const struct wl_registry_listener registryListener;
 };
 
 #endif // DESKTOPSHELL_H

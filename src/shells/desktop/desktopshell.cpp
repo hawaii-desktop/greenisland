@@ -25,26 +25,23 @@
  ***************************************************************************/
 
 #include <QGuiApplication>
+#include <qpa/qplatformnativeinterface.h>
+
+#include <wayland-client.h>
 
 #include "cmakedirs.h"
 #include "desktopshell.h"
+#include "desktopshellintegration.h"
 #include "panelview.h"
 #include "launcherview.h"
+
+const struct wl_registry_listener DesktopShell::registryListener = {
+    DesktopShellIntegration::handleGlobal
+};
 
 DesktopShell::DesktopShell()
     : VShell()
 {
-#if 0
-    // Make it transparent
-    QSurfaceFormat surfaceFormat;
-    surfaceFormat.setSamples(16);
-    surfaceFormat.setAlphaBufferSize(8);
-    setFormat(surfaceFormat);
-    setClearBeforeRendering(true);
-    setColor(QColor(Qt::transparent));
-    setResizeMode(QQuickView::SizeViewToRootObject);
-#endif
-
     // Set path so that programs will be found
     QByteArray path = qgetenv("PATH");
     if (!path.isEmpty())
@@ -55,12 +52,23 @@ DesktopShell::DesktopShell()
     // All the screen is available
     m_availableGeometry = screenGeometry();
 
-    // Panel
-    m_panelView = new PanelView(this);
+    // Get the Wayland display and registry
+    QPlatformNativeInterface *native =
+        QGuiApplication::platformNativeInterface();
+    Q_ASSERT(native);
+    struct wl_display *display = (struct wl_display *)
+                                 native->nativeResourceForIntegration("display");
+    Q_ASSERT(display);
+    struct wl_registry *registry = wl_display_get_registry(display);
 
-    // Launcher
+    // Wayland integration
+    DesktopShellIntegration::createInstance();
+    wl_registry_add_listener(registry, &DesktopShell::registryListener,
+                             DesktopShellIntegration::instance());
+
+    // Create Panel and Launcher
+    m_panelView = new PanelView(this);
     m_launcherView = new LauncherView(this);
-    m_launcherView->configure();
 }
 
 DesktopShell::~DesktopShell()
