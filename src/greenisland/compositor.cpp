@@ -24,10 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <QScreen>
 #include <QQmlContext>
 #include <QQuickItem>
+#include <QtCompositor/wlsurface.h>
 #include <QtCompositor/waylandsurface.h>
 #include <QtCompositor/waylandsurfaceitem.h>
 #include <QtCompositor/waylandinput.h>
@@ -119,8 +121,9 @@ void Compositor::setCurrentSurface(WaylandSurface *surface)
 
 void Compositor::surfaceMapped()
 {
-    // Surface items gain focus right after they were mapped
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
+
+    // Surface items gain focus right after they were mapped
     WaylandSurfaceItem *item = surface->surfaceItem();
     item->takeFocus();
 
