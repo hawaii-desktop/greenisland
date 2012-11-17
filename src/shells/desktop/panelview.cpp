@@ -43,6 +43,7 @@ PanelView::PanelView(VShell *shell)
     setFormat(surfaceFormat);
     setClearBeforeRendering(true);
     setColor(QColor(Qt::transparent));
+    winId();
 
     // Set context properties
     rootContext()->setContextProperty("shell", shell);

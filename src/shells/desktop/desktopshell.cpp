@@ -62,7 +62,7 @@ DesktopShell::DesktopShell()
     struct wl_registry *registry = wl_display_get_registry(display);
 
     // Wayland integration
-    DesktopShellIntegration::createInstance();
+    DesktopShellIntegration::createInstance(this);
     wl_registry_add_listener(registry, &DesktopShell::registryListener,
                              DesktopShellIntegration::instance());
 

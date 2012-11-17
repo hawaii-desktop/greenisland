@@ -27,11 +27,16 @@
 #include <QDebug>
 
 #include <QtCompositor/wlsurface.h>
+#include <QtCompositor/waylandsurface.h>
 
 #include "desktopshellserver.h"
 
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
-    DesktopShellServer::set_background
+    DesktopShellServer::set_background,
+    DesktopShellServer::set_panel,
+    DesktopShellServer::set_panel_pos,
+    DesktopShellServer::set_launcher,
+    DesktopShellServer::set_launcher_pos
 };
 
 DesktopShellServer::DesktopShellServer(Wayland::Compositor *compositor)
@@ -64,33 +69,41 @@ void DesktopShellServer::destroy_resource(wl_resource *resource)
     free(resource);
 }
 
+void DesktopShellServer::set_background(struct wl_client *client,
+                                        struct wl_resource *resource,
+                                        const char *uri)
+{
+    qDebug() << "set_background received" << qPrintable(uri);
+}
+
 void DesktopShellServer::set_panel(struct wl_client *client,
                                    struct wl_resource *resource,
-                                   struct wl_surface *surface)
+                                   struct wl_resource *surface)
 {
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    self->m_panelSurface = Wayland::resolve<Wayland::Surface>(surface);
 }
 
 void DesktopShellServer::set_panel_pos(struct wl_client *client,
                                        struct wl_resource *resource,
                                        uint32_t x, uint32_t y)
 {
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    self->m_panelSurface->setPos(QPointF(x, y));
 }
 
 void DesktopShellServer::set_launcher(struct wl_client *client,
                                       struct wl_resource *resource,
-                                      struct wl_surface *surface)
+                                      struct wl_resource *surface)
 {
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    self->m_launcherSurface = Wayland::resolve<Wayland::Surface>(surface);
 }
 
 void DesktopShellServer::set_launcher_pos(struct wl_client *client,
                                           struct wl_resource *resource,
                                           uint32_t x, uint32_t y)
 {
-}
-
-void DesktopShellServer::set_background(struct wl_client *client,
-                                        struct wl_resource *resource,
-                                        const char *uri)
-{
-    qDebug() << "set_background received" << qPrintable(uri);
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    self->m_launcherSurface->setPos(QPointF(x, y));
 }

@@ -37,8 +37,6 @@ class LauncherView : public ShellQuickView
 public:
     explicit LauncherView(VShell *shell);
 
-    void configure();
-
 private:
     VSettings *m_settings;
 

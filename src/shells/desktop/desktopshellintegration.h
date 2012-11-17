@@ -29,12 +29,14 @@
 
 #include "wayland-desktop-extension-client-protocol.h"
 
+class DesktopShell;
+
 class DesktopShellIntegration
 {
 public:
-    explicit DesktopShellIntegration();
+    explicit DesktopShellIntegration(DesktopShell *shell);
 
-    static DesktopShellIntegration *createInstance();
+    static DesktopShellIntegration *createInstance(DesktopShell *shell);
 
     static DesktopShellIntegration *instance();
 
@@ -44,10 +46,11 @@ public:
                              const char *interface,
                              uint32_t version);
 
-    struct desktop_shell *shell;
+    struct desktop_shell *protocol;
 
 private:
     static DesktopShellIntegration *m_instance;
+    DesktopShell *m_shell;
 };
 
 #endif // DESKTOPSHELLINTEGRATION_H

@@ -106,32 +106,27 @@ private slots:
         switch (error) {
             case QProcess::FailedToStart:
                 qWarning("The shell process failed to start.\n"
-                         "Either the invoked program is missing, or you may have insufficient permissions to run it.\n");
+                         "Either the invoked program is missing, or you may have insufficient permissions to run it.");
                 break;
             case QProcess::Crashed:
-                qWarning("The shell process crashed some time after starting successfully.\n");
+                qWarning("The shell process crashed some time after starting successfully.");
                 break;
             case QProcess::Timedout:
                 qWarning("The shell process timedout.\n");
                 break;
             case QProcess::WriteError:
-                qWarning("An error occurred when attempting to write to the shell process.\n");
+                qWarning("An error occurred when attempting to write to the shell process.");
                 break;
             case QProcess::ReadError:
-                qWarning("An error occurred when attempting to read from the shell process.\n");
+                qWarning("An error occurred when attempting to read from the shell process.");
                 break;
             case QProcess::UnknownError:
-                qWarning("Unknown error starting the shell process!\n");
+                qWarning("Unknown error starting the shell process!");
                 break;
-        }
-
-        // Print shell output
-        if (m_shellProcess) {
-            qDebug() << "Standard output:" << m_shellProcess->readAllStandardOutput();
-            qDebug() << "Standard error:" << m_shellProcess->readAllStandardError();
         }
 
         // Don't need it anymore because it failed
+        m_shellProcess->close();
         delete m_shellProcess;
         m_shellProcess = 0;
     }

@@ -47,6 +47,13 @@ public:
     QRectF availableGeometry() const;
     void setAvailableGeometry(const QRectF &rect);
 
+    PanelView *panelView() const {
+        return m_panelView;
+    }
+    LauncherView *launcherView() const {
+        return m_launcherView;
+    }
+
     void show();
     void hide();
 

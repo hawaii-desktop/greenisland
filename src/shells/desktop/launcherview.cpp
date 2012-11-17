@@ -29,7 +29,6 @@
 #include <QScreen>
 #include <QQmlContext>
 #include <QQuickItem>
-#include <qpa/qplatformnativeinterface.h>
 
 #include "launcherview.h"
 #include "desktopshellintegration.h"
@@ -48,6 +47,7 @@ LauncherView::LauncherView(VShell *shell)
     setFormat(surfaceFormat);
     setClearBeforeRendering(true);
     setColor(QColor(Qt::transparent));
+    winId();
 
     // Set context properties
     rootContext()->setContextProperty("shell", shell);
@@ -61,22 +61,6 @@ LauncherView::LauncherView(VShell *shell)
     m_settings = new VSettings("org.hawaii.greenisland");
     connect(m_settings, SIGNAL(changed()), this, SLOT(settingsChanged()));
     settingsChanged();
-}
-
-void LauncherView::configure()
-{
-    QPlatformNativeInterface *native =
-        QGuiApplication::platformNativeInterface();
-    if (!native)
-        return;
-
-#if 0
-    // Make this window special for the compositor
-    native->setWindowProperty(handle(), "type", "launcher");
-
-    // Pass the coordinates to the compositor
-    native->setWindowProperty(handle(), "position", position());
-#endif
 }
 
 void LauncherView::settingsChanged()
@@ -94,18 +78,6 @@ void LauncherView::settingsChanged()
     else if (alignment == "bottom")
         setGeometry(rect.x(), rect.height() - launcherSize,
                     rect.width(), launcherSize);
-
-    QPlatformNativeInterface *native =
-        QGuiApplication::platformNativeInterface();
-    Q_ASSERT(native);
-    struct wl_surface *surface = (struct wl_surface *)
-                                 native->nativeResourceForWindow("surface", this);
-    Q_ASSERT(surface);
-    Q_ASSERT(DesktopShellIntegration::instance()->shell);
-    desktop_shell_set_launcher(DesktopShellIntegration::instance()->shell,
-                               surface);
-    desktop_shell_set_launcher_pos(DesktopShellIntegration::instance()->shell,
-                                   geometry().x(), geometry().y());
 }
 
 #include "moc_launcherview.cpp"

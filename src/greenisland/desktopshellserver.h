@@ -46,7 +46,7 @@ private:
 
     static void set_panel(struct wl_client *client,
                           struct wl_resource *resource,
-                          struct wl_surface *surface);
+                          struct wl_resource *surface);
 
     static void set_panel_pos(struct wl_client *client,
                               struct wl_resource *resource,
@@ -54,7 +54,7 @@ private:
 
     static void set_launcher(struct wl_client *client,
                              struct wl_resource *resource,
-                             struct wl_surface *surface);
+                             struct wl_resource *surface);
 
     static void set_launcher_pos(struct wl_client *client,
                                  struct wl_resource *resource,
@@ -68,6 +68,8 @@ private:
 
     Wayland::Compositor *m_compositor;
     QList<wl_resource *> m_resources;
+    Wayland::Surface *m_panelSurface;
+    Wayland::Surface *m_launcherSurface;
 };
 
 #endif // DESKTOPSHELLSERVER_H
