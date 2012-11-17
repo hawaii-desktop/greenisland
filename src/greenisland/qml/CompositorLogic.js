@@ -204,7 +204,6 @@ function windowAdded(root, window) {
     window.takeFocus();
 
     // Restrict windows coordinates to the available area
-    console.log("===", window.surface.size.width, window.surface.size.height, window.surface.windowFlags, window.surface.windowProperties);
     var availableGeometry = compositor.availableGeometry;
     if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
         windowContainer.targetX += availableGeometry.x + 5;
