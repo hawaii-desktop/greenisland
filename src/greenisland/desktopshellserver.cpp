@@ -24,8 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QDebug>
-
 #include <QtCompositor/wlsurface.h>
 #include <QtCompositor/waylandsurface.h>
 
@@ -41,6 +39,8 @@ const struct desktop_shell_interface DesktopShellServer::shell_interface = {
 
 DesktopShellServer::DesktopShellServer(Wayland::Compositor *compositor)
     : m_compositor(compositor)
+    , m_panelSurface(0)
+    , m_launcherSurface(0)
 {
     wl_display_add_global(compositor->wl_display(),
                           &desktop_shell_interface, this,
@@ -73,7 +73,6 @@ void DesktopShellServer::set_background(struct wl_client *client,
                                         struct wl_resource *resource,
                                         const char *uri)
 {
-    qDebug() << "set_background received" << qPrintable(uri);
 }
 
 void DesktopShellServer::set_panel(struct wl_client *client,
@@ -82,6 +81,9 @@ void DesktopShellServer::set_panel(struct wl_client *client,
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->m_panelSurface = Wayland::resolve<Wayland::Surface>(surface);
+    if (!self->m_panelSurface)
+        return;
+    self->m_panelSurface->waylandSurface()->setWindowProperty("special", true);
 }
 
 void DesktopShellServer::set_panel_pos(struct wl_client *client,
@@ -98,6 +100,9 @@ void DesktopShellServer::set_launcher(struct wl_client *client,
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->m_launcherSurface = Wayland::resolve<Wayland::Surface>(surface);
+    if (!self->m_launcherSurface)
+        return;
+    self->m_launcherSurface->waylandSurface()->setWindowProperty("special", true);
 }
 
 void DesktopShellServer::set_launcher_pos(struct wl_client *client,
