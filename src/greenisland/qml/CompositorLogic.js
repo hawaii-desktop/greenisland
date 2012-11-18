@@ -1,5 +1,6 @@
 /****************************************************************************
 **
+** Copyright (C) 2012 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
@@ -37,11 +38,6 @@
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
-
-/*
- * Changes made by Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
- * - Store original size.
- */
 
 var windowList = null;
 var indexes = null;
