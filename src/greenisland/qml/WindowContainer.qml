@@ -1,5 +1,6 @@
 /****************************************************************************
 **
+** Copyright (C) 2012 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
@@ -63,36 +64,35 @@ Item {
     width: targetWidth
     height: targetHeight
     scale: targetScale
-    state: child && chrome && chrome.selected && child.focus ? "selected" : "normal"
 
     Behavior on x {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
+        enabled: container.animationsEnabled
+        NumberAnimation { easing.type: Easing.InCubic; duration: 200 }
     }
 
     Behavior on y {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InQuad; duration: 200; }
+        enabled: container.animationsEnabled
+        NumberAnimation { easing.type: Easing.InQuad; duration: 200 }
     }
 
     Behavior on width {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
+        enabled: container.animationsEnabled
+        NumberAnimation { easing.type: Easing.InCubic; duration: 200 }
     }
 
     Behavior on height {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InCubic; duration: 200; }
+        enabled: container.animationsEnabled
+        NumberAnimation { easing.type: Easing.InCubic; duration: 200 }
     }
 
     Behavior on scale {
-        enabled: container.animationsEnabled;
-        NumberAnimation { easing.type: Easing.InQuad; duration: 200; }
+        enabled: container.animationsEnabled
+        NumberAnimation { easing.type: Easing.InQuad; duration: 200 }
     }
 
     Behavior on opacity {
-        enabled: true;
-        NumberAnimation { easing.type: Easing.Linear; duration: 250; }
+        enabled: true
+        NumberAnimation { easing.type: Easing.Linear; duration: 250 }
     }
 
     // Decrease opacity for unfocused windows
@@ -100,7 +100,6 @@ Item {
         id: effect
         source: child
         anchors.fill: child
-        blend: { if (child && chrome && (chrome.selected || child.focus)) 0.0; else 0.9 }
         opacity: 1.0
         z: 1
 
@@ -110,9 +109,27 @@ Item {
         }
     }
 
+    states: [
+        State {
+            name: "special"
+            when: child && child.surface.className == "greenisland-desktop-shell.desktop"
+            PropertyChanges { target: effect; blend: 0.0 }
+        },
+        State {
+            name: "selected"
+            when: child && child.focus && child.surface.className != "greenisland-desktop-shell.desktop"
+            PropertyChanges { target: effect; blend: 0.0 }
+        },
+        State {
+            name: "unselected"
+            when: child && !child.focus && child.surface.className != "greenisland-desktop-shell.desktop"
+            PropertyChanges { target: effect; blend: 1.0 }
+        }
+    ]
+
     transitions: [
         Transition {
-            from: "*"; to: "normal"
+            from: "*"; to: "unselected"
             SequentialAnimation {
                 ScriptAction {
                     script: {
@@ -134,6 +151,16 @@ Item {
                 }
                 ScriptAction {
                     script: compositor.currentSurface = child.surface
+                }
+            }
+        },
+        Transition {
+            from: "*"; to: "special"
+            SequentialAnimation {
+                ScriptAction {
+                    script: {
+                        container.z = 2
+                    }
                 }
             }
         }

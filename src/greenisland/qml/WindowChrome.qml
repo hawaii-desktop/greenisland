@@ -1,5 +1,6 @@
 /****************************************************************************
 **
+** Copyright (C) 2012 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
@@ -38,10 +39,6 @@
 **
 ****************************************************************************/
 
-/*
- * Grid layout logic added by Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
- */
-
 import QtQuick 2.0
 import "CompositorLogic.js" as CompositorLogic
 
@@ -54,9 +51,17 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        enabled: !window.focus
-        hoverEnabled: !window.focus
+        enabled: !window.focus || window.parent.state == "special"
+        hoverEnabled: !window.focus || window.parent.state == "special"
+        preventStealing: true
+        onEntered: {
+            if (window.parent.state == "special")
+                window.takeFocus();
+        }
         onClicked: {
+            if (window.parent.state == "special")
+                return;
+
             // If currently in a grid layout, revert back to the normal layout
             // and restore coordinates and scale of the windows
             if (!root.normalLayout) {
