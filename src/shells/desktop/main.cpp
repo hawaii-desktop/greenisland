@@ -24,13 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QGuiApplication>
+#include <QApplication>
 
 #include "desktopshell.h"
 
 int main(int argc, char *argv[])
 {
-    QGuiApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     DesktopShell *shell = new DesktopShell();
     shell->show();

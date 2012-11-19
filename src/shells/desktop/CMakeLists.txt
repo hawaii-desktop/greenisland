@@ -1,6 +1,7 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_INCLUDE_DIRS}
+    ${Qt5Widgets_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_CLIENT_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/headers
@@ -11,6 +12,7 @@ include_directories(
 add_definitions(
     ${Qt5Gui_DEFINITIONS}
     ${Qt5Quick_DEFINITIONS}
+    ${Qt5Widgets_DEFINITIONS}
 )
 
 set(SOURCES
@@ -33,6 +35,7 @@ set_target_properties(greenisland-desktop-shell PROPERTIES
 )
 target_link_libraries(greenisland-desktop-shell
     ${Qt5Quick_LIBRARIES}
+    ${Qt5Widgets_LIBRARIES}
     ${VibeCore_LIBRARIES}
     ${WAYLAND_CLIENT_LIBRARIES}
     GreenIsland
