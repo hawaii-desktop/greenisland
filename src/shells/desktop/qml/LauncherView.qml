@@ -258,8 +258,10 @@ LauncherDropItem {
 
                 onEntered: {
                     // FIXME: Look if the item has draggable = true instead
+/*
                     if (dragArea.VisualDataModel.itemsIndex == 0)
                         return;
+*/
 
                     visualModel.items.move(
                         drag.source.VisualDataModel.itemsIndex,
