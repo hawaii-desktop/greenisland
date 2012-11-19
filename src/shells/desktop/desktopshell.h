@@ -27,14 +27,13 @@
 #ifndef DESKTOPSHELL_H
 #define DESKTOPSHELL_H
 
+#include <QObject>
 #include <QRect>
-
-#include <VShell>
 
 class PanelView;
 class LauncherView;
 
-class DesktopShell : public VShell
+class DesktopShell : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)

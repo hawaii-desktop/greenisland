@@ -33,7 +33,7 @@
 #include "launcherview.h"
 #include "desktopshellintegration.h"
 
-LauncherView::LauncherView(VShell *shell)
+LauncherView::LauncherView(DesktopShell *shell)
     : ShellQuickView(shell)
 {
     // This is a frameless window that stays on top of everything

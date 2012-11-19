@@ -38,4 +38,4 @@ target_link_libraries(greenisland-desktop-shell
     GreenIsland
 )
 
-install(TARGETS greenisland-desktop-shell DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS greenisland-desktop-shell DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})

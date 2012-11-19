@@ -1,8 +1,8 @@
 set(HEADERS
+    VCompositor
+    VCompositorPlugin
     VIndicator
     VIndicatorPlugin
-    VShell
-    VShellPlugin
     VGreenIslandGlobal
 )
 

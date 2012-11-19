@@ -5,20 +5,23 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
 )
 
-add_definitions(${Qt5Quick_DEFINITIONS})
+add_definitions(
+    ${Qt5Quick_DEFINITIONS}
+    ${Qt5Compositor_DEFINITIONS}
+)
 
 set(SOURCES
+    vcompositor.cpp
+    vcompositorplugin.cpp
     vindicator.cpp
     vindicatorplugin.cpp
-    vshell.cpp
-    vshellplugin.cpp
 )
 
 set(HEADERS
+    vcompositor.h
+    vcompositorplugin.h
     vindicator.h
     vindicatorplugin.h
-    vshell.h
-    vshellplugin.h
 )
 
 add_library(GreenIsland SHARED ${SOURCES})

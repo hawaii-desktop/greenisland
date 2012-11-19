@@ -35,7 +35,7 @@ class LauncherView : public ShellQuickView
 {
     Q_OBJECT
 public:
-    explicit LauncherView(VShell *shell);
+    explicit LauncherView(DesktopShell *shell);
 
 private:
     VSettings *m_settings;

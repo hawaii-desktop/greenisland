@@ -24,11 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "vshell.h"
+#include "vcompositor.h"
 
-VShell::VShell(QObject *parent)
-    : QObject(parent)
+VCompositor::VCompositor(QWindow *window)
+    : WaylandCompositor(window)
 {
 }
 
-#include "moc_vshell.cpp"
+void VCompositor::runShell()
+{
+}

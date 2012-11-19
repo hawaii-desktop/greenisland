@@ -24,124 +24,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QGuiApplication>
-#include <QDir>
 #include <QDebug>
-#include <QPluginLoader>
-#include <QProcess>
-#include <QStringList>
 #include <QScreen>
+#include <QStringList>
+#include <QWindow>
 
-#include <VShellPlugin>
+#include <VCompositor>
 
-#include "cmakedirs.h"
-#include "compositor.h"
-
-class GreenIsland : public QGuiApplication
-{
-    Q_OBJECT
-public:
-    GreenIsland(int &argc, char **argv)
-        : QGuiApplication(argc, argv)
-        , m_shellProcess(0) {
-        // Set application information
-        setApplicationName("Green Island");
-        setApplicationVersion("0.1.0");
-        setOrganizationName("Maui Project");
-        setOrganizationDomain("maui-project.org");
-    }
-
-#if 0
-    VShell *loadShell(const QString &name) {
-        // Load plugins
-        QDir pluginsDir(QStringLiteral("%1/greenisland/shells").arg(INSTALL_PLUGINSDIR));
-        foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
-            QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-            VShellPlugin *plugin = qobject_cast<VShellPlugin *>(
-                                       loader.instance());
-            if (!plugin)
-                continue;
-
-            foreach(QString key, plugin->keys()) {
-                if (key == name)
-                    return plugin->create(key);
-            }
-        }
-
-        return 0;
-    }
-#else
-    void runShell() {
-        // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
-        env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
-        env.insert(QLatin1String("XDG_RUNTIME_DIR"), qgetenv("XDG_RUNTIME_DIR"));
-
-        // Run the shell client process
-        m_shellProcess = new QProcess(this);
-        connect(m_shellProcess, SIGNAL(started()),
-                this, SLOT(shellStarted()));
-        connect(m_shellProcess, SIGNAL(error(QProcess::ProcessError)),
-                this, SLOT(shellFailed(QProcess::ProcessError)));
-        connect(m_shellProcess, SIGNAL(readyReadStandardOutput()),
-                this, SLOT(shellReadyReadStandardOutput()));
-        connect(m_shellProcess, SIGNAL(readyReadStandardError()),
-                this, SLOT(shellReadyReadStandardError()));
-        m_shellProcess->setProcessEnvironment(env);
-        m_shellProcess->start(QLatin1String(INSTALL_BINDIR "/greenisland-desktop-shell"),
-                              QStringList(), QIODevice::ReadOnly);
-    }
-
-private:
-    QProcess *m_shellProcess;
-
-private slots:
-    void shellStarted() {
-        if (m_shellProcess)
-            qDebug() << "Shell is ready!";
-    }
-
-    void shellFailed(QProcess::ProcessError error) {
-        switch (error) {
-            case QProcess::FailedToStart:
-                qWarning("The shell process failed to start.\n"
-                         "Either the invoked program is missing, or you may have insufficient permissions to run it.");
-                break;
-            case QProcess::Crashed:
-                qWarning("The shell process crashed some time after starting successfully.");
-                break;
-            case QProcess::Timedout:
-                qWarning("The shell process timedout.\n");
-                break;
-            case QProcess::WriteError:
-                qWarning("An error occurred when attempting to write to the shell process.");
-                break;
-            case QProcess::ReadError:
-                qWarning("An error occurred when attempting to read from the shell process.");
-                break;
-            case QProcess::UnknownError:
-                qWarning("Unknown error starting the shell process!");
-                break;
-        }
-
-        // Don't need it anymore because it failed
-        m_shellProcess->close();
-        delete m_shellProcess;
-        m_shellProcess = 0;
-    }
-
-    void shellReadyReadStandardOutput() {
-        if (m_shellProcess)
-            printf("shell: %s", m_shellProcess->readAllStandardOutput().constData());
-    }
-
-    void shellReadyReadStandardError() {
-        if (m_shellProcess)
-            fprintf(stderr, "shell: %s", m_shellProcess->readAllStandardError().constData());
-    }
-#endif
-};
+#include "greenisland.h"
 
 int main(int argc, char *argv[])
 {
@@ -149,8 +39,10 @@ int main(int argc, char *argv[])
     // otherwise go for kms
     if (!qgetenv("DISPLAY").isEmpty())
         setenv("QT_QPA_PLATFORM", "xcb", 0);
-    else
+    else {
         setenv("QT_QPA_PLATFORM", "kms", 0);
+        setenv("QT_QPA_GENERIC_PLUGINS", "evdevmouse,evdevkeyboard,evdevtouch", 0);
+    }
 
     GreenIsland app(argc, argv);
 
@@ -179,28 +71,31 @@ int main(int argc, char *argv[])
     if (pluginArg != -1 && pluginArg + 1 < arguments.size())
         pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
 
-    // Start the compositor and set it up
-    Compositor compositor;
-    compositor.setWindowTitle("Green Island");
+    // Load the compositor plugin
+    VCompositor *compositor = app.loadCompositor(pluginName);
+    if (!compositor)
+        qFatal("Unable to run the compositor because the '%s' plugin was not found",
+               pluginName.toLocal8Bit().constData());
+
+    // Ensure the compositor renders into a window
+    if (!compositor->window())
+        qFatal("The compositor '%s' doesn't render into a window",
+               pluginName.toLocal8Bit().constData());
+
+    // Set window title
+    compositor->window()->setWindowTitle(QLatin1String("Green Island"));
+
+    // Show the compositor
     if (arguments.contains(QStringLiteral("--fullscreen"))) {
-        compositor.setGeometry(QGuiApplication::primaryScreen()->geometry());
-        compositor.showFullScreen();
+        compositor->window()->setGeometry(QGuiApplication::primaryScreen()->geometry());
+        compositor->window()->showFullScreen();
     } else {
-        compositor.setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-        compositor.showMaximized();
+        compositor->window()->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+        compositor->window()->showMaximized();
     }
 
-#if 0
-    // Load the shell plugin
-    VShell *shell = app.loadShell(pluginName);
-    if (!shell)
-        qFatal("Unable to run the shell because the '%s' plugin was not found",
-               pluginName.toLocal8Bit().constData());
-#else
-    app.runShell();
-#endif
+    // Run the shell
+    compositor->runShell();
 
     return app.exec();
 }
-
-#include "main.moc"

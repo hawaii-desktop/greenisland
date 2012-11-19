@@ -29,16 +29,16 @@
 
 #include <QQuickView>
 
-#include <VShell>
+#include "desktopshell.h"
 
 class ShellQuickView : public QQuickView
 {
     Q_OBJECT
     Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
 public:
-    explicit ShellQuickView(VShell *shell);
+    explicit ShellQuickView(DesktopShell *shell);
 
-    VShell *shell() const {
+    DesktopShell *shell() const {
         return m_shell;
     }
 
@@ -48,7 +48,7 @@ signals:
     void screenGeometryChanged();
 
 private:
-    VShell *m_shell;
+    DesktopShell *m_shell;
 };
 
 #endif // SHELLQUICKVIEW_H

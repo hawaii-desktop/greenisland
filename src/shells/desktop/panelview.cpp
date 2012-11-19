@@ -29,7 +29,7 @@
 
 #include "panelview.h"
 
-PanelView::PanelView(VShell *shell)
+PanelView::PanelView(DesktopShell *shell)
     : ShellQuickView(shell)
 {
     // This is a frameless window that stays on top of everything

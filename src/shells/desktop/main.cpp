@@ -24,31 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <VShellPlugin>
+#include <QGuiApplication>
 
 #include "desktopshell.h"
-
-#if 0
-class DesktopShellPlugin : public VShellPlugin
-{
-    Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.maui.GreenIsland.VShellFactoryInterface" FILE "desktop.json")
-public:
-    QStringList keys() const {
-        return QStringList() << "desktop";
-    }
-
-    VShell *create(const QString &key) {
-        if (key.toLower() == "desktop")
-            return new DesktopShell();
-
-        return 0;
-    }
-};
-
-#include "main.moc"
-#else
-#include <QGuiApplication>
 
 int main(int argc, char *argv[])
 {
@@ -59,4 +37,3 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
-#endif

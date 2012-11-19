@@ -40,7 +40,7 @@ const struct wl_registry_listener DesktopShell::registryListener = {
 };
 
 DesktopShell::DesktopShell()
-    : VShell()
+    : QObject()
 {
     // Set path so that programs will be found
     QByteArray path = qgetenv("PATH");

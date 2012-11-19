@@ -1,45 +1,26 @@
 include_directories(
-    ${Qt5Core_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Compositor_INCLUDE_DIRS}
+    ${Qt5Gui_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
-    ${WAYLAND_SERVER_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
 )
 
 add_definitions(
-    ${Qt5Core_DEFINITIONS}
     ${Qt5Gui_DEFINITIONS}
-    ${Qt5Quick_DEFINITIONS}
-    ${Qt5Compositor_DEFINITIONS}
     -DQT_COMPOSITOR_QUICK
 )
 
 set(SOURCES
     main.cpp
-    compositor.cpp
-    desktopshellserver.cpp
+    greenisland.cpp
 )
 
-wayland_add_protocol_server(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
-wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
-
-qt5_add_resources(RESOURCES greenisland.qrc)
-
-add_executable(greenisland ${SOURCES} ${RESOURCES})
-set_target_properties(greenisland PROPERTIES
-    COMPILE_FLAGS ${Qt5Compositor_EXECUTABLE_COMPILE_FLAGS}
-    LINK_FLAGS "-L${GLESV2_LIBDIR} -L${WAYLAND_SERVER_LIBDIR}"
-)
+add_executable(greenisland ${SOURCES})
+set_target_properties(greenisland PROPERTIES COMPILE_FLAGS ${Qt5Gui_EXECUTABLE_COMPILE_FLAGS})
 target_link_libraries(greenisland
-    ${Qt5Quick_LIBRARIES}
-    ${Qt5Compositor_LIBRARIES}
+    ${Qt5Gui_LIBRARIES}
     ${VibeCore_LIBRARIES}
-    ${GLESV2_LIBRARIES}
-    ${WAYLAND_SERVER_LIBRARIES}
     GreenIsland
 )
 

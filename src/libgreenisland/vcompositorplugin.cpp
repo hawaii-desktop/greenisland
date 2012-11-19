@@ -24,15 +24,15 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "vshellplugin.h"
+#include "vcompositorplugin.h"
 
-VShellPlugin::VShellPlugin(QObject *parent)
+VCompositorPlugin::VCompositorPlugin(QObject *parent)
     : QObject(parent)
 {
 }
 
-VShellPlugin::~VShellPlugin()
+VCompositorPlugin::~VCompositorPlugin()
 {
 }
 
-#include "moc_vshellplugin.cpp"
+#include "moc_vcompositorplugin.cpp"

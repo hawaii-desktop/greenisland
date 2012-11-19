@@ -1,1 +1,2 @@
+add_subdirectory(compositors)
 add_subdirectory(indicators)

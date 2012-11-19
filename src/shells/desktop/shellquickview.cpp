@@ -28,7 +28,7 @@
 
 #include "shellquickview.h"
 
-ShellQuickView::ShellQuickView(VShell *shell)
+ShellQuickView::ShellQuickView(DesktopShell *shell)
     : QQuickView(new QWindow())
     , m_shell(shell)
 {

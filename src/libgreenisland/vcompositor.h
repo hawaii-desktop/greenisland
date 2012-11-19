@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Desktop Shell.
+ * This file is part of libGreenIsland.
  *
- * Copyright (c) 2012 Pier Luigi Fiorini
+ * Copyright (c) Pier Luigi Fiorini
  *
  * Author(s):
  *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
@@ -24,16 +24,19 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef PANELVIEW_H
-#define PANELVIEW_H
+#ifndef VCOMPOSITOR_H
+#define VCOMPOSITOR_H
 
-#include "shellquickview.h"
+#include <QtCompositor/waylandcompositor.h>
 
-class PanelView : public ShellQuickView
+#include <VGreenIslandGlobal>
+
+class GREENISLAND_EXPORT VCompositor : public WaylandCompositor
 {
-    Q_OBJECT
 public:
-    explicit PanelView(DesktopShell *shell);
+    explicit VCompositor(QWindow *window = 0);
+
+    virtual void runShell();
 };
 
-#endif // PANELVIEW_H
+#endif // VCOMPOSITOR_H

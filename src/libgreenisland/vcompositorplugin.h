@@ -24,31 +24,31 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef VSHELLPLUGIN_H
-#define VSHELLPLUGIN_H
+#ifndef VCOMPOSITORPLUGIN_H
+#define VCOMPOSITORPLUGIN_H
 
 #include <QtCore/qplugin.h>
 
 #include <VGreenIslandGlobal>
-#include <VShell>
+#include <VCompositor>
 
-struct GREENISLAND_EXPORT VShellFactoryInterface {
+struct GREENISLAND_EXPORT VCompositorFactoryInterface {
     virtual QStringList keys() const = 0;
-    virtual VShell *create(const QString &key) = 0;
+    virtual VCompositor *create(const QString &key) = 0;
 };
 
-#define VShellFactoryInterface_iid "org.maui.GreenIsland.VShellFactoryInterface"
+#define VCompositorFactoryInterface_iid "org.hawaii.GreenIsland.VCompositorFactoryInterface"
 
-Q_DECLARE_INTERFACE(VShellFactoryInterface, VShellFactoryInterface_iid)
+Q_DECLARE_INTERFACE(VCompositorFactoryInterface, VCompositorFactoryInterface_iid)
 
-class GREENISLAND_EXPORT VShellPlugin : public QObject, public VShellFactoryInterface
+class GREENISLAND_EXPORT VCompositorPlugin : public QObject, public VCompositorFactoryInterface
 {
     Q_OBJECT
-    Q_INTERFACES(VShellFactoryInterface)
+    Q_INTERFACES(VCompositorFactoryInterface)
 public:
-    explicit VShellPlugin(QObject *parent = 0);
+    explicit VCompositorPlugin(QObject *parent = 0);
 
-    virtual ~VShellPlugin();
+    virtual ~VCompositorPlugin();
 
     /*!
         Returns a list of keys this plugins supports.
@@ -58,14 +58,14 @@ public:
     virtual QStringList keys() const = 0;
 
     /*!
-        Creates and returns a VShell object for the given key.
+        Creates and returns a VCompositor object for the given key.
         If a plugin cannot create the indicator, it should return 0 instead.
 
         \param key the key.
 
         \sa keys()
     */
-    virtual VShell *create(const QString &key) = 0;
+    virtual VCompositor *create(const QString &key) = 0;
 };
 
-#endif // VSHELLPLUGIN_H
+#endif // VCOMPOSITORPLUGIN_H

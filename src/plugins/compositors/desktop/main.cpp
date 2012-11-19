@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of Desktop Shell.
+ * This file is part of Green Island.
  *
  * Copyright (c) 2012 Pier Luigi Fiorini
  *
@@ -24,16 +24,25 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef PANELVIEW_H
-#define PANELVIEW_H
+#include <VCompositorPlugin>
 
-#include "shellquickview.h"
+#include "compositor.h"
 
-class PanelView : public ShellQuickView
+class GREENISLAND_EXPORT DesktopCompositorPlugin : public VCompositorPlugin
 {
     Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.hawaii.GreenIsland.VCompositorFactoryInterface" FILE "desktop.json")
 public:
-    explicit PanelView(DesktopShell *shell);
+    QStringList keys() const {
+        return QStringList() << "desktop";
+    }
+
+    VCompositor *create(const QString &key) {
+        if (key.toLower() == "desktop")
+            return new Compositor();
+
+        return 0;
+    }
 };
 
-#endif // PANELVIEW_H
+#include "main.moc"
