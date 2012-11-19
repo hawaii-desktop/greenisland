@@ -49,9 +49,6 @@ DesktopShell::DesktopShell()
     path += INSTALL_BINDIR;
     setenv("PATH", qPrintable(path), 1);
 
-    // All the screen is available
-    m_availableGeometry = screenGeometry();
-
     // Get the Wayland display and registry
     QPlatformNativeInterface *native =
         QGuiApplication::platformNativeInterface();
@@ -75,24 +72,6 @@ DesktopShell::~DesktopShell()
 {
     delete m_launcherView;
     delete m_panelView;
-}
-
-QRectF DesktopShell::screenGeometry() const
-{
-#if 0
-    return m_screen->availableGeometry();
-#endif
-}
-
-QRectF DesktopShell::availableGeometry() const
-{
-    return m_availableGeometry;
-}
-
-void DesktopShell::setAvailableGeometry(const QRectF &rect)
-{
-    m_availableGeometry = rect;
-    emit availableGeometryChanged();
 }
 
 void DesktopShell::show()

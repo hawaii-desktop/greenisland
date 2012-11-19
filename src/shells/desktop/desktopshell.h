@@ -36,15 +36,9 @@ class LauncherView;
 class DesktopShell : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
 public:
     explicit DesktopShell();
     ~DesktopShell();
-
-    QRectF screenGeometry() const;
-
-    QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &rect);
 
     PanelView *panelView() const {
         return m_panelView;
@@ -56,11 +50,7 @@ public:
     void show();
     void hide();
 
-signals:
-    void availableGeometryChanged();
-
 private:
-    QRectF m_availableGeometry;
     PanelView *m_panelView;
     LauncherView *m_launcherView;
 
