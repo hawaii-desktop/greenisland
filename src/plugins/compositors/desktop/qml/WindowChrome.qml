@@ -51,17 +51,9 @@ Item {
 
     MouseArea {
         anchors.fill: parent
-        enabled: !window.focus || window.parent.state == "special"
-        hoverEnabled: !window.focus || window.parent.state == "special"
-        preventStealing: true
-        onEntered: {
-            if (window.parent.state == "special")
-                window.takeFocus();
-        }
+        enabled: !window.focus
+        hoverEnabled: !window.focus
         onClicked: {
-            if (window.parent.state == "special")
-                return;
-
             // If currently in a grid layout, revert back to the normal layout
             // and restore coordinates and scale of the windows
             if (!root.normalLayout) {
