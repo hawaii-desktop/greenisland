@@ -85,6 +85,9 @@ int main(int argc, char *argv[])
     // Set window title
     compositor->window()->setWindowTitle(QLatin1String("Green Island"));
 
+    // Run the shell
+    compositor->runShell();
+
     // Show the compositor
     if (arguments.contains(QStringLiteral("--fullscreen"))) {
         compositor->window()->setGeometry(QGuiApplication::primaryScreen()->geometry());
@@ -93,9 +96,6 @@ int main(int argc, char *argv[])
         compositor->window()->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
         compositor->window()->showMaximized();
     }
-
-    // Run the shell
-    compositor->runShell();
 
     return app.exec();
 }
