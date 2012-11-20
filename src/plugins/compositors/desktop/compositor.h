@@ -73,6 +73,7 @@ private slots:
     void shellFailed(QProcess::ProcessError error);
     void shellReadyReadStandardOutput();
     void shellReadyReadStandardError();
+    void shellAboutToClose();
 
     void surfaceMapped();
     void surfaceUnmapped();

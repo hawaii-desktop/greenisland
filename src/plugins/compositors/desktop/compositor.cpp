@@ -71,6 +71,7 @@ Compositor::Compositor()
 
 Compositor::~Compositor()
 {
+    m_shellProcess->close();
     delete m_shellProcess;
 }
 
@@ -92,6 +93,8 @@ void Compositor::runShell()
             this, SLOT(shellReadyReadStandardOutput()));
     connect(m_shellProcess, SIGNAL(readyReadStandardError()),
             this, SLOT(shellReadyReadStandardError()));
+    connect(m_shellProcess, SIGNAL(aboutToClose()),
+            this, SLOT(shellAboutToClose()));
     m_shellProcess->setProcessEnvironment(env);
     m_shellProcess->start(QLatin1String(INSTALL_LIBEXECDIR "/greenisland-desktop-shell"),
                           QStringList(), QIODevice::ReadOnly);
@@ -195,6 +198,11 @@ void Compositor::shellReadyReadStandardError()
 {
     if (m_shellProcess)
         fprintf(stderr, "shell: %s", m_shellProcess->readAllStandardError().constData());
+}
+
+void Compositor::shellAboutToClose()
+{
+    qDebug() << "Shell is about to close...";
 }
 
 void Compositor::surfaceMapped()
