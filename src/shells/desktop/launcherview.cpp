@@ -38,7 +38,7 @@ LauncherView::LauncherView(DesktopShell *shell)
 {
     // This is a frameless window that stays on top of everything
     setTitle(QLatin1String("Launcher"));
-    setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    setFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
     // Make it transparent
     QSurfaceFormat surfaceFormat;
