@@ -62,9 +62,9 @@ DesktopShell::DesktopShell()
     wl_registry_add_listener(registry, &DesktopShell::registryListener,
                              DesktopShellIntegration::instance());
 
-    // Create Panel and Launcher
-    m_launcherView = new LauncherView(this);
-    m_launcherView->show();
+    // Create the shell window
+    m_shellView = new ShellView(this);
+    m_shellView->show();
 }
 
 DesktopShell::~DesktopShell()
