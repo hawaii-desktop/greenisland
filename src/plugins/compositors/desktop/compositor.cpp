@@ -79,9 +79,15 @@ void Compositor::runShell()
 {
     // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert(QLatin1String("EGL_PLATFORM"), QLatin1String("wayland"));
+    env.remove(QLatin1String("QT_QPA_GENERIC_PLUGINS"));
     env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
     env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
     env.insert(QLatin1String("XDG_RUNTIME_DIR"), qgetenv("XDG_RUNTIME_DIR"));
+
+    // Process arguments
+    QStringList arguments = QStringList()
+        << QLatin1String("-platform") << QLatin1String("wayland");
 
     // Run the shell client process
     m_shellProcess = new QProcess(this);
@@ -97,7 +103,7 @@ void Compositor::runShell()
             this, SLOT(shellAboutToClose()));
     m_shellProcess->setProcessEnvironment(env);
     m_shellProcess->start(QLatin1String(INSTALL_LIBEXECDIR "/greenisland-desktop-shell"),
-                          QStringList(), QIODevice::ReadOnly);
+                          arguments, QIODevice::ReadOnly);
 }
 
 QRectF Compositor::availableGeometry() const
