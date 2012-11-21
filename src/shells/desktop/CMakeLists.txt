@@ -29,7 +29,7 @@ qt5_add_resources(RESOURCES desktop-shell.qrc)
 
 add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
 set_target_properties(greenisland-desktop-shell PROPERTIES
-    COMPILE_FLAGS ${Qt5Quick_EXECUTABLE_COMPILE_FLAGS}
+    COMPILE_FLAGS "${Qt5Quick_EXECUTABLE_COMPILE_FLAGS} -rdynamic"
     LINK_FLAGS "-L${GLESV2_LIBDIR} -L${WAYLAND_CLIENT_LIBDIR}"
 )
 target_link_libraries(greenisland-desktop-shell
