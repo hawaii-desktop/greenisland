@@ -112,8 +112,8 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    DesktopShell *shell = new DesktopShell();
-    shell->show();
+    // Create the shell
+    (void)new DesktopShell();
 
     return app.exec();
 }
