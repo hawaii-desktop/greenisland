@@ -32,8 +32,7 @@
 #include "cmakedirs.h"
 #include "desktopshell.h"
 #include "desktopshellintegration.h"
-#include "panelview.h"
-#include "launcherview.h"
+#include "shellview.h"
 
 const struct wl_registry_listener DesktopShell::registryListener = {
     DesktopShellIntegration::handleGlobal
@@ -64,26 +63,23 @@ DesktopShell::DesktopShell()
                              DesktopShellIntegration::instance());
 
     // Create Panel and Launcher
-    m_panelView = new PanelView(this);
     m_launcherView = new LauncherView(this);
+    m_launcherView->show();
 }
 
 DesktopShell::~DesktopShell()
 {
-    delete m_launcherView;
-    delete m_panelView;
+    delete m_shellView;
 }
 
 void DesktopShell::show()
 {
-    m_panelView->show();
-    m_launcherView->show();
+    m_shellView->show();
 }
 
 void DesktopShell::hide()
 {
-    m_launcherView->hide();
-    m_panelView->hide();
+    m_shellView->hide();
 }
 
 #include "moc_desktopshell.cpp"

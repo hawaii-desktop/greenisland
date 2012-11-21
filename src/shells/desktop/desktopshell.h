@@ -30,8 +30,7 @@
 #include <QObject>
 #include <QRect>
 
-class PanelView;
-class LauncherView;
+class ShellView;
 
 class DesktopShell : public QObject
 {
@@ -40,19 +39,15 @@ public:
     explicit DesktopShell();
     ~DesktopShell();
 
-    PanelView *panelView() const {
-        return m_panelView;
-    }
-    LauncherView *launcherView() const {
-        return m_launcherView;
+    ShellView *shellView() const {
+        return m_shellView;
     }
 
     void show();
     void hide();
 
 private:
-    PanelView *m_panelView;
-    LauncherView *m_launcherView;
+    ShellView *m_shellView;
 
     static const struct wl_registry_listener registryListener;
 };

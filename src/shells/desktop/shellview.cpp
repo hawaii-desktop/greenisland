@@ -24,16 +24,34 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef PANELVIEW_H
-#define PANELVIEW_H
+#include <QWindow>
+#include <QQmlContext>
 
-#include "shellquickview.h"
+#include "shellview.h"
 
-class PanelView : public ShellQuickView
+ShellView::ShellView(DesktopShell *shell)
+    : ShellQuickView(shell)
 {
-    Q_OBJECT
-public:
-    explicit PanelView(DesktopShell *shell);
-};
+    // This is a frameless window that stays on top of everything
+    setTitle(QLatin1String("Desktop Shell"));
+    setFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
-#endif // PANELVIEW_H
+    // Make it transparent
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setSamples(16);
+    surfaceFormat.setAlphaBufferSize(8);
+    setFormat(surfaceFormat);
+    setClearBeforeRendering(true);
+    setColor(QColor(Qt::transparent));
+    winId();
+
+    // Set context properties
+    rootContext()->setContextProperty("shell", shell);
+    rootContext()->setContextProperty("quickview", this);
+
+    // Load QML view
+    setSource(QUrl("qrc:///qml/Shell.qml"));
+    setResizeMode(QQuickView::SizeViewToRootObject);
+}
+
+#include "moc_shellview.cpp"

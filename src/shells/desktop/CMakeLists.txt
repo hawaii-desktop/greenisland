@@ -20,8 +20,7 @@ set(SOURCES
     desktopshell.cpp
     desktopshellintegration.cpp
     shellquickview.cpp
-    panelview.cpp
-    launcherview.cpp
+    shellview.cpp
 )
 
 wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
