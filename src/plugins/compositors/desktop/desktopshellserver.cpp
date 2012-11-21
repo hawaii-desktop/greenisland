@@ -31,16 +31,13 @@
 
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
     DesktopShellServer::set_background,
-    DesktopShellServer::set_panel,
-    DesktopShellServer::set_panel_pos,
-    DesktopShellServer::set_launcher,
-    DesktopShellServer::set_launcher_pos
+    DesktopShellServer::set_surface,
+    DesktopShellServer::set_geometry
 };
 
 DesktopShellServer::DesktopShellServer(Wayland::Compositor *compositor)
     : m_compositor(compositor)
-    , m_panelSurface(0)
-    , m_launcherSurface(0)
+    , m_surface(0)
 {
     wl_display_add_global(compositor->wl_display(),
                           &desktop_shell_interface, this,
@@ -75,40 +72,22 @@ void DesktopShellServer::set_background(struct wl_client *client,
 {
 }
 
-void DesktopShellServer::set_panel(struct wl_client *client,
-                                   struct wl_resource *resource,
-                                   struct wl_resource *surface)
+void DesktopShellServer::set_surface(struct wl_client *client,
+                                     struct wl_resource *resource,
+                                     struct wl_resource *surface)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_panelSurface = Wayland::resolve<Wayland::Surface>(surface);
-    if (!self->m_panelSurface)
+    self->m_surface = Wayland::resolve<Wayland::Surface>(surface);
+    if (!self->m_surface)
         return;
-    self->m_panelSurface->waylandSurface()->setWindowProperty("special", true);
+    self->m_surface->waylandSurface()->setWindowProperty("special", true);
 }
 
-void DesktopShellServer::set_panel_pos(struct wl_client *client,
-                                       struct wl_resource *resource,
-                                       uint32_t x, uint32_t y)
-{
-    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_panelSurface->setPos(QPointF(x, y));
-}
-
-void DesktopShellServer::set_launcher(struct wl_client *client,
+void DesktopShellServer::set_geometry(struct wl_client *client,
                                       struct wl_resource *resource,
-                                      struct wl_resource *surface)
+                                      uint32_t x, uint32_t y,
+                                      uint32_t w, uint32_t h)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_launcherSurface = Wayland::resolve<Wayland::Surface>(surface);
-    if (!self->m_launcherSurface)
-        return;
-    self->m_launcherSurface->waylandSurface()->setWindowProperty("special", true);
-}
-
-void DesktopShellServer::set_launcher_pos(struct wl_client *client,
-                                          struct wl_resource *resource,
-                                          uint32_t x, uint32_t y)
-{
-    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_launcherSurface->setPos(QPointF(x, y));
+    Q_UNUSED(self);
 }

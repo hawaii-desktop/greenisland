@@ -30,8 +30,7 @@
 
 #include "desktopshellintegration.h"
 #include "desktopshell.h"
-#include "panelview.h"
-#include "launcherview.h"
+#include "shellview.h"
 
 DesktopShellIntegration *DesktopShellIntegration::m_instance = 0;
 
@@ -72,23 +71,15 @@ void DesktopShellIntegration::handleGlobal(void *data,
         QGuiApplication::platformNativeInterface();
     Q_ASSERT(native);
 
-    // Pass Panel surfave and position to the compositor
-    struct wl_surface *panelSurface =
+    // Pass surfave and geometry to the compositor
+    struct wl_surface *surface =
         static_cast<struct wl_surface *>(
-                native->nativeResourceForWindow("surface", object->m_shell->panelView()));
-    Q_ASSERT(panelSurface);
-    desktop_shell_set_launcher(object->protocol, panelSurface);
-    desktop_shell_set_launcher_pos(object->protocol,
-                                   object->m_shell->panelView()->geometry().x(),
-                                   object->m_shell->panelView()->geometry().y());
-
-    // Pass Launcher surfave and position to the compositor
-    struct wl_surface *launcherSurface =
-        static_cast<struct wl_surface *>(
-                native->nativeResourceForWindow("surface", object->m_shell->launcherView()));
-    Q_ASSERT(launcherSurface);
-    desktop_shell_set_launcher(object->protocol, launcherSurface);
-    desktop_shell_set_launcher_pos(object->protocol,
-                                   object->m_shell->launcherView()->geometry().x(),
-                                   object->m_shell->launcherView()->geometry().y());
+                native->nativeResourceForWindow("surface", object->m_shell->shellView()));
+    Q_ASSERT(surface);
+    desktop_shell_set_surface(object->protocol, surface);
+    desktop_shell_set_geometry(object->protocol,
+                               object->m_shell->shellView()->geometry().x(),
+                               object->m_shell->shellView()->geometry().y(),
+                               object->m_shell->shellView()->geometry().width(),
+                               object->m_shell->shellView()->geometry().height());
 }
