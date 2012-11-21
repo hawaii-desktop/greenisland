@@ -31,12 +31,15 @@ import FluidCore 1.0
 Item {
     id: root
 
-    x: 0
-    y: 0
-    width: 1
-    height: 1
+    x: quickview.screenGeometry.x
+    y: quickview.screenGeometry.y
+    width: quickview.screenGeometry.width
+    height: quickview.screenGeometry.height
 
-/*
+    // Recalculate geometry when the size changes
+    onWidthChanged: calculateGeometry()
+    onHeightChanged: calculateGeometry()
+
     // Panel
     Loader {
         id: panelComponent
@@ -51,7 +54,6 @@ Item {
             NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
         }
     }
-*/
 
     // Launcher
     Loader {
@@ -61,7 +63,7 @@ Item {
         asynchronous: true
         onLoaded: {
             // Recalculate geometry
-            //calculateGeometry();
+            calculateGeometry();
 
             // Set a pointer to the AppChooser object
             launcherComponent.item.appChooserObject = appChooser;
@@ -103,7 +105,6 @@ Item {
                     height: root.height - y
                 }
             },
-/*
             State {
                 name: "bottom"
                 when: launcherComponent.item.alignment === LauncherAlignment.Bottom
@@ -119,30 +120,6 @@ Item {
                     height: item.launcherSize
                 }
             }
-*/
-
-       State {
-            name: "bottom"
-            when: item.alignment === LauncherAlignment.Bottom
-
-            PropertyChanges {
-                target: launcherComponent.item
-                launcherSize: tileSize + frame.margins.top + (padding * 2)
-            }
-            PropertyChanges {
-                target: launcherComponent.item
-                anchors.topMargin: frame.margins.top + padding
-                orientation: ListView.Horizontal
-            }
-            PropertyChanges {
-                target: launcherComponent
-                x: quickview.screenGeometry.x
-                y: quickview.screenGeometry.height - launcherSize
-                width: quickview.screenGeometry.width
-                height: item.launcherSize
-            }
-        }
-
         ]
     }
 
@@ -182,33 +159,35 @@ Item {
     */
 
     function calculateGeometry() {
-return;
         // Available geometry equals screen geometry
-        shell.availableGeometry = Qt.rect(x, y, width, height);
+        var geometry = Qt.rect(x, y, width, height);
 
         // ...unless the panel is loaded
         if (panelComponent.status == Loader.Ready) {
             panelComponent.height = panelComponent.item.panelHeight;
-            shell.availableGeometry.y += panelComponent.item.panelHeight;
-            shell.availableGeometry.height -= panelComponent.item.panelHeight;
+            geometry.y += panelComponent.item.panelHeight;
+            geometry.height -= panelComponent.item.panelHeight;
         }
 
         // ...or the launcher is
         if (launcherComponent.status == Loader.Ready) {
             switch (launcherComponent.item.alignment) {
             case LauncherAlignment.Left:
-                shell.availableGeometry.x += launcherComponent.item.launcherSize;
-                shell.availableGeometry.width -= launcherComponent.item.launcherSize;
+                geometry.x += launcherComponent.item.launcherSize;
+                geometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Right:
-                shell.availableGeometry.x = shell.availableGeometry.width - launcherComponent.item.launcherSize;
-                shell.availableGeometry.width -= launcherComponent.item.launcherSize;
+                geometry.x = geometry.width - launcherComponent.item.launcherSize;
+                geometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Bottom:
-                shell.availableGeometry.height -= launcherComponent.item.launcherSize;
+                geometry.height -= launcherComponent.item.launcherSize;
                 break;
             }
         }
+
+        // Set the available geometry to the result of the above computation
+        quickview.availableGeometry = geometry;
 
         // Resize AppChooser
         appChooser.width = shell.availableGeometry.width / 1.1;
