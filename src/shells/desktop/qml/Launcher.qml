@@ -137,6 +137,11 @@ Item {
                 anchors.topMargin: frame.margins.top + padding
                 orientation: ListView.Horizontal
             }
+            PropertyChanges {
+                target: launcher
+                width: quickview.screenGeometry.width
+                height: launcherSize
+            }
         }
     ]
 }
