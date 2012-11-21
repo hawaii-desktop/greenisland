@@ -26,6 +26,7 @@
 
 #include <QWindow>
 #include <QQmlContext>
+#include <QScreen>
 
 #include "shellview.h"
 

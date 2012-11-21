@@ -41,6 +41,9 @@ public:
 
 signals:
     void availableGeometryChanged();
+
+private:
+    QRectF m_availableGeometry;
 };
 
 #endif // SHELLVIEW_H

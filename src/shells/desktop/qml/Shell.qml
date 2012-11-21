@@ -64,9 +64,6 @@ Item {
         onLoaded: {
             // Recalculate geometry
             calculateGeometry();
-
-            // Set a pointer to the AppChooser object
-            launcherComponent.item.appChooserObject = appChooser;
         }
 
         // Animate Launcher when it shows up
@@ -188,9 +185,5 @@ Item {
 
         // Set the available geometry to the result of the above computation
         quickview.availableGeometry = geometry;
-
-        // Resize AppChooser
-        appChooser.width = shell.availableGeometry.width / 1.1;
-        appChooser.height = shell.availableGeometry.height / 1.1;
     }
 }
