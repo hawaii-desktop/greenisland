@@ -137,7 +137,7 @@ Item {
                     }
                 }
                 ScriptAction {
-                    script: container.z = 0
+                    script: container.z = 1
                 }
             }
         },

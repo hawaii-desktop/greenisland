@@ -37,12 +37,26 @@ Item {
     // True if we're using the normal layout
     property bool normalLayout: true
 
-    // Recalculate geometry when the size changes
-    onWidthChanged: calculateGeometry()
-    onHeightChanged: calculateGeometry()
+    // Area where all windows will be created
+    property alias availableArea: availableAreaItem
+
+    Item {
+        id: availableAreaItem
+        x: compositor.availableGeometry.x
+        y: compositor.availableGeometry.y
+        z: 3
+        width: compositor.availableGeometry.width
+        height: compositor.availableGeometry.height
+    }
+
+    // Relayout windows
+    onWidthChanged: CompositorLogic.relayout()
+    onHeightChanged: CompositorLogic.relayout()
 
     // Opacity will be set to 1.0 by the fade-in animation
     opacity: 0.0
+
+    z: 0
 
     Settings {
         id: bgSettings
@@ -90,14 +104,6 @@ Item {
         fillMode: Image.Tile
         source: bgSettings.value("wallpaper-uri")
         smooth: true
-    }
-
-    function calculateGeometry() {
-        // Available geometry equals screen geometry
-        compositor.availableGeometry = Qt.rect(x, y, width, height);
-
-        // Recalculate the layout
-        CompositorLogic.relayout();
     }
 
     function windowAdded(window) {

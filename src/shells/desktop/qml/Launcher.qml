@@ -47,8 +47,8 @@ Item {
     // Number of items
     property alias count: launcher.count
 
-    // The AppChooser object from Shell.qml
-    property alias appChooserObject: launcher.appChooserObject
+    // AppChooser object
+    property var appChooser: AppChooser {}
 
     Settings {
         id: settings
@@ -136,11 +136,6 @@ Item {
                 target: launcher
                 anchors.topMargin: frame.margins.top + padding
                 orientation: ListView.Horizontal
-            }
-            PropertyChanges {
-                target: launcher
-                width: quickview.screenGeometry.width
-                height: launcherSize
             }
         }
     ]

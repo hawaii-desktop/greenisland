@@ -41,13 +41,10 @@ Item {
     onHeightChanged: calculateGeometry()
 
     // Panel
-    Loader {
-        id: panelComponent
+    Panel {
+        id: panel
         anchors { top: parent.top; left: parent.left; right: parent.right }
         z: 2
-        source: "Panel.qml"
-        asynchronous: true
-        onLoaded: calculateGeometry()
 
         // Animate Panel when it shows up
         Behavior on height {
@@ -82,7 +79,7 @@ Item {
                 }
                 PropertyChanges {
                     target: launcherComponent
-                    y: panelComponent.item.height
+                    y: panel.height
                     width: item.launcherSize
                     height: root.height - y
                 }
@@ -97,7 +94,7 @@ Item {
                 }
                 PropertyChanges {
                     target: launcherComponent
-                    y: panelComponent.item.height
+                    y: panel.height
                     width: item.launcherSize
                     height: root.height - y
                 }
@@ -126,6 +123,8 @@ Item {
         z: 3
         visible: false
     }
+
+    Component.onCompleted: calculateGeometry()
 
     // Top-right corner is sensible and exposes all the windows
 /*
@@ -157,20 +156,17 @@ Item {
 
     function calculateGeometry() {
         // Available geometry equals screen geometry
-        var geometry = Qt.rect(x, y, width, height);
+        var geometry = Qt.rect(x, y, width, height); //quickview.screenGeometry;
 
         // ...unless the panel is loaded
-        if (panelComponent.status == Loader.Ready) {
-            panelComponent.height = panelComponent.item.panelHeight;
-            geometry.y += panelComponent.item.panelHeight;
-            geometry.height -= panelComponent.item.panelHeight;
-        }
+        geometry.y = panel.height;
+        geometry.height -= panel.height;
 
         // ...or the launcher is
         if (launcherComponent.status == Loader.Ready) {
             switch (launcherComponent.item.alignment) {
             case LauncherAlignment.Left:
-                geometry.x += launcherComponent.item.launcherSize;
+                geometry.x = launcherComponent.item.launcherSize;
                 geometry.width -= launcherComponent.item.launcherSize;
                 break;
             case LauncherAlignment.Right:

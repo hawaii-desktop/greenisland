@@ -28,6 +28,7 @@
 #include <QtCompositor/waylandsurface.h>
 
 #include "desktopshellserver.h"
+#include "compositor.h"
 
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
     DesktopShellServer::set_background,
@@ -35,11 +36,12 @@ const struct desktop_shell_interface DesktopShellServer::shell_interface = {
     DesktopShellServer::set_geometry
 };
 
-DesktopShellServer::DesktopShellServer(Wayland::Compositor *compositor)
+DesktopShellServer::DesktopShellServer(DesktopCompositor *compositor, Wayland::Compositor *handle)
     : m_compositor(compositor)
+    , m_compositorHandle(handle)
     , m_surface(0)
 {
-    wl_display_add_global(compositor->wl_display(),
+    wl_display_add_global(handle->wl_display(),
                           &desktop_shell_interface, this,
                           DesktopShellServer::bind_func);
 }
@@ -85,9 +87,9 @@ void DesktopShellServer::set_surface(struct wl_client *client,
 
 void DesktopShellServer::set_geometry(struct wl_client *client,
                                       struct wl_resource *resource,
-                                      uint32_t x, uint32_t y,
-                                      uint32_t w, uint32_t h)
+                                      int32_t x, int32_t y,
+                                      int32_t w, int32_t h)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    Q_UNUSED(self);
+    self->m_compositor->setAvailableGeometry(QRectF(x, y, w, h));
 }

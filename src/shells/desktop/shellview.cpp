@@ -29,6 +29,7 @@
 #include <QScreen>
 
 #include "shellview.h"
+#include "desktopshellintegration.h"
 
 ShellView::ShellView(DesktopShell *shell)
     : ShellQuickView(shell)
@@ -66,6 +67,9 @@ QRectF ShellView::availableGeometry() const
 void ShellView::setAvailableGeometry(const QRectF &g)
 {
     m_availableGeometry = g;
+
+    // Every time the available geometry changes we'll tell the compositor
+    DesktopShellIntegration::instance()->updateAvailableGeometry();
 }
 
 #include "moc_shellview.cpp"

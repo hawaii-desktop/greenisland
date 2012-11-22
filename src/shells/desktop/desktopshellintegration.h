@@ -48,6 +48,9 @@ public:
 
     struct desktop_shell *protocol;
 
+public Q_SLOTS:
+    void updateAvailableGeometry();
+
 private:
     static DesktopShellIntegration *m_instance;
     DesktopShell *m_shell;

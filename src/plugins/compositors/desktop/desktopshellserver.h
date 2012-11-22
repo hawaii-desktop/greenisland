@@ -28,14 +28,15 @@
 #define DESKTOPSHELLSERVER_H
 
 #include <QtCompositor/wlcompositor.h>
+#include <wayland-util.h>
 
 #include "wayland-desktop-extension-server-protocol.h"
-#include "wayland-util.h"
+#include "compositor.h"
 
 class DesktopShellServer
 {
 public:
-    DesktopShellServer(Wayland::Compositor *compositor);
+    DesktopShellServer(DesktopCompositor *compositor, Wayland::Compositor *handle);
     ~DesktopShellServer();
 
 private:
@@ -50,8 +51,8 @@ private:
 
     static void set_geometry(struct wl_client *client,
                              struct wl_resource *resource,
-                             uint32_t x, uint32_t y,
-                             uint32_t w, uint32_t h);
+                             int32_t x, int32_t y,
+                             int32_t w, int32_t h);
 
     static void set_background(struct wl_client *client,
                                struct wl_resource *resource,
@@ -59,7 +60,8 @@ private:
 
     static const struct desktop_shell_interface shell_interface;
 
-    Wayland::Compositor *m_compositor;
+    DesktopCompositor *m_compositor;
+    Wayland::Compositor *m_compositorHandle;
     QList<wl_resource *> m_resources;
     Wayland::Surface *m_surface;
 };

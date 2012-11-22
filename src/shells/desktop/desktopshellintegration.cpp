@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
 #include <qpa/qplatformwindow.h>
@@ -53,6 +54,19 @@ DesktopShellIntegration *DesktopShellIntegration::instance()
     return m_instance;
 }
 
+void DesktopShellIntegration::updateAvailableGeometry()
+{
+    if (!protocol || !m_shell->shellView())
+        return;
+
+qDebug() << m_shell->shellView()->availableGeometry();
+    desktop_shell_set_geometry(protocol,
+                               m_shell->shellView()->availableGeometry().x(),
+                               m_shell->shellView()->availableGeometry().y(),
+                               m_shell->shellView()->availableGeometry().width(),
+                               m_shell->shellView()->availableGeometry().height());
+}
+
 void DesktopShellIntegration::handleGlobal(void *data,
                                            struct wl_registry *registry,
                                            uint32_t id,
@@ -78,8 +92,8 @@ void DesktopShellIntegration::handleGlobal(void *data,
     Q_ASSERT(surface);
     desktop_shell_set_surface(object->protocol, surface);
     desktop_shell_set_geometry(object->protocol,
-                               object->m_shell->shellView()->geometry().x(),
-                               object->m_shell->shellView()->geometry().y(),
-                               object->m_shell->shellView()->geometry().width(),
-                               object->m_shell->shellView()->geometry().height());
+                               object->m_shell->shellView()->availableGeometry().x(),
+                               object->m_shell->shellView()->availableGeometry().y(),
+                               object->m_shell->shellView()->availableGeometry().width(),
+                               object->m_shell->shellView()->availableGeometry().height());
 }

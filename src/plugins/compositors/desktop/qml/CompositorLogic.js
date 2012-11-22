@@ -191,8 +191,9 @@ function restorelayout()
  */
 
 function windowAdded(root, window) {
+    var isSpecial = window.surface.className == "greenisland-desktop-shell.desktop";
     var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
-    var windowContainer = windowContainerComponent.createObject(root);
+    var windowContainer = windowContainerComponent.createObject(isSpecial ? root : root.availableArea);
 
     window.parent = windowContainer;
 
@@ -200,11 +201,13 @@ function windowAdded(root, window) {
     window.takeFocus();
 
     // Restrict windows coordinates to the available area
-    var availableGeometry = compositor.availableGeometry;
-    if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
-        windowContainer.targetX += availableGeometry.x + 5;
-    if (windowContainer.targetY < availableGeometry.y || windowContainer.targetY > availableGeometry.y + availableGeometry.height)
-        windowContainer.targetY += availableGeometry.y + 5;
+    if (!isSpecial) {
+        var availableGeometry = compositor.availableGeometry;
+        if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
+            windowContainer.targetX += availableGeometry.x + 5;
+        if (windowContainer.targetY < availableGeometry.y || windowContainer.targetY > availableGeometry.y + availableGeometry.height)
+            windowContainer.targetY += availableGeometry.y + 5;
+    }
 
     windowContainer.targetScale = 1.0;
     windowContainer.targetWidth = window.width;

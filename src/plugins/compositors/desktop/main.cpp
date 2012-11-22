@@ -39,7 +39,7 @@ public:
 
     VCompositor *create(const QString &key) {
         if (key.toLower() == "desktop")
-            return new Compositor();
+            return new DesktopCompositor();
 
         return 0;
     }

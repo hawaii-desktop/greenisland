@@ -38,26 +38,30 @@
 #include "desktopshellserver.h"
 #include "cmakedirs.h"
 
-Compositor::Compositor()
+DesktopCompositor::DesktopCompositor()
     : VCompositor(this)
     , m_currentSurface(0)
     , m_shellProcess(0)
 {
+    // Enable the subsurface extension
+    enableSubSurfaceExtension();
+
     // Desktop shell protocol
-    m_desktopShell = new DesktopShellServer(WaylandCompositor::handle());
+    m_desktopShell = new DesktopShellServer(this, WaylandCompositor::handle());
+
+    // Allow QML to access this compositor
+    rootContext()->setContextProperty("compositor", this);
+
+    // All the screen is initially available
+    m_availableGeometry = screen()->availableGeometry();
+    connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
+            this, SIGNAL(screenGeometryChanged()));
 
     // Load the QML code
-    enableSubSurfaceExtension();
     setSource(QUrl("qrc:///qml/Compositor.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
     winId();
-
-    // All the screen is available
-    m_availableGeometry = geometry();
-
-    // Allow QML to access this compositor
-    rootContext()->setContextProperty("compositor", this);
 
     connect(this, SIGNAL(windowAdded(QVariant)),
             rootObject(), SLOT(windowAdded(QVariant)));
@@ -69,13 +73,13 @@ Compositor::Compositor()
             this, SLOT(frameSwapped()));
 }
 
-Compositor::~Compositor()
+DesktopCompositor::~DesktopCompositor()
 {
     m_shellProcess->close();
     delete m_shellProcess;
 }
 
-void Compositor::runShell()
+void DesktopCompositor::runShell()
 {
     // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
@@ -87,7 +91,7 @@ void Compositor::runShell()
 
     // Process arguments
     QStringList arguments = QStringList()
-        << QLatin1String("-platform") << QLatin1String("wayland");
+                            << QLatin1String("-platform") << QLatin1String("wayland");
 
     // Run the shell client process
     m_shellProcess = new QProcess(this);
@@ -106,18 +110,23 @@ void Compositor::runShell()
                           arguments, QIODevice::ReadOnly);
 }
 
-QRectF Compositor::availableGeometry() const
+QRectF DesktopCompositor::screenGeometry() const
+{
+    return screen()->availableGeometry();
+}
+
+QRectF DesktopCompositor::availableGeometry() const
 {
     return m_availableGeometry;
 }
 
-void Compositor::setAvailableGeometry(const QRectF &rect)
+void DesktopCompositor::setAvailableGeometry(const QRectF &g)
 {
-    m_availableGeometry = rect;
+    m_availableGeometry = g;
     emit availableGeometryChanged();
 }
 
-void Compositor::surfaceCreated(WaylandSurface *surface)
+void DesktopCompositor::surfaceCreated(WaylandSurface *surface)
 {
     // Create a WaylandSurfaceItem from the surface
     WaylandSurfaceItem *item = new WaylandSurfaceItem(surface, rootObject());
@@ -133,24 +142,24 @@ void Compositor::surfaceCreated(WaylandSurface *surface)
             this, SLOT(surfaceUnmapped()));
 }
 
-void Compositor::surfaceAboutToBeDestroyed(WaylandSurface *surface)
+void DesktopCompositor::surfaceAboutToBeDestroyed(WaylandSurface *surface)
 {
     // TODO:
 }
 
-void Compositor::destroyWindow(QVariant window)
+void DesktopCompositor::destroyWindow(QVariant window)
 {
     qvariant_cast<QObject *>(window)->deleteLater();
 }
 
-void Compositor::destroyClientForWindow(QVariant window)
+void DesktopCompositor::destroyClientForWindow(QVariant window)
 {
     WaylandSurface *surface = qobject_cast<WaylandSurfaceItem *>(
                                   qvariant_cast<QObject *>(window))->surface();
     destroyClientForSurface(surface);
 }
 
-void Compositor::setCurrentSurface(WaylandSurface *surface)
+void DesktopCompositor::setCurrentSurface(WaylandSurface *surface)
 {
     if (surface == m_currentSurface)
         return;
@@ -158,13 +167,13 @@ void Compositor::setCurrentSurface(WaylandSurface *surface)
     emit currentSurfaceChanged();
 }
 
-void Compositor::shellStarted()
+void DesktopCompositor::shellStarted()
 {
     if (m_shellProcess)
         qDebug() << "Shell is ready!";
 }
 
-void Compositor::shellFailed(QProcess::ProcessError error)
+void DesktopCompositor::shellFailed(QProcess::ProcessError error)
 {
     switch (error) {
         case QProcess::FailedToStart:
@@ -194,24 +203,24 @@ void Compositor::shellFailed(QProcess::ProcessError error)
     m_shellProcess = 0;
 }
 
-void Compositor::shellReadyReadStandardOutput()
+void DesktopCompositor::shellReadyReadStandardOutput()
 {
     if (m_shellProcess)
         printf("shell: %s", m_shellProcess->readAllStandardOutput().constData());
 }
 
-void Compositor::shellReadyReadStandardError()
+void DesktopCompositor::shellReadyReadStandardError()
 {
     if (m_shellProcess)
         fprintf(stderr, "shell: %s", m_shellProcess->readAllStandardError().constData());
 }
 
-void Compositor::shellAboutToClose()
+void DesktopCompositor::shellAboutToClose()
 {
     qDebug() << "Shell is about to close...";
 }
 
-void Compositor::surfaceMapped()
+void DesktopCompositor::surfaceMapped()
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
 
@@ -223,7 +232,7 @@ void Compositor::surfaceMapped()
     emit windowAdded(QVariant::fromValue(static_cast<QQuickItem *>(item)));
 }
 
-void Compositor::surfaceUnmapped()
+void DesktopCompositor::surfaceUnmapped()
 {
     // Set to 0 the current surface if it was unmapped
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
@@ -235,7 +244,7 @@ void Compositor::surfaceUnmapped()
     emit windowDestroyed(QVariant::fromValue(item));
 }
 
-void Compositor::surfaceDestroyed(QObject *object)
+void DesktopCompositor::surfaceDestroyed(QObject *object)
 {
     // Set to 0 the current surface if it was destroyed
     WaylandSurface *surface = static_cast<WaylandSurface *>(object);
@@ -247,12 +256,12 @@ void Compositor::surfaceDestroyed(QObject *object)
     emit windowDestroyed(QVariant::fromValue(item));
 }
 
-void Compositor::frameSwapped()
+void DesktopCompositor::frameSwapped()
 {
     frameFinished(m_currentSurface);
 }
 
-void Compositor::resizeEvent(QResizeEvent *event)
+void DesktopCompositor::resizeEvent(QResizeEvent *event)
 {
     // Scale compositor output to window's size
     QQuickView::resizeEvent(event);

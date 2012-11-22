@@ -44,9 +44,6 @@ LauncherDropItem {
     // Number of items
     property alias count: view.count
 
-    // The AppChooser object from Shell.qml
-    property variant appChooserObject: null
-
     onApplicationDropped: visualModel.model.pinApplication(path)
     onUrlDropped: visualModel.model.pinUrl(url)
 
@@ -287,12 +284,14 @@ LauncherDropItem {
             width: tileSize
             height: width
             onClicked: {
-                if (appChooserObject) {
+                if (launcherContainer.appChooser) {
                     var pos = mapFromItem(parent, x, y);
-                    appChooserObject.x = pos.x;
-                    appChooserObject.y = shell.availableGeometry.y +
-                            shell.availableGeometry.height - appChooserObject.height;
-                    appChooserObject.visible = checked;
+                    launcherContainer.appChooser.width = quickview.availableGeometry.width / 1.1;
+                    launcherContainer.appChooser.height = quickview.availableGeometry.height / 1.1;
+                    launcherContainer.appChooser.x = pos.x;
+                    launcherContainer.appChooser.y = quickview.availableGeometry.y +
+                            quickview.availableGeometry.height - launcherContainer.appChooser.height;
+                    launcherContainer.appChooser.visible = checked;
                 }
             }
         }

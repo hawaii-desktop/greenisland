@@ -34,19 +34,22 @@
 
 class DesktopShellServer;
 
-class Compositor : public QQuickView, public VCompositor
+class DesktopCompositor : public QQuickView, public VCompositor
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
+    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
+    Q_PROPERTY(QRectF availableGeometry READ availableGeometry NOTIFY availableGeometryChanged)
     Q_PROPERTY(WaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
-    explicit Compositor();
-    ~Compositor();
+    explicit DesktopCompositor();
+    ~DesktopCompositor();
 
     void runShell();
 
+    QRectF screenGeometry() const;
+
     QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &rect);
+    void setAvailableGeometry(const QRectF &g);
 
     WaylandSurface *currentSurface() const {
         return m_currentSurface;
@@ -56,10 +59,12 @@ public:
     void surfaceAboutToBeDestroyed(WaylandSurface *surface);
 
 signals:
+    void screenGeometryChanged();
+    void availableGeometryChanged();
+
     void windowAdded(QVariant window);
     void windowDestroyed(QVariant window);
     void windowResized(QVariant window);
-    void availableGeometryChanged();
     void currentSurfaceChanged();
 
 public slots:

@@ -12,10 +12,10 @@
 		</request>
 
 		<request name="set_geometry">
-			<arg name="x" type="uint"/>
-			<arg name="y" type="uint"/>
-			<arg name="width" type="uint"/>
-			<arg name="height" type="uint"/>
+			<arg name="x" type="int"/>
+			<arg name="y" type="int"/>
+			<arg name="width" type="int"/>
+			<arg name="height" type="int"/>
 		</request>
 	</interface>
 </protocol>
