@@ -31,13 +31,9 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
-    id: appchooser
-
     FrameSvgItem {
-        id: frame
         anchors.fill: parent
         imagePath: "opaque/dialogs/background"
-        visible: true
     }
 
     Item {

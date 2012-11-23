@@ -31,6 +31,9 @@ import FluidCore 1.0
 Item {
     id: root
 
+    // AppChooser
+    property var appChooser: appChooserObject
+
     x: quickview.screenGeometry.x
     y: quickview.screenGeometry.y
     width: quickview.screenGeometry.width
@@ -119,7 +122,7 @@ Item {
 
     // Application chooser
     AppChooser {
-        id: appChooser
+        id: appChooserObject
         z: 3
         visible: false
     }

@@ -47,9 +47,6 @@ Item {
     // Number of items
     property alias count: launcher.count
 
-    // AppChooser object
-    property var appChooser: AppChooser {}
-
     Settings {
         id: settings
         schema: "org.hawaii.greenisland"
