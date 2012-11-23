@@ -23,5 +23,6 @@
         <file>qml/AppChooser.qml</file>
         <file>qml/AppChooserItem.qml</file>
         <file>qml/AppChooserDelegate.qml</file>
+        <file>qml/Notifications.qml</file>
     </qresource>
 </RCC>

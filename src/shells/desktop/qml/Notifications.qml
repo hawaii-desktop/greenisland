@@ -26,17 +26,6 @@
 
 import QtQuick 2.0
 
-PanelIndicator {
-    property bool active: false
-
-    iconName: "view-list-symbolic"
-
-    onClicked: {
-        active = !active;
-console.log(root, root.notifications);
-        if (active)
-            root.notifications.show();
-        else
-            root.notifications.hide();
-    }
+Rectangle {
+    color: "black"
 }

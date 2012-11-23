@@ -34,6 +34,9 @@ Item {
     // AppChooser
     property var appChooser: appChooserObject
 
+    // Notifications
+    property var notifications: notificationsObject
+
     x: quickview.screenGeometry.x
     y: quickview.screenGeometry.y
     width: quickview.screenGeometry.width
@@ -120,19 +123,6 @@ Item {
         ]
     }
 
-    // Application chooser
-    AppChooser {
-        id: appChooserObject
-        opacity: 0.0
-        width: quickview.availableGeometry.width / 1.1
-        height: quickview.availableGeometry.height / 1.1
-
-        // Animate when it shows up
-        Behavior on opacity {
-            NumberAnimation { duration: 200 }
-        }
-    }
-
     Component.onCompleted: calculateGeometry()
 
     // Top-right corner is sensible and exposes all the windows
@@ -149,6 +139,41 @@ Item {
         }
     }
 */
+
+    // Application chooser
+    AppChooser {
+        id: appChooserObject
+        opacity: 0.0
+        width: quickview.availableGeometry.width / 1.1
+        height: quickview.availableGeometry.height / 1.1
+
+        // Animate when it shows up
+        Behavior on opacity {
+            NumberAnimation { duration: 200 }
+        }
+    }
+
+    // Notifications
+    Notifications {
+        id: notificationsObject
+        x: quickview.availableGeometry.width
+        y: quickview.availableGeometry.y
+        width: quickview.availableGeometry.width / 10
+        height: quickview.availableGeometry.height
+
+        // Animation
+        Behavior on x {
+            NumberAnimation { duration: 200 }
+        }
+
+        function show() {
+            x = quickview.availableGeometry.width - width;
+        }
+
+        function hide() {
+            x = quickview.availableGeometry.width;
+        }
+    }
 
     /*
     MouseArea {
