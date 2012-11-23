@@ -32,6 +32,7 @@ import FluidUi 1.0
 
 Item {
     FrameSvgItem {
+        id: frame
         anchors.fill: parent
         imagePath: "opaque/dialogs/background"
     }
@@ -39,12 +40,12 @@ Item {
     Item {
         id: leftColumn
         anchors {
-            left: parent.left
-            top: parent.top
-            bottom: parent.bottom
+            left: frame.left
+            top: frame.top
+            bottom: frame.bottom
             margins: 8
         }
-        width: parent.width / 4
+        width: frame.width / 4
 
         TextField {
             id: searchField
@@ -109,9 +110,9 @@ Item {
         id: rightColumn
         anchors {
             left: leftColumn.right
-            top: parent.top
-            right: parent.right
-            bottom: parent.bottom
+            top: frame.top
+            right: frame.right
+            bottom: frame.bottom
             margins: 8
         }
 

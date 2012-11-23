@@ -285,8 +285,6 @@ LauncherDropItem {
             height: width
             onClicked: {
                 var pos = mapFromItem(parent, x, y);
-                root.appChooser.width = quickview.availableGeometry.width / 1.1;
-                root.appChooser.height = quickview.availableGeometry.height / 1.1;
                 root.appChooser.x = pos.x;
                 root.appChooser.y = quickview.availableGeometry.y +
                         quickview.availableGeometry.height - root.appChooser.height;

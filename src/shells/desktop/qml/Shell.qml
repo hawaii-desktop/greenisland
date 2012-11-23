@@ -123,8 +123,9 @@ Item {
     // Application chooser
     AppChooser {
         id: appChooserObject
-        z: 3
         visible: false
+        width: quickview.availableGeometry.width / 1.1
+        height: quickview.availableGeometry.height / 1.1
     }
 
     Component.onCompleted: calculateGeometry()
