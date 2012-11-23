@@ -27,6 +27,5 @@
 import QtQuick 2.0
 
 PanelIndicator {
-    iconName: "face-worried-symbolic"
-    label: "A"
+    iconName: "view-list-symbolic"
 }
