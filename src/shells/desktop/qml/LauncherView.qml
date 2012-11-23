@@ -288,7 +288,7 @@ LauncherDropItem {
                 root.appChooser.x = pos.x;
                 root.appChooser.y = quickview.availableGeometry.y +
                         quickview.availableGeometry.height - root.appChooser.height;
-                root.appChooser.visible = checked;
+                root.appChooser.opacity = checked ? 1.0 : 0.0;
             }
         }
     }

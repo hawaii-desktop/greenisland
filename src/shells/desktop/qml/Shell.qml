@@ -68,7 +68,7 @@ Item {
 
         // Animate Launcher when it shows up
         Behavior on height {
-            NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
+            NumberAnimation { easing.type: Easing.InQuad; duration: 550 }
         }
 
         states: [
@@ -123,9 +123,14 @@ Item {
     // Application chooser
     AppChooser {
         id: appChooserObject
-        visible: false
+        opacity: 0.0
         width: quickview.availableGeometry.width / 1.1
         height: quickview.availableGeometry.height / 1.1
+
+        // Animate when it shows up
+        Behavior on opacity {
+            NumberAnimation { duration: 200 }
+        }
     }
 
     Component.onCompleted: calculateGeometry()
