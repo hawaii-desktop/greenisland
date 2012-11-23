@@ -29,7 +29,7 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
-    id: root
+    id: menuItem
 
     default property alias items: contentsItem.children
     property alias text: label.text
@@ -45,11 +45,11 @@ Item {
     width: Math.max(implicitWidth, parent.width)
     enabled: !separator
 
-    Keys.onReturnPressed: root.clicked()
+    Keys.onReturnPressed: menuItem.clicked()
 
     onSeparatorChanged: {
         if (separator)
-            internal.separatorItem = separatorComponent.createObject(root)
+            internal.separatorItem = separatorComponent.createObject(menuItem)
         else
             internal.separatorItem.destroy();
     }
@@ -121,7 +121,7 @@ Item {
                 // Trigger the clicked() signal for child items too
                 for (var i = 0; i < children.length; ++i) {
                     if (children[i].clicked != undefined)
-                        children[i].clicked.connect(root.clicked)
+                        children[i].clicked.connect(menuItem.clicked)
                 }
             }
         }
@@ -139,6 +139,6 @@ Item {
             label.color = theme.windowTextColor;
             container.prefix = "";
         }
-        onClicked: root.clicked()
+        onClicked: menuItem.clicked()
     }
 }

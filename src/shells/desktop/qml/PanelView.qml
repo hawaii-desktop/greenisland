@@ -28,7 +28,7 @@ import QtQuick 2.0
 import GreenIsland 1.0
 
 Item {
-    id: root
+    id: panelView
 
     // Spacing between indicators
     property real spacing: 8
@@ -97,7 +97,7 @@ Item {
                 PanelIndicator {
                     label: indicator.label
                     iconName: indicator.iconName
-                    panelView: root
+                    panelView: panelView
                 }
             }
         }

@@ -29,7 +29,7 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
-    id: root
+    id: contextMenuItem
 
     default property alias items: contentsItem.children
 
@@ -41,7 +41,7 @@ Item {
     implicitHeight: Math.max(contentsItem.height, contentsItem.implicitHeight) + (padding * 2)
     width: Math.max(implicitWidth, parent.width)
 
-    Keys.onReturnPressed: root.clicked()
+    Keys.onReturnPressed: contextMenuItem.clicked()
 
     Row {
         id: contentsItem
@@ -57,7 +57,7 @@ Item {
             // Trigger the clicked() signal for child items too
             for (var i = 0; i < children.length; ++i) {
                 if (children[i].clicked != undefined)
-                    children[i].clicked.connect(root.clicked)
+                    children[i].clicked.connect(contextMenuItem.clicked)
             }
         }
     }

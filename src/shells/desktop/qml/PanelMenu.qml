@@ -29,7 +29,7 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
-    id: root
+    id: panelMenu
 
     default property alias content: menuContents.children
     property int status: DialogStatus.Closed
@@ -42,7 +42,7 @@ Item {
 
     FrameSvgItem {
         id: menuContainer
-        x: root.parent.x - root.parent.width
+        x: panelMenu.parent.x - panelMenu.parent.width
         width: menu.width
         height: menu.height
         imagePath: "widgets/menu-background"
@@ -74,13 +74,13 @@ Item {
                     function connectClickedSignal() {
                         for (var i = 0; i < children.length; ++i) {
                             if (children[i].clicked != undefined)
-                                children[i].clicked.connect(root.close);
+                                children[i].clicked.connect(panelMenu.close);
                         }
                     }
 
                     function resizePopupMenu() {
-                        root.width = childrenRect.width + menuContainer.margins.left + menuContainer.margins.right;
-                        root.height = childrenRect.height + menuContainer.margins.top + menuContainer.margins.bottom;
+                        panelMenu.width = childrenRect.width + menuContainer.margins.left + menuContainer.margins.right;
+                        panelMenu.height = childrenRect.height + menuContainer.margins.top + menuContainer.margins.bottom;
                     }
                 }
             }
@@ -103,7 +103,7 @@ Item {
             when: status == DialogStatus.Opening || status == DialogStatus.Open
             PropertyChanges {
                 target: menuContainer
-                y: root.parent.parent.height + root.parent.y
+                y: panelMenu.parent.parent.height + panelMenu.parent.y
                 opacity: 1.0
             }
         },
@@ -138,7 +138,7 @@ Item {
                         easing.type: Easing.Linear
                     }
                 }
-                PropertyAction { target: root; property: "status"; value: DialogStatus.Closed }
+                PropertyAction { target: panelMenu; property: "status"; value: DialogStatus.Closed }
             }
         },
         Transition {
@@ -160,7 +160,7 @@ Item {
                         easing.type: Easing.Linear
                     }
                 }
-                PropertyAction { target: root; property: "status"; value: DialogStatus.Open }
+                PropertyAction { target: panelMenu; property: "status"; value: DialogStatus.Open }
             }
         }
     ]
