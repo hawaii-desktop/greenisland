@@ -49,6 +49,9 @@ Item {
     property bool selected: false
     property bool hovered: false
 
+    // Emitted when the indicator is clicked and doesn't have a menu
+    signal clicked()
+
     width: iconItem.width + labelItem.paintedWidth + (spacing * 4)
 
     MouseArea {
@@ -74,8 +77,11 @@ Item {
             hovered = false;
         }
         onClicked: {
-            if (!menu)
+            // If the indicato doesn't have a menu, it can handle the click
+            if (!menu) {
+                indicator.clicked();
                 return;
+            }
 
             selected = !selected;
 
