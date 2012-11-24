@@ -34,15 +34,24 @@ Item {
     // TODO: Define margins and padding in Fluid::Theme
     property real padding: 4
 
-    // Size
-    property real launcherSize: 0
-
     // Tile size
     property alias tileSize: launcher.tileSize
 
     // Alignment and orientation
     property int alignment: LauncherAlignment.Bottom
     property alias orientation: launcher.orientation
+
+    // Size
+    property real launcherSize: {
+        switch (alignment) {
+        case LauncherAlignment.Left:
+            return tileSize + frame.margins.right + (padding * 2);
+        case LauncherAlignment.Right:
+            return tileSize + frame.margins.left + (padding * 2);
+        case LauncherAlignment.Bottom:
+            return tileSize + frame.margins.top + (padding * 2);
+        }
+    }
 
     // Number of items
     property alias count: launcher.count
@@ -98,10 +107,6 @@ Item {
             when: alignment === LauncherAlignment.Left
 
             PropertyChanges {
-                target: launcherContainer
-                launcherSize: tileSize + frame.margins.right + (padding * 2)
-            }
-            PropertyChanges {
                 target: launcher
                 anchors.rightMargin: frame.margins.right + padding
                 orientation: ListView.Vertical
@@ -112,10 +117,6 @@ Item {
             when: alignment === LauncherAlignment.Right
 
             PropertyChanges {
-                target: launcherContainer
-                launcherSize: tileSize + frame.margins.left + (padding * 2)
-            }
-            PropertyChanges {
                 target: launcher
                 anchors.leftMargin: frame.margins.left + padding
                 orientation: ListView.Vertical
@@ -125,10 +126,6 @@ Item {
             name: "bottom"
             when: alignment === LauncherAlignment.Bottom
 
-            PropertyChanges {
-                target: launcherContainer
-                launcherSize: tileSize + frame.margins.top + (padding * 2)
-            }
             PropertyChanges {
                 target: launcher
                 anchors.topMargin: frame.margins.top + padding
