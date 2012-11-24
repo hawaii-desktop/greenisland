@@ -132,22 +132,50 @@ Item {
         ]
     }
 
-    Component.onCompleted: calculateGeometry()
-
-    // Top-right corner is sensible and exposes all the windows
-/*
+    // Active top left corner
     MouseArea {
-        x: root.width - width
-        y: 0
-        width: panelComponent.height
-        height: panelComponent.height
+        id: topLeftCorner
+        x: compositor.screenGeometry.x
+        y: compositor.screenGeometry.y
+        width: 16
+        height: 16
         hoverEnabled: true
         onEntered: {
-            root.normalLayout = !root.normalLayout;
+            root.normalLayout = false;
+            CompositorLogic.relayout()
+        }
+        onExited: {
+            root.normalLayout = true;
             CompositorLogic.relayout();
         }
     }
-*/
+
+    // Active top right corner
+    MouseArea {
+        id: topRightCorner
+        x: compositor.screenGeometry.width - 16
+        y: compositor.screenGeometry.y
+        width: 16
+        height: 16
+    }
+
+    // Active bottom left corner
+    MouseArea {
+        id: bottomLeftCorner
+        x: compositor.screenGeometry.x
+        y: compositor.screenGeometry.height - 16
+        width: 16
+        height: 16
+    }
+
+    // Active bottom right corner
+    MouseArea {
+        id: bottomRightCorner
+        x: compositor.screenGeometry.width - 16
+        y: compositor.screenGeometry.y
+        width: 16
+        height: 16
+    }
 
     // Application chooser
     AppChooser {
@@ -184,18 +212,7 @@ Item {
         }
     }
 
-    /*
-    MouseArea {
-        x: shell.availableGeometry.x
-        y: shell.availableGeometry.y
-        width: shell.availableGeometry.width
-        height: shell.availableGeometry.height
-        hoverEnabled: true
-        onEntered: {
-            console.log("ciao");
-        }
-    }
-    */
+    Component.onCompleted: calculateGeometry()
 
     function calculateGeometry() {
         // Available geometry equals screen geometry
