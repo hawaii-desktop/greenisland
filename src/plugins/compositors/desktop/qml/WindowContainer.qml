@@ -137,7 +137,7 @@ Item {
                     }
                 }
                 ScriptAction {
-                    script: container.z = 1
+                    script: container.z = 0
                 }
             }
         },
@@ -159,7 +159,7 @@ Item {
             SequentialAnimation {
                 ScriptAction {
                     script: {
-                        container.z = 2
+                        container.z = 1
                     }
                 }
             }

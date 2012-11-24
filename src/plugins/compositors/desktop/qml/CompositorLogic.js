@@ -39,6 +39,7 @@
 **
 ****************************************************************************/
 
+var rootWindow = null;
 var windowList = null;
 var indexes = null;
 
@@ -193,9 +194,14 @@ function restorelayout()
 function windowAdded(root, window) {
     var isSpecial = window.surface.className == "greenisland-desktop-shell.desktop";
 
-    var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
-    var windowContainer = windowContainerComponent.createObject(isSpecial ? root : root.availableArea);
+    // Save the shell window and use it as a root window
+    if (isSpecial)
+        rootWindow = window;
 
+    var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
+    var windowContainer = windowContainerComponent.createObject(isSpecial ? root : rootWindow);
+
+    // Disable animations for the shell window
     if (isSpecial)
         windowContainer.animationsEnabled = false;
 
@@ -218,11 +224,8 @@ function windowAdded(root, window) {
     windowContainer.targetHeight = window.height;
     windowContainer.child = window;
 
-    var windowChrome = null;
-    if (!isSpecial) {
-        var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
-        windowChrome = windowChromeComponent.createObject(window);
-    }
+    var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
+    var windowChrome = windowChromeComponent.createObject(window);
 
     addWindow(windowContainer);
 
