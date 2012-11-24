@@ -25,7 +25,24 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import FluidCore 1.0
+import FluidUi 1.0
 
-Rectangle {
-    color: "black"
+Item {
+    FrameSvgItem {
+        id: frame
+        anchors.fill: parent
+        imagePath: "opaque/dialogs/background"
+        enabledBorders: FrameSvgItem.LeftBorder
+    }
+
+    Label {
+        anchors {
+            left: frame.left
+            top: frame.top
+            margins: frame.margins.left
+        }
+        text: qsTr("Notifications")
+        font.weight: Font.Bold
+    }
 }
