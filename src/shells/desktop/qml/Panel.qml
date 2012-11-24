@@ -28,14 +28,13 @@ import QtQuick 2.0
 import FluidCore 1.0
 
 Item {
-    // Panel height
+    // Padding
+    // TODO: Take it from parameters
     property real padding: 2
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
 
-    x: quickview.screenGeometry.x
-    y: quickview.screenGeometry.y
-    width: quickview.screenGeometry.width
-    height: panelRealHeight + frame.margins.bottom
+    // Panel height
+    property real panelRealHeight: theme.smallIconSize + (padding * 2)
+    property real panelHeight: panelRealHeight + frame.margins.bottom
 
     FrameSvgItem {
         id: frame

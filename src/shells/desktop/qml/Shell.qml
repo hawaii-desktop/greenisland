@@ -47,14 +47,23 @@ Item {
     onHeightChanged: calculateGeometry()
 
     // Panel
-    Panel {
-        id: panel
+    Loader {
+        id: panelComponent
         anchors { top: parent.top; left: parent.left; right: parent.right }
+        x: quickview.screenGeometry.x
+        y: quickview.screenGeometry.y
         z: 2
+        width: quickview.screenGeometry.width
+        source: "Panel.qml"
+        asynchronous: true
+        onLoaded: {
+            // Recalculate geometry
+            calculateGeometry();
+        }
 
         // Animate Panel when it shows up
         Behavior on height {
-            NumberAnimation { easing.type: Easing.InQuad; duration: 750 }
+            NumberAnimation { easing.type: Easing.InQuad; duration: 350 }
         }
     }
 
@@ -71,7 +80,7 @@ Item {
 
         // Animate Launcher when it shows up
         Behavior on height {
-            NumberAnimation { easing.type: Easing.InQuad; duration: 550 }
+            NumberAnimation { easing.type: Easing.InQuad; duration: 350 }
         }
 
         states: [
@@ -193,8 +202,11 @@ Item {
         var geometry = Qt.rect(x, y, width, height); //quickview.screenGeometry;
 
         // ...unless the panel is loaded
-        geometry.y = panel.height;
-        geometry.height -= panel.height;
+        if (panelComponent.status == Loader.Ready) {
+            panelComponent.height = panelComponent.item.panelHeight;
+            geometry.y = panelComponent.height;
+            geometry.height -= panelComponent.height;
+        }
 
         // ...or the launcher is
         if (launcherComponent.status == Loader.Ready) {
