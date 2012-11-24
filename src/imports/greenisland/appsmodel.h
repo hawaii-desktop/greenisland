@@ -53,6 +53,9 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
 
+public slots:
+    void launchApplicationAt(int index);
+
 private:
     QList<VApplicationInfo *> m_apps;
     VFileSystemWatcher *m_watcher;

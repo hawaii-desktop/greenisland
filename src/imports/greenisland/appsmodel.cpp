@@ -95,6 +95,13 @@ int AppsModel::rowCount(const QModelIndex &parent) const
     return m_apps.size();
 }
 
+void AppsModel::launchApplicationAt(int index)
+{
+    VApplicationInfo *info = m_apps.at(index);
+    if (info)
+        info->launch(QStringList());
+}
+
 void AppsModel::populate()
 {
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);

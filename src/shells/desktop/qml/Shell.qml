@@ -227,5 +227,6 @@ Item {
 
         // Set the available geometry to the result of the above computation
         quickview.availableGeometry = geometry;
+        notificationsObject.y = quickview.availableGeometry.y;
     }
 }

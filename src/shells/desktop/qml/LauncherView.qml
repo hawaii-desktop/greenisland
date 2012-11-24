@@ -26,6 +26,7 @@
 
 import QtQuick 2.0
 import GreenIsland 1.0
+import FluidCore 1.0
 import FluidUi 1.0
 
 LauncherDropItem {
@@ -280,6 +281,7 @@ LauncherDropItem {
 
         Button {
             checkable: true
+            checked: root.appChooser.status == DialogStatus.Open
             iconSource: "view-grid-symbolic"
             width: tileSize
             height: width
@@ -288,7 +290,7 @@ LauncherDropItem {
                 root.appChooser.x = pos.x;
                 root.appChooser.y = quickview.availableGeometry.y +
                         quickview.availableGeometry.height - root.appChooser.height;
-                root.appChooser.opacity = checked ? 1.0 : 0.0;
+                root.appChooser.toggle();
             }
         }
     }

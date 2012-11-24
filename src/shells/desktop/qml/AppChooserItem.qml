@@ -39,8 +39,6 @@ Item {
             horizontalCenter: parent.horizontalCenter
         }
         sourceSize: Qt.size(theme.largeIconSize, theme.largeIconSize)
-        width: theme.largeIconSize
-        height: theme.largeIconSize
         smooth: true
     }
 

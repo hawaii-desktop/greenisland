@@ -25,12 +25,23 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import QtGraphicalEffects 1.0
 import GreenIsland 1.0
 import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
+    property int status: DialogStatus.Closed
+
+    function toggle() {
+        if (status == DialogStatus.Open) {
+            opacity = 0.0;
+            status = DialogStatus.Closed;
+        } else if (status == DialogStatus.Closed) {
+            opacity = 1.0;
+            status = DialogStatus.Open;
+        }
+    }
+
     FrameSvgItem {
         id: frame
         anchors.fill: parent
@@ -130,11 +141,19 @@ Item {
             model: VisualDataModel {
                 id: visualModel
 
-                model: AvailableApplicationsModel {}
+                model: AvailableApplicationsModel {
+                    id: appsModel
+                }
                 delegate: AppChooserDelegate {
                     visualIndex: VisualDataModel.itemsIndex
                     icon: "image://desktoptheme/" + (iconName ? iconName : "unknown")
                     label: name
+
+                    onClicked: {
+                        // Launch the application and close the AppChooser
+                        root.appChooser.toggle();
+                        appsModel.launchApplicationAt(visualIndex);
+                    }
                 }
             }
 
