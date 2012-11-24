@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import QtGraphicalEffects 1.0
 import FluidCore 1.0
 import FluidUi 1.0
 
@@ -44,17 +43,6 @@ Item {
         height: theme.largeIconSize
         smooth: true
     }
-
-    /*
-    Glow {
-        anchors.fill: icon
-        radius: 8
-        samples: 16
-        color: theme.highlightColor
-        source: icon
-        visible: false
-    }
-    */
 
     Label {
         id: label
