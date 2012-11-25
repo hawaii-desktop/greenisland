@@ -108,7 +108,9 @@ Item {
 
             PropertyChanges {
                 target: launcher
+                anchors.topMargin: frame.margins.top + padding
                 anchors.rightMargin: frame.margins.right + padding
+                anchors.bottomMargin: frame.margins.top + padding
                 orientation: ListView.Vertical
             }
         },
@@ -119,6 +121,8 @@ Item {
             PropertyChanges {
                 target: launcher
                 anchors.leftMargin: frame.margins.left + padding
+                anchors.topMargin: frame.margins.top + padding
+                anchors.bottomMargin: frame.margins.top + padding
                 orientation: ListView.Vertical
             }
         },
@@ -128,7 +132,9 @@ Item {
 
             PropertyChanges {
                 target: launcher
+                anchors.leftMargin: frame.margins.left + padding
                 anchors.topMargin: frame.margins.top + padding
+                anchors.rightMargin: frame.margins.right + padding
                 orientation: ListView.Horizontal
             }
         }
