@@ -35,6 +35,7 @@
 #include "greenisland.h"
 
 #include <unistd.h>
+#include <stdio.h>
 
 static int convertPermission(const QFileInfo &fileInfo)
 {
@@ -112,6 +113,9 @@ int main(int argc, char *argv[])
         setenv("QT_QPA_PLATFORM", "kms", 0);
         setenv("QT_QPA_GENERIC_PLUGINS", "evdevmouse,evdevkeyboard,evdevtouch", 0);
     }
+
+    // Advertisement
+    printf("Green Island\nBug reports to: https://github.com/hawaii-desktop/greenisland/issues\n");
 
     GreenIsland app(argc, argv);
 
