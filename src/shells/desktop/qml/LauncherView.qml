@@ -281,7 +281,6 @@ LauncherDropItem {
 
         Button {
             checkable: true
-            checked: root.appChooser.status == DialogStatus.Open
             iconSource: "view-grid-symbolic"
             width: tileSize
             height: width
@@ -291,6 +290,11 @@ LauncherDropItem {
                 root.appChooser.y = quickview.availableGeometry.y +
                         quickview.availableGeometry.height - root.appChooser.height;
                 root.appChooser.toggle();
+            }
+
+            Connections {
+                target: root.appChooser
+                onVisibleChanged: checked = root.appChooser.visible
             }
         }
     }

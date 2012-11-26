@@ -30,22 +30,29 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Item {
+    visible: status === DialogStatus.Open || status === DialogStatus.Opening
+
     property int status: DialogStatus.Closed
 
     function toggle() {
-        if (status == DialogStatus.Open) {
-            opacity = 0.0;
+        if (status === DialogStatus.Open)
             status = DialogStatus.Closed;
-        } else if (status == DialogStatus.Closed) {
-            opacity = 1.0;
+        else if (status === DialogStatus.Closed)
             status = DialogStatus.Open;
-        }
+    }
+
+    function open() {
+        status = DialogStatus.Open;
+    }
+
+    function close() {
+        status = DialogStatus.Closed;
     }
 
     FrameSvgItem {
         id: frame
         anchors.fill: parent
-        imagePath: "opaque/dialogs/background"
+        imagePath: "dialogs/background"
     }
 
     Item {

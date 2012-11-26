@@ -85,7 +85,6 @@ Item {
             }
         }
         imagePath: "widgets/background"
-        prefix: "south-mini"
     }
 
     LauncherView {

@@ -144,7 +144,7 @@ Item {
 
     // Active top right corner
     MouseArea {
-        id: topRightCorner
+         id: topRightCorner
         x: quickview.screenGeometry.width - 16
         y: quickview.screenGeometry.y
         width: 16
@@ -172,12 +172,24 @@ Item {
         hoverEnabled: true
     }
 
+    // Area that contains windows
+    MouseArea {
+        id: availableArea
+        x: quickview.availableGeometry.x
+        y: quickview.availableGeometry.y
+        width: quickview.availableGeometry.width
+        height: quickview.availableGeometry.height
+        onClicked: {
+            // A click outside the shell closes AppChooser
+            appChooserObject.close();
+        }
+    }
+
     // Application chooser
     AppChooser {
         id: appChooserObject
-        opacity: 0.0
-        width: quickview.availableGeometry.width / 1.1
-        height: quickview.availableGeometry.height / 1.1
+        width: quickview.availableGeometry.width / 1.2
+        height: quickview.availableGeometry.height / 1.2
 
         // Animate when it shows up
         Behavior on opacity {
@@ -239,6 +251,5 @@ Item {
 
         // Set the available geometry to the result of the above computation
         quickview.availableGeometry = geometry;
-        notificationsObject.y = quickview.availableGeometry.y;
     }
 }
