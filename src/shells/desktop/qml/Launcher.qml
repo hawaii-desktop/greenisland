@@ -84,7 +84,7 @@ Item {
                 return FrameSvgItem.LeftBorder | FrameSvgItem.TopBorder | FrameSvgItem.RightBorder;
             }
         }
-        imagePath: "widgets/panel-background"
+        imagePath: "widgets/background"
         prefix: "south-mini"
     }
 

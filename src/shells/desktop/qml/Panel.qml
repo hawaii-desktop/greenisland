@@ -40,7 +40,7 @@ Item {
         id: frame
         anchors.fill: parent
         enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/panel-background"
+        imagePath: "widgets/background"
         prefix: "north-mini"
     }
 
