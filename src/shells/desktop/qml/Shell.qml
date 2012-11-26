@@ -135,46 +135,41 @@ Item {
     // Active top left corner
     MouseArea {
         id: topLeftCorner
-        x: compositor.screenGeometry.x
-        y: compositor.screenGeometry.y
+        x: quickview.screenGeometry.x
+        y: quickview.screenGeometry.y
         width: 16
         height: 16
         hoverEnabled: true
-        onEntered: {
-            root.normalLayout = false;
-            CompositorLogic.relayout()
-        }
-        onExited: {
-            root.normalLayout = true;
-            CompositorLogic.relayout();
-        }
     }
 
     // Active top right corner
     MouseArea {
         id: topRightCorner
-        x: compositor.screenGeometry.width - 16
-        y: compositor.screenGeometry.y
+        x: quickview.screenGeometry.width - 16
+        y: quickview.screenGeometry.y
         width: 16
         height: 16
+        hoverEnabled: true
     }
 
     // Active bottom left corner
     MouseArea {
         id: bottomLeftCorner
-        x: compositor.screenGeometry.x
-        y: compositor.screenGeometry.height - 16
+        x: quickview.screenGeometry.x
+        y: quickview.screenGeometry.height - 16
         width: 16
         height: 16
+        hoverEnabled: true
     }
 
     // Active bottom right corner
     MouseArea {
         id: bottomRightCorner
-        x: compositor.screenGeometry.width - 16
-        y: compositor.screenGeometry.y
+        x: quickview.screenGeometry.width - 16
+        y: quickview.screenGeometry.y
         width: 16
         height: 16
+        hoverEnabled: true
     }
 
     // Application chooser
