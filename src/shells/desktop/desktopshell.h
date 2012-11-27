@@ -39,6 +39,8 @@ public:
     explicit DesktopShell();
     ~DesktopShell();
 
+    Q_INVOKABLE void updateAvailableGeometry();
+
     ShellView *shellView() const {
         return m_shellView;
     }

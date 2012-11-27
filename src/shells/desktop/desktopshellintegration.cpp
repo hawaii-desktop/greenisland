@@ -24,7 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QDebug>
 #include <QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
 #include <qpa/qplatformwindow.h>

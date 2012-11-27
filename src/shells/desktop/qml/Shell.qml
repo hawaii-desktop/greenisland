@@ -254,5 +254,9 @@ Item {
 
         // Set the available geometry to the result of the above computation
         availableGeometry = geometry;
+
+        // Update the compositor only when both Panel and Launcher are ready
+        if (panelComponent.status == Loader.Ready && launcherComponent.status == Loader.Ready)
+            shell.updateAvailableGeometry();
     }
 }

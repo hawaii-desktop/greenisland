@@ -72,6 +72,11 @@ DesktopShell::~DesktopShell()
     delete m_shellView;
 }
 
+void DesktopShell::updateAvailableGeometry()
+{
+    DesktopShellIntegration::instance()->updateAvailableGeometry();
+}
+
 void DesktopShell::show()
 {
     m_shellView->show();
