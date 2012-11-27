@@ -31,6 +31,9 @@ import FluidCore 1.0
 Item {
     id: root
 
+    // Available geometry
+    property rect availableGeometry: Qt.rect(x, y, width, height)
+
     // AppChooser
     property var appChooser: appChooserObject
 
@@ -175,10 +178,10 @@ Item {
     // Area that contains windows
     MouseArea {
         id: availableArea
-        x: quickview.availableGeometry.x
-        y: quickview.availableGeometry.y
-        width: quickview.availableGeometry.width
-        height: quickview.availableGeometry.height
+        x: availableGeometry.x
+        y: availableGeometry.y
+        width: availableGeometry.width
+        height: availableGeometry.height
         onClicked: {
             // A click outside the shell closes AppChooser
             appChooserObject.close();
@@ -188,8 +191,8 @@ Item {
     // Application chooser
     AppChooser {
         id: appChooserObject
-        width: quickview.availableGeometry.width / 1.2
-        height: quickview.availableGeometry.height / 1.2
+        width: availableGeometry.width / 1.2
+        height: availableGeometry.height / 1.2
 
         // Animate when it shows up
         Behavior on opacity {
@@ -200,10 +203,10 @@ Item {
     // Notifications
     Notifications {
         id: notificationsObject
-        x: quickview.availableGeometry.width
-        y: quickview.availableGeometry.y
-        width: quickview.availableGeometry.width / 10
-        height: quickview.availableGeometry.height
+        x: availableGeometry.width
+        y: availableGeometry.y
+        width: availableGeometry.width / 10
+        height: availableGeometry.height
 
         // Animation
         Behavior on x {
@@ -211,11 +214,11 @@ Item {
         }
 
         function show() {
-            x = quickview.availableGeometry.width - width;
+            x = availableGeometry.width - width;
         }
 
         function hide() {
-            x = quickview.availableGeometry.width;
+            x = availableGeometry.width;
         }
     }
 
@@ -223,13 +226,13 @@ Item {
 
     function calculateGeometry() {
         // Available geometry equals screen geometry
-        var geometry = Qt.rect(x, y, width, height); //quickview.screenGeometry;
+        var geometry = Qt.rect(x, y, width, height);
 
         // ...unless the panel is loaded
         if (panelComponent.status == Loader.Ready) {
             panelComponent.height = panelComponent.item.panelHeight;
-            geometry.y = panelComponent.height;
-            geometry.height -= panelComponent.height;
+            geometry.y = panelComponent.item.panelHeight;
+            geometry.height -= panelComponent.item.panelHeight;
         }
 
         // ...or the launcher is
@@ -250,6 +253,6 @@ Item {
         }
 
         // Set the available geometry to the result of the above computation
-        quickview.availableGeometry = geometry;
+        availableGeometry = geometry;
     }
 }

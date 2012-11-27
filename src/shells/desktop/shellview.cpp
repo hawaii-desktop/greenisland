@@ -26,6 +26,7 @@
 
 #include <QWindow>
 #include <QQmlContext>
+#include <QQuickItem>
 #include <QScreen>
 
 #include "shellview.h"
@@ -47,9 +48,6 @@ ShellView::ShellView(DesktopShell *shell)
     setColor(QColor(Qt::transparent));
     winId();
 
-    // Initialize the available geometry to the whole screen size
-    m_availableGeometry = screen()->availableGeometry();
-
     // Set context properties
     rootContext()->setContextProperty("shell", shell);
     rootContext()->setContextProperty("quickview", this);
@@ -61,15 +59,7 @@ ShellView::ShellView(DesktopShell *shell)
 
 QRectF ShellView::availableGeometry() const
 {
-    return m_availableGeometry;
-}
-
-void ShellView::setAvailableGeometry(const QRectF &g)
-{
-    m_availableGeometry = g;
-
-    // Every time the available geometry changes we'll tell the compositor
-    DesktopShellIntegration::instance()->updateAvailableGeometry();
+    return rootObject()->property("availableGeometry").toRectF();
 }
 
 #include "moc_shellview.cpp"

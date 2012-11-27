@@ -32,18 +32,10 @@
 class ShellView : public ShellQuickView
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
 public:
     explicit ShellView(DesktopShell *shell);
 
     QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &g);
-
-signals:
-    void availableGeometryChanged();
-
-private:
-    QRectF m_availableGeometry;
 };
 
 #endif // SHELLVIEW_H

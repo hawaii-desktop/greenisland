@@ -59,7 +59,6 @@ void DesktopShellIntegration::updateAvailableGeometry()
     if (!protocol || !m_shell->shellView())
         return;
 
-qDebug() << m_shell->shellView()->availableGeometry();
     desktop_shell_set_geometry(protocol,
                                m_shell->shellView()->availableGeometry().x(),
                                m_shell->shellView()->availableGeometry().y(),
@@ -91,9 +90,5 @@ void DesktopShellIntegration::handleGlobal(void *data,
                 native->nativeResourceForWindow("surface", object->m_shell->shellView()));
     Q_ASSERT(surface);
     desktop_shell_set_surface(object->protocol, surface);
-    desktop_shell_set_geometry(object->protocol,
-                               object->m_shell->shellView()->availableGeometry().x(),
-                               object->m_shell->shellView()->availableGeometry().y(),
-                               object->m_shell->shellView()->availableGeometry().width(),
-                               object->m_shell->shellView()->availableGeometry().height());
+    object->updateAvailableGeometry();
 }
