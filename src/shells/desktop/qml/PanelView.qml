@@ -40,7 +40,7 @@ Item {
             top: parent.top
             bottom: parent.bottom
         }
-        width: parent.width / 3
+        width: Math.min(childrenRect.width, parent.width / 3)
 
         WorkspaceIndicator {
             id: workspaceIndicator
@@ -56,11 +56,11 @@ Item {
     Item {
         id: centerBox
         anchors {
-            left: leftBox.right
             top: parent.top
             bottom: parent.bottom
+            horizontalCenter: parent.horizontalCenter
         }
-        width: parent.width / 3
+        width: Math.min(childrenRect.width, parent.width / 3)
 
         DateIndicator {
             id: dateIndicator
@@ -76,11 +76,11 @@ Item {
     Item {
         id: rightBox
         anchors {
-            left: centerBox.right
             top: parent.top
+            right: parent.right
             bottom: parent.bottom
         }
-        width: parent.width / 3
+        width: Math.min(childrenRect.width, parent.width / 3)
 
         /*
         Row {
