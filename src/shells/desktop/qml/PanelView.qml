@@ -60,7 +60,7 @@ Item {
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        width: Math.min(childrenRect.width, parent.width / 3)
+        width: parent.width / 3
 
         DateIndicator {
             id: dateIndicator
