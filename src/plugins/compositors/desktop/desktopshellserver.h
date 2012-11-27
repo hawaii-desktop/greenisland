@@ -54,10 +54,6 @@ private:
                              int32_t x, int32_t y,
                              int32_t w, int32_t h);
 
-    static void set_background(struct wl_client *client,
-                               struct wl_resource *resource,
-                               const char *uri);
-
     static const struct desktop_shell_interface shell_interface;
 
     DesktopCompositor *m_compositor;

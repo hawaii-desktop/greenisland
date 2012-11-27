@@ -31,7 +31,6 @@
 #include "compositor.h"
 
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
-    DesktopShellServer::set_background,
     DesktopShellServer::set_surface,
     DesktopShellServer::set_geometry
 };
@@ -66,12 +65,6 @@ void DesktopShellServer::destroy_resource(wl_resource *resource)
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->m_resources.removeOne(resource);
     free(resource);
-}
-
-void DesktopShellServer::set_background(struct wl_client *client,
-                                        struct wl_resource *resource,
-                                        const char *uri)
-{
 }
 
 void DesktopShellServer::set_surface(struct wl_client *client,
