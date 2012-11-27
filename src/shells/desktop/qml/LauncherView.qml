@@ -287,8 +287,8 @@ LauncherDropItem {
             onClicked: {
                 var pos = mapFromItem(parent, x, y);
                 root.appChooser.x = pos.x;
-                root.appChooser.y = quickview.availableGeometry.y +
-                        quickview.availableGeometry.height - root.appChooser.height;
+                root.appChooser.y = root.availableGeometry.y +
+                        root.availableGeometry.height - root.appChooser.height;
                 root.appChooser.toggle();
             }
 
