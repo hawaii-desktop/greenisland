@@ -34,6 +34,7 @@ Item {
     default property alias content: menuContents.children
     property int status: DialogStatus.Closed
 
+    z: 3
     width: 400
     height: 400
     state: "hidden"
@@ -42,10 +43,9 @@ Item {
 
     FrameSvgItem {
         id: menuContainer
-        x: panelMenu.parent.x - panelMenu.parent.width
         width: menu.width
         height: menu.height
-        imagePath: "widgets/menu-background"
+        imagePath: "widgets/toolbar"
 
         Item {
             id: contentItem

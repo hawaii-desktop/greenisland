@@ -77,13 +77,17 @@ Item {
             hovered = false;
         }
         onClicked: {
-            // If the indicato doesn't have a menu, it can handle the click
+            // If the indicator doesn't have a menu, it can handle the click
             if (!menu) {
                 indicator.clicked();
                 return;
             }
 
             selected = !selected;
+
+            var pos = mapToItem(null, mouse.x, mouse.y);
+            menu.x = Math.max(0, Math.min(pos.x - menu.width / 2, root.availableGeometry.width - menu.width));
+            menu.y = root.availableGeometry.y;
 
             if (selected)
                 menu.open();
@@ -97,7 +101,7 @@ Item {
 
     onMenuChanged: {
         if (menu)
-            menu.parent = indicator;
+            menu.parent = root;
     }
 
     FrameSvgItem {
