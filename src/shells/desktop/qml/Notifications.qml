@@ -32,7 +32,7 @@ Item {
     FrameSvgItem {
         id: frame
         anchors.fill: parent
-        imagePath: "opaque/dialogs/background"
+        imagePath: "dialogs/background"
         enabledBorders: FrameSvgItem.LeftBorder
     }
 

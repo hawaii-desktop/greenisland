@@ -40,8 +40,7 @@ Item {
         id: frame
         anchors.fill: parent
         enabledBorders: FrameSvgItem.BottomBorder
-        imagePath: "widgets/background"
-        prefix: "north-mini"
+        imagePath: "widgets/toolbar"
     }
 
     PanelView {
