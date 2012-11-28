@@ -112,6 +112,7 @@ int main(int argc, char *argv[])
     else {
         setenv("QT_QPA_PLATFORM", "kms", 0);
         setenv("QT_QPA_GENERIC_PLUGINS", "evdevmouse,evdevkeyboard,evdevtouch", 0);
+        setenv("QT_KMS_TTYKBD", "1", 0);
     }
 
     // Advertisement
