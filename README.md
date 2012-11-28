@@ -63,58 +63,39 @@ The CMAKE_BUILD_TYPE parameter allows the following values:
 
 ## Installation
 
-It's really, it's just a matter of typing:
+It's really easy, it's just a matter of typing:
 
     make install
 
 from the build directory.
 
-Environment variables
-=====================
+Running Green Island on X11 and KMS
+===================================
 
-Remember to set the environment variable before running Green Island:
+You can run Green Island in a X11 window or on KMS, in both cases the right
+QPA platform plugin should be detected automatically.
 
-```sh
-export XDG_RUNTIME_DIR=/tmp
-```
+If the DISPLAY environment variable is set, the xcb QPA plugin is used otherwise
+kms is assumed.
 
-Run as a X window
-=================
+All relevant environment variables are automatically set except XDG_RUNTIME_DIR.
+Almost all GNU/Linux distributions has XDG_RUNTIME_DIR correctly set, if it's not
+the case read the [XDG Base Directory Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html).
 
-You can run Green Island in a X11 window for development and debugging purpose.
-The QPA platform plugin should be detected automatically if the DISPLAY environment
-variable is set.
+**Remember:** at the moment Green Island under KMS must be run by the root user.
 
-If it's not detected automatically, run Green Island like this:
+Running Green Island on Raspberry Pi
+====================================
 
-```sh
-export XDG_RUNTIME_DIR=/tmp
-greenisland -platform xcb
-```
+For starters you need the Raspberry Pi QPA platform plugin from the Mer project.
+Download the source code [here](https://build.pub.meego.com/package/files?package=qtplatformplugin-rpi&project=CE%3AAdaptation%3ARaspberryPi).
 
-Run from KMS
-============
-
-You can run Green Island under KMS (as root), this will be the default
-on production systems.
-
-Run Green Island like this:
-
-```sh
-export XDG_RUNTIME_DIR=/tmp
-export QT_KMS_TTYKBD=1
-greenisland -platform kms -plugin EvdevMouse -plugin EvdevKeyboard -plugin EvdevTouch
-```
-
-**Remember:** at the moment Green Island under KMS must be run as the root user.
-
-Run on RaspberryPi
-==================
-
-The RaspberryPi platform is **not** automatically detected, you have to run
+The RaspberryPi platform is **not** automatically detected, you must run
 Green Island with the -platform argument:
 
 ```sh
-export XDG_RUNTIME_DIR=/tmp
 greenisland -platform eglfsrpi
 ```
+
+The XDG_RUNTIME_DIR environment variable is required, if your GNU/Linux distribution
+doesn't take care of it consult the [XDG Base Directory Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html).
