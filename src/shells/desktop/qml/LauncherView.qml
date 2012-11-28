@@ -33,11 +33,11 @@ LauncherDropItem {
     id: launcher
 
     // Icon size
-    property real iconSize: theme.largeIconSize
+    property real iconSize: settings.value("icon-size")
 
     // Tile size
     // TODO: Where this 12 comes from? Need a parameter here
-    property real tileSize: iconSize + 12
+    property real tileSize: iconSize + (iconSize / 4)
 
     // Orientation
     property alias orientation: view.orientation
@@ -47,6 +47,20 @@ LauncherDropItem {
 
     onApplicationDropped: visualModel.model.pinApplication(path)
     onUrlDropped: visualModel.model.pinUrl(url)
+
+    Settings {
+        id: settings
+        schema: "org.hawaii.greenisland"
+        group: "launcher"
+        onValueChanged: {
+            var val = settings.value("icon-size");
+            if (val)
+                iconSize = val;
+            else
+                iconSize = theme.hugeIconSize;
+            tileSize = iconSize + (iconSize / 4);
+        }
+    }
 
     LauncherModel {
         id: launcherModel
@@ -117,8 +131,7 @@ LauncherDropItem {
                     anchors.margins: (tileSize - iconSize) / 2
                     smooth: true
                     source: "image://desktoptheme/" + (item.iconName ? item.iconName : "unknown")
-                    sourceSize.width: iconSize
-                    sourceSize.height: iconSize
+                    sourceSize: Qt.size(iconSize, iconSize)
                     scale: 1.0
                 }
 
