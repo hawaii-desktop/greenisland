@@ -155,6 +155,7 @@ Item {
             cacheBuffer: 1000
             cellWidth: theme.enormousIconSize
             cellHeight: theme.enormousIconSize
+            clip: true
             model: VisualDataModel {
                 id: visualModel
 
