@@ -59,10 +59,10 @@ Item {
         id: mainItem
         anchors {
             fill: frame
-            leftMargin: frame.margins.left
-            topMargin: frame.margins.top
-            rightMargin: frame.margins.right
-            bottomMargin: frame.margins.bottom
+            leftMargin: frame.margins.left + 8
+            topMargin: frame.margins.top + 8
+            rightMargin: frame.margins.right + 8
+            bottomMargin: frame.margins.bottom + 8
         }
     }
 
@@ -72,7 +72,6 @@ Item {
             left: mainItem.left
             top: mainItem.top
             bottom: mainItem.bottom
-            margins: 8
         }
         width: mainItem.width / 4
 
@@ -108,6 +107,7 @@ Item {
                 top: searchField.bottom
                 right: categoriesScrollBar.visible ? categoriesScrollBar.left : parent.right
                 bottom: parent.bottom
+                topMargin: 16
             }
             orientation: ListView.Vertical
             focus: true
@@ -142,7 +142,6 @@ Item {
             top: mainItem.top
             right: mainItem.right
             bottom: mainItem.bottom
-            margins: 8
         }
 
         GridView {
