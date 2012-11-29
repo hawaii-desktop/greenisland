@@ -56,14 +56,25 @@ Item {
     }
 
     Item {
+        id: mainItem
+        anchors {
+            fill: frame
+            leftMargin: frame.margins.left
+            topMargin: frame.margins.top
+            rightMargin: frame.margins.right
+            bottomMargin: frame.margins.bottom
+        }
+    }
+
+    Item {
         id: leftColumn
         anchors {
-            left: frame.left
-            top: frame.top
-            bottom: frame.bottom
+            left: mainItem.left
+            top: mainItem.top
+            bottom: mainItem.bottom
             margins: 8
         }
-        width: frame.width / 4
+        width: mainItem.width / 4
 
         TextField {
             id: searchField
@@ -128,9 +139,9 @@ Item {
         id: rightColumn
         anchors {
             left: leftColumn.right
-            top: frame.top
-            right: frame.right
-            bottom: frame.bottom
+            top: mainItem.top
+            right: mainItem.right
+            bottom: mainItem.bottom
             margins: 8
         }
 
