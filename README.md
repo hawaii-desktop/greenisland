@@ -99,3 +99,23 @@ greenisland -platform eglfsrpi
 
 The XDG_RUNTIME_DIR environment variable is required, if your GNU/Linux distribution
 doesn't take care of it consult the [XDG Base Directory Specification](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html).
+
+What should I do if something is wrong?
+=======================================
+
+If something is wrong like *greenisland* doesn't run or you only see the desktop
+background without any panel, we need to see a more verbose output to figure out
+what's happening.
+
+Set the following environment variables before running the *greenisland* command:
+
+```sh
+export MESA_DEBUG=1
+export EGL_LOG_LEVEL=debug
+export LIBGL_DEBUG=verbose
+export WAYLAND_DEBUG=1
+```
+
+Run the *greenisland* with the parameters that suit your needs.
+Send the output to the developers along with a detailed explaination of what's
+happening and how did you run *greenisland*.
