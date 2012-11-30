@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
     // Handle a segmentation fault nicely
     signal(SIGSEGV, deathSignal);
 
+    // Set the hawaii desktop session
+    setenv("DESKTOP_SESSION", "hawaii", 1);
+
     QApplication app(argc, argv);
 
     // Create the shell
