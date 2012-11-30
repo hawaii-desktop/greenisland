@@ -222,8 +222,6 @@ Item {
         }
     }
 
-    Component.onCompleted: calculateGeometry()
-
     function calculateGeometry() {
         // Available geometry equals screen geometry
         var geometry = Qt.rect(x, y, width, height);
@@ -246,7 +244,7 @@ Item {
                 geometry.x = geometry.width - launcherComponent.item.launcherSize;
                 geometry.width -= launcherComponent.item.launcherSize;
                 break;
-            case LauncherAlignment.Bottom:
+            default:
                 geometry.height -= launcherComponent.item.launcherSize;
                 break;
             }
