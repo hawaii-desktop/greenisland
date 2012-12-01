@@ -5,6 +5,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
 )
 
+if(BCMHOST)
+    include_directories(/opt/vc/include)
+endif()
+
 add_definitions(
     ${Qt5Quick_DEFINITIONS}
     ${Qt5Compositor_DEFINITIONS}
