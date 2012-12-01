@@ -81,13 +81,12 @@ DesktopCompositor::~DesktopCompositor()
 
 void DesktopCompositor::runShell()
 {
-    // Force Wayland as a QPA plugin and GTK+ backend and reuse XDG_RUNTIME_DIR
+    // Force Wayland as a QPA plugin and GTK+ backend
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert(QLatin1String("EGL_PLATFORM"), QLatin1String("wayland"));
     env.remove(QLatin1String("QT_QPA_GENERIC_PLUGINS"));
     env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
     env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
-    env.insert(QLatin1String("XDG_RUNTIME_DIR"), qgetenv("XDG_RUNTIME_DIR"));
 
     // Process arguments
     QStringList arguments = QStringList()
