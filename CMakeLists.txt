@@ -89,7 +89,7 @@ pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
 # Check whether we are building on Rapsberry Pi or not
 include(CheckFileExists)
 check_file_exists(/opt/vc/include/bcm_host.h BCMHOST)
-if(BCMHOST)
+if(BCMHOST_FOUND)
     include_directories(/opt/vc/include)
 endif()
 
