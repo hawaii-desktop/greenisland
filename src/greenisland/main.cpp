@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
     QStringList arguments = QCoreApplication::instance()->arguments();
 
     // Usage instructions
-    if (arguments.contains(QStringLiteral("-h")) || arguments.contains(QStringLiteral("--help"))) {
+    if (arguments.contains(QLatin1String("-h")) || arguments.contains(QLatin1String("--help"))) {
         qDebug() << "Usage: greenisland [options]";
         qDebug() << "Arguments are:";
         qDebug() << "\t--fullscreen\t\trun in fullscreen mode";
@@ -137,7 +137,7 @@ int main(int argc, char *argv[])
     }
 
     // Synthesize touch for unhandled mouse events
-    if (arguments.contains(QStringLiteral("--synthesize-touch")))
+    if (arguments.contains(QLatin1String("--synthesize-touch")))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
     // Shell plugin argument
@@ -163,7 +163,7 @@ int main(int argc, char *argv[])
     compositor->runShell();
 
     // Show the compositor
-    if (arguments.contains(QStringLiteral("--fullscreen"))) {
+    if (arguments.contains(QLatin1String("--fullscreen"))) {
         compositor->window()->setGeometry(QGuiApplication::primaryScreen()->geometry());
         compositor->window()->showFullScreen();
     } else {
