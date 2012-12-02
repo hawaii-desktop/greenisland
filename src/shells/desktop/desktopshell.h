@@ -47,9 +47,6 @@ public:
         return m_shellView;
     }
 
-    void show();
-    void hide();
-
 private:
     ShellView *m_shellView;
 

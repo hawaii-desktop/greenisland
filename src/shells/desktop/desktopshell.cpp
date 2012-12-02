@@ -84,14 +84,4 @@ void DesktopShell::updateAvailableGeometry()
     DesktopShellIntegration::instance()->updateAvailableGeometry();
 }
 
-void DesktopShell::show()
-{
-    m_shellView->show();
-}
-
-void DesktopShell::hide()
-{
-    m_shellView->hide();
-}
-
 #include "moc_desktopshell.cpp"
