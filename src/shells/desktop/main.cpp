@@ -27,6 +27,7 @@
 #include <QApplication>
 
 #include "desktopshell.h"
+#include "notificationsdaemon.h"
 
 #include <execinfo.h>
 #include <stdio.h>
@@ -116,7 +117,11 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Create the shell
-    (void)new DesktopShell();
+    (void)DesktopShell::instance();
+
+    // Create the notifications daemon and connect to the session bus
+    NotificationsDaemon *daemon = new NotificationsDaemon();
+    daemon->connectOnDBus();
 
     return app.exec();
 }
