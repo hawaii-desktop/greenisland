@@ -1,0 +1,23 @@
+{
+	"schema": "org.hawaii.greenisland",
+	"groups": [
+		{
+			"name": "launcher",
+			"keys": {
+				"icon-size": {
+					"type": "int",
+					"summary": "Launcher Icon Size",
+					"description": "Size of Launcher icons.",
+					"default": 64
+				},
+				"alignment": {
+					"type": "enum",
+					"summary": "Launcher Alignment",
+					"description": "Determines the Launcher alignment. Possible values are \"left\", \"right\" or \"bottom\".",
+					"default": "bottom",
+					"choices": ["left", "right", "bottom"]
+				}
+			}
+		}
+	]
+}
