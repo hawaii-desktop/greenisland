@@ -38,6 +38,8 @@ const struct wl_registry_listener DesktopShell::registryListener = {
     DesktopShellIntegration::handleGlobal
 };
 
+Q_GLOBAL_STATIC(DesktopShell, desktopShell)
+
 DesktopShell::DesktopShell()
     : QObject()
 {
@@ -70,6 +72,11 @@ DesktopShell::DesktopShell()
 DesktopShell::~DesktopShell()
 {
     delete m_shellView;
+}
+
+DesktopShell *DesktopShell::instance()
+{
+    return desktopShell();
 }
 
 void DesktopShell::updateAvailableGeometry()
