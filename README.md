@@ -87,11 +87,18 @@ the case read the [XDG Base Directory Specification](http://standards.freedeskto
 Running Green Island on Raspberry Pi
 ====================================
 
-For starters you need the Raspberry Pi QPA platform plugin from the Mer project.
-Download the source code [here](https://build.pub.meego.com/package/files?package=qtplatformplugin-rpi&project=CE%3AAdaptation%3ARaspberryPi).
+For starters take a look at the [Qt Project wiki page](http://qt-project.org/wiki/RaspberryPi).
 
 The RaspberryPi platform is **not** automatically detected, you must run
-Green Island with the -platform argument:
+Green Island with the -platform argument and set the environment:
+
+```sh
+greenisland -platform eglfs
+```
+
+You might want to use the Raspberry Pi QPA platform plugin from the Mer project instead of Qt's eglfs.
+The source code is [here](https://build.pub.meego.com/package/files?package=qtplatformplugin-rpi&project=CE%3AAdaptation%3ARaspberryPi).
+After you built and installed it you can run Green Island like this:
 
 ```sh
 greenisland -platform eglfsrpi
