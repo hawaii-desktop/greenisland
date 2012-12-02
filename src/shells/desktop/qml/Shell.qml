@@ -37,7 +37,7 @@ Item {
     // AppChooser
     property var appChooser: appChooserObject
 
-    // Notifications
+    // Notifications panel
     property var notifications: notificationsObject
 
     x: quickview.screenGeometry.x
@@ -200,8 +200,8 @@ Item {
         }
     }
 
-    // Notifications
-    Notifications {
+    // Notifications panel
+    NotificationsPanel {
         id: notificationsObject
         x: availableGeometry.width
         y: availableGeometry.y
