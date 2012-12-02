@@ -37,6 +37,18 @@ LauncherApplication::LauncherApplication()
     initialize();
 }
 
+LauncherApplication::LauncherApplication(const QString &desktopFile)
+    : LauncherItem()
+{
+    initialize();
+
+    m_sticky = true;
+    m_editable = true;
+    m_removable = true;
+
+    setDesktopFile(desktopFile);
+}
+
 LauncherApplication::LauncherApplication(const VBookmark &bookmark)
     : LauncherItem()
 {

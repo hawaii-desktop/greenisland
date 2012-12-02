@@ -31,6 +31,7 @@
 #include <QStringBuilder>
 
 #include <VBookmarkManager>
+#include <VSettings>
 
 #include "launchermodel.h"
 #include "launcherapplication.h"
@@ -40,38 +41,23 @@
 LauncherModel::LauncherModel(QObject *parent)
     : QAbstractListModel(parent)
 {
-    // Create a bookmark manager
-    QString fileName = QString("%1/greenisland/launcher.xbel").arg(
-                           QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
-    m_manager = VBookmarkManager::managerForFile(fileName, "Launcher");
+    // Settings
+    m_settings = new VSettings("org.hawaii.greenisland");
 
-    // If the bookmarks file doesn't exist, create initial items and save it
-    VBookmarkGroup root = m_manager->root();
-    if (root.first().isNull() || !QFile::exists(fileName)) {
-        QStringList files;
-        files << QStringLiteral("swordfish.desktop")
-              << QStringLiteral("terminal.desktop")
-              << QStringLiteral("system-preferences.desktop");
-
-        foreach(QString file, files) {
-            QString fileFound = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, file);
-            QFileInfo fileInfo(fileFound);
-            if (fileInfo.exists()) {
-                VBookmark bookmark = createBookmark(fileInfo.baseName(),
-                                                    fileInfo.filePath(),
-                                                    false, false);
-                m_list.append(new LauncherApplication(bookmark));
-            }
-        }
-    } else {
-        VBookmark bookmark = root.first();
-        while (!bookmark.isNull()) {
-            m_list.append(new LauncherApplication(bookmark));
-            bookmark = root.next(bookmark);
-        }
+    // Load pinned applications
+    QStringList pinnedApps = m_settings->value("launcher/pinned-apps").toStringList();
+    pinnedApps = QStringList() << "swordfish.desktop" << "hawaii-terminal.desktop" << "hawaii-system-preferences.desktop";
+    foreach(QString file, pinnedApps) {
+        QString fileFound = QStandardPaths::locate(QStandardPaths::ApplicationsLocation, file);
+        QFileInfo fileInfo(fileFound);
+        if (fileInfo.exists())
+            pinApplication(fileInfo.filePath());
     }
+}
 
-    m_manager->saveAs(fileName, false);
+LauncherModel::~LauncherModel()
+{
+    delete m_settings;
 }
 
 QVariant LauncherModel::data(const QModelIndex &index, int role) const
@@ -98,38 +84,13 @@ int LauncherModel::rowCount(const QModelIndex &parent) const
 void LauncherModel::pinApplication(const QString &path)
 {
     QFileInfo fileInfo(path);
-    VBookmark bookmark = createBookmark(fileInfo.baseName(),
-                                        fileInfo.filePath(),
-                                        false, false);
     beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
-    m_list.append(new LauncherApplication(bookmark));
+    m_list.append(new LauncherApplication(path));
     endInsertRows();
 }
 
 void LauncherModel::pinUrl(const QUrl &url)
 {
-    VBookmark bookmark = createBookmark(url.toLocalFile(),
-                                        url.toLocalFile(),
-                                        false, false);
-    beginInsertRows(QModelIndex(), m_list.size(), m_list.size());
-    m_list.append(new LauncherUrl(bookmark));
-    endInsertRows();
-}
-
-VBookmark LauncherModel::createBookmark(const QString &name,
-                                        const QString &desktopFile,
-                                        bool isEditable, bool isRemovable)
-{
-    Q_ASSERT(m_manager);
-
-    VBookmarkGroup root = m_manager->root();
-    if (root.isNull())
-        return VBookmark();
-
-    VBookmark bookmark = root.addBookmark(name, QUrl::fromLocalFile(desktopFile));
-    bookmark.setMetaDataItem("IsEditable", isEditable ? "true" : "false");
-    bookmark.setMetaDataItem("IsRemovable", isRemovable ? "true" : "false");
-    return bookmark;
 }
 
 void LauncherModel::addItem(LauncherApplication *item)

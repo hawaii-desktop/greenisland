@@ -33,8 +33,7 @@
 
 class QUrl;
 
-class VBookmarkManager;
-class VBookmark;
+class VSettings;
 
 class LauncherController;
 class LauncherApplication;
@@ -49,6 +48,7 @@ public:
     };
 
     LauncherModel(QObject *parent = 0);
+    ~LauncherModel();
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -57,11 +57,8 @@ public:
     Q_INVOKABLE void pinUrl(const QUrl &url);
 
 private:
-    VBookmarkManager *m_manager;
+    VSettings *m_settings;
     QList<LauncherItem *> m_list;
-
-    VBookmark createBookmark(const QString &name, const QString &desktopFile,
-                             bool isEditable, bool isRemovable);
 
 private:
     friend class LauncherController;

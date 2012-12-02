@@ -61,13 +61,13 @@ QVariant AppChooserCategories::data(const QModelIndex &index, int role) const
         return QVariant();
 
     switch (role) {
-    case LabelRole:
-    case Qt::DisplayRole:
-        return m_categories.at(index.row()).second;
-    case NameRole:
-        return m_categories.at(index.row()).first;
-    default:
-        break;
+        case LabelRole:
+        case Qt::DisplayRole:
+            return m_categories.at(index.row()).second;
+        case NameRole:
+            return m_categories.at(index.row()).first;
+        default:
+            break;
     }
 
     return QVariant();

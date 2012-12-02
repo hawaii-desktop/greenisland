@@ -40,6 +40,7 @@ class LauncherApplication : public LauncherItem
     Q_PROPERTY(QString version READ version)
 public:
     explicit LauncherApplication();
+    LauncherApplication(const QString &desktopFile);
     LauncherApplication(const VBookmark &bookmark);
     ~LauncherApplication();
 
