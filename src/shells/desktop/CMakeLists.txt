@@ -21,11 +21,15 @@ set(SOURCES
     desktopshellintegration.cpp
     shellquickview.cpp
     shellview.cpp
+    notificationsdaemon.cpp
+    notificationsimage.cpp
 )
 
 wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
 
 qt5_add_resources(RESOURCES desktop-shell.qrc)
+qt5_add_dbus_adaptor(SOURCES ${CMAKE_SOURCE_DIR}/data/org.freedesktop.Notifications.xml
+    notificationsdaemon.h NotificationsDaemon)
 
 add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
 set_target_properties(greenisland-desktop-shell PROPERTIES

@@ -38,7 +38,7 @@ Item {
     property var appChooser: appChooserObject
 
     // Notifications panel
-    property var notifications: notificationsObject
+    property var notifications: notificationsPanel
 
     x: quickview.screenGeometry.x
     y: quickview.screenGeometry.y
@@ -202,11 +202,13 @@ Item {
 
     // Notifications panel
     NotificationsPanel {
-        id: notificationsObject
+        id: notificationsPanel
         x: availableGeometry.width
         y: availableGeometry.y
+        z: 3
         width: availableGeometry.width / 10
         height: availableGeometry.height
+        visible: false
 
         // Animation
         Behavior on x {

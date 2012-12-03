@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>qml/Shell.qml</file>
+        <file>qml/NotificationItem.qml</file>
 
         <file>qml/Panel.qml</file>
         <file>qml/PanelView.qml</file>

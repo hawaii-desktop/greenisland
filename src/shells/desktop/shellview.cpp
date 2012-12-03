@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QWindow>
 #include <QQmlContext>
 #include <QQuickItem>
