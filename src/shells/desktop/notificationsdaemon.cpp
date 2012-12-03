@@ -145,14 +145,11 @@ uint NotificationsDaemon::Notify(const QString &appName, uint replacesId, const 
         image = decodeImageHint(width, height, stride, hasAlpha, bitsPerSample, channels, pixels);
     } else if (hints.contains("image_path")) {
         iconName = findImageFromPath(hints["image_path"].toString());
-        // TODO: Load image and set the "image"
     }
 
     // Unless an URL is provided use an icon from the theme
-    if (_iconName.startsWith("file:"))
-        iconName = _iconName;
-    else
-        iconName = "image://desktoptheme/" + _iconName;
+    if (!iconName.startsWith("file:"))
+        iconName = "image://desktoptheme/" + iconName;
 
     // Create the notification item
     item = createNotificationItem(appName, iconName, summary, body, image, timeout);
