@@ -2,11 +2,10 @@
  * This file is part of Desktop Shell.
  *
  * Copyright (c) 2012 Pier Luigi Fiorini
- * Copyright (c) 2009 Aurélien Gâteau
+ * Copyright (c) 2008 Dmitry Suzdalev <dimsuz@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
- *    Aurélien Gâteau <agateau@kde.org>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
