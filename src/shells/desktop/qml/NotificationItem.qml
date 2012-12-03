@@ -25,9 +25,10 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import FluidCore 1.0
 import FluidUi 1.0
 
-Rectangle {
+Item {
     id: notification
 
     property int identifier
@@ -38,8 +39,9 @@ Rectangle {
     property variant image
     property int timeout
 
-    property real defaultWidth: 240
-    property real defaultHeight: 50
+    property real defaultWidth: 240 + frame.margins.left + frame.margins.right + (padding * 2)
+    property real defaultHeight: 50 + frame.margins.top + frame.margins.bottom + (padding * 2)
+    property real padding: 10
 
     property real normalOpacity: 0.8
     property real fadeOpacity: 0.5
@@ -56,13 +58,10 @@ Rectangle {
             timeout = 2000 + Math.max(timeoutForText(summary + body), 3000);
     }
 
-    color: "#131313"
     opacity: 0.0
-    radius: 8
     z: 4
-    width: defaultWidth
-    height: defaultHeight
-    smooth: true
+    implicitWidth: defaultWidth
+    implicitHeight: defaultHeight
 
     // Fade-in when the notification pops out
     NumberAnimation {
@@ -116,68 +115,85 @@ Rectangle {
         }
     }
 
-    Image {
-        id: iconImage
-        anchors {
-            left: parent.left
-            top: parent.top
-            margins: 10
-        }
-        smooth: true
-        sourceSize: Qt.size(theme.largeIconSize, theme.largeIconSize)
-        source: iconName
-        onSourceChanged: visible = source != ""
+    FrameSvgItem {
+        id: frame
+        anchors.fill: parent
+        imagePath: "widgets/tooltip"
     }
 
-    Text {
-        id: summaryText
+    Item {
         anchors {
-            left: iconImage.right
-            top: parent.top
-            right: parent.right
-            leftMargin: 10
-            topMargin: 10
-            rightMargin: 10
+            fill: frame
+            leftMargin: frame.margins.left
+            topMargin: frame.margins.top
+            rightMargin: frame.margins.right
+            bottomMargin: frame.margins.bottom
         }
-        color: "white"
-        font.bold: true
-        style: Text.Raised
-        styleColor: "black"
-        verticalAlignment: Text.AlignVCenter
-    }
 
-    Text {
-        id: bodyText
-        anchors {
-            left: iconImage.right
-            top: summaryText.bottom
-            right: parent.right
-            leftMargin: 10
-            rightMargin: 10
-            bottomMargin: 10
-        }
-        color: "white"
-        font.pointSize: summaryText.font.pointSize * 0.9
-        style: Text.Raised
-        styleColor: "black"
-        textFormat: Text.StyledText
-        maximumLineCount: 20
-        wrapMode: Text.Wrap
-        //elide: Text.ElideRight
-        onTextChanged: {
-            if (text == "") {
-                visible = false;
-                summaryText.anchors.bottom = parent.bottom;
-                anchors.bottom = undefined;
-                resizeAnimation.to = notification.defaultHeight;
-            } else {
-                visible = true;
-                summaryText.anchors.bottom = undefined;
-                anchors.bottom = parent.bottom;
-                resizeAnimation.to = notification.defaultHeight + paintedHeight;
+        Image {
+            id: iconImage
+            anchors {
+                left: parent.left
+                top: parent.top
+                leftMargin: padding
+                topMargin: padding
             }
+            smooth: true
+            sourceSize: Qt.size(theme.largeIconSize, theme.largeIconSize)
+            source: iconName
+            onSourceChanged: visible = source != ""
+        }
 
-            resizeAnimation.start();
+        Label {
+            id: summaryText
+            anchors {
+                left: iconImage.right
+                top: iconImage.top
+                right: parent.right
+                leftMargin: padding
+            }
+            font.weight: Font.Bold
+            /*
+            color: "white"
+            style: Text.Raised
+            styleColor: "black"
+            */
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        Label {
+            id: bodyText
+            anchors {
+                left: summaryText.left
+                top: summaryText.bottom
+                right: parent.right
+                bottomMargin: padding
+            }
+            font.pointSize: summaryText.font.pointSize * 0.9
+            /*
+            color: "white"
+            style: Text.Raised
+            styleColor: "black"
+            */
+            textFormat: Text.StyledText
+            maximumLineCount: 20
+            wrapMode: Text.Wrap
+            //elide: Text.ElideRight
+            onTextChanged: {
+                if (text == "") {
+                    visible = false;
+                    summaryText.anchors.bottom = parent.bottom;
+                    anchors.bottom = undefined;
+                    resizeAnimation.to = defaultHeight;
+                } else {
+                    visible = true;
+                    summaryText.anchors.bottom = undefined;
+                    anchors.bottom = parent.bottom;
+                    resizeAnimation.to = defaultHeight + paintedHeight;
+                }
+
+                resizeAnimation.start();
+            }
         }
     }
 
