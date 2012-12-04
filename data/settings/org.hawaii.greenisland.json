@@ -8,7 +8,7 @@
                     "type": "int",
                     "summary": "Launcher Icon Size",
                     "description": "Size of Launcher icons.",
-                    "default": 64
+                    "default": 48
                 },
                 "alignment": {
                     "type": "enum",
