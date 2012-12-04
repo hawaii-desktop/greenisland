@@ -36,7 +36,6 @@ LauncherDropItem {
     property real iconSize: settings.value("icon-size")
 
     // Tile size
-    // TODO: Where this 12 comes from? Need a parameter here
     property real tileSize: iconSize + (iconSize / 4)
 
     // Orientation
@@ -133,6 +132,13 @@ LauncherDropItem {
                     source: "image://desktoptheme/" + (item.iconName ? item.iconName : "unknown")
                     sourceSize: Qt.size(iconSize, iconSize)
                     scale: 1.0
+
+                    Behavior on width {
+                        NumberAnimation { easing.type: Easing.Linear; duration: 550 }
+                    }
+                    Behavior on height {
+                        NumberAnimation { easing.type: Easing.Linear; duration: 550 }
+                    }
                 }
 
                 BusyIndicator {
