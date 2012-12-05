@@ -82,6 +82,9 @@ Item {
         }
 
         // Animate Launcher when it shows up
+        Behavior on width {
+            NumberAnimation { easing.type: Easing.InQuad; duration: 350 }
+        }
         Behavior on height {
             NumberAnimation { easing.type: Easing.InQuad; duration: 350 }
         }
@@ -97,7 +100,7 @@ Item {
                 }
                 PropertyChanges {
                     target: launcherComponent
-                    y: panel.height
+                    y: panelComponent.height
                     width: item.launcherSize
                     height: root.height - y
                 }
@@ -112,7 +115,7 @@ Item {
                 }
                 PropertyChanges {
                     target: launcherComponent
-                    y: panel.height
+                    y: panelComponent.height
                     width: item.launcherSize
                     height: root.height - y
                 }

@@ -38,7 +38,7 @@ Item {
     property alias tileSize: launcher.tileSize
 
     // Alignment and orientation
-    property int alignment: LauncherAlignment.Bottom
+    property int alignment: settings.value("alignment")
     property alias orientation: launcher.orientation
 
     // Size
@@ -61,13 +61,7 @@ Item {
         schema: "org.hawaii.greenisland"
         group: "launcher"
         onValueChanged: {
-            var val = settings.value("alignment");
-            if (val === "left")
-                alignment = LauncherAlignment.Left;
-            else if (val === "right")
-                alignment = LauncherAlignment.Right;
-            else
-                alignment = LauncherAlignment.Bottom;
+            alignment = LauncherAlignment.Right; //settings.value("alignment");
         }
     }
 
