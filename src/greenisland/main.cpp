@@ -157,7 +157,7 @@ int main(int argc, char *argv[])
                pluginName.toLocal8Bit().constData());
 
     // Set window title
-    compositor->window()->setWindowTitle(QLatin1String("Green Island"));
+    compositor->window()->setTitle(QLatin1String("Green Island"));
 
     // Run the shell
     compositor->runShell();

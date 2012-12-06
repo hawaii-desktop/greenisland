@@ -169,7 +169,7 @@ uint NotificationsDaemon::Notify(const QString &appName, uint replacesId, const 
     }
 
     // Set notification item position
-    item->setPos(pos);
+    item->setPosition(pos);
 
     // Show the notification view
     if (m_items.size() == 1)
@@ -283,11 +283,11 @@ QPointF NotificationsDaemon::position(QQuickItem *item)
     qreal left, top;
 
     if (alignment() & Qt::AlignTop)
-        top = rect.top() + lastItem->pos().y();
+        top = rect.top() + lastItem->position().y();
     else if (alignment() & Qt::AlignVCenter)
-        top = rect.top() + lastItem->pos().y() + (rect.height() - sh.height()) / 2;
+        top = rect.top() + lastItem->position().y() + (rect.height() - sh.height()) / 2;
     else
-        top = rect.bottom() - lastItem->pos().y() - sh.height();
+        top = rect.bottom() - lastItem->position().y() - sh.height();
 
     if (alignment() & Qt::AlignLeft)
         left = rect.left();
@@ -319,11 +319,11 @@ void NotificationsDaemon::slotNotificationsItemClosed(uint id, uint reason)
     if (!m_items.isEmpty()) {
         item = m_items.first();
 
-        QPointF pt = item->pos();
+        QPointF pt = item->position();
         if (pt.isNull())
             pt = position(item);
 
-        item->setPos(pt);
+        item->setPosition(pt);
         QMetaObject::invokeMethod(item, "start");
     }
 }
