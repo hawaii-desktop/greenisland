@@ -30,20 +30,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-function(get_git_head_revision _refspecvar)
+function(create_git_head_revision_file _file _target)
     if(NOT GIT_FOUND)
         find_package(Git QUIET)
     endif()
 
-    execute_process(COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD
-        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-        RESULT_VARIABLE res
-        OUTPUT_VARIABLE out
-        ERROR_QUIET
-        OUTPUT_STRIP_TRAILING_WHITESPACE)
-    if(NOT res EQUAL 0)
-        set(out "${out}-${res}-NOTFOUND")
-    endif()
-
-    set(${_refspecvar} "${out}" PARENT_SCOPE)
+    add_custom_target(gitsha1
+        ${CMAKE_COMMAND} -E remove -f ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/${_file}.in ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+        COMMAND "${GIT_EXECUTABLE}" rev-parse HEAD >> ${CMAKE_CURRENT_BINARY_DIR}/${_file}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        VERBATIM)
+    add_dependencies(${_target} gitsha1)
 endfunction()

@@ -24,7 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "gitsha1.h"
+#ifndef GREENISLAND_CONFIG_H
+#define GREENISLAND_CONFIG_H
 
-const char *gVersion = "@GREENISLAND_VERSION_STRING@";
-const char *gGitSha1 = "@GIT_SHA1@";
+#define GREENISLAND_VERSION "@GREENISLAND_VERSION_STRING@"
+
+#endif // GREENISLAND_CONFIG_H

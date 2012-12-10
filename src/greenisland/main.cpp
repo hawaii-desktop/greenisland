@@ -36,6 +36,7 @@
 
 #include "greenisland.h"
 #include "gitsha1.h"
+#include "config.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -150,7 +151,7 @@ static void showGraphicsInfo(QWindow *window)
 int main(int argc, char *argv[])
 {
     // Advertisement
-    printf("Green Island v%s-%s\n", gVersion, gGitSha1);
+    printf("Green Island v%s (%s)\n", GREENISLAND_VERSION, GIT_REV);
     printf("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n\n");
 
     // Check whether XDG_RUNTIME_DIR is ok or not
