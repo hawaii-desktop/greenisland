@@ -14,6 +14,9 @@ add_definitions(
     -DQT_COMPOSITOR_QUICK
 )
 
+# Git revision
+include(GetGitRevision)
+get_git_head_revision(GIT_SHA1)
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/gitsha1.cpp.in"
     "${CMAKE_CURRENT_BINARY_DIR}/gitsha1.cpp" @ONLY
@@ -23,6 +26,7 @@ set(SOURCES
     main.cpp
     greenisland.cpp
     "${CMAKE_CURRENT_BINARY_DIR}/gitsha1.cpp"
+    gitsha1.h
 )
 
 add_executable(greenisland ${SOURCES})

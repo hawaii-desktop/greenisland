@@ -18,10 +18,6 @@ include(HawaiiInstallDirs)
 # Our CMake modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-# Git revision
-include(GetGitRevision)
-get_git_head_revision(GIT_SHA1)
-
 # Include Wayland macros
 include(Wayland)
 
@@ -88,7 +84,8 @@ endif()
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
 
-# Find GLESv2 library
+# Find EGL and GLESv2 libraries
+pkg_check_modules(EGL egl REQUIRED)
 pkg_check_modules(GLESV2 glesv2 REQUIRED)
 
 # Find Wayland libraries
