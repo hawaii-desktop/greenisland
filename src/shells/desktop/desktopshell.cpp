@@ -25,6 +25,8 @@
  ***************************************************************************/
 
 #include <QGuiApplication>
+#include <QScreen>
+
 #include <qpa/qplatformnativeinterface.h>
 
 #include <wayland-client.h>
@@ -66,7 +68,8 @@ DesktopShell::DesktopShell()
 
     // Create the shell window
     m_shellView = new ShellView(this);
-    m_shellView->show();
+    m_shellView->setGeometry(QGuiApplication::primaryScreen()->geometry());
+    m_shellView->showFullScreen();
 }
 
 DesktopShell::~DesktopShell()
