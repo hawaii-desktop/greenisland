@@ -103,6 +103,10 @@ static void verifyXdgRuntimeDir()
 
 int main(int argc, char *argv[])
 {
+    // Advertisement
+    printf("Green Island v%s-%s\n", gVersion, gGitSha1);
+    printf("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n\n");
+
     // Check whether XDG_RUNTIME_DIR is ok or not
     verifyXdgRuntimeDir();
 
@@ -115,10 +119,6 @@ int main(int argc, char *argv[])
         setenv("QT_QPA_GENERIC_PLUGINS", "evdevmouse,evdevkeyboard,evdevtouch", 0);
         setenv("QT_KMS_TTYKBD", "1", 0);
     }
-
-    // Advertisement
-    printf("Green Island v%s-%s\n", gVersion, gGitSha1);
-    printf("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n\n");
 
     GreenIsland app(argc, argv);
 
