@@ -30,6 +30,8 @@
 #include <QStringList>
 #include <QWindow>
 
+#include <qpa/qplatformnativeinterface.h>
+
 #include <VCompositor>
 
 #include "greenisland.h"
@@ -37,6 +39,12 @@
 
 #include <unistd.h>
 #include <stdio.h>
+
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 static int convertPermission(const QFileInfo &fileInfo)
 {
@@ -98,6 +106,44 @@ static void verifyXdgRuntimeDir()
                       .arg(fileInfo.ownerId())
                       .arg(fileInfo.owner());
         qFatal(msg.toUtf8());
+    }
+}
+
+static void showGraphicsInfo(QWindow *window)
+{
+    QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();
+    if (nativeInterface) {
+        EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window);
+        if (display) {
+            const char *str;
+
+            str = eglQueryString(display, EGL_VERSION);
+            printf("EGL version: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_VENDOR);
+            printf("EGL vendor: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_CLIENT_APIS);
+            printf("EGL client APIs: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_EXTENSIONS);
+            printf("EGL extensions: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_VERSION);
+            printf("GL version: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+            printf("GLSL version: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_VENDOR);
+            printf("GL vendor: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_RENDERER);
+            printf("GL renderer: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_EXTENSIONS);
+            printf("GL extensions: %s\n", str ? str : "(null)");
+        }
     }
 }
 
@@ -172,6 +218,9 @@ int main(int argc, char *argv[])
         compositor->window()->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
         compositor->window()->showMaximized();
     }
+
+    // Show EGL/GL information
+    showGraphicsInfo(compositor->window());
 
     return app.exec();
 }
