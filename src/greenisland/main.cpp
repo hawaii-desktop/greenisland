@@ -177,11 +177,11 @@ int main(int argc, char *argv[])
 
     // Usage instructions
     if (arguments.contains(QLatin1String("-h")) || arguments.contains(QLatin1String("--help"))) {
-        qDebug() << "Usage: greenisland [options]";
-        qDebug() << "Arguments are:";
-        qDebug() << "\t--fullscreen\t\trun in fullscreen mode";
-        qDebug() << "\t--synthesize-touch\tsynthesize touch for unhandled mouse events";
-        qDebug() << "\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')";
+        printf("Usage: greenisland [options]\n");
+        printf("Arguments are:\n");
+        printf("\t--fullscreen\t\trun in fullscreen mode\n");
+        printf("\t--synthesize-touch\tsynthesize touch for unhandled mouse events\n");
+        printf("\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')\n");
         return 0;
     }
 
