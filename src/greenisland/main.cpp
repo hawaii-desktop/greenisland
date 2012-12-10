@@ -33,6 +33,7 @@
 #include <VCompositor>
 
 #include "greenisland.h"
+#include "gitsha1.h"
 
 #include <unistd.h>
 #include <stdio.h>
@@ -116,7 +117,8 @@ int main(int argc, char *argv[])
     }
 
     // Advertisement
-    printf("Green Island\nBug reports to: https://github.com/hawaii-desktop/greenisland/issues\n");
+    printf("Green Island v%s-%s\n", gVersion, gGitSha1);
+    printf("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n\n");
 
     GreenIsland app(argc, argv);
 
