@@ -41,8 +41,8 @@ Item {
     property var notifications: notificationsPanel
 
     // Recalculate geometry when the size changes
-    onWidthChanged: changeWidth()
-    onHeightChanged: changeHeight()
+    onWidthChanged: calculateGeometry()
+    onHeightChanged: calculateGeometry()
 
     // Panel
     Loader {
