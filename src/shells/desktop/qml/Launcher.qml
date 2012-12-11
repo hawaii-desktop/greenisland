@@ -38,7 +38,7 @@ Item {
     property alias tileSize: launcher.tileSize
 
     // Alignment and orientation
-    property int alignment: settings.value("alignment")
+    property int alignment: LauncherAlignment.Bottom
     property alias orientation: launcher.orientation
 
     // Size
@@ -48,7 +48,7 @@ Item {
             return tileSize + frame.margins.right + (padding * 2);
         case LauncherAlignment.Right:
             return tileSize + frame.margins.left + (padding * 2);
-        case LauncherAlignment.Bottom:
+        default:
             return tileSize + frame.margins.top + (padding * 2);
         }
     }
@@ -60,9 +60,7 @@ Item {
         id: settings
         schema: "org.hawaii.greenisland"
         group: "launcher"
-        onValueChanged: {
-            alignment = LauncherAlignment.Right; //settings.value("alignment");
-        }
+        onValueChanged: loadSettings()
     }
 
     FrameSvgItem {
@@ -132,4 +130,16 @@ Item {
             }
         }
     ]
+
+    Component.onCompleted: loadSettings()
+
+    function loadSettings() {
+        var alignmentVal = settings.value("alignment");
+        if (alignmentVal == "left")
+            alignment = LauncherAlignment.Left;
+        else if (alignmentVal == "right")
+            alignment = LauncherAlignment.Right;
+        else
+            alignment = LauncherAlignment.Bottom;
+    }
 }
