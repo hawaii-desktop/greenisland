@@ -111,6 +111,7 @@ Item {
             }
             orientation: ListView.Vertical
             focus: true
+            clip: true
             model: AppChooserCategoriesModel {}
             delegate: itemDelegate
             highlight: Highlight{}
