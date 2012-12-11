@@ -33,6 +33,8 @@ ShellQuickView::ShellQuickView(DesktopShell *shell)
     , m_shell(shell)
 {
     // Intercept screen geometry changes
+    connect(screen(), SIGNAL(geometryChanged(QRect)),
+            this, SIGNAL(screenGeometryChanged()));
     connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
             this, SIGNAL(screenGeometryChanged()));
 }

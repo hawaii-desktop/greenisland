@@ -55,7 +55,7 @@ ShellView::ShellView(DesktopShell *shell)
 
     // Load QML view
     setSource(QUrl("qrc:///qml/Shell.qml"));
-    setResizeMode(QQuickView::SizeViewToRootObject);
+    setResizeMode(QQuickView::SizeRootObjectToView);
 }
 
 QRectF ShellView::availableGeometry() const

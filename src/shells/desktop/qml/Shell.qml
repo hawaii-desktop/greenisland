@@ -40,23 +40,19 @@ Item {
     // Notifications panel
     property var notifications: notificationsPanel
 
-    x: quickview.screenGeometry.x
-    y: quickview.screenGeometry.y
-    width: quickview.screenGeometry.width
-    height: quickview.screenGeometry.height
-
     // Recalculate geometry when the size changes
-    onWidthChanged: calculateGeometry()
-    onHeightChanged: calculateGeometry()
+    onWidthChanged: changeWidth()
+    onHeightChanged: changeHeight()
 
     // Panel
     Loader {
         id: panelComponent
-        anchors { top: parent.top; left: parent.left; right: parent.right }
-        x: quickview.screenGeometry.x
-        y: quickview.screenGeometry.y
+        anchors {
+            left: parent.left
+            top: parent.top
+            right: parent.right
+        }
         z: 2
-        width: quickview.screenGeometry.width
         source: "Panel.qml"
         asynchronous: true
         onLoaded: {
@@ -141,8 +137,8 @@ Item {
     // Active top left corner
     MouseArea {
         id: topLeftCorner
-        x: quickview.screenGeometry.x
-        y: quickview.screenGeometry.y
+        x: root.x
+        y: root.y
         width: 16
         height: 16
         hoverEnabled: true
@@ -150,9 +146,9 @@ Item {
 
     // Active top right corner
     MouseArea {
-         id: topRightCorner
-        x: quickview.screenGeometry.width - 16
-        y: quickview.screenGeometry.y
+        id: topRightCorner
+        x: root.width - 16
+        y: root.y
         width: 16
         height: 16
         hoverEnabled: true
@@ -161,8 +157,8 @@ Item {
     // Active bottom left corner
     MouseArea {
         id: bottomLeftCorner
-        x: quickview.screenGeometry.x
-        y: quickview.screenGeometry.height - 16
+        x: root.x
+        y: root.height - 16
         width: 16
         height: 16
         hoverEnabled: true
@@ -171,8 +167,8 @@ Item {
     // Active bottom right corner
     MouseArea {
         id: bottomRightCorner
-        x: quickview.screenGeometry.width - 16
-        y: quickview.screenGeometry.y
+        x: root.width - 16
+        y: root.y
         width: 16
         height: 16
         hoverEnabled: true
@@ -256,9 +252,12 @@ Item {
 
         // Set the available geometry to the result of the above computation
         availableGeometry = geometry;
+        console.log("Available geometry is now", availableGeometry);
 
         // Update the compositor only when both Panel and Launcher are ready
-        if (panelComponent.status == Loader.Ready && launcherComponent.status == Loader.Ready)
+        if (panelComponent.status == Loader.Ready && launcherComponent.status == Loader.Ready) {
+            console.log("Sending the available geometry to the compositor...");
             shell.updateAvailableGeometry();
+        }
     }
 }

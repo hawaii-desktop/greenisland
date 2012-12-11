@@ -68,7 +68,7 @@ DesktopShell::DesktopShell()
 
     // Create the shell window
     m_shellView = new ShellView(this);
-    m_shellView->setGeometry(QGuiApplication::primaryScreen()->geometry());
+    m_shellView->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
     m_shellView->showFullScreen();
 }
 
