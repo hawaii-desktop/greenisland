@@ -211,7 +211,6 @@ Item {
         z: 3
         width: availableGeometry.width / 10
         height: availableGeometry.height
-        visible: false
 
         // Animation
         Behavior on x {

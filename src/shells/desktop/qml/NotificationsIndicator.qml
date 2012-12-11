@@ -33,7 +33,6 @@ PanelIndicator {
 
     onClicked: {
         active = !active;
-console.log(root, root.notifications);
         if (active)
             root.notifications.show();
         else
