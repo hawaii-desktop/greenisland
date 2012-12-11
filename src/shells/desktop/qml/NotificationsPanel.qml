@@ -33,14 +33,15 @@ Item {
         id: frame
         anchors.fill: parent
         imagePath: "dialogs/background"
-        enabledBorders: FrameSvgItem.LeftBorder
+        enabledBorders: "LeftBorder | TopBorder | BottomBorder"
     }
 
     Label {
         anchors {
             left: frame.left
             top: frame.top
-            margins: frame.margins.left
+            leftMargin: frame.margins.left
+            topMargin: frame.margins.top
         }
         text: qsTr("Notifications")
         font.weight: Font.Bold
