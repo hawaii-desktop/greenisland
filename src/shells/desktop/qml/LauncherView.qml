@@ -304,10 +304,23 @@ LauncherDropItem {
             width: tileSize
             height: width
             onClicked: {
-                var pos = mapFromItem(parent, x, y);
-                root.appChooser.x = pos.x;
-                root.appChooser.y = root.availableGeometry.y +
-                        root.availableGeometry.height - root.appChooser.height;
+                var pos = launcher.parent.mapToItem(null, 0, 0);
+
+                switch (launcher.parent.alignment) {
+                case LauncherAlignment.Left:
+                    root.appChooser.x = pos.x + launcher.parent.width;
+                    root.appChooser.y = pos.y;
+                    break;
+                case LauncherAlignment.Right:
+                    root.appChooser.x = pos.x - root.appChooser.width;
+                    root.appChooser.y = pos.y;
+                    break;
+                case LauncherAlignment.Bottom:
+                    root.appChooser.x = pos.x;
+                    root.appChooser.y = pos.y - root.appChooser.height;
+                    break;
+                }
+
                 root.appChooser.toggle();
             }
 
