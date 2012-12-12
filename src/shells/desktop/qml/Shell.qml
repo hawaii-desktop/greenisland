@@ -202,11 +202,11 @@ Item {
     // Notifications panel
     NotificationsPanel {
         id: notificationsPanel
-        x: availableGeometry.width
-        y: availableGeometry.y
+        x: root.width
+        y: panelComponent.height
         z: 3
-        width: availableGeometry.width / 10
-        height: availableGeometry.height
+        width: root.width / 4
+        height: root.height
         visible: false
 
         // Animation
@@ -216,11 +216,11 @@ Item {
 
         function show() {
             visible = true;
-            x = availableGeometry.width - width;
+            x = root.width - width;
         }
 
         function hide() {
-            x = availableGeometry.width;
+            x = root.width;
         }
     }
 

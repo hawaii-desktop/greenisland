@@ -33,7 +33,7 @@ Item {
         id: frame
         anchors.fill: parent
         imagePath: "dialogs/background"
-        enabledBorders: "LeftBorder | TopBorder | BottomBorder"
+        enabledBorders: "LeftBorder"
     }
 
     Label {
@@ -41,7 +41,6 @@ Item {
             left: frame.left
             top: frame.top
             leftMargin: frame.margins.left
-            topMargin: frame.margins.top
         }
         text: qsTr("Notifications")
         font.weight: Font.Bold
