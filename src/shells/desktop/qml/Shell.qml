@@ -100,6 +100,11 @@ Item {
                     width: item.launcherSize
                     height: root.height - y
                 }
+                PropertyChanges {
+                    target: appChooser
+                    x: launcherComponent.x + launcherComponent.width
+                    y: launcherComponent.y
+                }
             },
             State {
                 name: "right"
@@ -115,6 +120,11 @@ Item {
                     width: item.launcherSize
                     height: root.height - y
                 }
+                PropertyChanges {
+                    target: appChooser
+                    x: launcherComponent.x - appChooser.width
+                    y: launcherComponent.y
+                }
             },
             State {
                 name: "bottom"
@@ -129,6 +139,11 @@ Item {
                     target: launcherComponent
                     width: root.width
                     height: item.launcherSize
+                }
+                PropertyChanges {
+                    target: appChooser
+                    x: launcherComponent.x
+                    y: launcherComponent.y - appChooser.height
                 }
             }
         ]
