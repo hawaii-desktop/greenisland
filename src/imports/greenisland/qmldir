@@ -1,2 +1,3 @@
 module GreenIsland
+ModalDialog 1.0 ModalDialog.qml
 plugin greenislandqmlplugin
