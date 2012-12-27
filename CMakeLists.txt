@@ -92,6 +92,12 @@ pkg_check_modules(GLESV2 glesv2 REQUIRED)
 pkg_check_modules(WAYLAND_CLIENT wayland-client REQUIRED)
 pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
 
+# Find polkit-qt-1
+find_package(PolkitQt-1 REQUIRED)
+if(NOT PolkitQt-1_FOUND)
+    message(FATAL_ERROR "PolkitQt-1 is required!")
+endif()
+
 # Check whether we are building on Rapsberry Pi or not
 include(CheckFileExists)
 check_file_exists(/opt/vc/include/bcm_host.h BCMHOST)

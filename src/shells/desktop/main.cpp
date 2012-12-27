@@ -28,6 +28,7 @@
 
 #include "desktopshell.h"
 #include "notificationsdaemon.h"
+#include "policykitagent.h"
 
 #include <execinfo.h>
 #include <stdio.h>
@@ -122,6 +123,9 @@ int main(int argc, char *argv[])
     // Create the notifications daemon and connect to the session bus
     NotificationsDaemon *daemon = new NotificationsDaemon();
     daemon->connectOnDBus();
+
+    // Create the PolicyKit agent
+    (void)PolicyKitAgent::instance();
 
     return app.exec();
 }
