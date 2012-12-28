@@ -39,7 +39,7 @@ Item {
     signal clickedOutside
 
     anchors.fill: parent
-    z: "Infinity"
+    z: 9000
     visible: status == DialogStatus.Open
 
 	Rectangle {
@@ -99,8 +99,10 @@ Item {
                 top: titleBar.bottom
                 right: parent.right
                 bottom: buttonsItem.top
-                bottomMargin: 4
+                topMargin: titleBar.height + 6
+                bottomMargin: 6
             }
+            height: childrenRect.height
         }
 
         Item {
@@ -109,9 +111,10 @@ Item {
                 left: parent.left
                 right: parent.right
                 bottom: parent.bottom
-                bottomMargin: 6
+                topMargin: 6
+                bottomMargin: 4
             }
-            height: children.length > 0 && children[0].visible ? childrenRect.height : 0
+            height: childrenRect.height
         }
 	}
 

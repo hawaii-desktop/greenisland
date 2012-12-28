@@ -1,4 +1,6 @@
 # Install QML types
-file(GLOB MODULE_FILES "*.qml")
+set(MODULE_FILES
+    ModalDialog.qml
+)
 install(FILES ${MODULE_FILES}
     DESTINATION ${CMAKE_INSTALL_QMLDIR}/GreenIsland)

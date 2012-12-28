@@ -40,3 +40,5 @@ target_link_libraries(greenislandqmlplugin
 
 install(TARGETS greenislandqmlplugin LIBRARY DESTINATION ${CMAKE_INSTALL_QMLDIR}/GreenIsland)
 install(FILES qmldir DESTINATION ${CMAKE_INSTALL_QMLDIR}/GreenIsland)
+
+add_subdirectory(qml)
