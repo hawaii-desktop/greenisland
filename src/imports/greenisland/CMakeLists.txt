@@ -2,6 +2,7 @@ include_directories(
     ${Qt5Qml_INCLUDE_DIRS}
     ${Qt5Quick_INCLUDE_DIRS}
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5AccountsService_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
@@ -12,6 +13,7 @@ add_definitions(
     ${Qt5Qml_DEFINITIONS}
     ${Qt5Quick_DEFINITIONS}
     ${Qt5Widgets_DEFINITIONS}
+    ${Qt5AccountsService_DEFINITIONS}
     -DQT_PLUGIN
 )
 
@@ -34,6 +36,7 @@ target_link_libraries(greenislandqmlplugin
     ${Qt5Qml_LIBRARIES}
     ${Qt5Quick_LIBRARIES}
     ${Qt5Widgets_LIBRARIES}
+    ${Qt5AccountsService_LIBRARIES}
     ${VibeCore_LIBRARIES}
     GreenIsland
 )

@@ -85,7 +85,7 @@ private:
                                        const QImage &image,
                                        int timeout = 2000);
     QQuickItem *findNotificationItem(const QString &appName,
-                                             const QString &summary);
+                                     const QString &summary);
 
     QString findImageFromPath(const QString &imagePath);
 

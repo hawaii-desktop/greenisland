@@ -30,8 +30,8 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 
-#include <VAccountsManager>
-#include <VUserAccount>
+#include <QtAccountsService/AccountsManager>
+#include <QtAccountsService/UserAccount>
 
 #include "policykitagent.h"
 #include "shellview.h"
@@ -47,7 +47,7 @@ PolicyKitAgent::PolicyKitAgent(QObject *parent)
     , m_dialog(0)
 {
     PolkitQt1::UnixSessionSubject session(
-                QCoreApplication::instance()->applicationPid());
+        QCoreApplication::instance()->applicationPid());
     registerListener(session, "/org/hawaii/PolicyKit1/AuthenticationAgent");
 }
 
@@ -92,10 +92,10 @@ void PolicyKitAgent::initiateAuthentication(const QString &actionId,
     for (int i = 0; i < identities.size(); i++) {
         PolkitQt1::Identity identity = identities.at(i);
         PolkitQt1::Agent::Session *session =
-                new PolkitQt1::Agent::Session(identity, cookie, result);
+            new PolkitQt1::Agent::Session(identity, cookie, result);
         Q_ASSERT(session);
         m_sessionIdentity[session] = identity;
-        connect(session, SIGNAL(request(QString,bool)), this, SLOT(request(QString,bool)));
+        connect(session, SIGNAL(request(QString, bool)), this, SLOT(request(QString, bool)));
         connect(session, SIGNAL(completed(bool)), this, SLOT(completed(bool)));
         connect(session, SIGNAL(showInfo(QString)), this, SLOT(showInfo(QString)));
         connect(session, SIGNAL(showError(QString)), this, SLOT(showError(QString)));
@@ -144,8 +144,9 @@ void PolicyKitAgent::request(const QString &request, bool echo)
     // Assign the default identity
     PolkitQt1::Identity identity = m_sessionIdentity[session];
     if (identity.isValid()) {
-        VAccountsManager manager;
-        VUserAccount *account = manager.findUserById(identity.toUnixUserIdentity().uid());
+        QtAddOn::AccountsService::AccountsManager manager;
+        QtAddOn::AccountsService::UserAccount *account =
+            manager.findUserById(identity.toUnixUserIdentity().uid());
         m_dialog->setProperty("defaultIdentity", QVariant::fromValue(account));
         account->deleteLater();
     }
@@ -232,7 +233,7 @@ QQuickItem *PolicyKitAgent::createDialog(const QString &actionId,
     }
 
     // Convert the identities list to a list of users
-    VAccountsManager manager;
+    QtAddOn::AccountsService::AccountsManager manager;
     QList<QVariant> users;
     for (int i = 0; i < identities.size(); i++) {
         PolkitQt1::Identity identity = identities.at(i);

@@ -74,6 +74,10 @@ find_package(Qt5Compositor REQUIRED)
 if(NOT Qt5Compositor_FOUND)
     message(FATAL_ERROR "Qt5Compositor module is required!")
 endif()
+find_package(Qt5AccountsService REQUIRED)
+if(NOT Qt5AccountsService_FOUND)
+    message(FATAL_ERROR "Qt5AccountsService module is required!")
+endif()
 
 # Find Vibe libraries
 find_package(VibeCore REQUIRED)

@@ -28,8 +28,8 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 
-#include <VibeCore/VAccountsManager>
-#include <VibeCore/VUserAccount>
+#include <QtAccountsService/AccountsManager>
+
 #include <VIndicator>
 
 #include "enums.h"
@@ -73,10 +73,6 @@ public:
         // Enums
         qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");
         qmlRegisterUncreatableType<UserStatus>(uri, 1, 0, "UserStatus", "");
-
-        // Register Vibe types
-        qmlRegisterUncreatableType<VAccountsManager>(uri, 1, 0, "AccountsManager", "");
-        qmlRegisterUncreatableType<VUserAccount>(uri, 1, 0, "UserAccount", "");
     }
 
     void initializeEngine(QQmlEngine *engine, const char *uri) {
@@ -85,7 +81,8 @@ public:
         QQmlContext *context = engine->rootContext();
 
         // Register a global accounts manager object
-        VAccountsManager *accountsManager = new VAccountsManager();
+        QtAddOn::AccountsService::AccountsManager *accountsManager =
+            new QtAddOn::AccountsService::AccountsManager();
         context->setContextProperty("accountsManager", accountsManager);
     }
 };
