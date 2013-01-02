@@ -1,11 +1,11 @@
 /****************************************************************************
  * This file is part of GreenIslandQmlPlugin.
  *
- * Copyright (c) 2012 Pier Luigi Fiorini
- * Copyright (c) 2011 Canonical, Ltd.
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2011 Canonical, Ltd.
  *
  * Author(s):
- *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *    Pier Luigi Fiorini
  *    Olivier Tilloy <olivier.tilloy@canonical.com>
  *
  * $BEGIN_LICENSE:GPL3$
