@@ -27,12 +27,14 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 import FluidUi 1.0
+import QtAccountsService 5.0
 
 PanelIndicator {
+    property variant userAccount: UserAccount {}
     property int userStatus: UserStatus.Offline
 
     iconName: userStatusIcon(userStatus)
-    label: accountsManager.defaultUser.displayName
+    label: userAccount.displayName
     menu: PanelMenu {
         content: [
             PanelContainerMenuItem {
@@ -45,7 +47,7 @@ PanelIndicator {
                     Column {
                         Label {
                             id: userLabel
-                            text: accountsManager.defaultUser.displayName
+                            text: userAccount.displayName
                             font.weight: Font.Bold
                             font.pointSize: 16
                         }
