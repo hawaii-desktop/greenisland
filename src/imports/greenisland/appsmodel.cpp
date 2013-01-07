@@ -25,10 +25,9 @@
 
 #include <QDir>
 #include <QDirIterator>
+#include <QFileSystemWatcher>
 #include <QIcon>
 #include <QStandardPaths>
-
-#include <VFileSystemWatcher>
 
 #include "appsmodel.h"
 
@@ -40,16 +39,10 @@ AppsModel::AppsModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     // Watch for changes in application directories
-    m_watcher = new VFileSystemWatcher(this);
-    QStringList locations = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
-    foreach(QString dir, locations)
-    m_watcher->addDir(dir);
-    connect(m_watcher, SIGNAL(created(QString)),
-            this, SLOT(slotFileCreated(QString)));
-    connect(m_watcher, SIGNAL(deleted(QString)),
-            this, SLOT(slotFileDeleted(QString)));
-    connect(m_watcher, SIGNAL(dirty(QString)),
-            this, SLOT(slotFileChanged(QString)));
+    m_watcher = new QFileSystemWatcher(this);
+    m_watcher->addPaths(QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation));
+    connect(m_watcher, SIGNAL(directoryChanged(QString)),
+            this, SLOT(slotDirectoryCreated(QString)));
 
     // Populate the list
     populate();
@@ -105,28 +98,8 @@ void AppsModel::launchApplicationAt(int index)
 void AppsModel::populate()
 {
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
-    foreach(QString path, paths) {
-        QDirIterator walker(path,
-                            QDir::Files | QDir::NoDotAndDotDot | QDir::Readable,
-                            QDirIterator::Subdirectories);
-        while (walker.hasNext()) {
-            walker.next();
-
-            if (walker.fileInfo().completeSuffix() == "desktop") {
-                // Add this item (only if it can be displayed)
-                VApplicationInfo *info = new VApplicationInfo(walker.fileInfo().absoluteFilePath());
-                if (info->isValid() && !info->isHidden() && info->isExecutable()) {
-                    // Append item to the model
-                    beginInsertRows(QModelIndex(), m_apps.size(), m_apps.size());
-                    m_apps.append(info);
-                    endInsertRows();
-
-                    // Save categories
-                    m_categories += QSet<QString>::fromList(info->categories());
-                }
-            }
-        }
-    }
+    for (int i = 0; i < paths.size(); i++)
+        slotDirectoryChanged(paths.at(i));
 
     cleanupCategories();
 }
@@ -139,68 +112,42 @@ void AppsModel::cleanupCategories()
     m_categories.remove("GNOME");
 }
 
-void AppsModel::slotFileCreated(const QString &path)
+void AppsModel::slotDirectoryChanged(const QString &path)
 {
-    if (path.endsWith(".desktop") && QFile::exists(path)) {
-        // A new file was created, add the item to the model
-        VApplicationInfo *info = new VApplicationInfo(path);
-        if (info->isValid() && !info->isHidden() && info->isExecutable()) {
-            // Insert the new row
-            beginInsertRows(QModelIndex(), m_apps.size(), m_apps.size());
-            m_apps.append(info);
-            endInsertRows();
+    // Remove items from this path
+    for (int i = 0; i < m_apps.size(); i++) {
+        VApplicationInfo *info = m_apps.at(i);
 
-            // Save catrgories
-            m_categories += QSet<QString>::fromList(info->categories());
+        if (info->fileName().startsWith(path)) {
+            beginRemoveRows(QModelIndex(), i, i);
+            m_apps.removeAt(i);
+            delete info;
+            endRemoveRows();
         }
-
-        cleanupCategories();
     }
-}
 
-void AppsModel::slotFileDeleted(const QString &path)
-{
-    if (path.endsWith(".desktop") && QFile::exists(path)) {
-        foreach(VApplicationInfo * info, m_apps) {
-            // Remove row of the deleted file
-            int row = m_apps.indexOf(info);
-            if (info->fileName() == path) {
-                beginRemoveRows(QModelIndex(), row, row);
-                m_apps.removeAt(row);
-                endRemoveRows();
-                break;
+    QDirIterator walker(path,
+                        QDir::Files | QDir::NoDotAndDotDot | QDir::Readable,
+                        QDirIterator::Subdirectories);
+    while (walker.hasNext()) {
+        walker.next();
+
+        if (walker.fileInfo().completeSuffix() == "desktop") {
+            QString fullPath = walker.fileInfo().absoluteFilePath();
+
+            // Add this item (only if it can be displayed)
+            VApplicationInfo *info = new VApplicationInfo(fullPath);
+            if (info->isValid() && !info->isHidden() && info->isExecutable()) {
+                // Append item to the model
+                beginInsertRows(QModelIndex(), m_apps.size(), m_apps.size());
+                m_apps.append(info);
+                endInsertRows();
+
+                // Save categories
+                m_categories += QSet<QString>::fromList(info->categories());
             }
         }
     }
-
-    // TODO: if app categories were only defined by the deleted .desktop file
-    // we have to remove them from m_categories
-}
-
-void AppsModel::slotFileChanged(const QString &path)
-{
-    if (path.endsWith(".desktop") && QFile::exists(path)) {
-        foreach(VApplicationInfo * info, m_apps) {
-            if (info->fileName() == path) {
-                // We found the changed application info
-                int row = m_apps.indexOf(info);
-                VApplicationInfo *newInfo = new VApplicationInfo(path);
-
-                // If application is now not valid, hidden or not executable we remove
-                // it from the model, otherwise we update it
-                if (!newInfo->isValid() || newInfo->isHidden() || !newInfo->isExecutable()) {
-                    beginRemoveRows(QModelIndex(), row, row);
-                    m_apps.removeAt(row);
-                    endRemoveRows();
-                } else {
-                    m_apps.replace(row, newInfo);
-                    emit dataChanged(index(row), index(row));
-                }
-            }
-        }
-    }
-
-    // TODO: reload its categories
 }
 
 /*

@@ -33,7 +33,7 @@
 
 #include <VApplicationInfo>
 
-class VFileSystemWatcher;
+class QFileSystemWatcher;
 
 class AppsModel : public QAbstractListModel
 {
@@ -58,16 +58,14 @@ public slots:
 
 private:
     QList<VApplicationInfo *> m_apps;
-    VFileSystemWatcher *m_watcher;
+    QFileSystemWatcher *m_watcher;
     QSet<QString> m_categories;
 
     void populate();
     void cleanupCategories();
 
 private slots:
-    void slotFileCreated(const QString &path);
-    void slotFileDeleted(const QString &path);
-    void slotFileChanged(const QString &path);
+    void slotDirectoryChanged(const QString &path);
 };
 
 QML_DECLARE_TYPE(AppsModel)
