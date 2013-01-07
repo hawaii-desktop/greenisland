@@ -65,7 +65,7 @@ private:
     void cleanupCategories();
 
 private slots:
-    void slotDirectoryChanged(const QString &path);
+    void directoryChanged(const QString &path);
 };
 
 QML_DECLARE_TYPE(AppsModel)

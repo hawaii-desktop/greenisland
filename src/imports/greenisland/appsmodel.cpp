@@ -42,7 +42,7 @@ AppsModel::AppsModel(QObject *parent)
     m_watcher = new QFileSystemWatcher(this);
     m_watcher->addPaths(QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation));
     connect(m_watcher, SIGNAL(directoryChanged(QString)),
-            this, SLOT(slotDirectoryCreated(QString)));
+            this, SLOT(directoryChanged(QString)));
 
     // Populate the list
     populate();
@@ -99,7 +99,7 @@ void AppsModel::populate()
 {
     QStringList paths = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
     for (int i = 0; i < paths.size(); i++)
-        slotDirectoryChanged(paths.at(i));
+        directoryChanged(paths.at(i));
 
     cleanupCategories();
 }
@@ -112,7 +112,7 @@ void AppsModel::cleanupCategories()
     m_categories.remove("GNOME");
 }
 
-void AppsModel::slotDirectoryChanged(const QString &path)
+void AppsModel::directoryChanged(const QString &path)
 {
     // Remove items from this path
     for (int i = 0; i < m_apps.size(); i++) {
