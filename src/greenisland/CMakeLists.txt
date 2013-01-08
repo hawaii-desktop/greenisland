@@ -1,6 +1,5 @@
 include_directories(
     ${Qt5Gui_INCLUDE_DIRS}
-    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${EGL_INCLUDE_DIRS}
     ${GLESV2_INCLUDE_DIRS}

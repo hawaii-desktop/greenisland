@@ -1,4 +1,5 @@
 include_directories(
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_INCLUDE_DIRS}
     ${Qt5Compositor_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/headers

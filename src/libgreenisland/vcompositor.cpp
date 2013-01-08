@@ -24,11 +24,57 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QGuiApplication>
+#include <QOpenGLFunctions>
+
+#include <qpa/qplatformnativeinterface.h>
+
 #include "vcompositor.h"
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 
 VCompositor::VCompositor(QWindow *window)
     : WaylandCompositor(window)
 {
+}
+
+void VCompositor::showGraphicsInfo()
+{
+    QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();
+    if (nativeInterface) {
+        EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window());
+        if (display) {
+            const char *str;
+
+            str = eglQueryString(display, EGL_VERSION);
+            printf("EGL version: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_VENDOR);
+            printf("EGL vendor: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_CLIENT_APIS);
+            printf("EGL client APIs: %s\n", str ? str : "(null)");
+
+            str = eglQueryString(display, EGL_EXTENSIONS);
+            printf("EGL extensions: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_VERSION);
+            printf("GL version: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+            printf("GLSL version: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_VENDOR);
+            printf("GL vendor: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_RENDERER);
+            printf("GL renderer: %s\n", str ? str : "(null)");
+
+            str = (char *)glGetString(GL_EXTENSIONS);
+            printf("GL extensions: %s\n", str ? str : "(null)");
+        }
+    }
 }
 
 void VCompositor::runShell()

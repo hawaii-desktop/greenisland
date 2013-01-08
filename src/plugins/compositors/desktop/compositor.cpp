@@ -69,6 +69,8 @@ DesktopCompositor::DesktopCompositor()
             rootObject(), SLOT(windowDestroyed(QVariant)));
     connect(this, SIGNAL(windowResized(QVariant)),
             rootObject(), SLOT(windowResized(QVariant)));
+    connect(this, SIGNAL(sceneGraphInitialized()),
+            this, SLOT(sceneGraphInitialized()), Qt::DirectConnection);
     connect(this, SIGNAL(frameSwapped()),
             this, SLOT(frameSwapped()));
 }
@@ -253,6 +255,11 @@ void DesktopCompositor::surfaceDestroyed(QObject *object)
     // Announce this window was destroyed
     QQuickItem *item = surface->surfaceItem();
     emit windowDestroyed(QVariant::fromValue(item));
+}
+
+void DesktopCompositor::sceneGraphInitialized()
+{
+    showGraphicsInfo();
 }
 
 void DesktopCompositor::frameSwapped()

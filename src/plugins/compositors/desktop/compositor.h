@@ -83,6 +83,7 @@ private slots:
     void surfaceMapped();
     void surfaceUnmapped();
     void surfaceDestroyed(QObject *object);
+    void sceneGraphInitialized();
     void frameSwapped();
 
 protected:
