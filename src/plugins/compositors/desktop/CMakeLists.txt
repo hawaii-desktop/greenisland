@@ -1,8 +1,5 @@
 include_directories(
-    ${Qt5Core_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Compositor_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_SERVER_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers
@@ -11,10 +8,6 @@ include_directories(
 )
 
 add_definitions(
-    ${Qt5Core_DEFINITIONS}
-    ${Qt5Gui_DEFINITIONS}
-    ${Qt5Quick_DEFINITIONS}
-    ${Qt5Compositor_DEFINITIONS}
     -DQT_PLUGIN
     -DQT_COMPOSITOR_QUICK
 )
@@ -31,6 +24,7 @@ wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.x
 qt5_add_resources(RESOURCES desktop.qrc)
 
 add_library(desktop SHARED ${SOURCES} ${RESOURCES})
+qt5_use_modules(desktop Quick Compositor)
 set_target_properties(desktop PROPERTIES
     PREFIX ""
     LINK_FLAGS -L${WAYLAND_SERVER_LIBDIR}
@@ -41,4 +35,5 @@ target_link_libraries(desktop
     GreenIsland
 )
 
-install(TARGETS desktop DESTINATION ${CMAKE_INSTALL_PLUGINSDIR}/greenisland/compositors)
+install(TARGETS desktop
+    DESTINATION ${CMAKE_INSTALL_PLUGINSDIR}/greenisland/compositors)

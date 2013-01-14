@@ -1,10 +1,12 @@
 project(GreenIsland)
 
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.9)
 
-# Enable automoc and include current directory
-set(CMAKE_AUTOMOC ON)
+# Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# Instruct CMake to run moc automatically when needed
+set(CMAKE_AUTOMOC ON)
 
 # Set version
 set(GREENISLAND_VERSION_MAJOR 0)
@@ -14,6 +16,9 @@ set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSI
 
 # Installation directories
 include(HawaiiInstallDirs)
+
+# Log features
+include(MacroLogFeature)
 
 # Our CMake modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -78,12 +83,20 @@ find_package(Qt5AccountsService REQUIRED)
 if(NOT Qt5AccountsService_FOUND)
     message(FATAL_ERROR "Qt5AccountsService module is required!")
 endif()
+macro_log_feature(Qt5DBus_FOUND "Qt5DBus" "Support for Qt5DBus" "http://qt-project.org" "")
+macro_log_feature(Qt5Gui_FOUND "Qt5Gui" "Support for Qt5Gui" "http://qt-project.org" "")
+macro_log_feature(Qt5Widgets_FOUND "Qt5Widgets" "Support for Qt5Widgets" "http://qt-project.org" "")
+macro_log_feature(Qt5Qml_FOUND "Qt5Qml" "Support for Qt5Qml" "http://qt-project.org" "")
+macro_log_feature(Qt5Quick_FOUND "Qt5Quick" "Support for Qt5Quick" "http://qt-project.org" "")
+macro_log_feature(Qt5Compositor_FOUND "Qt5Compositor" "Support for Qt5Compositor" "http://qt-project.org" "")
+macro_log_feature(Qt5AccountsService_FOUND "Qt5AccountsService" "Support for Qt5AccountsService" "http://qt-project.org" "")
 
 # Find Vibe libraries
 find_package(VibeCore REQUIRED)
 if(NOT VibeCore_FOUND)
     message(FATAL_ERROR "VibeCore module is required!")
 endif()
+macro_log_feature(VibeCore_FOUND "VibeCore" "Support for VibeCore" "http://www.maui-project.org" "")
 
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
@@ -113,3 +126,6 @@ endif()
 add_subdirectory(data)
 add_subdirectory(headers)
 add_subdirectory(src)
+
+# Display featute log
+macro_display_feature_log()

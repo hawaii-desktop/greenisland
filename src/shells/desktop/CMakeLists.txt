@@ -1,21 +1,11 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Quick_INCLUDE_DIRS}
-    ${Qt5Widgets_INCLUDE_DIRS}
-    ${Qt5AccountsService_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_CLIENT_INCLUDE_DIRS}
     ${POLKITQT-1_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
-)
-
-add_definitions(
-    ${Qt5Gui_DEFINITIONS}
-    ${Qt5Quick_DEFINITIONS}
-    ${Qt5Widgets_DEFINITIONS}
-    ${Qt5AccountsService_DEFINITIONS}
 )
 
 set(SOURCES
@@ -36,14 +26,12 @@ qt5_add_dbus_adaptor(SOURCES ${CMAKE_SOURCE_DIR}/data/org.freedesktop.Notificati
     notificationsdaemon.h NotificationsDaemon)
 
 add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
+qt5_use_modules(greenisland-desktop-shell Quick Widgets AccountsService)
 set_target_properties(greenisland-desktop-shell PROPERTIES
     COMPILE_FLAGS "${Qt5Quick_EXECUTABLE_COMPILE_FLAGS} -rdynamic"
     LINK_FLAGS "-L${GLESV2_LIBDIR} -L${WAYLAND_CLIENT_LIBDIR} -L${POLKITQT-1_LIB_DIR}"
 )
 target_link_libraries(greenisland-desktop-shell
-    ${Qt5Quick_LIBRARIES}
-    ${Qt5Widgets_LIBRARIES}
-    ${Qt5AccountsService_LIBRARIES}
     ${VibeCore_LIBRARIES}
     ${WAYLAND_CLIENT_LIBRARIES}
     ${POLKITQT-1_CORE_LIBRARY}
@@ -51,4 +39,5 @@ target_link_libraries(greenisland-desktop-shell
     GreenIsland
 )
 
-install(TARGETS greenisland-desktop-shell DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
+install(TARGETS greenisland-desktop-shell
+    DESTINATION ${CMAKE_INSTALL_LIBEXECDIR})
