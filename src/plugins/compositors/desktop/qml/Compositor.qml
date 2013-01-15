@@ -87,7 +87,7 @@ Item {
     Image {
         id: background
         anchors.fill: parent
-        fillMode: Image.Tile
+        fillMode: Image.Stretch
         source: bgSettings.value("wallpaper-uri")
         smooth: true
     }
