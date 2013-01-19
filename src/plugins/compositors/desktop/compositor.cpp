@@ -129,11 +129,6 @@ void DesktopCompositor::setAvailableGeometry(const QRectF &g)
 
 void DesktopCompositor::surfaceCreated(WaylandSurface *surface)
 {
-    // Create a WaylandSurfaceItem from the surface
-    WaylandSurfaceItem *item = new WaylandSurfaceItem(surface, rootObject());
-    item->setClientRenderingEnabled(true);
-    item->setTouchEventsEnabled(true);
-
     // Connect surface signals
     connect(surface, SIGNAL(destroyed(QObject *)),
             this, SLOT(surfaceDestroyed(QObject *)));
@@ -225,8 +220,20 @@ void DesktopCompositor::surfaceMapped()
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
 
-    // Surface items gain focus right after they were mapped
+    //A surface without a shell surface is not a window
+    if (!surface->hasShellSurface())
+        return;
+
     WaylandSurfaceItem *item = surface->surfaceItem();
+
+    // Create a WaylandSurfaceItem from the surface
+    if (!item) {
+        item = new WaylandSurfaceItem(surface, rootObject());
+        item->setClientRenderingEnabled(true);
+        item->setTouchEventsEnabled(true);
+    }
+
+    // Surface items gain focus right after they were mapped
     item->takeFocus();
 
     // Announce a window was added
@@ -242,7 +249,8 @@ void DesktopCompositor::surfaceUnmapped()
 
     // Announce this window was destroyed
     QQuickItem *item = surface->surfaceItem();
-    emit windowDestroyed(QVariant::fromValue(item));
+    if (item)
+        emit windowDestroyed(QVariant::fromValue(item));
 }
 
 void DesktopCompositor::surfaceDestroyed(QObject *object)
@@ -254,7 +262,8 @@ void DesktopCompositor::surfaceDestroyed(QObject *object)
 
     // Announce this window was destroyed
     QQuickItem *item = surface->surfaceItem();
-    emit windowDestroyed(QVariant::fromValue(item));
+    if (item)
+        emit windowDestroyed(QVariant::fromValue(item));
 }
 
 void DesktopCompositor::sceneGraphInitialized()
