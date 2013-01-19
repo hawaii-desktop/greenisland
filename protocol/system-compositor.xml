@@ -1,0 +1,29 @@
+<protocol name="system_compositor">
+  <interface name="wl_system_compositor" version="1">
+    <description summary="Manage multiple users' displays">
+
+    </description>    
+    <request name="present_surface"> 
+      <description summary="present surface for display">
+        This requests the system compositor to display surface on output.
+        Each client of the system compositor can have at most one surface
+        per output at any one time.
+        
+        Subsequent requests with the same output replace the surface bound
+        to that output.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface"/>
+      <arg name="output" type="object" interface="wl_output"/>
+    </request>
+    
+    <request name="ready">
+      <description summary="notify that client is ready">
+        This notifies the system compositor that the client is ready to be
+        switched to. The client should have made a call to present_surface
+        prior to signaling readiness.
+      </description>
+    </request>
+  </interface>
+</protocol>
+    
+         

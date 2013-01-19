@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
     if (arguments.contains(QLatin1String("--synthesize-touch")))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
-    // Shell plugin argument
+    // Compositor plugin argument
     int pluginArg = arguments.indexOf(QLatin1String("--plugin"));
     if (pluginArg != -1 && pluginArg + 1 < arguments.size())
         pluginName = arguments.at(pluginArg + 1).toLocal8Bit();

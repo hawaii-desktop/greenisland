@@ -1,0 +1,86 @@
+<protocol name="display_manager">
+  <interface name="wl_system_client" version="1">
+    <request name="terminate" type="destructor">
+      <description summary="disconnect a client">
+        Disconnect a client's connection to the system compositor, and
+        destroy its associated resources.
+      </description>
+    </request>
+    <event name="ready">
+      <description summary="client ready">
+        Sent when the system compositor has determined a client is ready to
+        be switched to. Generally this means that the client has attached
+        the first buffer to its surface.
+      </description>
+    </event>
+    <event name="client_disconnected">
+      <!-- Need disconnect reason? -->
+    </event>
+  </interface>
+
+  <interface name="wl_display_manager" version="1">
+    <description summary="Manage multiple users' displays">
+      The display manager can use this interface to manage the system
+      compositor. It has requests to add new clients, to transition between
+      clients.
+      
+      All clients of the system compositor are assumed to be fullscreen.
+      With the exception of transitions, the compositor will generally
+      display only a single client at once.
+    </description>
+    
+    <request name="add_client">
+      <description summary="add a new system client">
+        This adds a new client to the system compositor. The system
+        compositor will listen to requests from the new client on the passed
+        fd.
+      </description>
+      <arg name="id" type="new_id" interface="wl_system_client"/>
+      <arg name="fd" type="fd"/>
+      <!-- Possibly need user, and display manager cookie? -->
+    </request>
+
+    <request name="switch_to_client">
+      <description summary="switch to client">
+        This request switches input and display focus to a different client.
+        The compositor may perform some transition animation between the two
+        clients, such as a crossfade or cube animation. During the transition
+        no client will have input focus.
+      </description>
+      <arg name="id" type="object" interface="wl_system_client"/>
+      <!-- Possibly need to specify transition options? -->
+    </request>
+
+    <enum name="error">
+      <entry name="keybinding_exists" value="0"/>
+      <entry name="invalid_keybinding" value="1"/>
+    </enum>
+
+    <request name="bind_key">
+      <description summary="receive notification when a key chord is pressed">
+        This request adds a key combination to the set of keybindings reserved
+        by the display manager. When one of these key combinations is pressed,
+        a keybinding event with cookie is sent to the display manager.
+
+        These keypresses are not sent to any other client.
+      </description>
+      <arg name="key" type="uint"/>
+      <arg name="modifier" type="uint"/>
+      <arg name="cookie" type="uint" />
+    </request>
+
+    <request name="unbind_key">
+      <description summary="remove a key combination from the list of keybindings">
+        This request removes a key combination to the set of keybindings.
+      </description>
+      <arg name="key" type="uint"/>
+      <arg name="modifier" type="uint"/>
+      <arg name="cookie" type="uint" />
+    </request>
+
+    <event name="keybinding_notify">
+      <arg name="cookie" type="uint"/>
+    </event>
+  </interface>
+</protocol>
+
