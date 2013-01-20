@@ -31,7 +31,7 @@
 #include <wayland-util.h>
 
 #include "wayland-system-compositor-server-protocol.h"
-#include "compositor.h"
+#include "systemcompositor.h"
 #include "systemclient.h"
 
 class SystemCompositorServer

@@ -39,7 +39,6 @@
 **
 ****************************************************************************/
 
-var rootWindow = null;
 var windowList = null;
 var indexes = null;
 
@@ -192,18 +191,8 @@ function restorelayout()
  */
 
 function windowAdded(root, window) {
-    var isSpecial = window.surface.className == "greenisland-desktop-shell.desktop";
-
-    // Save the shell window and use it as a root window
-    if (isSpecial)
-        rootWindow = window;
-
     var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
-    var windowContainer = windowContainerComponent.createObject(isSpecial ? root : rootWindow);
-
-    // Disable animations for the shell window
-    if (isSpecial)
-        windowContainer.animationsEnabled = false;
+    var windowContainer = windowContainerComponent.createObject(null);
 
     window.parent = windowContainer;
 
@@ -211,13 +200,11 @@ function windowAdded(root, window) {
     window.takeFocus();
 
     // Restrict windows coordinates to the available area
-    if (!isSpecial) {
-        var availableGeometry = compositor.availableGeometry;
-        if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
-            windowContainer.targetX += availableGeometry.x + 5;
-        if (windowContainer.targetY < availableGeometry.y || windowContainer.targetY > availableGeometry.y + availableGeometry.height)
-            windowContainer.targetY += availableGeometry.y + 5;
-    }
+    var availableGeometry = compositor.availableGeometry;
+    if (windowContainer.targetX < availableGeometry.x || windowContainer.targetX > availableGeometry.x + availableGeometry.width)
+        windowContainer.targetX += availableGeometry.x + 5;
+    if (windowContainer.targetY < availableGeometry.y || windowContainer.targetY > availableGeometry.y + availableGeometry.height)
+        windowContainer.targetY += availableGeometry.y + 5;
 
     windowContainer.targetScale = 1.0;
     windowContainer.targetWidth = window.width;

@@ -111,18 +111,13 @@ Item {
 
     states: [
         State {
-            name: "special"
-            when: child && child.surface.className == "greenisland-desktop-shell.desktop"
-            PropertyChanges { target: effect; blend: 0.0 }
-        },
-        State {
             name: "selected"
-            when: child && child.focus && child.surface.className != "greenisland-desktop-shell.desktop"
+            when: child && child.focus
             PropertyChanges { target: effect; blend: 0.0 }
         },
         State {
             name: "unselected"
-            when: child && !child.focus && child.surface.className != "greenisland-desktop-shell.desktop"
+            when: child && !child.focus
             PropertyChanges { target: effect; blend: 1.0 }
         }
     ]
@@ -151,16 +146,6 @@ Item {
                 }
                 ScriptAction {
                     script: compositor.currentSurface = child.surface
-                }
-            }
-        },
-        Transition {
-            from: "*"; to: "special"
-            SequentialAnimation {
-                ScriptAction {
-                    script: {
-                        container.z = 1
-                    }
                 }
             }
         }

@@ -26,7 +26,7 @@
 
 #include <VCompositorPlugin>
 
-#include "compositor.h"
+#include "systemcompositor.h"
 
 class GREENISLAND_EXPORT SystemCompositorPlugin : public VCompositorPlugin
 {

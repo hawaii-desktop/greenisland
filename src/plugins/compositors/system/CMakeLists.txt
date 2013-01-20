@@ -14,7 +14,7 @@ add_definitions(
 
 set(SOURCES
     main.cpp
-    compositor.cpp
+    systemcompositor.cpp
     systemcompositorserver.cpp
     systemclient.cpp
 )

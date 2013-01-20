@@ -27,7 +27,7 @@
 import QtQuick 2.0
 import "CompositorLogic.js" as CompositorLogic
 
-Item {
+Rectangle {
     id: root
 
     // Currently selected window
@@ -40,22 +40,8 @@ Item {
     onWidthChanged: CompositorLogic.relayout()
     onHeightChanged: CompositorLogic.relayout()
 
-    // Opacity will be set to 1.0 by the fade-in animation
-    opacity: 0.0
-
-    // Fade-in animation for the whole screen
-    NumberAnimation on opacity {
-        easing.type: Easing.Linear
-        duration: 1500
-        to: 1.0
-    }
-
     // Background color
-    Rectangle {
-        id: background
-        anchors.fill: parent
-        color: "#336699"
-    }
+    color: "#336699"
 
     function windowAdded(window) {
         CompositorLogic.windowAdded(root, window);
