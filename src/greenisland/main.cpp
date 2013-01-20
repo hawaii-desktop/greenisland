@@ -36,6 +36,7 @@
 #include "gitsha1.h"
 #include "config.h"
 
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <stdio.h>
 
@@ -71,10 +72,10 @@ static void verifyXdgRuntimeDir()
 
     if (dirName.isEmpty()) {
         QString msg = QObject::tr(
-                          "The XDG_RUNTIME_DIR environment variable is not set.\n"
-                          "Refer to your distribution on how to get it, or read\n"
-                          "http://www.freedesktop.org/wiki/Specifications/basedir-spec\n"
-                          "on how to implement it.\n");
+                    "The XDG_RUNTIME_DIR environment variable is not set.\n"
+                    "Refer to your distribution on how to get it, or read\n"
+                    "http://www.freedesktop.org/wiki/Specifications/basedir-spec\n"
+                    "on how to implement it.\n");
         qFatal(msg.toUtf8());
     }
 
@@ -82,34 +83,37 @@ static void verifyXdgRuntimeDir()
 
     if (!fileInfo.exists()) {
         QString msg = QObject::tr(
-                          "The XDG_RUNTIME_DIR environment variable is set to "
-                          "\"%1\", which doesn't exist.\n").arg(dirName.constData());
+                    "The XDG_RUNTIME_DIR environment variable is set to "
+                    "\"%1\", which doesn't exist.\n").arg(dirName.constData());
         qFatal(msg.toUtf8());
     }
 
     if (convertPermission(fileInfo) != 700 || fileInfo.ownerId() != getuid()) {
         QString msg = QObject::tr(
-                          "XDG_RUNTIME_DIR is set to \"%1\" and is not configured correctly.\n"
-                          "Unix access mode must be 0700, but is 0%2.\n"
-                          "It must also be owned by the current user (UID %3), "
-                          "but is owned by UID %4 (\"%5\").\n")
-                      .arg(dirName.constData())
-                      .arg(convertPermission(fileInfo))
-                      .arg(getuid())
-                      .arg(fileInfo.ownerId())
-                      .arg(fileInfo.owner());
+                    "XDG_RUNTIME_DIR is set to \"%1\" and is not configured correctly.\n"
+                    "Unix access mode must be 0700, but is 0%2.\n"
+                    "It must also be owned by the current user (UID %3), "
+                    "but is owned by UID %4 (\"%5\").\n")
+                .arg(dirName.constData())
+                .arg(convertPermission(fileInfo))
+                .arg(getuid())
+                .arg(fileInfo.ownerId())
+                .arg(fileInfo.owner());
         qFatal(msg.toUtf8());
     }
 }
 
 int main(int argc, char *argv[])
 {
-    // Advertisement
-    printf("Green Island v%s (%s)\n", GREENISLAND_VERSION, GIT_REV);
-    printf("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n\n");
+    // Banner
+    QStringList banner;
+    banner << QString("Green Island v%1 (%2)").arg(GREENISLAND_VERSION).arg(GIT_REV)
+           << QStringLiteral("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues");
 
-    // Check whether XDG_RUNTIME_DIR is ok or not
-    verifyXdgRuntimeDir();
+    // Add the name of the current system to the banner
+    struct utsname uts;
+    if (uname(&uts) != -1)
+        banner << QString("OS: %1 %2 %3").arg(uts.sysname).arg(uts.release).arg(uts.version);
 
     // Assume the xcb platform if the DISPLAY environment variable is defined,
     // otherwise go for kms
@@ -121,10 +125,13 @@ int main(int argc, char *argv[])
         setenv("QT_KMS_TTYKBD", "1", 0);
     }
 
+    // Print the banner
+    qDebug() << banner.join('\n').toLatin1().constData();
+
     GreenIsland app(argc, argv);
 
     // Shell plugin (defaults to desktop for the moment)
-    QString pluginName = QLatin1String("desktop");
+    QString pluginName = QStringLiteral("desktop");
 
     // Command line arguments
     QStringList arguments = QCoreApplication::instance()->arguments();
@@ -138,6 +145,9 @@ int main(int argc, char *argv[])
         printf("\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')\n");
         return 0;
     }
+
+    // Check whether XDG_RUNTIME_DIR is ok or not
+    verifyXdgRuntimeDir();
 
     // Synthesize touch for unhandled mouse events
     if (arguments.contains(QLatin1String("--synthesize-touch")))

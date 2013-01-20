@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDateTime>
 #include <QDebug>
 #include <QDir>
 #include <QPluginLoader>
@@ -38,6 +39,35 @@
 #include "greenisland.h"
 #include "cmakedirs.h"
 
+static void logMessageHandler(QtMsgType type, const QMessageLogContext &context,
+                              const QString &msg)
+{
+    QString timestamp = QDateTime::currentDateTime().toString("ddd MMM d yyyy hh:mm:ss.zzz");
+    QString text;
+    FILE *stream = 0;
+
+    switch (type) {
+    case QtDebugMsg:
+        text = QString("[%1] DEBUG %2: %3\n").arg(timestamp).arg(context.function).arg(msg);
+        stream = stdout;
+        break;
+    case QtWarningMsg:
+        text = QString("[%1] WARNING %2\n").arg(timestamp).arg(msg);
+        stream = stdout;
+        break;
+    case QtCriticalMsg:
+        text = QString("[%1] CRITICAL %2\n").arg(timestamp).arg(msg);
+        stream = stdout;
+        break;
+    case QtFatalMsg:
+        text = QString("[%1] FATAL %2\n").arg(timestamp).arg(msg);
+        stream = stderr;
+        break;
+    }
+
+    fprintf(stream, text.toLatin1().constData());
+}
+
 GreenIsland::GreenIsland(int &argc, char **argv)
     : QGuiApplication(argc, argv)
 {
@@ -46,6 +76,9 @@ GreenIsland::GreenIsland(int &argc, char **argv)
     setApplicationVersion("0.1.0");
     setOrganizationName("Maui Project");
     setOrganizationDomain("maui-project.org");
+
+    // Custom log message handler
+    qInstallMessageHandler(logMessageHandler);
 }
 
 VCompositor *GreenIsland::loadCompositor(const QString &name)
@@ -53,8 +86,6 @@ VCompositor *GreenIsland::loadCompositor(const QString &name)
     // Load plugins
     QDir pluginsDir(QStringLiteral("%1/greenisland/compositors").arg(INSTALL_PLUGINSDIR));
     foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
-        qDebug() << "Trying" << fileName << "plugin";
-
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QJsonValue keys = loader.metaData()["MetaData"];
 
