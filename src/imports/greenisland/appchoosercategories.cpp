@@ -32,7 +32,7 @@ AppChooserCategories::AppChooserCategories(QObject *parent)
     : QAbstractListModel(parent)
 {
     m_categories.append(AppChooserCategoryPair("AudioVideo", tr("Sound & Video")));
-    m_categories.append(AppChooserCategoryPair("Audio", tr("Video")));
+    m_categories.append(AppChooserCategoryPair("Audio", tr("Audio")));
     m_categories.append(AppChooserCategoryPair("Video", tr("Video")));
     m_categories.append(AppChooserCategoryPair("Development", tr("Programming")));
     m_categories.append(AppChooserCategoryPair("Education", tr("Education")));
