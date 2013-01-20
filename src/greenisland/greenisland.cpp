@@ -24,9 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QDir>
 #include <QPluginLoader>
 #include <QProcess>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QJsonValue>
 #include <QStringList>
 
 #include <VCompositorPlugin>
@@ -49,15 +53,18 @@ VCompositor *GreenIsland::loadCompositor(const QString &name)
     // Load plugins
     QDir pluginsDir(QStringLiteral("%1/greenisland/compositors").arg(INSTALL_PLUGINSDIR));
     foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
-        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-        VCompositorPlugin *plugin = qobject_cast<VCompositorPlugin *>(
-                                        loader.instance());
-        if (!plugin)
-            continue;
+        qDebug() << "Trying" << fileName << "plugin";
 
-        foreach(QString key, plugin->keys()) {
-            if (key == name)
-                return plugin->create(key);
+        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
+        QJsonValue keys = loader.metaData()["MetaData"];
+
+        if (keys.toObject()["Keys"].toArray().contains(QJsonValue(name))) {
+            VCompositorPlugin *plugin = qobject_cast<VCompositorPlugin *>(
+                        loader.instance());
+            if (!plugin)
+                continue;
+
+            return plugin->create(name);
         }
     }
 
