@@ -47,40 +47,40 @@ VCompositor::~VCompositor()
 
 void VCompositor::showGraphicsInfo()
 {
+    const char *str;
+
     QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();
     if (nativeInterface) {
         EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window());
         if (display) {
-            const char *str;
-
             str = eglQueryString(display, EGL_VERSION);
-            printf("EGL version: %s\n", str ? str : "(null)");
+            qDebug("EGL version: %s", str ? str : "(null)");
 
             str = eglQueryString(display, EGL_VENDOR);
-            printf("EGL vendor: %s\n", str ? str : "(null)");
+            qDebug("EGL vendor: %s", str ? str : "(null)");
 
             str = eglQueryString(display, EGL_CLIENT_APIS);
-            printf("EGL client APIs: %s\n", str ? str : "(null)");
+            qDebug("EGL client APIs: %s", str ? str : "(null)");
 
             str = eglQueryString(display, EGL_EXTENSIONS);
-            printf("EGL extensions: %s\n", str ? str : "(null)");
-
-            str = (char *)glGetString(GL_VERSION);
-            printf("GL version: %s\n", str ? str : "(null)");
-
-            str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
-            printf("GLSL version: %s\n", str ? str : "(null)");
-
-            str = (char *)glGetString(GL_VENDOR);
-            printf("GL vendor: %s\n", str ? str : "(null)");
-
-            str = (char *)glGetString(GL_RENDERER);
-            printf("GL renderer: %s\n", str ? str : "(null)");
-
-            str = (char *)glGetString(GL_EXTENSIONS);
-            printf("GL extensions: %s\n", str ? str : "(null)");
+            qDebug("EGL extensions: %s", str ? str : "(null)");
         }
     }
+
+    str = (char *)glGetString(GL_VERSION);
+    qDebug("GL version: %s", str ? str : "(null)");
+
+    str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+    qDebug("GLSL version: %s", str ? str : "(null)");
+
+    str = (char *)glGetString(GL_VENDOR);
+    qDebug("GL vendor: %s", str ? str : "(null)");
+
+    str = (char *)glGetString(GL_RENDERER);
+    qDebug("GL renderer: %s", str ? str : "(null)");
+
+    str = (char *)glGetString(GL_EXTENSIONS);
+    qDebug("GL extensions: %s", str ? str : "(null)");
 }
 
 void VCompositor::runShell()
