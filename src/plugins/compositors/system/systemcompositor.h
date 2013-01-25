@@ -90,9 +90,6 @@ private:
     WaylandSurface *m_currentSurface;
     SystemCompositorServer *m_protocol;
     QList<SystemClient *> m_systemClients;
-
-    int m_dmFd;
-    wl_client *m_dmClient;
 };
 
 #endif // SYSTEMCOMPOSITOR_H

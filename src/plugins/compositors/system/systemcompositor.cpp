@@ -43,25 +43,9 @@
 SystemCompositor::SystemCompositor()
     : VCompositor(this)
     , m_currentSurface(0)
-    , m_dmFd(-1)
-    , m_dmClient(0)
 {
     // Enable the subsurface extension
     enableSubSurfaceExtension();
-
-#if 0
-    // Command line arguments
-    QStringList arguments = QCoreApplication::instance()->arguments();
-
-    // Display manager file descriptor argument
-    int dmFdArg = arguments.indexOf(QLatin1String("--display-manager-fd"));
-    if (dmFdArg != -1 && dmFdArg + 1 < arguments.size())
-        m_dmFd = arguments.at(dmFdArg + 1).toInt();
-
-    // Create a Wayland client for the display manager
-    if (m_dmFd > -1)
-        m_dmClient = wl_client_create(waylandDisplay(), m_dmFd);
-#endif
 
     // System compositor protocol
     m_protocol = new SystemCompositorServer(this, WaylandCompositor::handle());
