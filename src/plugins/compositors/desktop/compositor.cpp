@@ -40,6 +40,7 @@
 
 DesktopCompositor::DesktopCompositor()
     : VCompositor(this)
+    , m_shellSurface(0)
     , m_currentSurface(0)
     , m_shellProcess(0)
 {
@@ -75,12 +76,6 @@ DesktopCompositor::DesktopCompositor()
             this, SLOT(frameSwapped()));
 }
 
-DesktopCompositor::~DesktopCompositor()
-{
-    m_shellProcess->close();
-    delete m_shellProcess;
-}
-
 void DesktopCompositor::runShell()
 {
     // Force Wayland as a QPA plugin and GTK+ backend
@@ -109,6 +104,14 @@ void DesktopCompositor::runShell()
     m_shellProcess->setProcessEnvironment(env);
     m_shellProcess->start(QLatin1String(INSTALL_LIBEXECDIR "/greenisland-desktop-shell"),
                           arguments, QIODevice::ReadOnly);
+}
+
+void DesktopCompositor::closeShell()
+{
+    if (m_shellSurface)
+        destroyClientForSurface(m_shellSurface);
+    m_shellProcess->close();
+    delete m_shellProcess;
 }
 
 QRectF DesktopCompositor::screenGeometry() const
@@ -232,6 +235,10 @@ void DesktopCompositor::surfaceMapped()
         item->setClientRenderingEnabled(true);
         item->setTouchEventsEnabled(true);
     }
+
+    // Save shell surface pointer
+    if (surface->className() == QStringLiteral("greenisland-desktop-shell.desktop"))
+        m_shellSurface = surface;
 
     // Surface items gain focus right after they were mapped
     item->takeFocus();

@@ -35,10 +35,12 @@ class GREENISLAND_EXPORT VCompositor : public WaylandCompositor
 {
 public:
     explicit VCompositor(QWindow *window = 0);
+    ~VCompositor();
 
     void showGraphicsInfo();
 
     virtual void runShell();
+    virtual void closeShell();
 };
 
 #endif // VCOMPOSITOR_H

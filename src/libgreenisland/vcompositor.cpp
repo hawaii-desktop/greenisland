@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <QOpenGLFunctions>
 
@@ -37,6 +38,11 @@
 VCompositor::VCompositor(QWindow *window)
     : WaylandCompositor(window)
 {
+}
+
+VCompositor::~VCompositor()
+{
+    closeShell();
 }
 
 void VCompositor::showGraphicsInfo()
@@ -78,5 +84,9 @@ void VCompositor::showGraphicsInfo()
 }
 
 void VCompositor::runShell()
+{
+}
+
+void VCompositor::closeShell()
 {
 }

@@ -42,9 +42,9 @@ class DesktopCompositor : public QQuickView, public VCompositor
     Q_PROPERTY(WaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
     explicit DesktopCompositor();
-    ~DesktopCompositor();
 
     void runShell();
+    void closeShell();
 
     QRectF screenGeometry() const;
 
@@ -91,6 +91,7 @@ protected:
 
 private:
     QRectF m_availableGeometry;
+    WaylandSurface *m_shellSurface;
     WaylandSurface *m_currentSurface;
     DesktopShellServer *m_desktopShell;
     QProcess *m_shellProcess;
