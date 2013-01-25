@@ -205,13 +205,13 @@ void DesktopCompositor::shellFailed(QProcess::ProcessError error)
 void DesktopCompositor::shellReadyReadStandardOutput()
 {
     if (m_shellProcess)
-        printf("shell: %s", m_shellProcess->readAllStandardOutput().constData());
+        printf("%s", m_shellProcess->readAllStandardOutput().constData());
 }
 
 void DesktopCompositor::shellReadyReadStandardError()
 {
     if (m_shellProcess)
-        fprintf(stderr, "shell: %s", m_shellProcess->readAllStandardError().constData());
+        fprintf(stderr, "%s", m_shellProcess->readAllStandardError().constData());
 }
 
 void DesktopCompositor::shellAboutToClose()
