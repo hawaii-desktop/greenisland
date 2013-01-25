@@ -42,25 +42,25 @@
 static void logMessageHandler(QtMsgType type, const QMessageLogContext &context,
                               const QString &msg)
 {
-    QString timestamp = QDateTime::currentDateTime().toString("ddd MMM d yyyy hh:mm:ss.zzz");
+    QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss.zzz");
     QString text;
     FILE *stream = 0;
 
     switch (type) {
     case QtDebugMsg:
-        text = QString("[%1] DEBUG %2: %3\n").arg(timestamp).arg(context.function).arg(msg);
+        text = QString("[%1] %2\n").arg(timestamp).arg(msg);
         stream = stdout;
         break;
     case QtWarningMsg:
-        text = QString("[%1] WARNING %2\n").arg(timestamp).arg(msg);
+        text = QString("[%1] \033[1;33mWARNING\033[0m %2\n").arg(timestamp).arg(msg);
         stream = stdout;
         break;
     case QtCriticalMsg:
-        text = QString("[%1] CRITICAL %2\n").arg(timestamp).arg(msg);
+        text = QString("[%1] \033[31mCRITICAL\033[0m %2\n").arg(timestamp).arg(msg);
         stream = stdout;
         break;
     case QtFatalMsg:
-        text = QString("[%1] FATAL %2\n").arg(timestamp).arg(msg);
+        text = QString("[%1] \033[31mFATAL\033[0m %2\n").arg(timestamp).arg(msg);
         stream = stderr;
         break;
     }
