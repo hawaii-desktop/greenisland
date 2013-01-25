@@ -108,10 +108,11 @@ void DesktopCompositor::runShell()
 
 void DesktopCompositor::closeShell()
 {
-    if (m_shellSurface)
-        destroyClientForSurface(m_shellSurface);
     m_shellProcess->close();
     delete m_shellProcess;
+
+    if (m_shellSurface)
+        destroyClientForSurface(m_shellSurface);
 }
 
 QRectF DesktopCompositor::screenGeometry() const
