@@ -273,7 +273,7 @@ void DesktopCompositor::sceneGraphInitialized()
 
 void DesktopCompositor::frameSwapped()
 {
-    frameFinished(m_currentSurface);
+    frameFinished();
 }
 
 void DesktopCompositor::resizeEvent(QResizeEvent *event)
