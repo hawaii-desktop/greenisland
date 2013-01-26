@@ -38,10 +38,13 @@ typedef QPair<Wayland::Output *, WaylandSurface *> OutputSurfaceMapping;
 class SystemClient
 {
 public:
-    SystemClient(struct wl_client *client);
+    SystemClient(wl_client *client);
 
-    struct wl_client *client() const;
-    struct wl_resource *clientResource() const;
+    wl_client *client() const;
+
+    wl_resource *clientResource() const;
+    void setClientResource(wl_resource *res);
+    void unbindClientResource();
 
     WaylandSurface *surfaceForOutput(Wayland::Output *output) const;
     void mapSurfaceToOutput(WaylandSurface *surface, Wayland::Output *output);
@@ -49,7 +52,6 @@ public:
     WaylandSurfaceList surfaces() const;
 
     bool isReadySent() const;
-
     void setReady();
 
 private:

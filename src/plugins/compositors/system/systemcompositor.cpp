@@ -38,7 +38,6 @@
 #include "systemcompositor.h"
 #include "cmakedirs.h"
 #include "systemcompositorserver.h"
-#include "systemclient.h"
 
 SystemCompositor::SystemCompositor()
     : VCompositor(this)
@@ -90,18 +89,6 @@ void SystemCompositor::setAvailableGeometry(const QRectF &g)
 {
     m_availableGeometry = g;
     emit availableGeometryChanged();
-}
-
-SystemClient *SystemCompositor::systemClientForClient(WaylandClient *client)
-{
-    for (int i = 0; i < m_systemClients.size(); i++) {
-        SystemClient *systemClient = m_systemClients.at(i);
-
-        if (systemClient->client() == client)
-            return systemClient;
-    }
-
-    return 0;
 }
 
 void SystemCompositor::surfaceCreated(WaylandSurface *surface)

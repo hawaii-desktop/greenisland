@@ -31,6 +31,7 @@
 #include <wayland-util.h>
 
 #include "wayland-system-compositor-server-protocol.h"
+#include "wayland-display-manager-server-protocol.h"
 #include "systemcompositor.h"
 #include "systemclient.h"
 
@@ -40,28 +41,56 @@ public:
     explicit SystemCompositorServer(SystemCompositor *compositor,
                                     Wayland::Compositor *handle);
 
-    void addSystemClient(SystemClient *client);
-
-private:
-    static void bind_func(struct wl_client *client, void *data,
-                          uint32_t version, uint32_t id);
-
-    static void destroy_resource(wl_resource *resource);
-
-    static void present_surface(struct wl_client *client,
-                                struct wl_resource *resource,
-                                struct wl_resource *surface,
-                                struct wl_resource *output_resource);
-
-    static void ready(struct wl_client *client,
-                      struct wl_resource *resource);
-
-    static const struct wl_system_compositor_interface interface;
-
     SystemCompositor *compositor;
     Wayland::Compositor *handle;
-    SystemClientList m_systemClients;
+    wl_client *dmClient;
+    wl_resource *dmResource;
+    SystemClientList systemClients;
     QList<wl_resource *> resources;
+
+private:
+    // System compositor interface
+    static void bindSystemCompositor(wl_client *client, void *data,
+                                     uint32_t version, uint32_t id);
+    static void unbindSystemCompositor(wl_resource *resource);
+
+    // Display manager interface
+    static void bindDisplayManager(wl_client *client, void *data,
+                                   uint32_t version, uint32_t id);
+    static void unbindDisplayManager(wl_resource *resource);
+
+    // System compositor server-side implementation
+    static void handlePresentSurface(wl_client *client,
+                                     wl_resource *resource,
+                                     wl_resource *surface,
+                                     wl_resource *output_resource);
+    static void handleReady(wl_client *client,
+                            wl_resource *resource);
+
+    // Display manager server-side implementation
+    static void unbindSystemClient(wl_resource *resource);
+
+    static void handleAddClient(wl_client *client,
+                                wl_resource *resource,
+                                uint32_t id, int32_t fd);
+    static void handleSwitchToClient(wl_client *client,
+                                     wl_resource *resource,
+                                     wl_resource *id);
+    static void handleBindKey(wl_client *client,
+                              wl_resource *resource,
+                              uint32_t key, uint32_t modifier, uint32_t cookie);
+    static void handleUnbindKey(wl_client *client,
+                                wl_resource *resource,
+                                uint32_t key, uint32_t modifier, uint32_t cookie);
+
+    // System client server-side implementation
+    static void handleTerminateClient(wl_client *client,
+                                      wl_resource *resource);
+
+    // Interfaces
+    static const struct wl_system_compositor_interface systemCompositorInterface;
+    static const struct wl_display_manager_interface displayManagerInterface;
+    static const struct wl_system_client_interface systemClientInterface;
 };
 
 #endif // SYSTEMCOMPOSITORSERVER_H

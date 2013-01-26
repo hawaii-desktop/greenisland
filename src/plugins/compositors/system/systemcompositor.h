@@ -32,10 +32,7 @@
 
 #include <VCompositor>
 
-#include <wayland-client.h>
-
 class SystemCompositorServer;
-class SystemClient;
 
 class SystemCompositor : public QQuickView, public VCompositor
 {
@@ -54,8 +51,6 @@ public:
     WaylandSurface *currentSurface() const {
         return m_currentSurface;
     }
-
-    SystemClient *systemClientForClient(WaylandClient *client);
 
     void surfaceCreated(WaylandSurface *surface);
     void surfaceAboutToBeDestroyed(WaylandSurface *surface);
@@ -89,7 +84,6 @@ private:
     QRectF m_availableGeometry;
     WaylandSurface *m_currentSurface;
     SystemCompositorServer *m_protocol;
-    QList<SystemClient *> m_systemClients;
 };
 
 #endif // SYSTEMCOMPOSITOR_H

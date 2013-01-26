@@ -26,21 +26,32 @@
 
 #include "systemclient.h"
 
-SystemClient::SystemClient(struct wl_client *client)
+SystemClient::SystemClient(wl_client *client)
     : m_client(client)
     , m_resource(0)
     , m_readySent(false)
 {
 }
 
-struct wl_client *SystemClient::client() const
+wl_client *SystemClient::client() const
 {
     return m_client;
 }
 
-struct wl_resource *SystemClient::clientResource() const
+wl_resource *SystemClient::clientResource() const
 {
     return m_resource;
+}
+
+void SystemClient::setClientResource(wl_resource *res)
+{
+    m_resource = res;
+}
+
+void SystemClient::unbindClientResource()
+{
+    free(m_resource);
+    m_resource = 0;
 }
 
 WaylandSurface *SystemClient::surfaceForOutput(Wayland::Output *output) const
