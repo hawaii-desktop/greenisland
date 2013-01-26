@@ -105,16 +105,6 @@ static void verifyXdgRuntimeDir()
 
 int main(int argc, char *argv[])
 {
-    // Banner
-    QStringList banner;
-    banner << QString("Green Island v%1 (%2)").arg(GREENISLAND_VERSION).arg(GIT_REV)
-           << QStringLiteral("Bug reports to: https://github.com/hawaii-desktop/greenisland/issues");
-
-    // Add the name of the current system to the banner
-    struct utsname uts;
-    if (uname(&uts) != -1)
-        banner << QString("OS: %1 %2 %3").arg(uts.sysname).arg(uts.release).arg(uts.version);
-
     // Assume the xcb platform if the DISPLAY environment variable is defined,
     // otherwise go for kms
     if (!qgetenv("DISPLAY").isEmpty())
@@ -125,10 +115,22 @@ int main(int argc, char *argv[])
         setenv("QT_KMS_TTYKBD", "1", 0);
     }
 
-    // Print the banner
-    qDebug() << banner.join('\n').toLatin1().constData();
-
     GreenIsland app(argc, argv);
+
+    // Print the banner
+    qDebug() << qPrintable(QString("Green Island v%1\n").arg(GREENISLAND_VERSION))
+             << "              http://www.maui-project.org\n"
+             << "              Bug reports to: https://github.com/hawaii-desktop/greenisland/issues\n"
+             << qPrintable(QString("              Build: %1-%2")
+                           .arg(GREENISLAND_VERSION).arg(GIT_REV));
+
+    // Print the current system
+    struct utsname uts;
+    if (uname(&uts) != -1)
+        qDebug() << qPrintable(QString("OS: %1, %2, %3, %4").arg(uts.sysname)
+                               .arg(uts.release).arg(uts.version).arg(uts.machine));
+    else
+        qDebug() << "OS: Unknown";
 
     // Shell plugin (defaults to desktop for the moment)
     QString pluginName = QStringLiteral("desktop");
