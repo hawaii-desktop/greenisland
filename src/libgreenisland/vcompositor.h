@@ -41,6 +41,9 @@ public:
 
     virtual void runShell();
     virtual void closeShell();
+
+private:
+    void logExtensions(const QString &label, const QString &extensions);
 };
 
 #endif // VCOMPOSITOR_H

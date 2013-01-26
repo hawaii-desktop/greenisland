@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QGuiApplication>
 #include <QOpenGLFunctions>
+#include <QStringList>
 
 #include <qpa/qplatformnativeinterface.h>
 
@@ -63,7 +64,8 @@ void VCompositor::showGraphicsInfo()
             qDebug("EGL client APIs: %s", str ? str : "(null)");
 
             str = eglQueryString(display, EGL_EXTENSIONS);
-            qDebug("EGL extensions: %s", str ? str : "(null)");
+            logExtensions(QStringLiteral("EGL extensions:"),
+                          str ? QString(str) : QStringLiteral("(null)"));
         }
     }
 
@@ -80,7 +82,8 @@ void VCompositor::showGraphicsInfo()
     qDebug("GL renderer: %s", str ? str : "(null)");
 
     str = (char *)glGetString(GL_EXTENSIONS);
-    qDebug("GL extensions: %s", str ? str : "(null)");
+    logExtensions(QStringLiteral("GL extensions:"),
+                  str ? QString(str) : QStringLiteral("(null)"));
 }
 
 void VCompositor::runShell()
@@ -89,4 +92,21 @@ void VCompositor::runShell()
 
 void VCompositor::closeShell()
 {
+}
+
+void VCompositor::logExtensions(const QString &label, const QString &extensions)
+{
+    QString msg = label;
+    QStringList parts = extensions.split(QLatin1Char(' '));
+
+    for (int i = 0; i < parts.size(); i++) {
+        QString part = parts.at(i);
+
+        if (msg.size() + part.size() + 15 > 78)
+            msg += QLatin1Char('\n') + QStringLiteral("               ") + part;
+        else
+            msg += QStringLiteral(" ") + part;
+    }
+
+    qDebug() << qPrintable(msg.trimmed());
 }
