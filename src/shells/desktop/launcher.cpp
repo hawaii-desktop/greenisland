@@ -24,31 +24,38 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SHELLQUICKVIEW_H
-#define SHELLQUICKVIEW_H
+#include <QSurfaceFormat>
+#include <QQmlContext>
+#include <QQuickItem>
 
-#include <QQuickView>
+#include "launcher.h"
 
-#include "desktopshell.h"
-
-class ShellQuickView : public QQuickView
+Launcher::Launcher()
+    : QQuickView(QUrl("qrc:///qml/Launcher.qml"))
 {
-    Q_OBJECT
-    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
-public:
-    explicit ShellQuickView(DesktopShell *shell);
+    // This is a frameless window that stays on top of everything
+    setTitle(QLatin1String("Hawaii Launcher"));
+    setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
 
-    DesktopShell *shell() const {
-        return m_shell;
-    }
+    // Resize root item to this view
+    setResizeMode(QQuickView::SizeRootObjectToView);
 
-    QRectF screenGeometry() const;
+    // Set context properties
+    rootContext()->setContextProperty("quickview", this);
 
-signals:
-    void screenGeometryChanged();
+    // Make it transparent
+    QSurfaceFormat surfaceFormat;
+    surfaceFormat.setSamples(16);
+    surfaceFormat.setAlphaBufferSize(8);
+    setFormat(surfaceFormat);
+    setClearBeforeRendering(true);
+    setColor(QColor(Qt::transparent));
+    winId();
+}
 
-private:
-    DesktopShell *m_shell;
-};
+int Launcher::tileSize() const
+{
+    return rootObject()->property("tileSize").toInt();
+}
 
-#endif // SHELLQUICKVIEW_H
+#include "moc_launcher.cpp"

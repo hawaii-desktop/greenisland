@@ -112,6 +112,9 @@ int main(int argc, char *argv[])
     // Handle a segmentation fault nicely
     signal(SIGSEGV, deathSignal);
 
+    // Force Wayland platform plugin
+    setenv("QT_QPA_PLATFORM", "wayland", 1);
+
     // Set the hawaii desktop session
     setenv("DESKTOP_SESSION", "hawaii", 1);
 
@@ -120,12 +123,14 @@ int main(int argc, char *argv[])
     // Create the shell
     (void)DesktopShell::instance();
 
+#if 0
     // Create the notifications daemon and connect to the session bus
     NotificationsDaemon *daemon = new NotificationsDaemon();
     daemon->connectOnDBus();
 
     // Create the PolicyKit agent
     (void)PolicyKitAgent::instance();
+#endif
 
     return app.exec();
 }

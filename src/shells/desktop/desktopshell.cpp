@@ -24,21 +24,20 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
 #include <QGuiApplication>
-#include <QScreen>
+#include <QSocketNotifier>
 
+#include <private/qguiapplication_p.h>
 #include <qpa/qplatformnativeinterface.h>
 
 #include <wayland-client.h>
 
 #include "cmakedirs.h"
 #include "desktopshell.h"
-#include "desktopshellintegration.h"
-#include "shellview.h"
-
-const struct wl_registry_listener DesktopShell::registryListener = {
-    DesktopShellIntegration::handleGlobal
-};
+#include "waylandintegration.h"
+#include "launcher.h"
+#include "background.h"
 
 Q_GLOBAL_STATIC(DesktopShell, desktopShell)
 
@@ -52,29 +51,64 @@ DesktopShell::DesktopShell()
     path += INSTALL_BINDIR;
     setenv("PATH", qPrintable(path), 1);
 
-    // Get the Wayland display and registry
+    // Platform native interface
     QPlatformNativeInterface *native =
         QGuiApplication::platformNativeInterface();
     Q_ASSERT(native);
-    struct wl_display *display = (struct wl_display *)
-                                 native->nativeResourceForIntegration("display");
-    Q_ASSERT(display);
-    struct wl_registry *registry = wl_display_get_registry(display);
+
+    // Get the Wayland display and registry
+    m_display = static_cast<struct wl_display *>(
+                    native->nativeResourceForIntegration("display"));
+    Q_ASSERT(m_display);
+    m_fd = wl_display_get_fd(m_display);
+    m_registry = wl_display_get_registry(m_display);
+    Q_ASSERT(m_registry);
 
     // Wayland integration
-    DesktopShellIntegration::createInstance(this);
-    wl_registry_add_listener(registry, &DesktopShell::registryListener,
-                             DesktopShellIntegration::instance());
+    WaylandIntegration *integration = WaylandIntegration::createInstance(this);
+    wl_list_init(&integration->outputs);
+    wl_registry_add_listener(m_registry, &WaylandIntegration::registryListener,
+                             WaylandIntegration::instance());
 
-    // Create the shell window
-    m_shellView = new ShellView(this);
-    m_shellView->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-    m_shellView->showFullScreen();
-}
+    QSocketNotifier *readNotifier = new QSocketNotifier(m_fd, QSocketNotifier::Read, this);
+    connect(readNotifier, SIGNAL(activated(int)), this, SLOT(readEvents()));
 
-DesktopShell::~DesktopShell()
-{
-    delete m_shellView;
+    QAbstractEventDispatcher *dispatcher = QGuiApplicationPrivate::eventDispatcher;
+    connect(dispatcher, SIGNAL(awake()), this, SLOT(flushRequests()));
+
+    QElapsedTimer timeout;
+    timeout.start();
+    do {
+        QGuiApplication::processEvents();
+    } while (m_screens.isEmpty() && timeout.elapsed() < 1000);
+
+    if (m_screens.isEmpty())
+        qFatal("Failed to receive globals from display");
+
+    Output *output;
+    wl_list_for_each(output, &integration->outputs, link) {
+        // Create a launcher window for each output
+        output->launcher = new Launcher();
+        QCoreApplication::processEvents();
+        flushRequests();
+        output->launcherSurface = static_cast<struct wl_surface *>(
+                    native->nativeResourceForWindow("surface", output->launcher));
+        wl_surface_set_user_data(output->launcherSurface, output->launcher);
+        output->launcher->setGeometry(QRect(0, 0, 1, 1));
+        desktop_shell_set_panel(integration->shell, output->output,
+                                output->launcherSurface);
+
+        // Set a wallpaper for each output
+        output->background = new Background();
+        QCoreApplication::processEvents();
+        flushRequests();
+        output->backgroundSurface = static_cast<struct wl_surface *>(
+                    native->nativeResourceForWindow("surface", output->background));
+        wl_surface_set_user_data(output->backgroundSurface, output->background);
+        output->background->setGeometry(QRect(0, 0, 1, 1));
+        desktop_shell_set_background(integration->shell, output->output,
+                                     output->backgroundSurface);
+    }
 }
 
 DesktopShell *DesktopShell::instance()
@@ -82,9 +116,20 @@ DesktopShell *DesktopShell::instance()
     return desktopShell();
 }
 
-void DesktopShell::updateAvailableGeometry()
+void DesktopShell::addScreen(Output *output)
 {
-    DesktopShellIntegration::instance()->updateAvailableGeometry();
+    m_screens.append(output);
+}
+
+void DesktopShell::readEvents()
+{
+    wl_display_dispatch(m_display);
+}
+
+void DesktopShell::flushRequests()
+{
+    wl_display_dispatch_pending(m_display);
+    wl_display_flush(m_display);
 }
 
 #include "moc_desktopshell.cpp"

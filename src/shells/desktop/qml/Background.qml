@@ -24,18 +24,29 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SHELLVIEW_H
-#define SHELLVIEW_H
+import QtQuick 2.0
+import FluidCore 1.0
 
-#include "shellquickview.h"
+Item {
+    id: backgroundRoot
 
-class ShellView : public ShellQuickView
-{
-    Q_OBJECT
-public:
-    explicit ShellView(DesktopShell *shell);
+    Settings {
+        id: settings
+        schema: "org.hawaii.desktop"
+        group: "background"
+        onValueChanged: loadSettings()
+    }
 
-    QRectF availableGeometry() const;
-};
+    // Desktop wallpaper
+    Image {
+        id: background
+        anchors.fill: parent
+        fillMode: Image.Tile
+        source: settings.value("wallpaper-uri")
+        smooth: true
+    }
 
-#endif // SHELLVIEW_H
+    function loadSettings() {
+        background.source = settings.value("wallpaper-uri");
+    }
+}

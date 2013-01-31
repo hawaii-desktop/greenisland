@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,36 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef DESKTOPSHELLINTEGRATION_H
-#define DESKTOPSHELLINTEGRATION_H
+#ifndef BACKGROUND_H
+#define BACKGROUND_H
 
-#include "wayland-desktop-extension-client-protocol.h"
+#include <QQuickView>
 
-class DesktopShell;
-
-class DesktopShellIntegration
+class Background : public QQuickView
 {
+    Q_OBJECT
 public:
-    explicit DesktopShellIntegration(DesktopShell *shell);
-
-    static DesktopShellIntegration *createInstance(DesktopShell *shell);
-
-    static DesktopShellIntegration *instance();
-
-    static void handleGlobal(void *data,
-                             struct wl_registry *registry,
-                             uint32_t id,
-                             const char *interface,
-                             uint32_t version);
-
-    struct desktop_shell *protocol;
-
-public Q_SLOTS:
-    void updateAvailableGeometry();
-
-private:
-    static DesktopShellIntegration *m_instance;
-    DesktopShell *m_shell;
+    explicit Background();
 };
 
-#endif // DESKTOPSHELLINTEGRATION_H
+#endif // BACKGROUND_H

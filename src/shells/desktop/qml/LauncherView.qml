@@ -33,10 +33,10 @@ LauncherDropItem {
     id: launcher
 
     // Icon size
-    property real iconSize: settings.value("icon-size")
+    property int iconSize: settings.value("icon-size")
 
     // Tile size
-    property real tileSize: iconSize + (iconSize / 4)
+    property int tileSize: iconSize + (iconSize / 4)
 
     // Orientation
     property alias orientation: view.orientation
@@ -303,12 +303,14 @@ LauncherDropItem {
             iconSource: "view-grid-symbolic"
             width: tileSize
             height: width
+/*
             onClicked: root.appChooser.toggle();
 
             Connections {
                 target: root.appChooser
                 onVisibleChanged: checked = root.appChooser.visible
             }
+*/
         }
     }
 

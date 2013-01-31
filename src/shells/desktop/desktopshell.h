@@ -28,29 +28,30 @@
 #define DESKTOPSHELL_H
 
 #include <QObject>
-#include <QRect>
 
-class ShellView;
+class QSocketNotifier;
+
+class Output;
 
 class DesktopShell : public QObject
 {
     Q_OBJECT
 public:
     explicit DesktopShell();
-    ~DesktopShell();
 
     static DesktopShell *instance();
 
-    Q_INVOKABLE void updateAvailableGeometry();
+    void addScreen(Output *output);
 
-    ShellView *shellView() const {
-        return m_shellView;
-    }
+public Q_SLOTS:
+    void readEvents();
+    void flushRequests();
 
 private:
-    ShellView *m_shellView;
-
-    static const struct wl_registry_listener registryListener;
+    struct wl_display *m_display;
+    struct wl_registry *m_registry;
+    int m_fd;
+    QList<Output *> m_screens;
 };
 
 #endif // DESKTOPSHELL_H

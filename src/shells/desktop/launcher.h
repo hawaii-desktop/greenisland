@@ -24,24 +24,18 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QScreen>
+#ifndef LAUNCHER_H
+#define LAUNCHER_H
 
-#include "shellquickview.h"
+#include <QQuickView>
 
-ShellQuickView::ShellQuickView(DesktopShell *shell)
-    : QQuickView(new QWindow())
-    , m_shell(shell)
+class Launcher : public QQuickView
 {
-    // Intercept screen geometry changes
-    connect(screen(), SIGNAL(geometryChanged(QRect)),
-            this, SIGNAL(screenGeometryChanged()));
-    connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
-            this, SIGNAL(screenGeometryChanged()));
-}
+    Q_OBJECT
+public:
+    explicit Launcher();
 
-QRectF ShellQuickView::screenGeometry() const
-{
-    return screen()->availableGeometry();
-}
+    int tileSize() const;
+};
 
-#include "moc_shellquickview.cpp"
+#endif // LAUNCHER_H

@@ -11,19 +11,19 @@ include_directories(
 set(SOURCES
     main.cpp
     desktopshell.cpp
-    desktopshellintegration.cpp
-    shellquickview.cpp
-    shellview.cpp
-    notificationsdaemon.cpp
-    notificationsimage.cpp
-    policykitagent.cpp
+    waylandintegration.cpp
+    launcher.cpp
+    background.cpp
 )
+#    notificationsdaemon.cpp
+#    notificationsimage.cpp
+#    policykitagent.cpp
 
 wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
 
 qt5_add_resources(RESOURCES desktop-shell.qrc)
-qt5_add_dbus_adaptor(SOURCES ${CMAKE_SOURCE_DIR}/data/org.freedesktop.Notifications.xml
-    notificationsdaemon.h NotificationsDaemon)
+#qt5_add_dbus_adaptor(SOURCES ${CMAKE_SOURCE_DIR}/data/org.freedesktop.Notifications.xml
+#    notificationsdaemon.h NotificationsDaemon)
 
 add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
 qt5_use_modules(greenisland-desktop-shell Quick Widgets AccountsService)

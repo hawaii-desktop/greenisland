@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,21 +24,23 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QDebug>
-#include <QWindow>
+#include <QSurfaceFormat>
 #include <QQmlContext>
-#include <QQuickItem>
-#include <QScreen>
 
-#include "shellview.h"
-#include "desktopshellintegration.h"
+#include "background.h"
 
-ShellView::ShellView(DesktopShell *shell)
-    : ShellQuickView(shell)
+Background::Background()
+    : QQuickView(QUrl("qrc:///qml/Background.qml"))
 {
     // This is a frameless window that stays on top of everything
-    setTitle(QLatin1String("Desktop Shell"));
-    setFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+    setTitle(QLatin1String("Hawaii Background"));
+    setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
+
+    // Resize root item to this view
+    setResizeMode(QQuickView::SizeRootObjectToView);
+
+    // Set context properties
+    rootContext()->setContextProperty("quickview", this);
 
     // Make it transparent
     QSurfaceFormat surfaceFormat;
@@ -48,19 +50,6 @@ ShellView::ShellView(DesktopShell *shell)
     setClearBeforeRendering(true);
     setColor(QColor(Qt::transparent));
     winId();
-
-    // Set context properties
-    rootContext()->setContextProperty("shell", shell);
-    rootContext()->setContextProperty("quickview", this);
-
-    // Load QML view
-    setSource(QUrl("qrc:///qml/Shell.qml"));
-    setResizeMode(QQuickView::SizeRootObjectToView);
 }
 
-QRectF ShellView::availableGeometry() const
-{
-    return rootObject()->property("availableGeometry").toRectF();
-}
-
-#include "moc_shellview.cpp"
+#include "moc_background.cpp"

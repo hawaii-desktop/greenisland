@@ -135,6 +135,7 @@ Item {
 
     function loadSettings() {
         var alignmentVal = settings.value("alignment");
+        console.log("Launcher alignment:", alignmentVal);
         if (alignmentVal == "left")
             alignment = LauncherAlignment.Left;
         else if (alignmentVal == "right")
