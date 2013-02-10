@@ -1,6 +1,5 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_SERVER_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers
@@ -8,13 +7,15 @@ include_directories(
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
 )
 
-add_definitions(-DQT_PLUGIN)
+add_definitions(
+    -DQT_PLUGIN
+    -DQT_COMPOSITOR_QUICK
+)
 
 set(SOURCES
     main.cpp
-    textureblitter.cpp
     compositor.cpp
-    waylandintegration.cpp
+    desktopshellserver.cpp
 )
 
 wayland_add_protocol_server(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
@@ -23,7 +24,7 @@ wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.x
 qt5_add_resources(RESOURCES desktop.qrc)
 
 add_library(desktop SHARED ${SOURCES} ${RESOURCES})
-qt5_use_modules(desktop Compositor)
+qt5_use_modules(desktop Quick Compositor)
 set_target_properties(desktop PROPERTIES
     PREFIX ""
     LINK_FLAGS -L${WAYLAND_SERVER_LIBDIR}
