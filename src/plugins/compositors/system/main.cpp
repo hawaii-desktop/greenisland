@@ -37,7 +37,7 @@ public:
         return QStringList() << "system";
     }
 
-    VCompositor *create(const QString &key) {
+    VCompositor *create(const QString &key, const QRect &geometry) {
         if (key.toLower() == "system")
             return new SystemCompositor();
 

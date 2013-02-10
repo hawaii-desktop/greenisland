@@ -37,7 +37,7 @@ class GreenIsland : public QGuiApplication
 public:
     explicit GreenIsland(int &argc, char **argv);
 
-    VCompositor *loadCompositor(const QString &name);
+    VCompositor *loadCompositor(const QString &name, const QRect &geometry);
 };
 
 #endif // GREENISLAND_H

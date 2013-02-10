@@ -74,14 +74,14 @@ GreenIsland::GreenIsland(int &argc, char **argv)
     // Set application information
     setApplicationName("Green Island");
     setApplicationVersion("0.1.0");
-    setOrganizationName("Maui Project");
+    setOrganizationName("Hawaii");
     setOrganizationDomain("maui-project.org");
 
     // Custom log message handler
     qInstallMessageHandler(logMessageHandler);
 }
 
-VCompositor *GreenIsland::loadCompositor(const QString &name)
+VCompositor *GreenIsland::loadCompositor(const QString &name, const QRect &geometry)
 {
     // Load plugins
     QDir pluginsDir(QStringLiteral("%1/greenisland/compositors").arg(INSTALL_PLUGINSDIR));
@@ -95,7 +95,7 @@ VCompositor *GreenIsland::loadCompositor(const QString &name)
             if (!plugin)
                 continue;
 
-            return plugin->create(name);
+            return plugin->create(name, geometry);
         }
     }
 

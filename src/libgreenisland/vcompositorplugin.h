@@ -34,7 +34,7 @@
 
 struct GREENISLAND_EXPORT VCompositorFactoryInterface {
     virtual QStringList keys() const = 0;
-    virtual VCompositor *create(const QString &key) = 0;
+    virtual VCompositor *create(const QString &key, const QRect &geometry) = 0;
 };
 
 #define VCompositorFactoryInterface_iid "org.hawaii.GreenIsland.VCompositorFactoryInterface"
@@ -62,10 +62,11 @@ public:
         If a plugin cannot create the indicator, it should return 0 instead.
 
         \param key the key.
+        \param geometry initial geometry.
 
         \sa keys()
     */
-    virtual VCompositor *create(const QString &key) = 0;
+    virtual VCompositor *create(const QString &key, const QRect &geometry) = 0;
 };
 
 #endif // VCOMPOSITORPLUGIN_H

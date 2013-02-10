@@ -160,8 +160,15 @@ int main(int argc, char *argv[])
     if (pluginArg != -1 && pluginArg + 1 < arguments.size())
         pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
 
+    // Window geometry
+    QRect geometry;
+    if (arguments.contains(QLatin1String("--fullscreen")))
+        geometry = QGuiApplication::primaryScreen()->geometry();
+    else
+        geometry = QGuiApplication::primaryScreen()->availableGeometry();
+
     // Load the compositor plugin
-    VCompositor *compositor = app.loadCompositor(pluginName);
+    VCompositor *compositor = app.loadCompositor(pluginName, geometry);
     if (!compositor)
         qFatal("Unable to run the compositor because the '%s' plugin was not found",
                pluginName.toLocal8Bit().constData());
@@ -178,13 +185,10 @@ int main(int argc, char *argv[])
     compositor->runShell();
 
     // Show the compositor
-    if (arguments.contains(QLatin1String("--fullscreen"))) {
-        compositor->window()->setGeometry(QGuiApplication::primaryScreen()->geometry());
+    if (arguments.contains(QLatin1String("--fullscreen")))
         compositor->window()->showFullScreen();
-    } else {
-        compositor->window()->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+    else
         compositor->window()->showMaximized();
-    }
 
     return app.exec();
 }
