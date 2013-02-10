@@ -3,6 +3,8 @@
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
+** Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+**
 ** This file is part of the Qt Compositor.
 **
 ** $QT_BEGIN_LICENSE:BSD$
@@ -38,32 +40,35 @@
 **
 ****************************************************************************/
 
-#ifndef QWINDOWCOMPOSITOR_H
-#define QWINDOWCOMPOSITOR_H
+#ifndef COMPOSITOR_H
+#define COMPOSITOR_H
 
-#include "waylandcompositor.h"
-#include "waylandsurface.h"
-#include "textureblitter.h"
-#include "qopenglwindow.h"
+#include <VCompositor>
+
+#include <QtCompositor/waylandsurface.h>
 
 #include <QtGui/private/qopengltexturecache_p.h>
 #include <QObject>
 #include <QTimer>
 
-class QWindowCompositor : public QObject, public WaylandCompositor
+#include "textureblitter.h"
+#include "qopenglwindow.h"
+
+class DesktopCompositor : public QObject, public VCompositor
 {
     Q_OBJECT
 public:
-    QWindowCompositor(QOpenGLWindow *window);
-    ~QWindowCompositor();
+    DesktopCompositor(QOpenGLWindow *window);
+    ~DesktopCompositor();
 
-private slots:
+private Q_SLOTS:
     void surfaceDestroyed(QObject *object);
     void surfaceMapped();
     void surfaceUnmapped();
     void surfaceDamaged(const QRect &rect);
 
     void render();
+
 protected:
     void surfaceDamaged(WaylandSurface *surface, const QRect &rect);
     void surfaceCreated(WaylandSurface *surface);
@@ -82,9 +87,10 @@ protected:
     void ensureKeyboardFocusSurface(WaylandSurface *oldSurface);
     QImage makeBackgroundImage(const QString &fileName);
 
-private slots:
+private Q_SLOTS:
     void sendExpose();
     void updateCursor();
+    void outputResized(const QSize &size);
 
 private:
     QOpenGLWindow *m_window;
@@ -96,12 +102,12 @@ private:
     GLuint m_surface_fbo;
     QTimer m_renderScheduler;
 
-    //Dragging windows around
+    // Dragging windows around
     WaylandSurface *m_draggingWindow;
     bool m_dragKeyIsPressed;
     QPointF m_drag_diff;
 
-    //Cursor
+    // Cursor
     WaylandSurface *m_cursorSurface;
     int m_cursorHotspotX;
     int m_cursorHotspotY;
@@ -109,4 +115,4 @@ private:
     Qt::KeyboardModifiers m_modifiers;
 };
 
-#endif // QWINDOWCOMPOSITOR_H
+#endif // COMPOSITOR_H

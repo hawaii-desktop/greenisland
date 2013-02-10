@@ -3,6 +3,8 @@
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
+** Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+**
 ** This file is part of the Qt Compositor.
 **
 ** $QT_BEGIN_LICENSE:BSD$
@@ -38,19 +40,31 @@
 **
 ****************************************************************************/
 
-#include "qopenglwindow.h"
 #include <QTouchEvent>
 
-QOpenGLWindow::QOpenGLWindow(const QSurfaceFormat &format, const QRect &geometry)
-    : m_format(format)
+#include "qopenglwindow.h"
+#include "compositor.h"
+
+QOpenGLWindow::QOpenGLWindow(const QRect &geometry)
 {
+    // Set depth buffer size
+    m_format.setDepthBufferSize(16);
+
     setSurfaceType(QWindow::OpenGLSurface);
     setGeometry(geometry);
-    setFormat(format);
+    setFormat(m_format);
+
     create();
+
     m_context = new QOpenGLContext;
-    m_context->setFormat(format);
+    m_context->setFormat(m_format);
     m_context->create();
+}
+
+void QOpenGLWindow::resizeEvent(QResizeEvent *event)
+{
+    QWindow::resizeEvent(event);
+    Q_EMIT resized(size());
 }
 
 void QOpenGLWindow::touchEvent(QTouchEvent *event)
@@ -59,3 +73,5 @@ void QOpenGLWindow::touchEvent(QTouchEvent *event)
     // so make sure the touch is always accepted.
     event->accept();
 }
+
+#include "moc_qopenglwindow.cpp"

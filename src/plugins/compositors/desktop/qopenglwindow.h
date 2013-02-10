@@ -3,6 +3,8 @@
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
+** Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+**
 ** This file is part of the Qt Compositor.
 **
 ** $QT_BEGIN_LICENSE:BSD$
@@ -47,14 +49,21 @@
 
 class QOpenGLWindow : public QWindow
 {
+    Q_OBJECT
 public:
-    QOpenGLWindow(const QSurfaceFormat &format, const QRect &geometry);
-public:
+    QOpenGLWindow(const QRect &geometry);
+
     QOpenGLContext* context() { return m_context; }
     bool makeCurrent() { return m_context->makeCurrent(this); }
     void swapBuffers() { m_context->swapBuffers(this); }
+
+Q_SIGNALS:
+    void resized(const QSize &size);
+
 protected:
+    void resizeEvent(QResizeEvent *event);
     void touchEvent(QTouchEvent *event);
+
 private:
     QOpenGLContext *m_context;
     QSurfaceFormat m_format;

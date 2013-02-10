@@ -3,6 +3,8 @@
 ** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
 ** Contact: http://www.qt-project.org/legal
 **
+** Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+**
 ** This file is part of the Qt Compositor.
 **
 ** $QT_BEGIN_LICENSE:BSD$
@@ -38,8 +40,6 @@
 **
 ****************************************************************************/
 
-#include "qwindowcompositor.h"
-
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QTouchEvent>
@@ -53,8 +53,10 @@
 
 #include <QtCompositor/waylandinput.h>
 
-QWindowCompositor::QWindowCompositor(QOpenGLWindow *window)
-    : WaylandCompositor(window)
+#include "compositor.h"
+
+DesktopCompositor::DesktopCompositor(QOpenGLWindow *window)
+    : VCompositor(window)
     , m_window(window)
     , m_textureBlitter(0)
     , m_renderScheduler(this)
@@ -68,9 +70,11 @@ QWindowCompositor::QWindowCompositor(QOpenGLWindow *window)
     enableSubSurfaceExtension();
     m_window->makeCurrent();
 
+    showGraphicsInfo();
+
     m_textureCache = new QOpenGLTextureCache(m_window->context());
     m_textureBlitter = new TextureBlitter();
-    m_backgroundImage = makeBackgroundImage(QLatin1String(":/background.jpg"));
+    m_backgroundImage = makeBackgroundImage(QLatin1String(":/images/background.jpg"));
     m_renderScheduler.setSingleShot(true);
     connect(&m_renderScheduler,SIGNAL(timeout()),this,SLOT(render()));
 
@@ -83,16 +87,17 @@ QWindowCompositor::QWindowCompositor(QOpenGLWindow *window)
 
     setOutputGeometry(QRect(QPoint(0, 0), window->size()));
     setOutputRefreshRate(qGuiApp->primaryScreen()->refreshRate());
+
+    connect(window, SIGNAL(resized(QSize)), this, SLOT(outputResized(QSize)));
 }
 
-QWindowCompositor::~QWindowCompositor()
+DesktopCompositor::~DesktopCompositor()
 {
     delete m_textureBlitter;
     delete m_textureCache;
 }
 
-
-QImage QWindowCompositor::makeBackgroundImage(const QString &fileName)
+QImage DesktopCompositor::makeBackgroundImage(const QString &fileName)
 {
     Q_ASSERT(m_window);
 
@@ -104,22 +109,21 @@ QImage QWindowCompositor::makeBackgroundImage(const QString &fileName)
 
     QSize imageSize = baseImage.size();
     for (int y = 0; y < height; y += imageSize.height()) {
-        for (int x = 0; x < width; x += imageSize.width()) {
+        for (int x = 0; x < width; x += imageSize.width())
             painter.drawImage(x, y, baseImage);
-        }
     }
 
     return patternedBackground;
 }
 
-void QWindowCompositor::ensureKeyboardFocusSurface(WaylandSurface *oldSurface)
+void DesktopCompositor::ensureKeyboardFocusSurface(WaylandSurface *oldSurface)
 {
     WaylandSurface *kbdFocus = defaultInputDevice()->keyboardFocus();
     if (kbdFocus == oldSurface || !kbdFocus)
         defaultInputDevice()->setKeyboardFocus(m_surfaces.isEmpty() ? 0 : m_surfaces.last());
 }
 
-void QWindowCompositor::surfaceDestroyed(QObject *object)
+void DesktopCompositor::surfaceDestroyed(QObject *object)
 {
     WaylandSurface *surface = static_cast<WaylandSurface *>(object);
     m_surfaces.removeOne(surface);
@@ -127,7 +131,7 @@ void QWindowCompositor::surfaceDestroyed(QObject *object)
     m_renderScheduler.start(0);
 }
 
-void QWindowCompositor::surfaceMapped()
+void DesktopCompositor::surfaceMapped()
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
     QPoint pos;
@@ -151,7 +155,7 @@ void QWindowCompositor::surfaceMapped()
     m_renderScheduler.start(0);
 }
 
-void QWindowCompositor::surfaceUnmapped()
+void DesktopCompositor::surfaceUnmapped()
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
     if (m_surfaces.removeOne(surface))
@@ -160,20 +164,20 @@ void QWindowCompositor::surfaceUnmapped()
     ensureKeyboardFocusSurface(surface);
 }
 
-void QWindowCompositor::surfaceDamaged(const QRect &rect)
+void DesktopCompositor::surfaceDamaged(const QRect &rect)
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
     surfaceDamaged(surface, rect);
 }
 
-void QWindowCompositor::surfaceDamaged(WaylandSurface *surface, const QRect &rect)
+void DesktopCompositor::surfaceDamaged(WaylandSurface *surface, const QRect &rect)
 {
     Q_UNUSED(surface)
     Q_UNUSED(rect)
     m_renderScheduler.start(0);
 }
 
-void QWindowCompositor::surfaceCreated(WaylandSurface *surface)
+void DesktopCompositor::surfaceCreated(WaylandSurface *surface)
 {
     connect(surface, SIGNAL(destroyed(QObject *)), this, SLOT(surfaceDestroyed(QObject *)));
     connect(surface, SIGNAL(mapped()), this, SLOT(surfaceMapped()));
@@ -183,13 +187,13 @@ void QWindowCompositor::surfaceCreated(WaylandSurface *surface)
     m_renderScheduler.start(0);
 }
 
-void QWindowCompositor::sendExpose()
+void DesktopCompositor::sendExpose()
 {
     WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
     surface->sendOnScreenVisibilityChange(true);
 }
 
-void QWindowCompositor::updateCursor()
+void DesktopCompositor::updateCursor()
 {
     if (!m_cursorSurface)
         return;
@@ -203,12 +207,12 @@ void QWindowCompositor::updateCursor()
     }
 }
 
-QPointF QWindowCompositor::toSurface(WaylandSurface *surface, const QPointF &pos) const
+QPointF DesktopCompositor::toSurface(WaylandSurface *surface, const QPointF &pos) const
 {
     return pos - surface->pos();
 }
 
-void QWindowCompositor::setCursorSurface(WaylandSurface *surface, int hotspotX, int hotspotY)
+void DesktopCompositor::setCursorSurface(WaylandSurface *surface, int hotspotX, int hotspotY)
 {
     if ((m_cursorSurface != surface) && surface)
         connect(surface, SIGNAL(damaged(QRect)), this, SLOT(updateCursor()));
@@ -218,7 +222,7 @@ void QWindowCompositor::setCursorSurface(WaylandSurface *surface, int hotspotX, 
     m_cursorHotspotY = hotspotY;
 }
 
-WaylandSurface *QWindowCompositor::surfaceAt(const QPointF &point, QPointF *local)
+WaylandSurface *DesktopCompositor::surfaceAt(const QPointF &point, QPointF *local)
 {
     for (int i = m_surfaces.size() - 1; i >= 0; --i) {
         WaylandSurface *surface = m_surfaces.at(i);
@@ -232,7 +236,7 @@ WaylandSurface *QWindowCompositor::surfaceAt(const QPointF &point, QPointF *loca
     return 0;
 }
 
-GLuint QWindowCompositor::composeSurface(WaylandSurface *surface)
+GLuint DesktopCompositor::composeSurface(WaylandSurface *surface)
 {
     GLuint texture = 0;
 
@@ -246,16 +250,16 @@ GLuint QWindowCompositor::composeSurface(WaylandSurface *surface)
     }
 
     functions->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                       GL_TEXTURE_2D, texture, 0);
+                                      GL_TEXTURE_2D, texture, 0);
     paintChildren(surface,surface);
     functions->glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                       GL_TEXTURE_2D,0, 0);
+                                      GL_TEXTURE_2D,0, 0);
 
     functions->glBindFramebuffer(GL_FRAMEBUFFER, 0);
     return texture;
 }
 
-void QWindowCompositor::paintChildren(WaylandSurface *surface, WaylandSurface *window) {
+void DesktopCompositor::paintChildren(WaylandSurface *surface, WaylandSurface *window) {
 
     if (surface->subSurfaces().size() == 0)
         return;
@@ -278,8 +282,7 @@ void QWindowCompositor::paintChildren(WaylandSurface *surface, WaylandSurface *w
     }
 }
 
-
-void QWindowCompositor::render()
+void DesktopCompositor::render()
 {
     m_window->makeCurrent();
     m_backgroundTexture = m_textureCache->bindTexture(QOpenGLContext::currentContext(),m_backgroundImage);
@@ -288,7 +291,7 @@ void QWindowCompositor::render()
     // Draw the background image texture
     m_textureBlitter->drawTexture(m_backgroundTexture,
                                   QRect(QPoint(0, 0), m_backgroundImage.size()),
-                                  window()->size(),
+                                  m_window->size(),
                                   0, false, true);
 
     foreach (WaylandSurface *surface, m_surfaces) {
@@ -303,7 +306,7 @@ void QWindowCompositor::render()
     m_window->swapBuffers();
 }
 
-bool QWindowCompositor::eventFilter(QObject *obj, QEvent *event)
+bool DesktopCompositor::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj != m_window)
         return false;
@@ -421,3 +424,11 @@ bool QWindowCompositor::eventFilter(QObject *obj, QEvent *event)
     }
     return false;
 }
+
+void DesktopCompositor::outputResized(const QSize &size)
+{
+    m_renderScheduler.start(0);
+    setOutputGeometry(QRect(QPoint(0, 0), size));
+}
+
+#include "moc_compositor.cpp"
