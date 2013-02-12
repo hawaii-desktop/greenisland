@@ -27,11 +27,11 @@
 #ifndef VCOMPOSITOR_H
 #define VCOMPOSITOR_H
 
-#include <QtCompositor/waylandcompositor.h>
+#include <QtCompositor/QWaylandCompositor>
 
 #include <VGreenIslandGlobal>
 
-class GREENISLAND_EXPORT VCompositor : public WaylandCompositor
+class GREENISLAND_EXPORT VCompositor : public QWaylandCompositor
 {
 public:
     explicit VCompositor(QWindow *window = 0);

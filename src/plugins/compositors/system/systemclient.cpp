@@ -54,7 +54,7 @@ void SystemClient::unbindClientResource()
     m_resource = 0;
 }
 
-WaylandSurface *SystemClient::surfaceForOutput(Wayland::Output *output) const
+QWaylandSurface *SystemClient::surfaceForOutput(QtWayland::Output *output) const
 {
     for (int i = 0; i < m_mappings.size(); i++) {
         OutputSurfaceMapping mapping = m_mappings.at(i);
@@ -66,7 +66,7 @@ WaylandSurface *SystemClient::surfaceForOutput(Wayland::Output *output) const
     return 0;
 }
 
-void SystemClient::mapSurfaceToOutput(WaylandSurface *surface, Wayland::Output *output)
+void SystemClient::mapSurfaceToOutput(QWaylandSurface *surface, QtWayland::Output *output)
 {
     OutputSurfaceMapping mapping;
     mapping.first = output;

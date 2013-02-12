@@ -27,7 +27,7 @@
 #ifndef SYSTEMCOMPOSITORSERVER_H
 #define SYSTEMCOMPOSITORSERVER_H
 
-#include <QtCompositor/wlcompositor.h>
+#include <QtCompositor/private/qwlcompositor_p.h>
 #include <wayland-util.h>
 
 #include "wayland-system-compositor-server-protocol.h"
@@ -39,10 +39,10 @@ class SystemCompositorServer
 {
 public:
     explicit SystemCompositorServer(SystemCompositor *compositor,
-                                    Wayland::Compositor *handle);
+                                    QtWayland::Compositor *handle);
 
     SystemCompositor *compositor;
-    Wayland::Compositor *handle;
+    QtWayland::Compositor *handle;
     wl_client *dmClient;
     wl_resource *dmResource;
     SystemClientList systemClients;

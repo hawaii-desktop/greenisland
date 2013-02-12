@@ -37,7 +37,7 @@
 #include <EGL/eglext.h>
 
 VCompositor::VCompositor(QWindow *window)
-    : WaylandCompositor(window)
+    : QWaylandCompositor(window)
 {
 }
 

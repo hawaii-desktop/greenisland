@@ -27,11 +27,10 @@
 #include <QDebug>
 #include <QQuickItem>
 
-#include <QtCompositor/wlcompositor.h>
-#include <QtCompositor/wlsurface.h>
-#include <QtCompositor/wloutput.h>
-#include <QtCompositor/waylandsurface.h>
-#include <QtCompositor/waylandsurfaceitem.h>
+#include <QtCompositor/private/qwlsurface_p.h>
+#include <QtCompositor/private/qwloutput_p.h>
+#include <QtCompositor/QWaylandSurface>
+#include <QtCompositor/QWaylandSurfaceItem>
 
 #include "systemcompositorserver.h"
 #include "wayland-system-compositor-client-protocol.h"
@@ -54,7 +53,7 @@ const struct wl_system_client_interface SystemCompositorServer::systemClientInte
 };
 
 SystemCompositorServer::SystemCompositorServer(SystemCompositor *compositor,
-                                               Wayland::Compositor *handle)
+                                               QtWayland::Compositor *handle)
     : compositor(compositor)
     , handle(handle)
     , dmClient(0)
@@ -123,7 +122,7 @@ void SystemCompositorServer::handlePresentSurface(wl_client *client,
                                                   wl_resource *output_resource)
 {
     SystemCompositorServer *self = static_cast<SystemCompositorServer *>(resource->data);
-    Wayland::Output *output = static_cast<Wayland::Output *>(output_resource->data);
+    QtWayland::Output *output = static_cast<QtWayland::Output *>(output_resource->data);
 
     // Find a system client associated with the Wayland client passed to this function
     SystemClient *systemClient = 0;
@@ -140,9 +139,9 @@ void SystemCompositorServer::handlePresentSurface(wl_client *client,
     }
 
     // Find an already mapped surface
-    WaylandSurface *mappedSurface = systemClient->surfaceForOutput(output);
+    QWaylandSurface *mappedSurface = systemClient->surfaceForOutput(output);
     if (!mappedSurface) {
-        mappedSurface = new WaylandSurface(Wayland::resolve<Wayland::Surface>(surface));
+        mappedSurface = new QWaylandSurface(QtWayland::resolve<QtWayland::Surface>(surface));
         systemClient->mapSurfaceToOutput(mappedSurface, output);
     }
 
@@ -218,16 +217,16 @@ void SystemCompositorServer::handleSwitchToClient(wl_client *client,
 
     // Activate surface
     for (int i = 0; i < systemClient->surfaces().size(); i++) {
-        WaylandSurface *surface = systemClient->surfaces().at(i);
+        QWaylandSurface *surface = systemClient->surfaces().at(i);
 
 #if 0
         if (surface->hasShellSurface()) {
-            WaylandSurfaceItem *item = surface->surfaceItem();
+            QWaylandSurfaceItem *item = surface->surfaceItem();
             if (item)
                 item->takeFocus();
         }
 #else
-        WaylandCompositor *compositor = static_cast<WaylandCompositor *>(self->compositor);
+        QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(self->compositor);
         compositor->handle()->setDirectRenderSurface(surface->handle(),
                                                      self->compositor->openglContext());
 #endif
