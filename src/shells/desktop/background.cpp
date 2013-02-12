@@ -24,32 +24,32 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QSurfaceFormat>
+#include <QDebug>
+#include <QQmlEngine>
+#include <QQmlComponent>
 #include <QQmlContext>
 
 #include "background.h"
 
 Background::Background()
-    : QQuickView(QUrl("qrc:///qml/Background.qml"))
+    : QObject()
 {
+    QQmlEngine engine;
+    QQmlComponent component(&engine);
+    component.loadUrl(QUrl("qrc:///qml/Background.qml"));
+    if (!component.isReady())
+        qFatal(qPrintable(component.errorString()));
+
+    QObject *topLevel = component.create();
+    m_window = qobject_cast<QQuickWindow *>(topLevel);
+    if (!m_window)
+        qFatal("Error: Background root item must be a Window!\n");
+
     // This is a frameless window that stays on top of everything
-    setTitle(QLatin1String("Hawaii Background"));
-    setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
+    m_window->setTitle(QLatin1String("Hawaii Background"));
+    m_window->setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
 
-    // Resize root item to this view
-    setResizeMode(QQuickView::SizeRootObjectToView);
-
-    // Set context properties
-    rootContext()->setContextProperty("quickview", this);
-
-    // Make it transparent
-    QSurfaceFormat surfaceFormat;
-    surfaceFormat.setSamples(16);
-    surfaceFormat.setAlphaBufferSize(8);
-    setFormat(surfaceFormat);
-    setClearBeforeRendering(true);
-    setColor(QColor(Qt::transparent));
-    winId();
+    m_window->winId();
 }
 
 #include "moc_background.cpp"

@@ -25,10 +25,15 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 import FluidCore 1.0
 
-Item {
-    id: backgroundRoot
+Window {
+    id: backgroundWindow
+    x: 0
+    y: 0
+    width: 1
+    height: 1
 
     Settings {
         id: settings

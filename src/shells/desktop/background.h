@@ -27,13 +27,20 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
-#include <QQuickView>
+#include <QQuickWindow>
 
-class Background : public QQuickView
+class Background : public QObject
 {
     Q_OBJECT
 public:
     explicit Background();
+
+    QQuickWindow *window() const {
+        return m_window;
+    }
+
+private:
+    QQuickWindow *m_window;
 };
 
 #endif // BACKGROUND_H

@@ -110,27 +110,28 @@ void WaylandIntegration::handleConfigure(void *data,
 
     Output *output;
     wl_list_for_each(output, &object->outputs, link) {
-        //DesktopShell::instance()->flushRequests();
-        //QGuiApplication::processEvents();
+        DesktopShell::instance()->flushRequests();
+        QGuiApplication::processEvents();
+        DesktopShell::instance()->flushRequests();
 
         if (output->backgroundSurface == surface) {
             QRect geometry(0, 0, width, height);
             qDebug() << "<============= Background" << geometry;
-            output->background->winId();
-            output->background->setGeometry(geometry);
-            output->background->show();
+            output->background->window()->setGeometry(geometry);
+            output->background->window()->show();
         }
 
         if (output->launcherSurface == surface) {
             QRect geometry(0, 0, width, output->launcher->tileSize());
             qDebug() << "<============= Launcher" << geometry;
-            output->launcher->winId();
             output->launcher->setGeometry(geometry);
             output->launcher->show();
         }
 
-        //DesktopShell::instance()->flushRequests();
-        //QGuiApplication::processEvents();
+        DesktopShell::instance()->flushRequests();
+        QGuiApplication::processEvents();
+        DesktopShell::instance()->flushRequests();
+        QGuiApplication::processEvents();
     }
 }
 

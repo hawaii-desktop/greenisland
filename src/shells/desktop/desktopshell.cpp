@@ -87,27 +87,23 @@ DesktopShell::DesktopShell()
 
     Output *output;
     wl_list_for_each(output, &integration->outputs, link) {
+        // Set a wallpaper for each output
+        output->background = new Background();
+        output->backgroundSurface = static_cast<struct wl_surface *>(
+                    native->nativeResourceForWindow("surface", output->background->window()));
+        wl_surface_set_user_data(output->backgroundSurface, output->background);
+        desktop_shell_set_background(integration->shell, output->output,
+                                     output->backgroundSurface);
+        continue;
+
         // Create a launcher window for each output
         output->launcher = new Launcher();
-        QCoreApplication::processEvents();
-        flushRequests();
         output->launcherSurface = static_cast<struct wl_surface *>(
                     native->nativeResourceForWindow("surface", output->launcher));
         wl_surface_set_user_data(output->launcherSurface, output->launcher);
         output->launcher->setGeometry(QRect(0, 0, 1, 1));
         desktop_shell_set_panel(integration->shell, output->output,
                                 output->launcherSurface);
-
-        // Set a wallpaper for each output
-        output->background = new Background();
-        QCoreApplication::processEvents();
-        flushRequests();
-        output->backgroundSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface", output->background));
-        wl_surface_set_user_data(output->backgroundSurface, output->background);
-        output->background->setGeometry(QRect(0, 0, 1, 1));
-        desktop_shell_set_background(integration->shell, output->output,
-                                     output->backgroundSurface);
     }
 }
 
