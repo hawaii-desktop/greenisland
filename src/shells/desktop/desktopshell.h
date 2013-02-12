@@ -29,19 +29,36 @@
 
 #include <QObject>
 
-class QSocketNotifier;
+class QScreen;
 
-class Output;
+class Launcher;
+class Background;
+
+class Output
+{
+public:
+    QScreen *screen;
+    struct wl_output *output;
+
+    Launcher *launcher;
+    struct wl_surface *launcherSurface;
+
+    Background *background;
+    struct wl_surface *backgroundSurface;
+};
 
 class DesktopShell : public QObject
 {
     Q_OBJECT
 public:
     explicit DesktopShell();
+    ~DesktopShell();
 
     static DesktopShell *instance();
 
-    void addScreen(Output *output);
+    QList<Output *> outputs() const {
+        return m_outputs;
+    }
 
 public Q_SLOTS:
     void readEvents();
@@ -49,9 +66,9 @@ public Q_SLOTS:
 
 private:
     struct wl_display *m_display;
-    struct wl_registry *m_registry;
     int m_fd;
-    QList<Output *> m_screens;
+    struct wl_registry *m_registry;
+    QList<Output *> m_outputs;
 };
 
 #endif // DESKTOPSHELL_H

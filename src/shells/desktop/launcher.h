@@ -33,7 +33,7 @@ class Launcher : public QQuickView
 {
     Q_OBJECT
 public:
-    explicit Launcher();
+    explicit Launcher(QScreen *screen, QObject *parent = 0);
 
     int tileSize() const;
 };

@@ -30,21 +30,6 @@
 #include "wayland-desktop-extension-client-protocol.h"
 
 class DesktopShell;
-class Launcher;
-class Background;
-
-class Output
-{
-public:
-    struct wl_output *output;
-    struct wl_list link;
-
-    Launcher *launcher;
-    struct wl_surface *launcherSurface;
-
-    Background *background;
-    struct wl_surface *backgroundSurface;
-};
 
 class WaylandIntegration
 {
@@ -56,7 +41,7 @@ public:
     static WaylandIntegration *instance();
 
     struct desktop_shell *shell;
-    struct wl_list outputs;
+    int protocolSync;
 
     static const struct wl_registry_listener registryListener;
 

@@ -30,10 +30,11 @@
 
 #include "launcher.h"
 
-Launcher::Launcher()
+Launcher::Launcher(QScreen *screen, QObject *parent)
     : QQuickView(QUrl("qrc:///qml/Launcher.qml"))
 {
     // This is a frameless window that stays on top of everything
+    setScreen(screen);
     setTitle(QLatin1String("Hawaii Launcher"));
     setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
 

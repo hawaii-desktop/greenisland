@@ -33,7 +33,7 @@ class Background : public QObject
 {
     Q_OBJECT
 public:
-    explicit Background();
+    explicit Background(QScreen *screen, QObject *parent = 0);
 
     QQuickWindow *window() const {
         return m_window;

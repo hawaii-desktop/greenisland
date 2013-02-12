@@ -53,68 +53,94 @@ DesktopShell::DesktopShell()
 
     // Platform native interface
     QPlatformNativeInterface *native =
-        QGuiApplication::platformNativeInterface();
+            QGuiApplication::platformNativeInterface();
     Q_ASSERT(native);
 
-    // Get the Wayland display and registry
+    // Get Wayland display
     m_display = static_cast<struct wl_display *>(
-                    native->nativeResourceForIntegration("display"));
+                native->nativeResourceForIntegration("display"));
     Q_ASSERT(m_display);
+
+    // Display file descriptor
     m_fd = wl_display_get_fd(m_display);
+    Q_ASSERT(m_fd > -1);
+
+    // Wayland registry
     m_registry = wl_display_get_registry(m_display);
     Q_ASSERT(m_registry);
 
-    // Wayland integration
-    WaylandIntegration *integration = WaylandIntegration::createInstance(this);
-    wl_list_init(&integration->outputs);
-    wl_registry_add_listener(m_registry, &WaylandIntegration::registryListener,
-                             WaylandIntegration::instance());
-
+    // Receive Wayland events
     QSocketNotifier *readNotifier = new QSocketNotifier(m_fd, QSocketNotifier::Read, this);
     connect(readNotifier, SIGNAL(activated(int)), this, SLOT(readEvents()));
 
+    // Dispatch Wayland events
     QAbstractEventDispatcher *dispatcher = QGuiApplicationPrivate::eventDispatcher;
     connect(dispatcher, SIGNAL(awake()), this, SLOT(flushRequests()));
 
+    // Wayland integration
+    WaylandIntegration *integration = WaylandIntegration::createInstance(this);
+    wl_registry_add_listener(m_registry, &WaylandIntegration::registryListener,
+                             WaylandIntegration::instance());
+
+    // Wait until QPA plugin detected all outputs and we registered the
+    // desktop shell listener
     QElapsedTimer timeout;
     timeout.start();
     do {
         QGuiApplication::processEvents();
-    } while (m_screens.isEmpty() && timeout.elapsed() < 1000);
+    } while (integration->protocolSync < 2 && timeout.elapsed() < 1000);
 
-    if (m_screens.isEmpty())
-        qFatal("Failed to receive globals from display");
+    // If we couldn't
+    if (integration->protocolSync < 2)
+        qFatal("Lost synchronization with compositor");
 
-    Output *output;
-    wl_list_for_each(output, &integration->outputs, link) {
-        // Set a wallpaper for each output
-        output->background = new Background();
+    qDebug() << "Number of screens detected:" << QGuiApplication::screens().size();
+
+    foreach (QScreen *screen, QGuiApplication::screens()) {
+        Output *output = new Output();
+
+        qDebug() << "Creating shell surfaces on" << screen->name();
+
+        m_outputs.append(output);
+
+        // Get native wl_output for the current screen
+        output->screen = screen;
+        output->output = static_cast<struct wl_output *>(
+                    native->nativeResourceForScreen("output", output->screen));
+
+        // Set a wallpaper for each screen
+        output->background = new Background(screen, this);
         output->backgroundSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface", output->background->window()));
+                    native->nativeResourceForWindow("surface",
+                                                    output->background->window()));
         wl_surface_set_user_data(output->backgroundSurface, output->background);
         desktop_shell_set_background(integration->shell, output->output,
                                      output->backgroundSurface);
-        continue;
 
+#if 0
         // Create a launcher window for each output
-        output->launcher = new Launcher();
+        output->launcher = new Launcher(screen, this);
         output->launcherSurface = static_cast<struct wl_surface *>(
                     native->nativeResourceForWindow("surface", output->launcher));
         wl_surface_set_user_data(output->launcherSurface, output->launcher);
         output->launcher->setGeometry(QRect(0, 0, 1, 1));
         desktop_shell_set_panel(integration->shell, output->output,
                                 output->launcherSurface);
+#endif
+    }
+}
+
+DesktopShell::~DesktopShell()
+{
+    foreach (Output *output, m_outputs) {
+        m_outputs.removeOne(output);
+        delete output;
     }
 }
 
 DesktopShell *DesktopShell::instance()
 {
     return desktopShell();
-}
-
-void DesktopShell::addScreen(Output *output)
-{
-    m_screens.append(output);
 }
 
 void DesktopShell::readEvents()

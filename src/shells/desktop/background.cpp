@@ -31,8 +31,8 @@
 
 #include "background.h"
 
-Background::Background()
-    : QObject()
+Background::Background(QScreen *screen, QObject *parent)
+    : QObject(parent)
 {
     QQmlEngine engine;
     QQmlComponent component(&engine);
@@ -44,11 +44,12 @@ Background::Background()
     m_window = qobject_cast<QQuickWindow *>(topLevel);
     if (!m_window)
         qFatal("Error: Background root item must be a Window!\n");
+    m_window->setScreen(screen);
 
     // This is a frameless window that stays on top of everything
-    m_window->setTitle(QLatin1String("Hawaii Background"));
     m_window->setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
 
+    // Create the platform window
     m_window->winId();
 }
 

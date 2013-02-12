@@ -49,6 +49,7 @@ const struct desktop_shell_listener WaylandIntegration::listener = {
 
 WaylandIntegration::WaylandIntegration(DesktopShell *shell)
     : shell(0)
+    , protocolSync(0)
     , m_shell(shell)
 {
     m_instance = this;
@@ -72,10 +73,16 @@ void WaylandIntegration::handleGlobal(void *data,
                                       const char *interface,
                                       uint32_t version)
 {
-    // Platform native interface
-    QPlatformNativeInterface *native =
-        QGuiApplication::platformNativeInterface();
-    Q_ASSERT(native);
+    Q_UNUSED(version);
+
+    qDebug() << "Wayland interface:" << interface;
+
+    if (strcmp(interface, "wl_output") == 0) {
+        WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
+        Q_ASSERT(object);
+
+        object->protocolSync++;
+    }
 
     if (strcmp(interface, "desktop_shell") == 0) {
         WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
@@ -84,18 +91,7 @@ void WaylandIntegration::handleGlobal(void *data,
         object->shell = static_cast<struct desktop_shell *>(
                             wl_registry_bind(registry, id, &desktop_shell_interface, 1));
         desktop_shell_add_listener(object->shell, &listener, data);
-    } else if (strcmp(interface, "wl_output") == 0) {
-        WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
-        Q_ASSERT(object);
-
-        Output *output = new Output();
-        qDebug() << "Registered a new output" << id;
-        output->output = static_cast<struct wl_output *>(
-                             wl_registry_bind(registry, id, &wl_output_interface, 1));
-        Q_ASSERT(output->output);
-        wl_list_insert(&object->outputs, &output->link);
-
-        object->m_shell->addScreen(output);
+        object->protocolSync++;
     }
 }
 
@@ -108,12 +104,9 @@ void WaylandIntegration::handleConfigure(void *data,
     WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
     Q_ASSERT(object);
 
-    Output *output;
-    wl_list_for_each(output, &object->outputs, link) {
-        DesktopShell::instance()->flushRequests();
-        QGuiApplication::processEvents();
-        DesktopShell::instance()->flushRequests();
+    DesktopShell *shell = DesktopShell::instance();
 
+    foreach (Output *output, shell->outputs()) {
         if (output->backgroundSurface == surface) {
             QRect geometry(0, 0, width, height);
             qDebug() << "<============= Background" << geometry;
@@ -121,17 +114,14 @@ void WaylandIntegration::handleConfigure(void *data,
             output->background->window()->show();
         }
 
+#if 0
         if (output->launcherSurface == surface) {
             QRect geometry(0, 0, width, output->launcher->tileSize());
             qDebug() << "<============= Launcher" << geometry;
             output->launcher->setGeometry(geometry);
             output->launcher->show();
         }
-
-        DesktopShell::instance()->flushRequests();
-        QGuiApplication::processEvents();
-        DesktopShell::instance()->flushRequests();
-        QGuiApplication::processEvents();
+#endif
     }
 }
 

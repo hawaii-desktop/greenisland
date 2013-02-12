@@ -34,6 +34,7 @@ Window {
     y: 0
     width: 1
     height: 1
+    title: "Hawaii Background"
 
     Settings {
         id: settings
