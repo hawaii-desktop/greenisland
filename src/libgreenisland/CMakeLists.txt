@@ -5,21 +5,35 @@ include_directories(
 )
 
 set(SOURCES
-    vcompositor.cpp
-    vcompositorplugin.cpp
     vindicator.cpp
     vindicatorplugin.cpp
 )
 
 set(HEADERS
-    vcompositor.h
-    vcompositorplugin.h
     vindicator.h
     vindicatorplugin.h
 )
 
+if(Qt5Compositor_FOUND)
+    set(SOURCES
+        ${SOURCES}
+        vcompositor.cpp
+        vcompositorplugin.cpp
+    )
+    set(HEADERS
+        ${HEADERS}
+        vcompositor.h
+        vcompositorplugin.h
+    )
+endif()
+
 add_library(GreenIsland SHARED ${SOURCES})
-qt5_use_modules(GreenIsland Quick Compositor)
+if(Qt5Compositor_FOUND)
+    set(GreenIsland_MODULES Quick Compositor)
+else()
+    set(GreenIsland_MODULES Quick)
+endif()
+qt5_use_modules(GreenIsland ${GreenIsland_MODULES})
 set_target_properties(GreenIsland PROPERTIES
     VERSION ${GREENISLAND_VERSION_STRING}
     SOVERSION ${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH})

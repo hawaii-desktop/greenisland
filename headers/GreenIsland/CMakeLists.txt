@@ -1,10 +1,16 @@
 set(HEADERS
-    VCompositor
-    VCompositorPlugin
     VIndicator
     VIndicatorPlugin
     VGreenIslandGlobal
 )
+
+if(Qt5Compositor_FOUND)
+    set(HEADERS
+        ${HEADERS}
+        VCompositor
+        VCompositorPlugin
+    )
+endif()
 
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/GreenIsland)
 

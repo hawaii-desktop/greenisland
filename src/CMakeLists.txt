@@ -1,5 +1,7 @@
 add_subdirectory(libgreenisland)
-add_subdirectory(greenisland)
+if(Qt5Compositor_FOUND)
+    add_subdirectory(greenisland)
+endif()
 add_subdirectory(shells)
 add_subdirectory(plugins)
 add_subdirectory(imports)
