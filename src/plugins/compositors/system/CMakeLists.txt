@@ -1,5 +1,6 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
     ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_SERVER_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers

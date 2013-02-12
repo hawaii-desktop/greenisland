@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/wlsurface.h>
-#include <QtCompositor/waylandsurface.h>
+#include <QtCompositor/private/qwlsurface_p.h>
+#include <QtCompositor/QWaylandSurface>
 
 #include "desktopshellserver.h"
 #include "compositor.h"
@@ -35,7 +35,7 @@ const struct desktop_shell_interface DesktopShellServer::shell_interface = {
     DesktopShellServer::set_geometry
 };
 
-DesktopShellServer::DesktopShellServer(DesktopCompositor *compositor, Wayland::Compositor *handle)
+DesktopShellServer::DesktopShellServer(DesktopCompositor *compositor, QtWayland::Compositor *handle)
     : m_compositor(compositor)
     , m_compositorHandle(handle)
     , m_surface(0)
@@ -72,7 +72,7 @@ void DesktopShellServer::set_surface(struct wl_client *client,
                                      struct wl_resource *surface)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_surface = Wayland::resolve<Wayland::Surface>(surface);
+    self->m_surface = QtWayland::resolve<QtWayland::Surface>(surface);
     if (!self->m_surface)
         return;
     self->m_surface->waylandSurface()->setWindowProperty("special", true);

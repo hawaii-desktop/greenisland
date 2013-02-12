@@ -29,11 +29,11 @@
 
 #include <QPair>
 
-#include <QtCompositor/wloutput.h>
-#include <QtCompositor/waylandsurface.h>
+#include <QtCompositor/private/qwloutput_p.h>
+#include <QtCompositor/QWaylandSurface>
 
-typedef QList<WaylandSurface *> WaylandSurfaceList;
-typedef QPair<Wayland::Output *, WaylandSurface *> OutputSurfaceMapping;
+typedef QList<QWaylandSurface *> WaylandSurfaceList;
+typedef QPair<QtWayland::Output *, QWaylandSurface *> OutputSurfaceMapping;
 
 class SystemClient
 {
@@ -46,8 +46,8 @@ public:
     void setClientResource(wl_resource *res);
     void unbindClientResource();
 
-    WaylandSurface *surfaceForOutput(Wayland::Output *output) const;
-    void mapSurfaceToOutput(WaylandSurface *surface, Wayland::Output *output);
+    QWaylandSurface *surfaceForOutput(QtWayland::Output *output) const;
+    void mapSurfaceToOutput(QWaylandSurface *surface, QtWayland::Output *output);
 
     WaylandSurfaceList surfaces() const;
 

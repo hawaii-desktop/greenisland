@@ -30,10 +30,9 @@
 #include <QQmlContext>
 #include <QQuickItem>
 
-#include <QtCompositor/wlsurface.h>
-#include <QtCompositor/waylandsurface.h>
-#include <QtCompositor/waylandsurfaceitem.h>
-#include <QtCompositor/waylandinput.h>
+#include <QtCompositor/QWaylandSurface>
+#include <QtCompositor/QWaylandSurfaceItem>
+#include <QtCompositor/QWaylandInputDevice>
 
 #include "systemcompositor.h"
 #include "cmakedirs.h"
@@ -47,7 +46,7 @@ SystemCompositor::SystemCompositor()
     enableSubSurfaceExtension();
 
     // System compositor protocol
-    m_protocol = new SystemCompositorServer(this, WaylandCompositor::handle());
+    m_protocol = new SystemCompositorServer(this, QWaylandCompositor::handle());
 
     // Allow QML to access this compositor
     rootContext()->setContextProperty("compositor", this);
@@ -91,7 +90,7 @@ void SystemCompositor::setAvailableGeometry(const QRectF &g)
     emit availableGeometryChanged();
 }
 
-void SystemCompositor::surfaceCreated(WaylandSurface *surface)
+void SystemCompositor::surfaceCreated(QWaylandSurface *surface)
 {
     // Connect surface signals
     connect(surface, SIGNAL(destroyed(QObject *)),
@@ -102,7 +101,7 @@ void SystemCompositor::surfaceCreated(WaylandSurface *surface)
             this, SLOT(surfaceUnmapped()));
 }
 
-void SystemCompositor::surfaceAboutToBeDestroyed(WaylandSurface *surface)
+void SystemCompositor::surfaceAboutToBeDestroyed(QWaylandSurface *surface)
 {
     // TODO:
 }
@@ -114,12 +113,12 @@ void SystemCompositor::destroyWindow(QVariant window)
 
 void SystemCompositor::destroyClientForWindow(QVariant window)
 {
-    WaylandSurface *surface = qobject_cast<WaylandSurfaceItem *>(
+    QWaylandSurface *surface = qobject_cast<QWaylandSurfaceItem *>(
                                   qvariant_cast<QObject *>(window))->surface();
     destroyClientForSurface(surface);
 }
 
-void SystemCompositor::setCurrentSurface(WaylandSurface *surface)
+void SystemCompositor::setCurrentSurface(QWaylandSurface *surface)
 {
     if (surface == m_currentSurface)
         return;
@@ -129,17 +128,17 @@ void SystemCompositor::setCurrentSurface(WaylandSurface *surface)
 
 void SystemCompositor::surfaceMapped()
 {
-    WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
+    QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
 
     //A surface without a shell surface is not a window
     if (!surface->hasShellSurface())
         return;
 
-    WaylandSurfaceItem *item = surface->surfaceItem();
+    QWaylandSurfaceItem *item = surface->surfaceItem();
 
-    // Create a WaylandSurfaceItem from the surface
+    // Create a QWaylandSurfaceItem from the surface
     if (!item) {
-        item = new WaylandSurfaceItem(surface, rootObject());
+        item = new QWaylandSurfaceItem(surface, rootObject());
         item->setClientRenderingEnabled(true);
         item->setTouchEventsEnabled(true);
     }
@@ -154,7 +153,7 @@ void SystemCompositor::surfaceMapped()
 void SystemCompositor::surfaceUnmapped()
 {
     // Set to 0 the current surface if it was unmapped
-    WaylandSurface *surface = qobject_cast<WaylandSurface *>(sender());
+    QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
     if (surface == m_currentSurface)
         m_currentSurface = 0;
 
@@ -166,7 +165,7 @@ void SystemCompositor::surfaceUnmapped()
 void SystemCompositor::surfaceDestroyed(QObject *object)
 {
     // Set to 0 the current surface if it was destroyed
-    WaylandSurface *surface = static_cast<WaylandSurface *>(object);
+    QWaylandSurface *surface = static_cast<QWaylandSurface *>(object);
     if (surface == m_currentSurface)
         m_currentSurface = 0;
 
@@ -190,7 +189,7 @@ void SystemCompositor::resizeEvent(QResizeEvent *event)
 {
     // Scale compositor output to window's size
     QQuickView::resizeEvent(event);
-    WaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
+    QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
 }
 
 #include "moc_systemcompositor.cpp"
