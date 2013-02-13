@@ -1,5 +1,5 @@
 if(Qt5Compositor_FOUND)
     #add_subdirectory(classic)
-    add_subdirectory(desktop-qml)
+    add_subdirectory(desktop)
     add_subdirectory(system)
 endif()
