@@ -41,7 +41,7 @@ class DesktopCompositor : public QQuickView, public VCompositor
     Q_PROPERTY(QRectF availableGeometry READ availableGeometry NOTIFY availableGeometryChanged)
     Q_PROPERTY(QWaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
-    explicit DesktopCompositor();
+    explicit DesktopCompositor(const QRect &geometry);
 
     void runShell();
     void closeShell();

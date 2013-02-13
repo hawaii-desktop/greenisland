@@ -37,12 +37,15 @@
 #include "desktopshellserver.h"
 #include "cmakedirs.h"
 
-DesktopCompositor::DesktopCompositor()
+DesktopCompositor::DesktopCompositor(const QRect &geometry)
     : VCompositor(this)
     , m_shellSurface(0)
     , m_currentSurface(0)
     , m_shellProcess(0)
 {
+    // Set initial geometry
+    setGeometry(geometry);
+
     // Enable the subsurface extension
     enableSubSurfaceExtension();
 

@@ -37,9 +37,9 @@ public:
         return QStringList() << "desktop";
     }
 
-    VCompositor *create(const QString &key) {
+    VCompositor *create(const QString &key, const QRect &geometry) {
         if (key.toLower() == "desktop")
-            return new DesktopCompositor();
+            return new DesktopCompositor(geometry);
 
         return 0;
     }
