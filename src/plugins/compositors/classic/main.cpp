@@ -32,14 +32,14 @@
 class GREENISLAND_EXPORT DesktopCompositorPlugin : public VCompositorPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.hawaii.GreenIsland.VCompositorFactoryInterface" FILE "desktop.json")
+    Q_PLUGIN_METADATA(IID "org.hawaii.GreenIsland.VCompositorFactoryInterface" FILE "classic.json")
 public:
     QStringList keys() const {
-        return QStringList() << "desktop";
+        return QStringList() << "classic";
     }
 
     VCompositor *create(const QString &key, const QRect &geometry) {
-        if (key.toLower() == "desktop")
+        if (key.toLower() == "classic")
             return new DesktopCompositor(new QOpenGLWindow(geometry));
 
         return 0;

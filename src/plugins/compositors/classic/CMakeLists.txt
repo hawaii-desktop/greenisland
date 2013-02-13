@@ -27,19 +27,19 @@ wayland_add_protocol_client(SOURCES
     desktop-shell
 )
 
-qt5_add_resources(RESOURCES desktop.qrc)
+qt5_add_resources(RESOURCES classic.qrc)
 
-add_library(desktop SHARED ${SOURCES} ${RESOURCES})
-qt5_use_modules(desktop Compositor)
-set_target_properties(desktop PROPERTIES
+add_library(classic SHARED ${SOURCES} ${RESOURCES})
+qt5_use_modules(classic Compositor)
+set_target_properties(classic PROPERTIES
     PREFIX ""
     LINK_FLAGS -L${WAYLAND_SERVER_LIBDIR}
 )
-target_link_libraries(desktop
+target_link_libraries(classic
     ${VibeCore_LIBRARIES}
     ${WAYLAND_SERVER_LIBRARIES}
     GreenIsland
 )
 
-install(TARGETS desktop
+install(TARGETS classic
     DESTINATION ${CMAKE_INSTALL_PLUGINSDIR}/greenisland/compositors)
