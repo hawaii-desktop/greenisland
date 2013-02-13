@@ -19,8 +19,14 @@ set(SOURCES
     desktopshellserver.cpp
 )
 
-wayland_add_protocol_server(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
-wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
+wayland_add_protocol_server(SOURCES
+    ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml
+    desktop-shell
+)
+wayland_add_protocol_client(SOURCES
+    ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml
+    desktop-shell
+)
 
 qt5_add_resources(RESOURCES desktop.qrc)
 

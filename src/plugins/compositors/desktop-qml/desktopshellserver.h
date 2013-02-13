@@ -30,14 +30,19 @@
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <wayland-util.h>
 
-#include "wayland-desktop-extension-server-protocol.h"
+#include "wayland-desktop-shell-server-protocol.h"
 #include "compositor.h"
 
 class DesktopShellServer
 {
 public:
-    DesktopShellServer(DesktopCompositor *compositor, QtWayland::Compositor *handle);
+    DesktopShellServer(DesktopCompositor *compositor,
+                       QtWayland::Compositor *handle);
     ~DesktopShellServer();
+
+    QtWayland::Surface *backgroundSurface;
+    QtWayland::Surface *panelSurface;
+    QtWayland::Surface *lockSurface;
 
 private:
     static void bind_func(struct wl_client *client, void *data,
@@ -45,21 +50,32 @@ private:
 
     static void destroy_resource(wl_resource *resource);
 
-    static void set_surface(struct wl_client *client,
-                            struct wl_resource *resource,
-                            struct wl_resource *surface);
+    static void set_background(struct wl_client *client,
+                               struct wl_resource *resource,
+                               struct wl_resource *output,
+                               struct wl_resource *surface);
 
-    static void set_geometry(struct wl_client *client,
-                             struct wl_resource *resource,
-                             int32_t x, int32_t y,
-                             int32_t w, int32_t h);
+    static void set_panel(struct wl_client *client,
+                          struct wl_resource *resource,
+                          struct wl_resource *output,
+                          struct wl_resource *surface);
+
+    static void set_lock_surface(struct wl_client *client,
+                                 struct wl_resource *resource,
+                                 struct wl_resource *surface);
+
+    static void unlock(struct wl_client *client,
+                       struct wl_resource *resource);
+
+    static void set_grab_surface(struct wl_client *client,
+                                 struct wl_resource *resource,
+                                 struct wl_resource *surface);
 
     static const struct desktop_shell_interface shell_interface;
 
     DesktopCompositor *m_compositor;
     QtWayland::Compositor *m_compositorHandle;
     QList<wl_resource *> m_resources;
-    QtWayland::Surface *m_surface;
 };
 
 #endif // DESKTOPSHELLSERVER_H

@@ -31,14 +31,17 @@
 #include "compositor.h"
 
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
-    DesktopShellServer::set_surface,
-    DesktopShellServer::set_geometry
+    DesktopShellServer::set_background,
+    DesktopShellServer::set_panel,
+    DesktopShellServer::set_lock_surface,
+    DesktopShellServer::unlock,
+    DesktopShellServer::set_grab_surface
 };
 
 DesktopShellServer::DesktopShellServer(DesktopCompositor *compositor, QtWayland::Compositor *handle)
-    : m_compositor(compositor)
+    : lockSurface(0)
+    , m_compositor(compositor)
     , m_compositorHandle(handle)
-    , m_surface(0)
 {
     wl_display_add_global(handle->wl_display(),
                           &desktop_shell_interface, this,
@@ -67,22 +70,44 @@ void DesktopShellServer::destroy_resource(wl_resource *resource)
     free(resource);
 }
 
-void DesktopShellServer::set_surface(struct wl_client *client,
-                                     struct wl_resource *resource,
-                                     struct wl_resource *surface)
+void DesktopShellServer::set_background(struct wl_client *client,
+                                        struct wl_resource *resource,
+                                        struct wl_resource *output,
+                                        struct wl_resource *surface)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_surface = QtWayland::resolve<QtWayland::Surface>(surface);
-    if (!self->m_surface)
-        return;
-    self->m_surface->waylandSurface()->setWindowProperty("special", true);
+    self->backgroundSurface = QtWayland::resolve<QtWayland::Surface>(surface);
 }
 
-void DesktopShellServer::set_geometry(struct wl_client *client,
-                                      struct wl_resource *resource,
-                                      int32_t x, int32_t y,
-                                      int32_t w, int32_t h)
+void DesktopShellServer::set_panel(struct wl_client *client,
+                                   struct wl_resource *resource,
+                                   struct wl_resource *output,
+                                   struct wl_resource *surface)
 {
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    self->m_compositor->setAvailableGeometry(QRectF(x, y, w, h));
+    self->panelSurface = QtWayland::resolve<QtWayland::Surface>(surface);
+}
+
+void DesktopShellServer::set_lock_surface(struct wl_client *client,
+                                          struct wl_resource *resource,
+                                          struct wl_resource *surface)
+{
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    self->lockSurface = QtWayland::resolve<QtWayland::Surface>(surface);
+}
+
+void DesktopShellServer::unlock(struct wl_client *client,
+                                struct wl_resource *resource)
+{
+    Q_UNUSED(client);
+    Q_UNUSED(resource);
+}
+
+void DesktopShellServer::set_grab_surface(struct wl_client *client,
+                                          struct wl_resource *resource,
+                                          struct wl_resource *surface)
+{
+    Q_UNUSED(client);
+    Q_UNUSED(resource);
+    Q_UNUSED(surface);
 }
