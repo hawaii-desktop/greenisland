@@ -29,14 +29,10 @@
 
 #include "wayland-desktop-extension-client-protocol.h"
 
-class DesktopShell;
-
 class WaylandIntegration
 {
 public:
-    explicit WaylandIntegration(DesktopShell *shell);
-
-    static WaylandIntegration *createInstance(DesktopShell *shell);
+    WaylandIntegration();
 
     static WaylandIntegration *instance();
 
@@ -65,10 +61,6 @@ public:
     static void handleGrabCursor(void *data,
                                  struct desktop_shell *desktop_shell,
                                  uint32_t cursor);
-
-private:
-    static WaylandIntegration *m_instance;
-    DesktopShell *m_shell;
 };
 
 #endif // WAYLANDINTEGRATION_H

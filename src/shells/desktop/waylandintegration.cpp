@@ -35,7 +35,7 @@
 #include "launcher.h"
 #include "background.h"
 
-WaylandIntegration *WaylandIntegration::m_instance = 0;
+Q_GLOBAL_STATIC(WaylandIntegration, s_waylandIntegration)
 
 const struct wl_registry_listener WaylandIntegration::registryListener = {
     WaylandIntegration::handleGlobal
@@ -47,24 +47,15 @@ const struct desktop_shell_listener WaylandIntegration::listener = {
     WaylandIntegration::handleGrabCursor
 };
 
-WaylandIntegration::WaylandIntegration(DesktopShell *shell)
+WaylandIntegration::WaylandIntegration()
     : shell(0)
     , protocolSync(0)
-    , m_shell(shell)
 {
-    m_instance = this;
-}
-
-WaylandIntegration *WaylandIntegration::createInstance(DesktopShell *shell)
-{
-    if (m_instance)
-        return 0;
-    return new WaylandIntegration(shell);
 }
 
 WaylandIntegration *WaylandIntegration::instance()
 {
-    return m_instance;
+    return s_waylandIntegration();
 }
 
 void WaylandIntegration::handleGlobal(void *data,

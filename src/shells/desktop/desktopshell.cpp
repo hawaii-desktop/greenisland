@@ -79,9 +79,9 @@ DesktopShell::DesktopShell()
     connect(dispatcher, SIGNAL(awake()), this, SLOT(flushRequests()));
 
     // Wayland integration
-    WaylandIntegration *integration = WaylandIntegration::createInstance(this);
+    WaylandIntegration *integration = WaylandIntegration::instance();
     wl_registry_add_listener(m_registry, &WaylandIntegration::registryListener,
-                             WaylandIntegration::instance());
+                             integration);
 
     // Wait until QPA plugin detected all outputs and we registered the
     // desktop shell listener
