@@ -27,15 +27,22 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
-#include <QQuickView>
+#include <QQuickWindow>
 
-class Launcher : public QQuickView
+class Launcher : public QObject
 {
     Q_OBJECT
 public:
     explicit Launcher(QScreen *screen, QObject *parent = 0);
 
     int tileSize() const;
+
+    QQuickWindow *window() const {
+        return m_window;
+    }
+
+private:
+    QQuickWindow *m_window;
 };
 
 #endif // LAUNCHER_H

@@ -24,39 +24,38 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QSurfaceFormat>
+#include <QDebug>
+#include <QQmlEngine>
+#include <QQmlComponent>
 #include <QQmlContext>
-#include <QQuickItem>
 
 #include "launcher.h"
 
 Launcher::Launcher(QScreen *screen, QObject *parent)
-    : QQuickView(QUrl("qrc:///qml/Launcher.qml"))
+    : QObject(parent)
 {
+    QQmlEngine engine;
+    QQmlComponent component(&engine);
+    component.loadUrl(QUrl("qrc:///qml/Launcher.qml"));
+    if (!component.isReady())
+        qFatal(qPrintable(component.errorString()));
+
+    QObject *topLevel = component.create();
+    m_window = qobject_cast<QQuickWindow *>(topLevel);
+    if (!m_window)
+        qFatal("Error: Background root item must be a Window!\n");
+    m_window->setScreen(screen);
+
     // This is a frameless window that stays on top of everything
-    setScreen(screen);
-    setTitle(QLatin1String("Hawaii Launcher"));
-    setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
+    m_window->setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
 
-    // Resize root item to this view
-    setResizeMode(QQuickView::SizeRootObjectToView);
-
-    // Set context properties
-    rootContext()->setContextProperty("quickview", this);
-
-    // Make it transparent
-    QSurfaceFormat surfaceFormat;
-    surfaceFormat.setSamples(16);
-    surfaceFormat.setAlphaBufferSize(8);
-    setFormat(surfaceFormat);
-    setClearBeforeRendering(true);
-    setColor(QColor(Qt::transparent));
-    winId();
+    // Create the platform window
+    m_window->winId();
 }
 
 int Launcher::tileSize() const
 {
-    return rootObject()->property("tileSize").toInt();
+    return m_window->property("tileSize").toInt();
 }
 
 #include "moc_launcher.cpp"

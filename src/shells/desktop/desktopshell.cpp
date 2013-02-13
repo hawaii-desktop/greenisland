@@ -64,6 +64,7 @@ DesktopShell::DesktopShell()
     // Display file descriptor
     m_fd = wl_display_get_fd(m_display);
     Q_ASSERT(m_fd > -1);
+    qDebug() << "Wayland display socket:" << m_fd;
 
     // Wayland registry
     m_registry = wl_display_get_registry(m_display);
@@ -101,8 +102,6 @@ DesktopShell::DesktopShell()
 
         qDebug() << "Creating shell surfaces on" << screen->name();
 
-        m_outputs.append(output);
-
         // Get native wl_output for the current screen
         output->screen = screen;
         output->output = static_cast<struct wl_output *>(
@@ -116,17 +115,21 @@ DesktopShell::DesktopShell()
         wl_surface_set_user_data(output->backgroundSurface, output->background);
         desktop_shell_set_background(integration->shell, output->output,
                                      output->backgroundSurface);
+        qDebug() << "Created background surface" << output->backgroundSurface
+                 << "for output" << output->output;
 
-#if 0
         // Create a launcher window for each output
         output->launcher = new Launcher(screen, this);
         output->launcherSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface", output->launcher));
+                    native->nativeResourceForWindow("surface",
+                                                    output->launcher->window()));
         wl_surface_set_user_data(output->launcherSurface, output->launcher);
-        output->launcher->setGeometry(QRect(0, 0, 1, 1));
         desktop_shell_set_panel(integration->shell, output->output,
                                 output->launcherSurface);
-#endif
+        qDebug() << "Created launcher surface" << output->launcherSurface
+                 << "for output" << output->output;
+
+        m_outputs.append(output);
     }
 }
 

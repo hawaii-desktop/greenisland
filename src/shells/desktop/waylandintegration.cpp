@@ -101,6 +101,8 @@ void WaylandIntegration::handleConfigure(void *data,
                                          struct wl_surface *surface,
                                          int32_t width, int32_t height)
 {
+    qDebug() << "Configure requested for surface" << surface;
+
     WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
     Q_ASSERT(object);
 
