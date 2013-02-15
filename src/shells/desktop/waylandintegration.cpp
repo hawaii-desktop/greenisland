@@ -26,6 +26,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QScreen>
 
 #include <qpa/qplatformnativeinterface.h>
 #include <qpa/qplatformwindow.h>
@@ -49,7 +50,6 @@ const struct desktop_shell_listener WaylandIntegration::listener = {
 
 WaylandIntegration::WaylandIntegration()
     : shell(0)
-    , protocolSync(0)
 {
 }
 
@@ -68,21 +68,55 @@ void WaylandIntegration::handleGlobal(void *data,
 
     qDebug() << "Wayland interface:" << interface;
 
-    if (strcmp(interface, "wl_output") == 0) {
-        WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
-        Q_ASSERT(object);
-
-        object->protocolSync++;
-    }
-
     if (strcmp(interface, "desktop_shell") == 0) {
         WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
         Q_ASSERT(object);
 
         object->shell = static_cast<struct desktop_shell *>(
-                            wl_registry_bind(registry, id, &desktop_shell_interface, 1));
+                    wl_registry_bind(registry, id, &desktop_shell_interface, 1));
         desktop_shell_add_listener(object->shell, &listener, data);
-        object->protocolSync++;
+
+        // Platform native interface
+        QPlatformNativeInterface *native =
+                QGuiApplication::platformNativeInterface();
+        Q_ASSERT(native);
+
+        DesktopShell *shell = DesktopShell::instance();
+
+        foreach (QScreen *screen, QGuiApplication::screens()) {
+            Output *output = new Output();
+
+            // Get native wl_output for the current screen
+            output->screen = screen;
+            output->output = static_cast<struct wl_output *>(
+                        native->nativeResourceForScreen("output", output->screen));
+
+            // Geometry
+            qDebug() << "Creating shell surfaces on" << screen->name()
+                     << "with geometry" << screen->geometry();
+
+            // Set a wallpaper for each screen
+            output->background = new Background(screen, shell);
+            output->backgroundSurface = static_cast<struct wl_surface *>(
+                        native->nativeResourceForWindow("surface",
+                                                        output->background->window()));
+            desktop_shell_set_background(object->shell, output->output,
+                                         output->backgroundSurface);
+            qDebug() << "Created background surface" << output->backgroundSurface
+                     << "for output" << output->output;
+
+            // Create a launcher window for each output
+            output->launcher = new Launcher(screen, shell);
+            output->launcherSurface = static_cast<struct wl_surface *>(
+                        native->nativeResourceForWindow("surface",
+                                                        output->launcher->window()));
+            desktop_shell_set_panel(object->shell, output->output,
+                                    output->launcherSurface);
+            qDebug() << "Created launcher surface" << output->launcherSurface
+                     << "for output" << output->output;
+
+            shell->addOutput(output);
+        }
     }
 }
 
@@ -92,7 +126,12 @@ void WaylandIntegration::handleConfigure(void *data,
                                          struct wl_surface *surface,
                                          int32_t width, int32_t height)
 {
-    qDebug() << "Configure requested for surface" << surface;
+    Q_UNUSED(desktop_shell);
+    Q_UNUSED(edges);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+
+    qDebug() << "Configure received for surface" << surface;
 
     WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
     Q_ASSERT(object);
@@ -100,28 +139,34 @@ void WaylandIntegration::handleConfigure(void *data,
     DesktopShell *shell = DesktopShell::instance();
 
     foreach (Output *output, shell->outputs()) {
-        if (output->backgroundSurface == surface) {
-            QRect geometry(0, 0, width, height);
-            qDebug() << "<============= Background" << geometry;
-            output->background->window()->setGeometry(geometry);
-            output->background->window()->show();
-        }
+        QRect screenGeometry = output->screen->geometry();
+        QRect launcherGeometry = screenGeometry;
 
-#if 0
-        if (output->launcherSurface == surface) {
-            QRect geometry(0, 0, width, output->launcher->tileSize());
-            qDebug() << "<============= Launcher" << geometry;
-            output->launcher->setGeometry(geometry);
-            output->launcher->show();
+        if (output->backgroundSurface == surface) {
+            output->background->window()->setGeometry(screenGeometry);
+            output->background->window()->show();
+
+            qDebug() << "Background geometry"
+                     << output->background->window()->geometry()
+                     << "for screen" << output->screen->name();
+        } else if (output->launcherSurface == surface) {
+            launcherGeometry.setTop(screenGeometry.height() - output->launcher->tileSize());
+            launcherGeometry.setHeight(output->launcher->tileSize());
+
+            output->launcher->window()->setGeometry(launcherGeometry);
+            output->launcher->window()->show();
+
+            qDebug() << "Launcher geometry"
+                     << output->launcher->window()->geometry()
+                     << "for screen" << output->screen->name();
         }
-#endif
     }
 }
 
 void WaylandIntegration::handlePrepareLockSurface(void *data,
                                                   struct desktop_shell *desktop_shell)
 {
-desktop_shell_unlock(desktop_shell);
+    desktop_shell_unlock(desktop_shell);
 }
 
 void WaylandIntegration::handleGrabCursor(void *data,

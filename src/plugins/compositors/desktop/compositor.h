@@ -37,19 +37,12 @@ class DesktopShellServer;
 class DesktopCompositor : public QQuickView, public VCompositor
 {
     Q_OBJECT
-    Q_PROPERTY(QRectF screenGeometry READ screenGeometry NOTIFY screenGeometryChanged)
-    Q_PROPERTY(QRectF availableGeometry READ availableGeometry NOTIFY availableGeometryChanged)
     Q_PROPERTY(QWaylandSurface *currentSurface READ currentSurface WRITE setCurrentSurface NOTIFY currentSurfaceChanged)
 public:
     explicit DesktopCompositor(const QRect &geometry);
 
     void runShell();
     void closeShell();
-
-    QRectF screenGeometry() const;
-
-    QRectF availableGeometry() const;
-    void setAvailableGeometry(const QRectF &g);
 
     QWaylandSurface *currentSurface() const {
         return m_currentSurface;
@@ -58,22 +51,19 @@ public:
     void surfaceCreated(QWaylandSurface *surface);
     void surfaceAboutToBeDestroyed(QWaylandSurface *surface);
 
-signals:
-    void screenGeometryChanged();
-    void availableGeometryChanged();
-
+Q_SIGNALS:
     void windowAdded(QVariant window);
     void windowDestroyed(QVariant window);
     void windowResized(QVariant window);
     void currentSurfaceChanged();
 
-public slots:
+public Q_SLOTS:
     void destroyWindow(QVariant window);
     void destroyClientForWindow(QVariant window);
 
     void setCurrentSurface(QWaylandSurface *surface);
 
-private slots:
+private Q_SLOTS:
     void shellStarted();
     void shellFailed(QProcess::ProcessError error);
     void shellReadyReadStandardOutput();
@@ -90,8 +80,6 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
-    QRectF m_availableGeometry;
-    QWaylandSurface *m_shellSurface;
     QWaylandSurface *m_currentSurface;
     DesktopShellServer *m_desktopShell;
     QProcess *m_shellProcess;

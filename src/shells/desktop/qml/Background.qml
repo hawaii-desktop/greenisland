@@ -30,11 +30,6 @@ import FluidCore 1.0
 
 Window {
     id: backgroundWindow
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-    title: "Hawaii Background"
 
     Settings {
         id: settings

@@ -60,9 +60,9 @@ public:
         return m_outputs;
     }
 
-public Q_SLOTS:
-    void readEvents();
-    void flushRequests();
+    void addOutput(Output *output) {
+        m_outputs.append(output);
+    }
 
 private:
     struct wl_display *m_display;

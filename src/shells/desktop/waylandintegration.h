@@ -37,7 +37,6 @@ public:
     static WaylandIntegration *instance();
 
     struct desktop_shell *shell;
-    int protocolSync;
 
     static const struct wl_registry_listener registryListener;
 

@@ -31,11 +31,6 @@ import FluidCore 1.0
 
 Window {
     id: launcherContainer
-    x: 0
-    y: 0
-    width: 1
-    height: 1
-    title: "Hawaii Launcher"
 
     // TODO: Define margins and padding in Fluid::Theme
     property real padding: 4

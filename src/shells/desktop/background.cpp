@@ -28,6 +28,7 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
+#include <QScreen>
 
 #include "background.h"
 
@@ -47,7 +48,10 @@ Background::Background(QScreen *screen, QObject *parent)
     m_window->setScreen(screen);
 
     // This is a frameless window that stays on top of everything
-    m_window->setFlags(Qt::FramelessWindowHint | Qt::CustomWindow);
+    m_window->setFlags(Qt::CustomWindow);
+
+    // Set the title
+    m_window->setTitle(QString("Background on %1").arg(screen->name()));
 
     // Create the platform window
     m_window->winId();

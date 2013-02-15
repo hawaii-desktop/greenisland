@@ -28,8 +28,9 @@ import QtQuick 2.0
 import FluidCore 1.0
 import "CompositorLogic.js" as CompositorLogic
 
-Item {
+Rectangle {
     id: root
+    color: "black"
 
     // Currently selected window
     property variant selectedWindow: null
@@ -41,59 +42,8 @@ Item {
     onWidthChanged: CompositorLogic.relayout()
     onHeightChanged: CompositorLogic.relayout()
 
-    // Opacity will be set to 1.0 by the fade-in animation
-    opacity: 0.0
-
-    Settings {
-        id: bgSettings
-        schema: "org.hawaii.desktop"
-        group: "background"
-        onValueChanged: {
-            // Change wallpaper image
-            backgroundChangeAnim.start();
-        }
-    }
-
-    // Fade-in animation for the whole screen
-    NumberAnimation on opacity {
-        easing.type: Easing.Linear
-        duration: 1500
-        to: 1.0
-    }
-
-    SequentialAnimation {
-        id: backgroundChangeAnim
-
-        NumberAnimation {
-            target: background
-            property: "opacity"
-            duration: 250
-            easing.type: Easing.Linear
-            to: 0.0
-        }
-        ScriptAction {
-            script: background.source = bgSettings.value("wallpaper-uri")
-        }
-        NumberAnimation {
-            target: background
-            property: "opacity"
-            duration: 250
-            easing.type: Easing.Linear
-            to: 1.0
-        }
-    }
-
-    // Desktop wallpaper
-    Image {
-        id: background
-        anchors.fill: parent
-        fillMode: Image.Stretch
-        source: bgSettings.value("wallpaper-uri")
-        smooth: true
-    }
-
     function windowAdded(window) {
-        CompositorLogic.windowAdded(root, window);
+        CompositorLogic.windowAdded(window);
     }
 
     function windowResized(window) {

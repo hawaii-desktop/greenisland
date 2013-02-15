@@ -26,9 +26,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
-#include <QSocketNotifier>
 
-#include <private/qguiapplication_p.h>
 #include <qpa/qplatformnativeinterface.h>
 
 #include <wayland-client.h>
@@ -70,67 +68,10 @@ DesktopShell::DesktopShell()
     m_registry = wl_display_get_registry(m_display);
     Q_ASSERT(m_registry);
 
-    // Receive Wayland events
-    QSocketNotifier *readNotifier = new QSocketNotifier(m_fd, QSocketNotifier::Read, this);
-    connect(readNotifier, SIGNAL(activated(int)), this, SLOT(readEvents()));
-
-    // Dispatch Wayland events
-    QAbstractEventDispatcher *dispatcher = QGuiApplicationPrivate::eventDispatcher;
-    connect(dispatcher, SIGNAL(awake()), this, SLOT(flushRequests()));
-
     // Wayland integration
     WaylandIntegration *integration = WaylandIntegration::instance();
     wl_registry_add_listener(m_registry, &WaylandIntegration::registryListener,
                              integration);
-
-    // Wait until QPA plugin detected all outputs and we registered the
-    // desktop shell listener
-    QElapsedTimer timeout;
-    timeout.start();
-    do {
-        QGuiApplication::processEvents();
-    } while (integration->protocolSync < 2 && timeout.elapsed() < 1000);
-
-    // If we couldn't
-    if (integration->protocolSync < 2)
-        qFatal("Lost synchronization with compositor");
-
-    qDebug() << "Number of screens detected:" << QGuiApplication::screens().size();
-
-    foreach (QScreen *screen, QGuiApplication::screens()) {
-        Output *output = new Output();
-
-        qDebug() << "Creating shell surfaces on" << screen->name();
-
-        // Get native wl_output for the current screen
-        output->screen = screen;
-        output->output = static_cast<struct wl_output *>(
-                    native->nativeResourceForScreen("output", output->screen));
-
-        // Set a wallpaper for each screen
-        output->background = new Background(screen, this);
-        output->backgroundSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface",
-                                                    output->background->window()));
-        wl_surface_set_user_data(output->backgroundSurface, output->background);
-        desktop_shell_set_background(integration->shell, output->output,
-                                     output->backgroundSurface);
-        qDebug() << "Created background surface" << output->backgroundSurface
-                 << "for output" << output->output;
-
-        // Create a launcher window for each output
-        output->launcher = new Launcher(screen, this);
-        output->launcherSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface",
-                                                    output->launcher->window()));
-        wl_surface_set_user_data(output->launcherSurface, output->launcher);
-        desktop_shell_set_panel(integration->shell, output->output,
-                                output->launcherSurface);
-        qDebug() << "Created launcher surface" << output->launcherSurface
-                 << "for output" << output->output;
-
-        m_outputs.append(output);
-    }
 }
 
 DesktopShell::~DesktopShell()
@@ -144,17 +85,6 @@ DesktopShell::~DesktopShell()
 DesktopShell *DesktopShell::instance()
 {
     return desktopShell();
-}
-
-void DesktopShell::readEvents()
-{
-    wl_display_dispatch(m_display);
-}
-
-void DesktopShell::flushRequests()
-{
-    wl_display_dispatch_pending(m_display);
-    wl_display_flush(m_display);
 }
 
 #include "moc_desktopshell.cpp"

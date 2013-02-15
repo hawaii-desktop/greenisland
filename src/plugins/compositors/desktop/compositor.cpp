@@ -39,7 +39,6 @@
 
 DesktopCompositor::DesktopCompositor(const QRect &geometry)
     : VCompositor(this)
-    , m_shellSurface(0)
     , m_currentSurface(0)
     , m_shellProcess(0)
 {
@@ -54,11 +53,6 @@ DesktopCompositor::DesktopCompositor(const QRect &geometry)
 
     // Allow QML to access this compositor
     rootContext()->setContextProperty("compositor", this);
-
-    // All the screen is initially available
-    m_availableGeometry = screen()->availableGeometry();
-    connect(screen(), SIGNAL(virtualGeometryChanged(QRect)),
-            this, SIGNAL(screenGeometryChanged()));
 
     // Load the QML code
     setSource(QUrl("qrc:///qml/Compositor.qml"));
@@ -87,10 +81,6 @@ void DesktopCompositor::runShell()
     env.insert(QLatin1String("QT_QPA_PLATFORM"), QLatin1String("wayland"));
     env.insert(QLatin1String("GDK_BACKEND"), QLatin1String("wayland"));
 
-    // Process arguments
-    QStringList arguments = QStringList()
-                            << QLatin1String("-platform") << QLatin1String("wayland");
-
     // Run the shell client process
     m_shellProcess = new QProcess(this);
     connect(m_shellProcess, SIGNAL(started()),
@@ -105,32 +95,13 @@ void DesktopCompositor::runShell()
             this, SLOT(shellAboutToClose()));
     m_shellProcess->setProcessEnvironment(env);
     m_shellProcess->start(QLatin1String(INSTALL_LIBEXECDIR "/greenisland-desktop-shell"),
-                          arguments, QIODevice::ReadOnly);
+                          QStringList(), QIODevice::ReadOnly);
 }
 
 void DesktopCompositor::closeShell()
 {
     m_shellProcess->close();
     delete m_shellProcess;
-
-    if (m_shellSurface)
-        destroyClientForSurface(m_shellSurface);
-}
-
-QRectF DesktopCompositor::screenGeometry() const
-{
-    return screen()->availableGeometry();
-}
-
-QRectF DesktopCompositor::availableGeometry() const
-{
-    return m_availableGeometry;
-}
-
-void DesktopCompositor::setAvailableGeometry(const QRectF &g)
-{
-    m_availableGeometry = g;
-    emit availableGeometryChanged();
 }
 
 void DesktopCompositor::surfaceCreated(QWaylandSurface *surface)
@@ -226,7 +197,9 @@ void DesktopCompositor::surfaceMapped()
 {
     QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
 
-    //A surface without a shell surface is not a window
+    qDebug() << "Surface" << surface->title() << "mapped";
+
+    // A surface without a shell surface is not a window
     if (!surface->hasShellSurface())
         return;
 
@@ -238,10 +211,6 @@ void DesktopCompositor::surfaceMapped()
         item->setClientRenderingEnabled(true);
         item->setTouchEventsEnabled(true);
     }
-
-    // Save shell surface pointer
-    if (surface->className() == QStringLiteral("greenisland-desktop-shell.desktop"))
-        m_shellSurface = surface;
 
     // Surface items gain focus right after they were mapped
     item->takeFocus();
@@ -256,6 +225,8 @@ void DesktopCompositor::surfaceUnmapped()
     QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
     if (surface == m_currentSurface)
         m_currentSurface = 0;
+
+    qDebug() << "Surface" << surface->title() << "unmapped";
 
     // Announce this window was destroyed
     QQuickItem *item = surface->surfaceItem();
