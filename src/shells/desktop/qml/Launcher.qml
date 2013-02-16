@@ -31,6 +31,7 @@ import FluidCore 1.0
 
 Window {
     id: launcherContainer
+    color: "transparent"
 
     // Screen size (Window.Screen cannot be used when we setup launcher size,
     // so we set this from C++)
