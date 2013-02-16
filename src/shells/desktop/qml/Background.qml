@@ -30,6 +30,7 @@ import FluidCore 1.0
 
 Window {
     id: backgroundWindow
+    color: settings.value("primary-color")
 
     Settings {
         id: settings
@@ -38,16 +39,52 @@ Window {
         onValueChanged: loadSettings()
     }
 
-    // Desktop wallpaper
-    Image {
+    Rectangle {
         id: background
         anchors.fill: parent
-        fillMode: Image.Tile
+
+        Gradient {
+            id: gradient
+            GradientStop {
+                position: 0.0
+                color: settings.value("primary-color")
+            }
+            GradientStop {
+                position: 1.0
+                color: settings.value("secondary-color")
+            }
+        }
+    }
+
+    Image {
+        id: wallpaper
+        anchors.fill: parent
         source: settings.value("wallpaper-uri")
         smooth: true
     }
 
     function loadSettings() {
-        background.source = settings.value("wallpaper-uri");
+        var type = settings.value("type");
+
+        if (type === "color") {
+            var shading = settings.value("color-shading-type");
+
+            if (shading === "solid") {
+                background.opacity = 0.0;
+            } else if (shading === "horizontal") {
+                background.rotation = 0;
+                background.opacity = 1.0;
+            } else if (shading === "vertical") {
+                background.rotation = 90;
+                background.opacity = 1.0;
+            }
+
+            wallpaper.opacity = 0.0;
+        } else {
+            background.opacity = 0.0;
+            wallpaper.opacity = 1.0;
+        }
     }
+
+    Component.onCompleted: loadSettings()
 }
