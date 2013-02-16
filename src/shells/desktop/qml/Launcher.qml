@@ -32,6 +32,10 @@ import FluidCore 1.0
 Window {
     id: launcherContainer
 
+    // Screen size (Window.Screen cannot be used when we setup launcher size,
+    // so we set this from C++)
+    property size screenSize
+
     // TODO: Define margins and padding in Fluid::Theme
     property real padding: 4
 
@@ -108,6 +112,11 @@ Window {
                     anchors.rightMargin: frame.margins.right + padding
                     anchors.bottomMargin: frame.margins.top + padding
                 }
+                PropertyChanges {
+                    target: launcherContainer
+                    width: launcherSize
+                    height: screenSize.height
+                }
             },
             State {
                 name: "right"
@@ -119,6 +128,11 @@ Window {
                     anchors.topMargin: frame.margins.top + padding
                     anchors.bottomMargin: frame.margins.top + padding
                 }
+                PropertyChanges {
+                    target: launcherContainer
+                    width: launcherSize
+                    height: screenSize.height
+                }
             },
             State {
                 name: "bottom"
@@ -129,6 +143,11 @@ Window {
                     anchors.leftMargin: frame.margins.left + padding
                     anchors.topMargin: frame.margins.top + padding
                     anchors.rightMargin: frame.margins.right + padding
+                }
+                PropertyChanges {
+                    target: launcherContainer
+                    width: screenSize.width
+                    height: launcherSize
                 }
             }
         ]

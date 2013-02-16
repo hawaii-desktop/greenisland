@@ -43,6 +43,9 @@ public:
 
 private:
     QQuickWindow *m_window;
+
+private Q_SLOTS:
+    void updateScreenGeometry(const QRect &geometry);
 };
 
 #endif // LAUNCHER_H

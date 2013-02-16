@@ -140,7 +140,6 @@ void WaylandIntegration::handleConfigure(void *data,
 
     foreach (Output *output, shell->outputs()) {
         QRect screenGeometry = output->screen->geometry();
-        QRect launcherGeometry = screenGeometry;
 
         if (output->backgroundSurface == surface) {
             output->background->window()->setGeometry(screenGeometry);
@@ -150,10 +149,6 @@ void WaylandIntegration::handleConfigure(void *data,
                      << output->background->window()->geometry()
                      << "for screen" << output->screen->name();
         } else if (output->launcherSurface == surface) {
-            launcherGeometry.setTop(screenGeometry.height() - output->launcher->tileSize());
-            launcherGeometry.setHeight(output->launcher->tileSize());
-
-            output->launcher->window()->setGeometry(launcherGeometry);
             output->launcher->window()->show();
 
             qDebug() << "Launcher geometry"

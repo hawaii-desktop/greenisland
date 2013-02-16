@@ -48,18 +48,28 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     m_window->setScreen(screen);
 
     // This is a frameless window that stays on top of everything
-    m_window->setFlags(Qt::CustomWindow);
+    m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
     // Set the title
     m_window->setTitle(QString("Launcher on %1").arg(screen->name()));
 
     // Create the platform window
     m_window->winId();
+
+    // Set screen size and detect geometry changes
+    updateScreenGeometry(screen->availableGeometry());
+    connect(screen, SIGNAL(geometryChanged(QRect)),
+            this, SLOT(updateScreenGeometry(QRect)));
 }
 
 int Launcher::tileSize() const
 {
     return m_window->property("tileSize").toInt();
+}
+
+void Launcher::updateScreenGeometry(const QRect &geometry)
+{
+    m_window->setProperty("screenSize", geometry.size());
 }
 
 #include "moc_launcher.cpp"
