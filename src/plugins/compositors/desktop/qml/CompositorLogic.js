@@ -194,6 +194,9 @@ function windowAdded(window) {
     var windowContainerComponent = Qt.createComponent("WindowContainer.qml");
     var windowContainer = windowContainerComponent.createObject(root);
 
+    var isShell = window.surface.windowProperty("background")
+            || window.surface.windowProperty("launcher");
+
     window.parent = windowContainer;
 
     windowContainer.targetScale = 1.0;
@@ -204,14 +207,26 @@ function windowAdded(window) {
     // Automatically give focus to new windows
     window.takeFocus();
 
-    var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
-    var windowChrome = windowChromeComponent.createObject(window);
-
     addWindow(windowContainer);
 
     windowContainer.opacity = 1.0;
-    windowContainer.animationsEnabled = true;
-    windowContainer.chrome = windowChrome;
+
+    if (isShell) {
+        if (window.surface.windowProperty("background")) {
+            windowContainer.z = 0;
+            windowContainer.alwaysOnTop = true;
+        } else if (window.surface.windowProperty("launcher")) {
+            windowContainer.z = 1000;
+            windowContainer.alwaysOnTop = true;
+            windowContainer.y = 1100;
+        }
+    } else {
+        var windowChromeComponent = Qt.createComponent("WindowChrome.qml");
+        var windowChrome = windowChromeComponent.createObject(window);
+
+        windowContainer.animationsEnabled = true;
+        windowContainer.chrome = windowChrome;
+    }
 }
 
 function windowResized(window) {

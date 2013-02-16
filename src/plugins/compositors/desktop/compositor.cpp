@@ -199,9 +199,18 @@ void DesktopCompositor::surfaceMapped()
 
     qDebug() << "Surface" << surface->title() << "mapped";
 
+    bool isShell = ((surface->handle() == m_desktopShell->backgroundSurface)
+            || (surface->handle() == m_desktopShell->panelSurface));
+
     // A surface without a shell surface is not a window
-    if (!surface->hasShellSurface())
+    if (!surface->hasShellSurface() && !isShell)
         return;
+
+    // Set a custom property for shell windows
+    if (surface->handle() == m_desktopShell->backgroundSurface)
+        surface->setWindowProperty("background", true);
+    else if (surface->handle() == m_desktopShell->panelSurface)
+        surface->setWindowProperty("launcher", true);
 
     QWaylandSurfaceItem *item = surface->surfaceItem();
 
@@ -211,9 +220,6 @@ void DesktopCompositor::surfaceMapped()
         item->setClientRenderingEnabled(true);
         item->setTouchEventsEnabled(true);
     }
-
-    // Surface items gain focus right after they were mapped
-    item->takeFocus();
 
     // Announce a window was added
     emit windowAdded(QVariant::fromValue(static_cast<QQuickItem *>(item)));

@@ -58,6 +58,7 @@ Item {
     property variant chrome: null
     property int index
     property bool animationsEnabled: false
+    property bool alwaysOnTop: false
 
     x: targetX
     y: targetY
@@ -111,6 +112,11 @@ Item {
 
     states: [
         State {
+            name: "alwaysOnTop"
+            when: alwaysOnTop
+            PropertyChanges { target: effect; blend: 0.0 }
+        },
+        State {
             name: "selected"
             when: child && child.focus
             PropertyChanges { target: effect; blend: 0.0 }
@@ -132,7 +138,7 @@ Item {
                     }
                 }
                 ScriptAction {
-                    script: container.z = 0
+                    script: container.z = 1
                 }
             }
         },
@@ -141,7 +147,7 @@ Item {
             SequentialAnimation {
                 ScriptAction {
                     script: {
-                        container.z = 1
+                        container.z = 2
                     }
                 }
                 ScriptAction {
