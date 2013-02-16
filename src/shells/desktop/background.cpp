@@ -55,6 +55,21 @@ Background::Background(QScreen *screen, QObject *parent)
 
     // Create the platform window
     m_window->winId();
+
+    // Set screen size and detect geometry changes
+    updateScreenGeometry();
+    connect(screen, SIGNAL(geometryChanged(QRect)),
+            this, SLOT(updateScreenGeometry(QRect)));
+}
+
+void Background::updateScreenGeometry()
+{
+    updateScreenGeometry(m_window->screen()->geometry());
+}
+
+void Background::updateScreenGeometry(const QRect &geometry)
+{
+    m_window->setGeometry(geometry);
 }
 
 #include "moc_background.cpp"

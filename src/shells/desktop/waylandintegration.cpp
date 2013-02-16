@@ -139,10 +139,7 @@ void WaylandIntegration::handleConfigure(void *data,
     DesktopShell *shell = DesktopShell::instance();
 
     foreach (Output *output, shell->outputs()) {
-        QRect screenGeometry = output->screen->geometry();
-
         if (output->backgroundSurface == surface) {
-            output->background->window()->setGeometry(screenGeometry);
             output->background->window()->show();
 
             qDebug() << "Background geometry"

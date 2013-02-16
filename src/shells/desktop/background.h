@@ -39,6 +39,10 @@ public:
         return m_window;
     }
 
+public Q_SLOTS:
+    void updateScreenGeometry();
+    void updateScreenGeometry(const QRect &geometry);
+
 private:
     QQuickWindow *m_window;
 };
