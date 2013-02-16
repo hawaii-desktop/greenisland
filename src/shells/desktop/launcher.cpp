@@ -57,7 +57,7 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     m_window->winId();
 
     // Set screen size and detect geometry changes
-    updateScreenGeometry(screen->availableGeometry());
+    updateScreenGeometry();
     connect(screen, SIGNAL(geometryChanged(QRect)),
             this, SLOT(updateScreenGeometry(QRect)));
 }
@@ -65,6 +65,11 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
 int Launcher::tileSize() const
 {
     return m_window->property("tileSize").toInt();
+}
+
+void Launcher::updateScreenGeometry()
+{
+    updateScreenGeometry(m_window->screen()->availableGeometry());
 }
 
 void Launcher::updateScreenGeometry(const QRect &geometry)
