@@ -36,7 +36,8 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
     QQmlEngine engine;
-    QQmlComponent component(&engine);
+    QQmlComponent component(&engine, this);
+    component.moveToThread(parent ? parent->thread() : thread());
     component.loadUrl(QUrl("qrc:///qml/Launcher.qml"));
     if (!component.isReady())
         qFatal(qPrintable(component.errorString()));
@@ -49,9 +50,6 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
 
     // This is a frameless window that stays on top of everything
     m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
-
-    // Set the title
-    m_window->setTitle(QString("Launcher on %1").arg(screen->name()));
 
     // Create the platform window
     m_window->winId();

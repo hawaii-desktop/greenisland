@@ -64,6 +64,9 @@ public:
         m_outputs.append(output);
     }
 
+public Q_SLOTS:
+    void create();
+
 private:
     struct wl_display *m_display;
     int m_fd;

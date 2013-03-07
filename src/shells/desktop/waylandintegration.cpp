@@ -76,47 +76,8 @@ void WaylandIntegration::handleGlobal(void *data,
                     wl_registry_bind(registry, id, &desktop_shell_interface, 1));
         desktop_shell_add_listener(object->shell, &listener, data);
 
-        // Platform native interface
-        QPlatformNativeInterface *native =
-                QGuiApplication::platformNativeInterface();
-        Q_ASSERT(native);
-
         DesktopShell *shell = DesktopShell::instance();
-
-        foreach (QScreen *screen, QGuiApplication::screens()) {
-            Output *output = new Output();
-
-            // Get native wl_output for the current screen
-            output->screen = screen;
-            output->output = static_cast<struct wl_output *>(
-                        native->nativeResourceForScreen("output", output->screen));
-
-            // Geometry
-            qDebug() << "Creating shell surfaces on" << screen->name()
-                     << "with geometry" << screen->geometry();
-
-            // Set a wallpaper for each screen
-            output->background = new Background(screen, shell);
-            output->backgroundSurface = static_cast<struct wl_surface *>(
-                        native->nativeResourceForWindow("surface",
-                                                        output->background->window()));
-            desktop_shell_set_background(object->shell, output->output,
-                                         output->backgroundSurface);
-            qDebug() << "Created background surface" << output->backgroundSurface
-                     << "for output" << output->output;
-
-            // Create a launcher window for each output
-            output->launcher = new Launcher(screen, shell);
-            output->launcherSurface = static_cast<struct wl_surface *>(
-                        native->nativeResourceForWindow("surface",
-                                                        output->launcher->window()));
-            desktop_shell_set_panel(object->shell, output->output,
-                                    output->launcherSurface);
-            qDebug() << "Created launcher surface" << output->launcherSurface
-                     << "for output" << output->output;
-
-            shell->addOutput(output);
-        }
+        QMetaObject::invokeMethod(shell, "create");
     }
 }
 
@@ -140,13 +101,13 @@ void WaylandIntegration::handleConfigure(void *data,
 
     foreach (Output *output, shell->outputs()) {
         if (output->backgroundSurface == surface) {
-            output->background->window()->show();
+            QMetaObject::invokeMethod(output->background->window(), "show");
 
             qDebug() << "Background geometry"
                      << output->background->window()->geometry()
                      << "for screen" << output->screen->name();
         } else if (output->launcherSurface == surface) {
-            output->launcher->window()->show();
+            QMetaObject::invokeMethod(output->launcher->window(), "show");
 
             qDebug() << "Launcher geometry"
                      << output->launcher->window()->geometry()

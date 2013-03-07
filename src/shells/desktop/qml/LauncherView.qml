@@ -44,6 +44,9 @@ LauncherDropItem {
     // Number of items
     property alias count: view.count
 
+    // AppChooser window
+    property var appChooser: AppChooser {}
+
     onApplicationDropped: visualModel.model.pinApplication(path)
     onUrlDropped: visualModel.model.pinUrl(url)
 
@@ -303,6 +306,10 @@ LauncherDropItem {
             iconSource: "view-grid-symbolic"
             width: tileSize
             height: width
+            onClicked: {
+                console.log("****************** CLICKED **********");
+                appChooser.open();
+            }
 /*
             onClicked: root.appChooser.toggle();
 

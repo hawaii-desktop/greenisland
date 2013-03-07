@@ -25,11 +25,14 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 import GreenIsland 1.0
 import FluidCore 1.0
 import FluidUi 1.0
 
-Item {
+Window {
+    color: "transparent"
+    modality: Qt.ApplicationModal
     visible: status === DialogStatus.Open || status === DialogStatus.Opening
 
     property int status: DialogStatus.Closed
@@ -42,10 +45,12 @@ Item {
     }
 
     function open() {
+        showNormal();
         status = DialogStatus.Open;
     }
 
     function close() {
+        hide();
         status = DialogStatus.Closed;
     }
 
