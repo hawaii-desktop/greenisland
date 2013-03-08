@@ -30,6 +30,7 @@
 #include <QObject>
 
 class QScreen;
+class QQmlEngine;
 
 class Launcher;
 class Background;
@@ -37,6 +38,16 @@ class Background;
 class Output
 {
 public:
+    Output()
+        : screen(0)
+        , output(0)
+        , launcher(0)
+        , launcherSurface(0)
+        , background(0)
+        , backgroundSurface(0)
+    {
+    }
+
     QScreen *screen;
     struct wl_output *output;
 
@@ -64,6 +75,10 @@ public:
         m_outputs.append(output);
     }
 
+    QQmlEngine *qmlEngine() const {
+        return m_qmlEngine;
+    }
+
 public Q_SLOTS:
     void create();
 
@@ -72,6 +87,7 @@ private:
     int m_fd;
     struct wl_registry *m_registry;
     QList<Output *> m_outputs;
+    QQmlEngine *m_qmlEngine;
 };
 
 #endif // DESKTOPSHELL_H

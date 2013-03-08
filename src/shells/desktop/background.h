@@ -27,13 +27,15 @@
 #ifndef BACKGROUND_H
 #define BACKGROUND_H
 
-#include <QQuickWindow>
+class QQmlComponent;
+class QQuickWindow;
 
 class Background : public QObject
 {
     Q_OBJECT
 public:
     explicit Background(QScreen *screen, QObject *parent = 0);
+    ~Background();
 
     QQuickWindow *window() const {
         return m_window;
@@ -44,6 +46,7 @@ public Q_SLOTS:
     void updateScreenGeometry(const QRect &geometry);
 
 private:
+    QQmlComponent *m_component;
     QQuickWindow *m_window;
 };
 

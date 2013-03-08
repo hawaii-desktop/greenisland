@@ -28,21 +28,23 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include <QScreen>
 
 #include "background.h"
+#include "desktopshell.h"
 
 Background::Background(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
-    QQmlEngine engine;
-    QQmlComponent component(&engine, this);
-    component.moveToThread(parent ? parent->thread() : thread());
-    component.loadUrl(QUrl("qrc:///qml/Background.qml"));
-    if (!component.isReady())
-        qFatal(qPrintable(component.errorString()));
+    // Load component
+    m_component = new QQmlComponent(DesktopShell::instance()->qmlEngine(), this);
+    m_component->loadUrl(QUrl("qrc:///qml/Background.qml"));
+    if (!m_component->isReady())
+        qFatal(qPrintable(m_component->errorString()));
 
-    QObject *topLevel = component.create();
+    // Create component
+    QObject *topLevel = m_component->create();
     m_window = qobject_cast<QQuickWindow *>(topLevel);
     if (!m_window)
         qFatal("Error: Background root item must be a Window!\n");
@@ -52,12 +54,17 @@ Background::Background(QScreen *screen, QObject *parent)
     m_window->setFlags(Qt::CustomWindow);
 
     // Create the platform window
-    m_window->winId();
+    m_window->create();
 
     // Set screen size and detect geometry changes
     updateScreenGeometry();
     connect(screen, SIGNAL(geometryChanged(QRect)),
             this, SLOT(updateScreenGeometry(QRect)));
+}
+
+Background::~Background()
+{
+    delete m_component;
 }
 
 void Background::updateScreenGeometry()

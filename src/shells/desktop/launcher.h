@@ -27,14 +27,18 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
-#include <QQuickWindow>
+class QQmlComponent;
+class QQuickWindow;
 
 class Launcher : public QObject
 {
     Q_OBJECT
 public:
     explicit Launcher(QScreen *screen, QObject *parent = 0);
+    ~Launcher();
 
+    QPoint position() const;
+    QSize size() const;
     int tileSize() const;
 
     QQuickWindow *window() const {
@@ -42,10 +46,13 @@ public:
     }
 
 public Q_SLOTS:
+    void configure();
+
     void updateScreenGeometry();
     void updateScreenGeometry(const QRect &geometry);
 
 private:
+    QQmlComponent *m_component;
     QQuickWindow *m_window;
 };
 

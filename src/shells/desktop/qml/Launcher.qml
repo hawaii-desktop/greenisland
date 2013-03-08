@@ -47,27 +47,41 @@ Window {
     property int alignment: LauncherAlignment.Bottom
     property alias orientation: launcherView.orientation
 
-    // Size
-    property real launcherSize: {
+    // Position
+    property point position: {
         switch (alignment) {
         case LauncherAlignment.Left:
-            return tileSize + frame.margins.right + (padding * 2);
+            return Qt.point(0, 0);
         case LauncherAlignment.Right:
-            return tileSize + frame.margins.left + (padding * 2);
+            return Qt.point(0, 0);
         default:
-            return tileSize + frame.margins.top + (padding * 2);
+            return Qt.point(0, screenSize.height - size);
+        }
+    }
+
+    // Size
+    property size size: {
+        switch (alignment) {
+        case LauncherAlignment.Left:
+            return Qt.size(tileSize + frame.margins.right + (padding * 2), screenSize.height);
+        case LauncherAlignment.Right:
+            return Qt.size(tileSize + frame.margins.left + (padding * 2), screenSize.height);
+        default:
+            return Qt.size(screenSize.width, tileSize + frame.margins.top + (padding * 2));
         }
     }
 
     // Number of items
     property alias count: launcherView.count
 
+    /*
     Settings {
         id: settings
         schema: "org.hawaii.greenisland"
         group: "launcher"
         onValueChanged: loadSettings()
     }
+    */
 
     FrameSvgItem {
         id: frame
@@ -113,11 +127,6 @@ Window {
                     anchors.rightMargin: frame.margins.right + padding
                     anchors.bottomMargin: frame.margins.top + padding
                 }
-                PropertyChanges {
-                    target: launcherContainer
-                    width: launcherSize
-                    height: screenSize.height
-                }
             },
             State {
                 name: "right"
@@ -128,11 +137,6 @@ Window {
                     anchors.leftMargin: frame.margins.left + padding
                     anchors.topMargin: frame.margins.top + padding
                     anchors.bottomMargin: frame.margins.top + padding
-                }
-                PropertyChanges {
-                    target: launcherContainer
-                    width: launcherSize
-                    height: screenSize.height
                 }
             },
             State {
@@ -145,20 +149,16 @@ Window {
                     anchors.topMargin: frame.margins.top + padding
                     anchors.rightMargin: frame.margins.right + padding
                 }
-                PropertyChanges {
-                    target: launcherContainer
-                    width: screenSize.width
-                    height: launcherSize
-                }
             }
         ]
     }
 
+    /*
     Component.onCompleted: loadSettings()
 
     function loadSettings() {
         var alignmentVal = settings.value("alignment");
-        console.log("Launcher alignment:", alignmentVal);
+
         if (alignmentVal == "left")
             alignment = LauncherAlignment.Left;
         else if (alignmentVal == "right")
@@ -166,4 +166,5 @@ Window {
         else
             alignment = LauncherAlignment.Bottom;
     }
+    */
 }

@@ -26,6 +26,8 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QQmlEngine>
+#include <QQuickWindow>
 #include <QScreen>
 
 #include <qpa/qplatformnativeinterface.h>
@@ -49,6 +51,9 @@ DesktopShell::DesktopShell()
         path += ":";
     path += INSTALL_BINDIR;
     setenv("PATH", qPrintable(path), 1);
+
+    // QML engine
+    m_qmlEngine = new QQmlEngine(this);
 
     // Platform native interface
     QPlatformNativeInterface *native =
@@ -81,6 +86,8 @@ DesktopShell::~DesktopShell()
         m_outputs.removeOne(output);
         delete output;
     }
+
+    delete m_qmlEngine;
 }
 
 DesktopShell *DesktopShell::instance()

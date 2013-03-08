@@ -26,6 +26,7 @@
 
 #include <QDebug>
 #include <QGuiApplication>
+#include <QQuickWindow>
 #include <QScreen>
 
 #include <qpa/qplatformnativeinterface.h>
@@ -66,8 +67,6 @@ void WaylandIntegration::handleGlobal(void *data,
 {
     Q_UNUSED(version);
 
-    qDebug() << "Wayland interface:" << interface;
-
     if (strcmp(interface, "desktop_shell") == 0) {
         WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
         Q_ASSERT(object);
@@ -92,8 +91,6 @@ void WaylandIntegration::handleConfigure(void *data,
     Q_UNUSED(width);
     Q_UNUSED(height);
 
-    qDebug() << "Configure received for surface" << surface;
-
     WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
     Q_ASSERT(object);
 
@@ -101,12 +98,15 @@ void WaylandIntegration::handleConfigure(void *data,
 
     foreach (Output *output, shell->outputs()) {
         if (output->backgroundSurface == surface) {
+            // Background already configure, show it
             QMetaObject::invokeMethod(output->background->window(), "show");
 
             qDebug() << "Background geometry"
                      << output->background->window()->geometry()
                      << "for screen" << output->screen->name();
         } else if (output->launcherSurface == surface) {
+            // Configure and show launcher
+            QMetaObject::invokeMethod(output->launcher, "configure");
             QMetaObject::invokeMethod(output->launcher->window(), "show");
 
             qDebug() << "Launcher geometry"

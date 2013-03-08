@@ -28,21 +28,23 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include <QQmlContext>
+#include <QQuickWindow>
 #include <QScreen>
 
 #include "launcher.h"
+#include "desktopshell.h"
 
 Launcher::Launcher(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
-    QQmlEngine engine;
-    QQmlComponent component(&engine, this);
-    component.moveToThread(parent ? parent->thread() : thread());
-    component.loadUrl(QUrl("qrc:///qml/Launcher.qml"));
-    if (!component.isReady())
-        qFatal(qPrintable(component.errorString()));
+    // Load component
+    m_component = new QQmlComponent(DesktopShell::instance()->qmlEngine(), this);
+    m_component->loadUrl(QUrl("qrc:///qml/Launcher.qml"));
+    if (!m_component->isReady())
+        qFatal(qPrintable(m_component->errorString()));
 
-    QObject *topLevel = component.create();
+    // Create component
+    QObject *topLevel = m_component->create();
     m_window = qobject_cast<QQuickWindow *>(topLevel);
     if (!m_window)
         qFatal("Error: Launcher root item must be a Window!\n");
@@ -52,7 +54,8 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
     // Create the platform window
-    m_window->winId();
+    //m_window->winId();
+    m_window->create();
 
     // Set screen size and detect geometry changes
     updateScreenGeometry();
@@ -60,9 +63,33 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
             this, SLOT(updateScreenGeometry(QRect)));
 }
 
+Launcher::~Launcher()
+{
+    delete m_component;
+}
+
+QPoint Launcher::position() const
+{
+    return m_window->property("position").toPoint();
+}
+
+QSize Launcher::size() const
+{
+    return m_window->property("size").toSize();
+}
+
 int Launcher::tileSize() const
 {
     return m_window->property("tileSize").toInt();
+}
+
+void Launcher::configure()
+{
+    QRect geometry;
+    qDebug() << "*************************************" << position() << size();
+    geometry.setTopLeft(position());
+    geometry.setSize(size());
+    m_window->setGeometry(geometry);
 }
 
 void Launcher::updateScreenGeometry()
@@ -73,6 +100,7 @@ void Launcher::updateScreenGeometry()
 void Launcher::updateScreenGeometry(const QRect &geometry)
 {
     m_window->setProperty("screenSize", geometry.size());
+    configure();
 }
 
 #include "moc_launcher.cpp"
