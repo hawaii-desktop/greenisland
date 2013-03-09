@@ -26,7 +26,6 @@
 
 #include <QDebug>
 #include <QGuiApplication>
-#include <QQmlEngine>
 #include <QQuickWindow>
 #include <QScreen>
 
@@ -37,8 +36,9 @@
 #include "cmakedirs.h"
 #include "desktopshell.h"
 #include "waylandintegration.h"
-#include "launcher.h"
 #include "background.h"
+#include "panel.h"
+#include "launcher.h"
 
 Q_GLOBAL_STATIC(DesktopShell, desktopShell)
 
@@ -51,9 +51,6 @@ DesktopShell::DesktopShell()
         path += ":";
     path += INSTALL_BINDIR;
     setenv("PATH", qPrintable(path), 1);
-
-    // QML engine
-    m_qmlEngine = new QQmlEngine(this);
 
     // Platform native interface
     QPlatformNativeInterface *native =
@@ -86,8 +83,6 @@ DesktopShell::~DesktopShell()
         m_outputs.removeOne(output);
         delete output;
     }
-
-    delete m_qmlEngine;
 }
 
 DesktopShell *DesktopShell::instance()
@@ -127,13 +122,23 @@ void DesktopShell::create()
         qDebug() << "Created background surface" << output->backgroundSurface
                  << "for output" << output->output;
 
+        // Create a panel window for each output
+        output->panel = new Panel(screen, this);
+        output->panelSurface = static_cast<struct wl_surface *>(
+                    native->nativeResourceForWindow("surface",
+                                                    output->panel->window()));
+        desktop_shell_set_panel(object->shell, output->output,
+                                output->panelSurface);
+        qDebug() << "Created panel surface" << output->panelSurface
+                 << "for output" << output->output;
+
         // Create a launcher window for each output
         output->launcher = new Launcher(screen, this);
         output->launcherSurface = static_cast<struct wl_surface *>(
                     native->nativeResourceForWindow("surface",
                                                     output->launcher->window()));
-        desktop_shell_set_panel(object->shell, output->output,
-                                output->launcherSurface);
+        desktop_shell_set_launcher(object->shell, output->output,
+                                   output->launcherSurface);
         qDebug() << "Created launcher surface" << output->launcherSurface
                  << "for output" << output->output;
 

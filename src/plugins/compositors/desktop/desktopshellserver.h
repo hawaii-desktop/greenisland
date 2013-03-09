@@ -42,6 +42,7 @@ public:
 
     QtWayland::Surface *backgroundSurface;
     QtWayland::Surface *panelSurface;
+    QtWayland::Surface *launcherSurface;
     QtWayland::Surface *lockSurface;
 
 private:
@@ -59,6 +60,11 @@ private:
                           struct wl_resource *resource,
                           struct wl_resource *output,
                           struct wl_resource *surface);
+
+    static void set_launcher(struct wl_client *client,
+                             struct wl_resource *resource,
+                             struct wl_resource *output,
+                             struct wl_resource *surface);
 
     static void set_lock_surface(struct wl_client *client,
                                  struct wl_resource *resource,

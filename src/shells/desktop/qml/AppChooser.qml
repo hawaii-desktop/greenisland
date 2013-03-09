@@ -31,28 +31,9 @@ import FluidCore 1.0
 import FluidUi 1.0
 
 Window {
-    color: "transparent"
     modality: Qt.ApplicationModal
-    visible: status === DialogStatus.Open || status === DialogStatus.Opening
-
-    property int status: DialogStatus.Closed
-
-    function toggle() {
-        if (status === DialogStatus.Open)
-            status = DialogStatus.Closed;
-        else if (status === DialogStatus.Closed)
-            status = DialogStatus.Open;
-    }
-
-    function open() {
-        showNormal();
-        status = DialogStatus.Open;
-    }
-
-    function close() {
-        hide();
-        status = DialogStatus.Closed;
-    }
+    width: 600
+    height: 600
 
     FrameSvgItem {
         id: frame
@@ -175,7 +156,7 @@ Window {
 
                     onClicked: {
                         // Launch the application and close the AppChooser
-                        root.appChooser.toggle();
+                        // TODO: Hide this window
                         appsModel.launchApplicationAt(visualIndex);
                     }
                 }

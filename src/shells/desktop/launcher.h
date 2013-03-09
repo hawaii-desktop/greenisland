@@ -27,6 +27,7 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
+class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
 
@@ -52,6 +53,7 @@ public Q_SLOTS:
     void updateScreenGeometry(const QRect &geometry);
 
 private:
+    QQmlEngine *m_engine;
     QQmlComponent *m_component;
     QQuickWindow *m_window;
 };

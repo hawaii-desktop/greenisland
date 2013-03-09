@@ -44,9 +44,6 @@ LauncherDropItem {
     // Number of items
     property alias count: view.count
 
-    // AppChooser window
-    //property var appChooser: AppChooser {}
-
     onApplicationDropped: visualModel.model.pinApplication(path)
     onUrlDropped: visualModel.model.pinUrl(url)
 
@@ -307,8 +304,7 @@ LauncherDropItem {
             width: tileSize
             height: width
             onClicked: {
-                console.log("****************** CLICKED **********");
-                //appChooser.open();
+                launcherObject.toggleAppChooser();
             }
 /*
             onClicked: root.appChooser.toggle();

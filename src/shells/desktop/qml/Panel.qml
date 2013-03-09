@@ -25,9 +25,18 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 import FluidCore 1.0
 
-Item {
+Window {
+    color: "transparent"
+    width: 100
+    height: panelHeight
+
+    // Screen size (Window.Screen cannot be used when we setup launcher size,
+    // so we set this from C++)
+    property size screenSize
+
     // Padding
     // TODO: Take it from parameters
     property real padding: 2

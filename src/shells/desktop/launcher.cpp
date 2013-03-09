@@ -32,13 +32,17 @@
 #include <QScreen>
 
 #include "launcher.h"
-#include "desktopshell.h"
 
 Launcher::Launcher(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
+    // Engine
+    m_engine = new QQmlEngine(this);
+    m_engine->rootContext()->setContextProperty(
+                QStringLiteral("launcherObject"), this);
+
     // Load component
-    m_component = new QQmlComponent(DesktopShell::instance()->qmlEngine(), this);
+    m_component = new QQmlComponent(m_engine, this);
     m_component->loadUrl(QUrl("qrc:///qml/Launcher.qml"));
     if (!m_component->isReady())
         qFatal(qPrintable(m_component->errorString()));
@@ -54,7 +58,6 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
     // Create the platform window
-    //m_window->winId();
     m_window->create();
 
     // Set screen size and detect geometry changes
@@ -66,6 +69,7 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
 Launcher::~Launcher()
 {
     delete m_component;
+    delete m_engine;
 }
 
 QPoint Launcher::position() const

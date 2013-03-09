@@ -25,10 +25,11 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Window 2.0
 import GreenIsland 1.0
 import FluidCore 1.0
 
-Item {
+Window {
     id: root
 
     // Available geometry
@@ -203,6 +204,7 @@ Item {
     }
 
     // Application chooser
+/*
     AppChooser {
         id: appChooserObject
         width: availableGeometry.width / 1.2
@@ -213,6 +215,7 @@ Item {
             NumberAnimation { duration: 200 }
         }
     }
+*/
 
     // Notifications panel
     NotificationsPanel {

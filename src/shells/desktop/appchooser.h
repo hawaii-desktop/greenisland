@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,27 +24,26 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
+#ifndef APPCHOOSER_H
+#define APPCHOOSER_H
 
 class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
 
-class Background : public QObject
+class AppChooser : public QObject
 {
     Q_OBJECT
 public:
-    explicit Background(QScreen *screen, QObject *parent = 0);
-    ~Background();
+    explicit AppChooser(QScreen *screen, QObject *parent = 0);
+    ~AppChooser();
 
     QQuickWindow *window() const {
         return m_window;
     }
 
 public Q_SLOTS:
-    void updateScreenGeometry();
-    void updateScreenGeometry(const QRect &geometry);
+    void configure();
 
 private:
     QQmlEngine *m_engine;
@@ -52,4 +51,4 @@ private:
     QQuickWindow *m_window;
 };
 
-#endif // BACKGROUND_H
+#endif // APPCHOOSER_H

@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -31,9 +31,9 @@
 #include <QQuickWindow>
 #include <QScreen>
 
-#include "background.h"
+#include "appchooser.h"
 
-Background::Background(QScreen *screen, QObject *parent)
+AppChooser::AppChooser(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
     // Engine
@@ -41,7 +41,7 @@ Background::Background(QScreen *screen, QObject *parent)
 
     // Load component
     m_component = new QQmlComponent(m_engine, this);
-    m_component->loadUrl(QUrl("qrc:///qml/Background.qml"));
+    m_component->loadUrl(QUrl("qrc:///qml/AppChooser.qml"));
     if (!m_component->isReady())
         qFatal(qPrintable(m_component->errorString()));
 
@@ -49,35 +49,24 @@ Background::Background(QScreen *screen, QObject *parent)
     QObject *topLevel = m_component->create();
     m_window = qobject_cast<QQuickWindow *>(topLevel);
     if (!m_window)
-        qFatal("Error: Background root item must be a Window!\n");
+        qFatal("Error: AppChooser root item must be a Window!\n");
     m_window->setScreen(screen);
 
     // This is a frameless window that stays on top of everything
-    m_window->setFlags(Qt::CustomWindow);
+    m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
     // Create the platform window
     m_window->create();
-
-    // Set screen size and detect geometry changes
-    updateScreenGeometry();
-    connect(screen, SIGNAL(geometryChanged(QRect)),
-            this, SLOT(updateScreenGeometry(QRect)));
 }
 
-Background::~Background()
+AppChooser::~AppChooser()
 {
     delete m_component;
     delete m_engine;
 }
 
-void Background::updateScreenGeometry()
+void AppChooser::configure()
 {
-    updateScreenGeometry(m_window->screen()->geometry());
 }
 
-void Background::updateScreenGeometry(const QRect &geometry)
-{
-    m_window->setGeometry(geometry);
-}
-
-#include "moc_background.cpp"
+#include "moc_appchooser.cpp"

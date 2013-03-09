@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,25 +24,27 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
+#ifndef PANEL_H
+#define PANEL_H
 
 class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
 
-class Background : public QObject
+class Panel : public QObject
 {
     Q_OBJECT
 public:
-    explicit Background(QScreen *screen, QObject *parent = 0);
-    ~Background();
+    explicit Panel(QScreen *screen, QObject *parent = 0);
+    ~Panel();
 
     QQuickWindow *window() const {
         return m_window;
     }
 
 public Q_SLOTS:
+    void configure();
+
     void updateScreenGeometry();
     void updateScreenGeometry(const QRect &geometry);
 
@@ -52,4 +54,4 @@ private:
     QQuickWindow *m_window;
 };
 
-#endif // BACKGROUND_H
+#endif // PANEL_H

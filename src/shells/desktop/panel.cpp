@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -31,17 +31,19 @@
 #include <QQuickWindow>
 #include <QScreen>
 
-#include "background.h"
+#include "panel.h"
 
-Background::Background(QScreen *screen, QObject *parent)
+Panel::Panel(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
     // Engine
     m_engine = new QQmlEngine(this);
+    m_engine->rootContext()->setContextProperty(
+                QStringLiteral("PanelObject"), this);
 
     // Load component
     m_component = new QQmlComponent(m_engine, this);
-    m_component->loadUrl(QUrl("qrc:///qml/Background.qml"));
+    m_component->loadUrl(QUrl("qrc:///qml/Panel.qml"));
     if (!m_component->isReady())
         qFatal(qPrintable(m_component->errorString()));
 
@@ -49,11 +51,11 @@ Background::Background(QScreen *screen, QObject *parent)
     QObject *topLevel = m_component->create();
     m_window = qobject_cast<QQuickWindow *>(topLevel);
     if (!m_window)
-        qFatal("Error: Background root item must be a Window!\n");
+        qFatal("Error: Panel root item must be a Window!\n");
     m_window->setScreen(screen);
 
     // This is a frameless window that stays on top of everything
-    m_window->setFlags(Qt::CustomWindow);
+    m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
     // Create the platform window
     m_window->create();
@@ -64,20 +66,29 @@ Background::Background(QScreen *screen, QObject *parent)
             this, SLOT(updateScreenGeometry(QRect)));
 }
 
-Background::~Background()
+Panel::~Panel()
 {
     delete m_component;
     delete m_engine;
 }
 
-void Background::updateScreenGeometry()
+void Panel::configure()
 {
-    updateScreenGeometry(m_window->screen()->geometry());
-}
-
-void Background::updateScreenGeometry(const QRect &geometry)
-{
+    QRect geometry;
+    geometry.setTopLeft(QPoint(0, 0));
+    geometry.setSize(QSize(100, 48));
     m_window->setGeometry(geometry);
 }
 
-#include "moc_background.cpp"
+void Panel::updateScreenGeometry()
+{
+    updateScreenGeometry(m_window->screen()->availableGeometry());
+}
+
+void Panel::updateScreenGeometry(const QRect &geometry)
+{
+    m_window->setProperty("screenSize", geometry.size());
+    configure();
+}
+
+#include "moc_panel.cpp"

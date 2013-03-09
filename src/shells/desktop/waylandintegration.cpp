@@ -34,8 +34,9 @@
 
 #include "waylandintegration.h"
 #include "desktopshell.h"
-#include "launcher.h"
 #include "background.h"
+#include "panel.h"
+#include "launcher.h"
 
 Q_GLOBAL_STATIC(WaylandIntegration, s_waylandIntegration)
 
@@ -103,6 +104,13 @@ void WaylandIntegration::handleConfigure(void *data,
 
             qDebug() << "Background geometry"
                      << output->background->window()->geometry()
+                     << "for screen" << output->screen->name();
+        } else if (output->panelSurface == surface) {
+            // Show already configured panel
+            QMetaObject::invokeMethod(output->panel->window(), "show");
+
+            qDebug() << "Panel geometry"
+                     << output->panel->window()->geometry()
                      << "for screen" << output->screen->name();
         } else if (output->launcherSurface == surface) {
             // Configure and show launcher
