@@ -30,20 +30,15 @@ import FluidCore 1.0
 
 Window {
     color: "transparent"
-    width: 100
-    height: panelHeight
-
-    // Screen size (Window.Screen cannot be used when we setup launcher size,
-    // so we set this from C++)
-    property size screenSize
+    visible: false
 
     // Padding
     // TODO: Take it from parameters
     property real padding: 2
 
     // Panel height
-    property real panelRealHeight: theme.smallIconSize + (padding * 2)
-    property real panelHeight: panelRealHeight + frame.margins.bottom
+    property int realSize: theme.smallIconSize + (padding * 2)
+    property int size: realSize + frame.margins.bottom
 
     FrameSvgItem {
         id: frame

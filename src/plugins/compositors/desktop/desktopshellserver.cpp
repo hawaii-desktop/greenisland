@@ -33,7 +33,9 @@
 const struct desktop_shell_interface DesktopShellServer::shell_interface = {
     DesktopShellServer::set_background,
     DesktopShellServer::set_panel,
+    DesktopShellServer::set_panel_geometry,
     DesktopShellServer::set_launcher,
+    DesktopShellServer::set_launcher_geometry,
     DesktopShellServer::set_lock_surface,
     DesktopShellServer::unlock,
     DesktopShellServer::set_grab_surface
@@ -84,9 +86,7 @@ void DesktopShellServer::set_background(struct wl_client *client,
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->backgroundSurface = QtWayland::resolve<QtWayland::Surface>(surface);
 
-    // This is just for Weston compatibility, our shell is perfectly capabable
-    // of figuring out background's geometry since it creates one for each screen
-    desktop_shell_send_configure(resource, 0, surface, 0, 0);
+    desktop_shell_send_present(resource, surface);
 }
 
 void DesktopShellServer::set_panel(struct wl_client *client,
@@ -100,9 +100,25 @@ void DesktopShellServer::set_panel(struct wl_client *client,
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->panelSurface = QtWayland::resolve<QtWayland::Surface>(surface);
 
-    // This is just for Weston compatibility, our shell is perfectly capabable
-    // of figuring out panel's geometry since it creates one for each screen
-    desktop_shell_send_configure(resource, 0, surface, 800, 0);
+    desktop_shell_send_present(resource, surface);
+}
+
+void DesktopShellServer::set_panel_geometry(struct wl_client *client,
+                                            struct wl_resource *resource,
+                                            struct wl_resource *output,
+                                            struct wl_resource *surface,
+                                            int32_t x, int32_t y,
+                                            int32_t width, int32_t height)
+{
+    Q_UNUSED(client);
+    Q_UNUSED(output);
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    // TODO: Move surface
 }
 
 void DesktopShellServer::set_launcher(struct wl_client *client,
@@ -116,9 +132,25 @@ void DesktopShellServer::set_launcher(struct wl_client *client,
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
     self->launcherSurface = QtWayland::resolve<QtWayland::Surface>(surface);
 
-    // This is just for Weston compatibility, our shell is perfectly capabable
-    // of figuring out panel's geometry since it creates one for each screen
-    desktop_shell_send_configure(resource, 0, surface, 800, 0);
+    desktop_shell_send_present(resource, surface);
+}
+
+void DesktopShellServer::set_launcher_geometry(struct wl_client *client,
+                                               struct wl_resource *resource,
+                                               struct wl_resource *output,
+                                               struct wl_resource *surface,
+                                               int32_t x, int32_t y,
+                                               int32_t width, int32_t height)
+{
+    Q_UNUSED(client);
+    Q_UNUSED(output);
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+
+    DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
+    // TODO: Move surface
 }
 
 void DesktopShellServer::set_lock_surface(struct wl_client *client,

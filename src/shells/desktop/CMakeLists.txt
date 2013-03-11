@@ -12,6 +12,7 @@ set(SOURCES
     main.cpp
     desktopshell.cpp
     waylandintegration.cpp
+    output.cpp
     background.cpp
     launcher.cpp
     panel.cpp

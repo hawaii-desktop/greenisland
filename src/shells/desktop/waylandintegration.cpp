@@ -24,7 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QDebug>
 #include <QGuiApplication>
 #include <QQuickWindow>
 #include <QScreen>
@@ -34,6 +33,7 @@
 
 #include "waylandintegration.h"
 #include "desktopshell.h"
+#include "output.h"
 #include "background.h"
 #include "panel.h"
 #include "launcher.h"
@@ -45,7 +45,7 @@ const struct wl_registry_listener WaylandIntegration::registryListener = {
 };
 
 const struct desktop_shell_listener WaylandIntegration::listener = {
-    WaylandIntegration::handleConfigure,
+    WaylandIntegration::handlePresent,
     WaylandIntegration::handlePrepareLockSurface,
     WaylandIntegration::handleGrabCursor
 };
@@ -81,16 +81,11 @@ void WaylandIntegration::handleGlobal(void *data,
     }
 }
 
-void WaylandIntegration::handleConfigure(void *data,
-                                         struct desktop_shell *desktop_shell,
-                                         uint32_t edges,
-                                         struct wl_surface *surface,
-                                         int32_t width, int32_t height)
+void WaylandIntegration::handlePresent(void *data,
+                                       struct desktop_shell *desktop_shell,
+                                       struct wl_surface *surface)
 {
     Q_UNUSED(desktop_shell);
-    Q_UNUSED(edges);
-    Q_UNUSED(width);
-    Q_UNUSED(height);
 
     WaylandIntegration *object = static_cast<WaylandIntegration *>(data);
     Q_ASSERT(object);
@@ -98,28 +93,14 @@ void WaylandIntegration::handleConfigure(void *data,
     DesktopShell *shell = DesktopShell::instance();
 
     foreach (Output *output, shell->outputs()) {
-        if (output->backgroundSurface == surface) {
-            // Background already configure, show it
-            QMetaObject::invokeMethod(output->background->window(), "show");
-
-            qDebug() << "Background geometry"
-                     << output->background->window()->geometry()
-                     << "for screen" << output->screen->name();
-        } else if (output->panelSurface == surface) {
-            // Show already configured panel
-            QMetaObject::invokeMethod(output->panel->window(), "show");
-
-            qDebug() << "Panel geometry"
-                     << output->panel->window()->geometry()
-                     << "for screen" << output->screen->name();
-        } else if (output->launcherSurface == surface) {
-            // Configure and show launcher
-            QMetaObject::invokeMethod(output->launcher, "configure");
-            QMetaObject::invokeMethod(output->launcher->window(), "show");
-
-            qDebug() << "Launcher geometry"
-                     << output->launcher->window()->geometry()
-                     << "for screen" << output->screen->name();
+        if (surface == output->backgroundSurface()) {
+            QMetaObject::invokeMethod(output->background()->window(), "show");
+        } else if (surface == output->panelSurface()) {
+            QMetaObject::invokeMethod(output->panel()->window(), "show");
+            QMetaObject::invokeMethod(output, "sendPanelGeometry");
+        } else if (surface == output->launcherSurface()) {
+            //QMetaObject::invokeMethod(output, "sendLauncherGeometry");
+            //QMetaObject::invokeMethod(output->launcher()->window(), "show");
         }
     }
 }

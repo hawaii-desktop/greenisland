@@ -30,6 +30,7 @@
 #include <QQmlContext>
 #include <QQuickWindow>
 #include <QScreen>
+#include <QTimer>
 
 #include "background.h"
 
@@ -55,11 +56,11 @@ Background::Background(QScreen *screen, QObject *parent)
     // This is a frameless window that stays on top of everything
     m_window->setFlags(Qt::CustomWindow);
 
-    // Create the platform window
+    // Create the platform window and set geometry
     m_window->create();
+    m_window->setGeometry(screen->geometry());
 
     // Set screen size and detect geometry changes
-    updateScreenGeometry();
     connect(screen, SIGNAL(geometryChanged(QRect)),
             this, SLOT(updateScreenGeometry(QRect)));
 }
@@ -68,11 +69,6 @@ Background::~Background()
 {
     delete m_component;
     delete m_engine;
-}
-
-void Background::updateScreenGeometry()
-{
-    updateScreenGeometry(m_window->screen()->geometry());
 }
 
 void Background::updateScreenGeometry(const QRect &geometry)

@@ -57,13 +57,14 @@ Panel::Panel(QScreen *screen, QObject *parent)
     // This is a frameless window that stays on top of everything
     m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
-    // Create the platform window
+    // Create the platform window and set geometry
     m_window->create();
+    m_window->setGeometry(geometry());
 
-    // Set screen size and detect geometry changes
-    updateScreenGeometry();
+    // When screen geometry changes our geometry changes as well and we
+    // emit a signal
     connect(screen, SIGNAL(geometryChanged(QRect)),
-            this, SLOT(updateScreenGeometry(QRect)));
+            this, SIGNAL(geometryChanged(QRect)));
 }
 
 Panel::~Panel()
@@ -72,23 +73,15 @@ Panel::~Panel()
     delete m_engine;
 }
 
-void Panel::configure()
+QRect Panel::geometry() const
 {
-    QRect geometry;
-    geometry.setTopLeft(QPoint(0, 0));
-    geometry.setSize(QSize(100, 48));
-    m_window->setGeometry(geometry);
+    QRect screenGeometry = m_window->screen()->availableGeometry();
+    return QRect(QPoint(0, 0), QSize(screenGeometry.width(), windowSize()));
 }
 
-void Panel::updateScreenGeometry()
+int Panel::windowSize() const
 {
-    updateScreenGeometry(m_window->screen()->availableGeometry());
-}
-
-void Panel::updateScreenGeometry(const QRect &geometry)
-{
-    m_window->setProperty("screenSize", geometry.size());
-    configure();
+    return m_window->property("size").toInt();
 }
 
 #include "moc_panel.cpp"

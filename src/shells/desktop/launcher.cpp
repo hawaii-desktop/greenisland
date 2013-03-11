@@ -29,13 +29,20 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQuickWindow>
+#include <QOpenGLContext>
 #include <QScreen>
+#include <QTimer>
+
+#include <VibeCore/VSettings>
 
 #include "launcher.h"
 
 Launcher::Launcher(QScreen *screen, QObject *parent)
     : QObject(parent)
 {
+    // Settings
+    m_settings = new VSettings(QStringLiteral("org.hawaii.greenisland"));
+
     // Engine
     m_engine = new QQmlEngine(this);
     m_engine->rootContext()->setContextProperty(
@@ -57,54 +64,48 @@ Launcher::Launcher(QScreen *screen, QObject *parent)
     // This is a frameless window that stays on top of everything
     m_window->setFlags(Qt::WindowStaysOnTopHint | Qt::CustomWindow);
 
-    // Create the platform window
+    // Create the platform window and set geometry
     m_window->create();
+    m_window->setGeometry(geometry());
 
-    // Set screen size and detect geometry changes
-    updateScreenGeometry();
+    // When screen geometry changes our geometry changes as well and we
+    // emit a signal
     connect(screen, SIGNAL(geometryChanged(QRect)),
-            this, SLOT(updateScreenGeometry(QRect)));
+            this, SIGNAL(geometryChanged(QRect)));
 }
 
 Launcher::~Launcher()
 {
+    delete m_window;
     delete m_component;
     delete m_engine;
+    delete m_settings;
 }
 
-QPoint Launcher::position() const
+QRect Launcher::geometry() const
 {
-    return m_window->property("position").toPoint();
+    QString alignment = m_settings->value("launcher/alignment").toString();
+    QRect screenGeometry = m_window->screen()->availableGeometry();
+    QPoint pt(0, 0);
+    QSize size;
+
+    if (alignment == QStringLiteral("bottom")) {
+        pt.setY(screenGeometry.height() - windowSize());
+        size = QSize(screenGeometry.width(), windowSize());
+    } else
+        size = QSize(windowSize(), screenGeometry.height());
+
+    return QRect(pt, size);
 }
 
-QSize Launcher::size() const
+int Launcher::windowSize() const
 {
-    return m_window->property("size").toSize();
+    return m_window->property("size").toInt();
 }
 
 int Launcher::tileSize() const
 {
     return m_window->property("tileSize").toInt();
-}
-
-void Launcher::configure()
-{
-    QRect geometry;
-    qDebug() << "*************************************" << position() << size();
-    geometry.setTopLeft(position());
-    geometry.setSize(size());
-    m_window->setGeometry(geometry);
-}
-
-void Launcher::updateScreenGeometry()
-{
-    updateScreenGeometry(m_window->screen()->availableGeometry());
-}
-
-void Launcher::updateScreenGeometry(const QRect &geometry)
-{
-    m_window->setProperty("screenSize", geometry.size());
-    configure();
 }
 
 #include "moc_launcher.cpp"

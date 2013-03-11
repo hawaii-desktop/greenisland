@@ -33,10 +33,6 @@ Window {
     id: launcherContainer
     color: "transparent"
 
-    // Screen size (Window.Screen cannot be used when we setup launcher size,
-    // so we set this from C++)
-    property size screenSize
-
     // TODO: Define margins and padding in Fluid::Theme
     property real padding: 4
 
@@ -47,41 +43,27 @@ Window {
     property int alignment: LauncherAlignment.Bottom
     property alias orientation: launcherView.orientation
 
-    // Position
-    property point position: {
-        switch (alignment) {
-        case LauncherAlignment.Left:
-            return Qt.point(0, 0);
-        case LauncherAlignment.Right:
-            return Qt.point(0, 0);
-        default:
-            return Qt.point(0, screenSize.height - size);
-        }
-    }
-
     // Size
-    property size size: {
+    property int size: {
         switch (alignment) {
         case LauncherAlignment.Left:
-            return Qt.size(tileSize + frame.margins.right + (padding * 2), screenSize.height);
+            return tileSize + frame.margins.right + (padding * 2);
         case LauncherAlignment.Right:
-            return Qt.size(tileSize + frame.margins.left + (padding * 2), screenSize.height);
+            return tileSize + frame.margins.left + (padding * 2);
         default:
-            return Qt.size(screenSize.width, tileSize + frame.margins.top + (padding * 2));
+            return tileSize + frame.margins.top + (padding * 2);
         }
     }
 
     // Number of items
     property alias count: launcherView.count
 
-    /*
     Settings {
         id: settings
         schema: "org.hawaii.greenisland"
         group: "launcher"
         onValueChanged: loadSettings()
     }
-    */
 
     FrameSvgItem {
         id: frame
@@ -153,18 +135,16 @@ Window {
         ]
     }
 
-    /*
     Component.onCompleted: loadSettings()
 
     function loadSettings() {
         var alignmentVal = settings.value("alignment");
 
-        if (alignmentVal == "left")
+        if (alignmentVal === "left")
             alignment = LauncherAlignment.Left;
-        else if (alignmentVal == "right")
+        else if (alignmentVal === "right")
             alignment = LauncherAlignment.Right;
         else
             alignment = LauncherAlignment.Bottom;
     }
-    */
 }

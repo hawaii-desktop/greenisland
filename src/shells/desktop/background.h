@@ -43,7 +43,6 @@ public:
     }
 
 public Q_SLOTS:
-    void updateScreenGeometry();
     void updateScreenGeometry(const QRect &geometry);
 
 private:

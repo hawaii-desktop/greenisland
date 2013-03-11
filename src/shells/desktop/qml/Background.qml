@@ -31,6 +31,7 @@ import FluidCore 1.0
 Window {
     id: backgroundWindow
     color: settings.value("primary-color")
+    visible: false
 
     Settings {
         id: settings

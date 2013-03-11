@@ -30,6 +30,7 @@
 class QQmlEngine;
 class QQmlComponent;
 class QQuickWindow;
+class VSettings;
 
 class Launcher : public QObject
 {
@@ -38,21 +39,20 @@ public:
     explicit Launcher(QScreen *screen, QObject *parent = 0);
     ~Launcher();
 
-    QPoint position() const;
-    QSize size() const;
+    QRect geometry() const;
+
+    int windowSize() const;
     int tileSize() const;
 
     QQuickWindow *window() const {
         return m_window;
     }
 
-public Q_SLOTS:
-    void configure();
-
-    void updateScreenGeometry();
-    void updateScreenGeometry(const QRect &geometry);
+Q_SIGNALS:
+    void geometryChanged(const QRect &geometry);
 
 private:
+    VSettings *m_settings;
     QQmlEngine *m_engine;
     QQmlComponent *m_component;
     QQuickWindow *m_window;

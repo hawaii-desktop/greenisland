@@ -303,17 +303,6 @@ LauncherDropItem {
             iconSource: "view-grid-symbolic"
             width: tileSize
             height: width
-            onClicked: {
-                launcherObject.toggleAppChooser();
-            }
-/*
-            onClicked: root.appChooser.toggle();
-
-            Connections {
-                target: root.appChooser
-                onVisibleChanged: checked = root.appChooser.visible
-            }
-*/
         }
     }
 

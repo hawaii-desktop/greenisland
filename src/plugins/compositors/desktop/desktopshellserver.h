@@ -60,11 +60,23 @@ private:
                           struct wl_resource *resource,
                           struct wl_resource *output,
                           struct wl_resource *surface);
+    static void set_panel_geometry(struct wl_client *client,
+                                   struct wl_resource *resource,
+                                   struct wl_resource *output,
+                                   struct wl_resource *surface,
+                                   int32_t x, int32_t y,
+                                   int32_t width, int32_t height);
 
     static void set_launcher(struct wl_client *client,
                              struct wl_resource *resource,
                              struct wl_resource *output,
                              struct wl_resource *surface);
+    static void set_launcher_geometry(struct wl_client *client,
+                                      struct wl_resource *resource,
+                                      struct wl_resource *output,
+                                      struct wl_resource *surface,
+                                      int32_t x, int32_t y,
+                                      int32_t width, int32_t height);
 
     static void set_lock_surface(struct wl_client *client,
                                  struct wl_resource *resource,

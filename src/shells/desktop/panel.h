@@ -38,15 +38,16 @@ public:
     explicit Panel(QScreen *screen, QObject *parent = 0);
     ~Panel();
 
+    QRect geometry() const;
+
+    int windowSize() const;
+
     QQuickWindow *window() const {
         return m_window;
     }
 
-public Q_SLOTS:
-    void configure();
-
-    void updateScreenGeometry();
-    void updateScreenGeometry(const QRect &geometry);
+Q_SIGNALS:
+    void geometryChanged(const QRect &rect);
 
 private:
     QQmlEngine *m_engine;

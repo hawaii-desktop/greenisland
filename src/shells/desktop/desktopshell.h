@@ -31,37 +31,7 @@
 
 class QScreen;
 
-class Background;
-class Panel;
-class Launcher;
-
-class Output
-{
-public:
-    Output()
-        : screen(0)
-        , output(0)
-        , background(0)
-        , backgroundSurface(0)
-        , panel(0)
-        , panelSurface(0)
-        , launcher(0)
-        , launcherSurface(0)
-    {
-    }
-
-    QScreen *screen;
-    struct wl_output *output;
-
-    Background *background;
-    struct wl_surface *backgroundSurface;
-
-    Panel *panel;
-    struct wl_surface *panelSurface;
-
-    Launcher *launcher;
-    struct wl_surface *launcherSurface;
-};
+class Output;
 
 class DesktopShell : public QObject
 {

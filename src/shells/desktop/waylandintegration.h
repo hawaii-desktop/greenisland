@@ -48,11 +48,9 @@ public:
 
     static const struct desktop_shell_listener listener;
 
-    static void handleConfigure(void *data,
-                                struct desktop_shell *desktop_shell,
-                                uint32_t edges,
-                                struct wl_surface *surface,
-                                int32_t width, int32_t height);
+    static void handlePresent(void *data,
+                              struct desktop_shell *desktop_shell,
+                              struct wl_surface *surface);
 
     static void handlePrepareLockSurface(void *data,
                                          struct desktop_shell *desktop_shell);

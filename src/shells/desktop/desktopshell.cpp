@@ -31,11 +31,10 @@
 
 #include <qpa/qplatformnativeinterface.h>
 
-#include <wayland-client.h>
-
 #include "cmakedirs.h"
 #include "desktopshell.h"
 #include "waylandintegration.h"
+#include "output.h"
 #include "background.h"
 #include "panel.h"
 #include "launcher.h"
@@ -92,55 +91,40 @@ DesktopShell *DesktopShell::instance()
 
 void DesktopShell::create()
 {
-    // Platform native interface
-    QPlatformNativeInterface *native =
-            QGuiApplication::platformNativeInterface();
-    Q_ASSERT(native);
-
     // Wayland integration
     WaylandIntegration *object = WaylandIntegration::instance();
 
     foreach (QScreen *screen, QGuiApplication::screens()) {
-        Output *output = new Output();
-
-        // Get native wl_output for the current screen
-        output->screen = screen;
-        output->output = static_cast<struct wl_output *>(
-                    native->nativeResourceForScreen("output", output->screen));
+        Output *output = new Output(screen);
 
         // Geometry
         qDebug() << "Creating shell surfaces on" << screen->name()
                  << "with geometry" << screen->geometry();
 
         // Set a wallpaper for each screen
-        output->background = new Background(screen, this);
-        output->backgroundSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface",
-                                                    output->background->window()));
-        desktop_shell_set_background(object->shell, output->output,
-                                     output->backgroundSurface);
-        qDebug() << "Created background surface" << output->backgroundSurface
-                 << "for output" << output->output;
+        output->setBackground(new Background(screen, this));
+        desktop_shell_set_background(object->shell, output->output(),
+                                     output->backgroundSurface());
+        qDebug() << "Created background surface" << output->backgroundSurface()
+                 << "for output" << output->output() << "with geometry"
+                 << output->background()->window()->geometry();
 
         // Create a panel window for each output
-        output->panel = new Panel(screen, this);
-        output->panelSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface",
-                                                    output->panel->window()));
-        desktop_shell_set_panel(object->shell, output->output,
-                                output->panelSurface);
-        qDebug() << "Created panel surface" << output->panelSurface
-                 << "for output" << output->output;
+        output->setPanel(new Panel(screen, this));
+        desktop_shell_set_panel(object->shell, output->output(),
+                                output->panelSurface());
+        qDebug() << "Created panel surface" << output->panelSurface()
+                 << "for output" << output->output() << "with geometry"
+                 << output->panel()->window()->geometry();
 
         // Create a launcher window for each output
-        output->launcher = new Launcher(screen, this);
-        output->launcherSurface = static_cast<struct wl_surface *>(
-                    native->nativeResourceForWindow("surface",
-                                                    output->launcher->window()));
-        desktop_shell_set_launcher(object->shell, output->output,
-                                   output->launcherSurface);
-        qDebug() << "Created launcher surface" << output->launcherSurface
-                 << "for output" << output->output;
+        output->setLauncher(new Launcher(screen, this));
+        desktop_shell_set_launcher(object->shell, output->output(),
+                                   output->launcherSurface());
+        output->sendLauncherGeometry();
+        qDebug() << "Created launcher surface" << output->launcherSurface()
+                 << "for output" << output->output() << "with geometry"
+                 << output->launcher()->window()->geometry();
 
         addOutput(output);
     }
