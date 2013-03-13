@@ -63,7 +63,7 @@ private:
     static void set_panel_geometry(struct wl_client *client,
                                    struct wl_resource *resource,
                                    struct wl_resource *output,
-                                   struct wl_resource *surface,
+                                   struct wl_resource *surface_resource,
                                    int32_t x, int32_t y,
                                    int32_t width, int32_t height);
 
@@ -74,7 +74,7 @@ private:
     static void set_launcher_geometry(struct wl_client *client,
                                       struct wl_resource *resource,
                                       struct wl_resource *output,
-                                      struct wl_resource *surface,
+                                      struct wl_resource *surface_resource,
                                       int32_t x, int32_t y,
                                       int32_t width, int32_t height);
 

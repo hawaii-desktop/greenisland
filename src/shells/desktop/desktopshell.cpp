@@ -34,10 +34,7 @@
 #include "cmakedirs.h"
 #include "desktopshell.h"
 #include "waylandintegration.h"
-#include "output.h"
-#include "background.h"
-#include "panel.h"
-#include "launcher.h"
+#include "shellui.h"
 
 Q_GLOBAL_STATIC(DesktopShell, desktopShell)
 
@@ -78,9 +75,9 @@ DesktopShell::DesktopShell()
 
 DesktopShell::~DesktopShell()
 {
-    foreach (Output *output, m_outputs) {
-        m_outputs.removeOne(output);
-        delete output;
+    foreach (ShellUi *shellUi, m_windows) {
+        m_windows.removeOne(shellUi);
+        delete shellUi;
     }
 }
 
@@ -95,38 +92,15 @@ void DesktopShell::create()
     WaylandIntegration *object = WaylandIntegration::instance();
 
     foreach (QScreen *screen, QGuiApplication::screens()) {
-        Output *output = new Output(screen);
+        ShellUi *ui = new ShellUi(screen, this);
+        m_windows.append(ui);
 
-        // Geometry
-        qDebug() << "Creating shell surfaces on" << screen->name()
-                 << "with geometry" << screen->geometry();
-
-        // Set a wallpaper for each screen
-        output->setBackground(new Background(screen, this));
-        desktop_shell_set_background(object->shell, output->output(),
-                                     output->backgroundSurface());
-        qDebug() << "Created background surface" << output->backgroundSurface()
-                 << "for output" << output->output() << "with geometry"
-                 << output->background()->window()->geometry();
-
-        // Create a panel window for each output
-        output->setPanel(new Panel(screen, this));
-        desktop_shell_set_panel(object->shell, output->output(),
-                                output->panelSurface());
-        qDebug() << "Created panel surface" << output->panelSurface()
-                 << "for output" << output->output() << "with geometry"
-                 << output->panel()->window()->geometry();
-
-        // Create a launcher window for each output
-        output->setLauncher(new Launcher(screen, this));
-        desktop_shell_set_launcher(object->shell, output->output(),
-                                   output->launcherSurface());
-        output->sendLauncherGeometry();
-        qDebug() << "Created launcher surface" << output->launcherSurface()
-                 << "for output" << output->output() << "with geometry"
-                 << output->launcher()->window()->geometry();
-
-        addOutput(output);
+        desktop_shell_set_background(object->shell, ui->output(),
+                                     ui->backgroundSurface());
+        desktop_shell_set_panel(object->shell, ui->output(),
+                                ui->panelSurface());
+        desktop_shell_set_launcher(object->shell, ui->output(),
+                                   ui->launcherSurface());
     }
 }
 

@@ -11,16 +11,9 @@ include_directories(
 set(SOURCES
     main.cpp
     desktopshell.cpp
+    shellui.cpp
     waylandintegration.cpp
-    output.cpp
-    background.cpp
-    launcher.cpp
-    panel.cpp
-    appchooser.cpp
 )
-#    notificationsdaemon.cpp
-#    notificationsimage.cpp
-#    policykitagent.cpp
 
 wayland_add_protocol_client(SOURCES ${CMAKE_SOURCE_DIR}/protocol/desktop-shell.xml desktop-extension)
 
@@ -31,8 +24,8 @@ qt5_add_resources(RESOURCES desktop-shell.qrc)
 add_executable(greenisland-desktop-shell ${SOURCES} ${RESOURCES})
 qt5_use_modules(greenisland-desktop-shell Quick Widgets AccountsService)
 set_target_properties(greenisland-desktop-shell PROPERTIES
-    COMPILE_FLAGS "${Qt5Quick_EXECUTABLE_COMPILE_FLAGS} -rdynamic"
-    LINK_FLAGS "-L${GLESV2_LIBDIR} -L${WAYLAND_CLIENT_LIBDIR} -L${POLKITQT-1_LIB_DIR}"
+    COMPILE_FLAGS "-rdynamic"
+    LINK_FLAGS "-L${WAYLAND_CLIENT_LIBDIR} -L${POLKITQT-1_LIB_DIR}"
 )
 target_link_libraries(greenisland-desktop-shell
     ${VibeCore_LIBRARIES}

@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Desktop Shell.
  *
- * Copyright (C) 2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,31 +24,20 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef BACKGROUND_H
-#define BACKGROUND_H
+#include <QApplication>
+#include <QScreen>
 
-class QQmlEngine;
-class QQmlComponent;
-class QQuickWindow;
+#include "shellui.h"
 
-class Background : public QObject
+int main(int argc, char *argv[])
 {
-    Q_OBJECT
-public:
-    explicit Background(QScreen *screen, QObject *parent = 0);
-    ~Background();
+    // Set the hawaii desktop session
+    setenv("DESKTOP_SESSION", "hawaii", 1);
 
-    QQuickWindow *window() const {
-        return m_window;
-    }
+    QApplication app(argc, argv);
 
-public Q_SLOTS:
-    void updateScreenGeometry(const QRect &geometry);
+    ShellUi shellUi(QApplication::primaryScreen(), &app);
+    Q_UNUSED(shellUi);
 
-private:
-    QQmlEngine *m_engine;
-    QQmlComponent *m_component;
-    QQuickWindow *m_window;
-};
-
-#endif // BACKGROUND_H
+    return app.exec();
+}

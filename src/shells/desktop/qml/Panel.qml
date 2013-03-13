@@ -30,7 +30,6 @@ import FluidCore 1.0
 
 Window {
     color: "transparent"
-    visible: false
 
     // Padding
     // TODO: Take it from parameters

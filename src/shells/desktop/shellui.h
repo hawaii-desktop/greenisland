@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef OUTPUT_H
-#define OUTPUT_H
+#ifndef SHELLUI_H
+#define SHELLUI_H
 
 #include <QObject>
 
@@ -33,77 +33,81 @@
 
 class QPlatformNativeInterface;
 class QScreen;
+class QQmlEngine;
+class QQmlComponent;
+class QQuickWindow;
 
-class Background;
-class Panel;
-class Launcher;
+class VSettings;
 
-class Output : public QObject
+class ShellUi : public QObject
 {
     Q_OBJECT
 public:
-    explicit Output(QScreen *screen);
+    explicit ShellUi(QScreen *screen, QObject *parent = 0);
+    ~ShellUi();
 
-    QScreen *screen() const {
-        return m_screen;
-    }
-
+    // Wayland screen output
     struct wl_output *output() const {
         return m_output;
     }
 
-    Background *background() const {
-        return m_background;
+    // Background
+
+    QQuickWindow *backgroundWindow() const {
+        return m_backgroundWindow;
     }
 
     struct wl_surface *backgroundSurface() const {
         return m_backgroundSurface;
     }
 
-    void setBackground(Background *background);
+    // Panel
 
-    Panel *panel() const {
-        return m_panel;
+    int panelSize() const;
+
+    QRect panelGeometry() const;
+
+    QQuickWindow *panelWindow() const {
+        return m_backgroundWindow;
     }
 
     struct wl_surface *panelSurface() const {
         return m_panelSurface;
     }
 
-    void setPanel(Panel *panel);
+    // Launcher
 
-    Launcher *launcher() const {
-        return m_launcher;
+    int launcherSize() const;
+
+    QRect launcherGeometry() const;
+
+    QQuickWindow *launcherWindow() const {
+        return m_launcherWindow;
     }
 
     struct wl_surface *launcherSurface() const {
         return m_launcherSurface;
     }
 
-    void setLauncher(Launcher *launcher);
-
 public Q_SLOTS:
+    void updateScreenGeometry(const QRect &geometry);
     void sendPanelGeometry();
     void sendLauncherGeometry();
 
 private:
+    VSettings *m_settings;
     QPlatformNativeInterface *m_native;
-
     QScreen *m_screen;
     struct wl_output *m_output;
-
-    Background *m_background;
+    QQmlEngine *m_engine;
+    QQmlComponent *m_component;
+    QObject *m_rootObject;
+    QQuickWindow *m_backgroundWindow;
     struct wl_surface *m_backgroundSurface;
-
-    Panel *m_panel;
+    QQuickWindow *m_panelWindow;
     struct wl_surface *m_panelSurface;
-
-    Launcher *m_launcher;
+    QQuickWindow *m_launcherWindow;
     struct wl_surface *m_launcherSurface;
-
-private Q_SLOTS:
-    void panelGeometryChanged(const QRect &geometry);
-    void launcherGeometryChanged(const QRect &geometry);
 };
 
-#endif // OUTPUT_H
+#endif // SHELLUI_H

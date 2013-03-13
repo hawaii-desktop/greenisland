@@ -31,7 +31,7 @@
 
 class QScreen;
 
-class Output;
+class ShellUi;
 
 class DesktopShell : public QObject
 {
@@ -42,12 +42,8 @@ public:
 
     static DesktopShell *instance();
 
-    QList<Output *> outputs() const {
-        return m_outputs;
-    }
-
-    void addOutput(Output *output) {
-        m_outputs.append(output);
+    QList<ShellUi *> windows() const {
+        return m_windows;
     }
 
 public Q_SLOTS:
@@ -57,7 +53,7 @@ private:
     struct wl_display *m_display;
     int m_fd;
     struct wl_registry *m_registry;
-    QList<Output *> m_outputs;
+    QList<ShellUi *> m_windows;
 };
 
 #endif // DESKTOPSHELL_H

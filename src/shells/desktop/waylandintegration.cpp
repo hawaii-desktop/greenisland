@@ -24,19 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QGuiApplication>
 #include <QQuickWindow>
-#include <QScreen>
-
-#include <qpa/qplatformnativeinterface.h>
-#include <qpa/qplatformwindow.h>
 
 #include "waylandintegration.h"
 #include "desktopshell.h"
-#include "output.h"
-#include "background.h"
-#include "panel.h"
-#include "launcher.h"
+#include "shellui.h"
 
 Q_GLOBAL_STATIC(WaylandIntegration, s_waylandIntegration)
 
@@ -92,15 +84,15 @@ void WaylandIntegration::handlePresent(void *data,
 
     DesktopShell *shell = DesktopShell::instance();
 
-    foreach (Output *output, shell->outputs()) {
-        if (surface == output->backgroundSurface()) {
-            QMetaObject::invokeMethod(output->background()->window(), "show");
-        } else if (surface == output->panelSurface()) {
-            QMetaObject::invokeMethod(output->panel()->window(), "show");
-            QMetaObject::invokeMethod(output, "sendPanelGeometry");
-        } else if (surface == output->launcherSurface()) {
-            //QMetaObject::invokeMethod(output, "sendLauncherGeometry");
-            //QMetaObject::invokeMethod(output->launcher()->window(), "show");
+    foreach (ShellUi *shellUi, shell->windows()) {
+        if (surface == shellUi->backgroundSurface()) {
+            QMetaObject::invokeMethod(shellUi->backgroundWindow(), "show");
+        } else if (surface == shellUi->panelSurface()) {
+            QMetaObject::invokeMethod(shellUi, "sendPanelGeometry");
+            QMetaObject::invokeMethod(shellUi->panelWindow(), "show");
+        } else if (surface == shellUi->launcherSurface()) {
+            QMetaObject::invokeMethod(shellUi, "sendLauncherGeometry");
+            QMetaObject::invokeMethod(shellUi->launcherWindow(), "show");
         }
     }
 }
