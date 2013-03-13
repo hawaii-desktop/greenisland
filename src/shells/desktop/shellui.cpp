@@ -82,15 +82,14 @@ ShellUi::ShellUi(QScreen *screen, QObject *parent)
     format.setAlphaBufferSize(8);
 
     // Setup all windows
-    QWindowList windows = QGuiApplication::topLevelWindows();
-    for (int i = 0; i < windows.size(); i++) {
-        QWindow *window = windows.at(i);
+    const QObjectList objects = m_rootObject->children();
+    for (int i = 0; i < objects.size(); i++) {
+        QQuickWindow *window = qobject_cast<QQuickWindow *>(objects.at(i));
+        if (!window)
+            continue;
 
         if (window->objectName() == QStringLiteral("background")) {
-            m_backgroundWindow = qobject_cast<QQuickWindow *>(window);
-            if (!m_backgroundWindow)
-                qFatal("Invalid background window");
-
+            m_backgroundWindow = window;
             m_backgroundWindow->setFormat(format);
             m_backgroundWindow->setClearBeforeRendering(true);
             m_backgroundWindow->setScreen(screen);
@@ -103,10 +102,7 @@ ShellUi::ShellUi(QScreen *screen, QObject *parent)
             qDebug() << "Background for screen" << screen->name()
                      << "with geometry" << m_backgroundWindow->geometry();
         } else if (window->objectName() == QStringLiteral("panel")) {
-            m_panelWindow = qobject_cast<QQuickWindow *>(window);
-            if (!m_panelWindow)
-                qFatal("Invalid panel window");
-
+            m_panelWindow = window;
             m_panelWindow->setFormat(format);
             m_panelWindow->setClearBeforeRendering(true);
             m_panelWindow->setScreen(screen);
@@ -119,10 +115,7 @@ ShellUi::ShellUi(QScreen *screen, QObject *parent)
             qDebug() << "Panel for screen" << screen->name()
                      << "with geometry" << m_panelWindow->geometry();
         } else if (window->objectName() == QStringLiteral("launcher")) {
-            m_launcherWindow = qobject_cast<QQuickWindow *>(window);
-            if (!m_launcherWindow)
-                qFatal("Invalid launcher window");
-
+            m_launcherWindow = window;
             m_launcherWindow->setFormat(format);
             m_launcherWindow->setClearBeforeRendering(true);
             m_launcherWindow->setScreen(screen);
@@ -134,24 +127,28 @@ ShellUi::ShellUi(QScreen *screen, QObject *parent)
 
             qDebug() << "Launcher for screen" << screen->name()
                      << "with geometry" << m_launcherWindow->geometry();
-        } else {
-            QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window);
-            if (quickWindow) {
-                quickWindow->setFormat(format);
-                quickWindow->setClearBeforeRendering(true);
-                quickWindow->setScreen(screen);
-                quickWindow->setFlags(Qt::CustomWindow);
-                quickWindow->create();
-            }
         }
     }
 
-    Q_ASSERT(m_backgroundWindow);
-    Q_ASSERT(m_backgroundSurface);
-    Q_ASSERT(m_panelWindow);
-    Q_ASSERT(m_panelSurface);
-    Q_ASSERT(m_launcherWindow);
-    Q_ASSERT(m_launcherSurface);
+    // Check whether we created all the windows
+    if (!m_backgroundWindow)
+        qFatal("Invalid background window for screen \"%s\"",
+               qPrintable(screen->name()));
+    if (!m_backgroundSurface)
+        qFatal("Invalid background surface for screen \"%s\"",
+               qPrintable(screen->name()));
+    if (!m_panelWindow)
+        qFatal("Invalid panel window for screen \"%s\"",
+               qPrintable(screen->name()));
+    if (!m_panelSurface)
+        qFatal("Invalid panel surface for screen \"%s\"",
+               qPrintable(screen->name()));
+    if (!m_launcherWindow)
+        qFatal("Invalid launcher window for screen \"%s\"",
+               qPrintable(screen->name()));
+    if (!m_launcherSurface)
+        qFatal("Invalid launcher surface for screen \"%s\"",
+               qPrintable(screen->name()));
 
     // Set screen size and detect geometry changes
     connect(screen, SIGNAL(geometryChanged(QRect)),
