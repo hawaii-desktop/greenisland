@@ -29,9 +29,7 @@ import QtQuick.Window 2.0
 import FluidCore 1.0
 
 Window {
-    id: backgroundWindow
-    color: settings.value("primary-color")
-    visible: false
+    color: "black"
 
     Settings {
         id: settings
@@ -41,11 +39,18 @@ Window {
     }
 
     Rectangle {
-        id: background
+        id: solid
         anchors.fill: parent
+        color: settings.value("primary-color")
+        opacity: 0.0
+    }
+
+    Rectangle {
+        id: gradient
+        anchors.fill: parent
+        opacity: 0.0
 
         Gradient {
-            id: gradient
             GradientStop {
                 position: 0.0
                 color: settings.value("primary-color")
@@ -62,29 +67,51 @@ Window {
         anchors.fill: parent
         source: settings.value("wallpaper-uri")
         smooth: true
+        opacity: 0.0
+    }
+
+    SequentialAnimation {
+        id: solidAnimation
+        NumberAnimation { target: gradient; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: wallpaper; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: solid; property: "opacity"; to: 1.0; duration: 250 }
+    }
+
+    SequentialAnimation {
+        id: gradientAnimation
+        NumberAnimation { target: solid; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: wallpaper; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: gradient; property: "opacity"; to: 1.0; duration: 250 }
+    }
+
+    SequentialAnimation {
+        id: wallpaperAnimation
+        NumberAnimation { target: solid; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: gradient; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: wallpaper; property: "opacity"; to: 1.0; duration: 250 }
+    }
+
+    SequentialAnimation {
+        id: blankAnimation
+        NumberAnimation { target: solid; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: gradient; property: "opacity"; to: 0.0; duration: 200 }
+        NumberAnimation { target: wallpaper; property: "opacity"; to: 0.0; duration: 250 }
     }
 
     function loadSettings() {
         var type = settings.value("type");
 
         if (type === "color") {
-            var shading = settings.value("color-shading-type");
+            var shadingType = settings.value("color-shading-type");
 
-            if (shading === "solid") {
-                background.opacity = 0.0;
-            } else if (shading === "horizontal") {
-                background.rotation = 0;
-                background.opacity = 1.0;
-            } else if (shading === "vertical") {
-                background.rotation = 90;
-                background.opacity = 1.0;
-            }
-
-            wallpaper.opacity = 0.0;
-        } else {
-            background.opacity = 0.0;
-            wallpaper.opacity = 1.0;
-        }
+            if (shadingType === "solid")
+                solidAnimation.start();
+            else if (shadingType === "horizontal" || shadingType === "vertical")
+                gradientAnimation.start();
+        } else if (type === "wallpaper")
+            wallpaperAnimation.start();
+        else
+            blankAnimation.start();
     }
 
     Component.onCompleted: loadSettings()
