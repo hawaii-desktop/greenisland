@@ -51,14 +51,8 @@ QtObject {
 
     property var appChooser: AppChooser {
         objectName: "appChooser"
-/*
         width: availableGeometry.width / 1.2
         height: availableGeometry.height / 1.2
-*/
-x: 250
-y: 250
-width: 400
-height: 400
     }
 
 /*
