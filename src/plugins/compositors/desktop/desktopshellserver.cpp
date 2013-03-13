@@ -106,19 +106,17 @@ void DesktopShellServer::set_panel(struct wl_client *client,
 void DesktopShellServer::set_panel_geometry(struct wl_client *client,
                                             struct wl_resource *resource,
                                             struct wl_resource *output,
-                                            struct wl_resource *surface,
+                                            struct wl_resource *surface_resource,
                                             int32_t x, int32_t y,
                                             int32_t width, int32_t height)
 {
     Q_UNUSED(client);
     Q_UNUSED(output);
-    Q_UNUSED(x);
-    Q_UNUSED(y);
-    Q_UNUSED(width);
-    Q_UNUSED(height);
 
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    // TODO: Move surface
+    QtWayland::Surface *surface = QtWayland::resolve<QtWayland::Surface>(surface_resource);
+    surface->setPos(QPointF(x, y));
+    surface->setSize(QSize(width, height));
 }
 
 void DesktopShellServer::set_launcher(struct wl_client *client,
@@ -138,19 +136,17 @@ void DesktopShellServer::set_launcher(struct wl_client *client,
 void DesktopShellServer::set_launcher_geometry(struct wl_client *client,
                                                struct wl_resource *resource,
                                                struct wl_resource *output,
-                                               struct wl_resource *surface,
+                                               struct wl_resource *surface_resource,
                                                int32_t x, int32_t y,
                                                int32_t width, int32_t height)
 {
     Q_UNUSED(client);
     Q_UNUSED(output);
-    Q_UNUSED(x);
-    Q_UNUSED(y);
-    Q_UNUSED(width);
-    Q_UNUSED(height);
 
     DesktopShellServer *self = static_cast<DesktopShellServer *>(resource->data);
-    // TODO: Move surface
+    QtWayland::Surface *surface = QtWayland::resolve<QtWayland::Surface>(surface_resource);
+    surface->setPos(QPointF(x, y));
+    surface->setSize(QSize(width, height));
 }
 
 void DesktopShellServer::set_lock_surface(struct wl_client *client,
