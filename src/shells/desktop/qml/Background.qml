@@ -98,6 +98,20 @@ Window {
         NumberAnimation { target: wallpaper; property: "opacity"; to: 0.0; duration: 250 }
     }
 
+    function loadInitialSettings() {
+        var type = settings.value("type");
+
+        if (type === "color") {
+            var shadingType = settings.value("color-shading-type");
+
+            if (shadingType === "solid")
+                solid.opacity = 1.0;
+            else if (shadingType === "horizontal" || shadingType === "vertical")
+                gradient.opacity = 1.0;
+        } else if (type === "wallpaper")
+            wallpaper.opacity = 1.0;
+    }
+
     function loadSettings() {
         var type = settings.value("type");
 
@@ -114,5 +128,5 @@ Window {
             blankAnimation.start();
     }
 
-    Component.onCompleted: loadSettings()
+    Component.onCompleted: loadInitialSettings()
 }
