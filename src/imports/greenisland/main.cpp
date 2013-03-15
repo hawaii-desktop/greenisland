@@ -41,6 +41,7 @@
 #include "launchermodel.h"
 #include "launcherapplication.h"
 #include "launcherurl.h"
+#include "popupwindow.h"
 
 class GreenIslandQmlPlugin : public QQmlExtensionPlugin
 {
@@ -69,6 +70,9 @@ public:
         // Launcher item types
         qmlRegisterType<LauncherApplication>(uri, 1, 0, "LauncherApplication");
         qmlRegisterType<LauncherUrl>(uri, 1, 0, "LauncherUrl");
+
+        // Controls
+        qmlRegisterType<PopupWindow>(uri, 1, 0, "PopupWindow");
 
         // Enums
         qmlRegisterUncreatableType<LauncherAlignment>(uri, 1, 0, "LauncherAlignment", "");

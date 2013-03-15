@@ -19,6 +19,7 @@ set(SOURCES
     launchermodel.cpp
     launcherurl.cpp
     listaggregatormodel.cpp
+    popupwindow.cpp
 )
 
 add_library(greenislandqmlplugin SHARED ${SOURCES})
