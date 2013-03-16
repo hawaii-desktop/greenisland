@@ -12,6 +12,7 @@ set(SOURCES
 set(HEADERS
     vindicator.h
     vindicatorplugin.h
+    vgreenislandglobal.h
 )
 
 if(Qt5Compositor_FOUND)
@@ -37,6 +38,8 @@ qt5_use_modules(GreenIsland ${GreenIsland_MODULES})
 set_target_properties(GreenIsland PROPERTIES
     VERSION ${GREENISLAND_VERSION_STRING}
     SOVERSION ${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH})
+
+install(TARGETS GreenIsland EXPORT GreenIslandTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries(GreenIsland ${EGL_LIBRARIES})
 

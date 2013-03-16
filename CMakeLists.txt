@@ -17,7 +17,7 @@ set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSI
 # Installation directories
 include(HawaiiInstallDirs)
 
-# Log features
+# Important macros
 include(MacroLogFeature)
 
 # Our CMake modules
