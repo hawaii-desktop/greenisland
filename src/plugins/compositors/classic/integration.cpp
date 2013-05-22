@@ -72,7 +72,7 @@ void ShellIntegration::set_surface(struct wl_client *client,
                                      struct wl_resource *surface)
 {
     ShellIntegration *self = static_cast<ShellIntegration *>(resource->data);
-    self->m_surface = Wayland::resolve<Wayland::Surface>(surface);
+    self->m_surface = Wayland::Surface::fromResource(surface);
     if (!self->m_surface)
         return;
     //self->m_surface->waylandSurface()->setWindowProperty("special", true);

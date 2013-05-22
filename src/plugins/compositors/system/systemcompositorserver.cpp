@@ -141,7 +141,7 @@ void SystemCompositorServer::handlePresentSurface(wl_client *client,
     // Find an already mapped surface
     QWaylandSurface *mappedSurface = systemClient->surfaceForOutput(output);
     if (!mappedSurface) {
-        mappedSurface = new QWaylandSurface(QtWayland::resolve<QtWayland::Surface>(surface));
+        mappedSurface = new QWaylandSurface(QtWayland::Surface::fromResource(surface));
         systemClient->mapSurfaceToOutput(mappedSurface, output);
     }
 
