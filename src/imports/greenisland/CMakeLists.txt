@@ -1,5 +1,4 @@
 include_directories(
-    ${VibeCore_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
@@ -23,15 +22,14 @@ set(SOURCES
 )
 
 add_library(greenislandqmlplugin SHARED ${SOURCES})
-qt5_use_modules(greenislandqmlplugin Qml Quick Widgets AccountsService)
+qt5_use_modules(greenislandqmlplugin Qml Quick Widgets Xdg AccountsService)
 target_link_libraries(greenislandqmlplugin
-    ${VibeCore_LIBRARIES}
     GreenIsland
 )
 
 install(TARGETS greenislandqmlplugin LIBRARY
-    DESTINATION ${CMAKE_INSTALL_QMLDIR}/GreenIsland)
+    DESTINATION ${QT_IMPORTS_DIR}/GreenIsland)
 install(FILES qmldir
-    DESTINATION ${CMAKE_INSTALL_QMLDIR}/GreenIsland)
+    DESTINATION ${QT_IMPORTS_DIR}/GreenIsland)
 
 add_subdirectory(qml)

@@ -31,7 +31,7 @@
 #include <QSortFilterProxyModel>
 #include <QQmlComponent>
 
-#include <VApplicationInfo>
+#include <QtXdg/QApplicationInfo>
 
 class QFileSystemWatcher;
 
@@ -57,7 +57,7 @@ public slots:
     void launchApplicationAt(int index);
 
 private:
-    QList<VApplicationInfo *> m_apps;
+    QList<QApplicationInfo *> m_apps;
     QFileSystemWatcher *m_watcher;
     QSet<QString> m_categories;
 

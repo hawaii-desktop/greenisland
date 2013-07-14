@@ -15,7 +15,7 @@ set(GREENISLAND_VERSION_PATCH 90)
 set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH}")
 
 # Installation directories
-include(HawaiiInstallDirs)
+include(GNUInstallDirs)
 
 # Important macros
 include(MacroLogFeature)
@@ -76,6 +76,10 @@ if(NOT Qt5Quick_FOUND)
     message(FATAL_ERROR "Qt5Quick module is required!")
 endif()
 find_package(Qt5Compositor)
+find_package(Qt5Xdg REQUIRED)
+if(NOT Qt5Xdg_FOUND)
+    message(FATAL_ERROR "Qt5Xdg module is required!")
+endif()
 find_package(Qt5AccountsService REQUIRED)
 if(NOT Qt5AccountsService_FOUND)
     message(FATAL_ERROR "Qt5AccountsService module is required!")
@@ -86,14 +90,12 @@ macro_log_feature(Qt5Widgets_FOUND "Qt5Widgets" "Support for Qt5Widgets" "http:/
 macro_log_feature(Qt5Qml_FOUND "Qt5Qml" "Support for Qt5Qml" "http://qt-project.org" "")
 macro_log_feature(Qt5Quick_FOUND "Qt5Quick" "Support for Qt5Quick" "http://qt-project.org" "")
 macro_log_feature(Qt5Compositor_FOUND "Qt5Compositor" "Support for Qt5Compositor" "http://qt-project.org" "")
+macro_log_feature(Qt5Xdg_FOUND "Qt5Xdg" "Support for Qt5Xdg" "http://qt-project.org" "")
 macro_log_feature(Qt5AccountsService_FOUND "Qt5AccountsService" "Support for Qt5AccountsService" "http://qt-project.org" "")
 
-# Find Vibe libraries
-find_package(VibeCore REQUIRED)
-if(NOT VibeCore_FOUND)
-    message(FATAL_ERROR "VibeCore module is required!")
-endif()
-macro_log_feature(VibeCore_FOUND "VibeCore" "Support for VibeCore" "http://www.maui-project.org" "")
+# Find Qt imports dir
+get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
+exec_program(${QMAKE_EXECUTABLE} ARGS "-query QT_INSTALL_IMPORTS" RETURN_VALUE return_code OUTPUT_VARIABLE QT_PLUGINS_DIR)
 
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
@@ -105,12 +107,6 @@ pkg_check_modules(GLESV2 glesv2 REQUIRED)
 # Find Wayland libraries
 pkg_check_modules(WAYLAND_CLIENT wayland-client REQUIRED)
 pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
-
-# Find polkit-qt-1
-find_package(PolkitQt-1 REQUIRED)
-if(NOT PolkitQt-1_FOUND)
-    message(FATAL_ERROR "PolkitQt-1 is required!")
-endif()
 
 # Check whether we are building on Rapsberry Pi or not
 include(CheckFileExists)

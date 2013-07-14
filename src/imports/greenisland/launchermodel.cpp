@@ -29,9 +29,7 @@
 #include <QUrl>
 #include <QStandardPaths>
 #include <QStringBuilder>
-
-#include <VBookmarkManager>
-#include <VSettings>
+#include <QSettings>
 
 #include "launchermodel.h"
 #include "launcherapplication.h"
@@ -42,7 +40,7 @@ LauncherModel::LauncherModel(QObject *parent)
     : QAbstractListModel(parent)
 {
     // Settings
-    m_settings = new VSettings("org.hawaii.greenisland");
+    m_settings = new QSettings("Hawaii", "GreenIsland");
 
     // Load pinned applications
     QStringList pinnedApps = m_settings->value("launcher/pinned-apps").toStringList();

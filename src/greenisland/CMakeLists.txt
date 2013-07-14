@@ -18,10 +18,7 @@ set(SOURCES
 
 add_executable(greenisland ${SOURCES})
 qt5_use_modules(greenisland Gui)
-target_link_libraries(greenisland
-    ${VibeCore_LIBRARIES}
-    GreenIsland
-)
+target_link_libraries(greenisland GreenIsland)
 
 # Git revision
 include(GetGitRevision)

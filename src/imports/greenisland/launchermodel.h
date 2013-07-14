@@ -33,7 +33,7 @@
 
 class QUrl;
 
-class VSettings;
+class QSettings;
 
 class LauncherController;
 class LauncherApplication;
@@ -57,7 +57,7 @@ public:
     Q_INVOKABLE void pinUrl(const QUrl &url);
 
 private:
-    VSettings *m_settings;
+    QSettings *m_settings;
     QList<LauncherItem *> m_list;
 
 private:

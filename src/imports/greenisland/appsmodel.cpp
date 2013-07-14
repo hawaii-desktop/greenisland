@@ -63,7 +63,7 @@ QVariant AppsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    VApplicationInfo *info = m_apps.at(index.row());
+    QApplicationInfo *info = m_apps.at(index.row());
 
     switch (role) {
         case NameRole:
@@ -90,7 +90,7 @@ int AppsModel::rowCount(const QModelIndex &parent) const
 
 void AppsModel::launchApplicationAt(int index)
 {
-    VApplicationInfo *info = m_apps.at(index);
+    QApplicationInfo *info = m_apps.at(index);
     if (info)
         info->launch(QStringList());
 }
@@ -116,7 +116,7 @@ void AppsModel::directoryChanged(const QString &path)
 {
     // Remove items from this path
     for (int i = 0; i < m_apps.size(); i++) {
-        VApplicationInfo *info = m_apps.at(i);
+        QApplicationInfo *info = m_apps.at(i);
 
         if (info->fileName().startsWith(path)) {
             beginRemoveRows(QModelIndex(), i, i);
@@ -136,7 +136,7 @@ void AppsModel::directoryChanged(const QString &path)
             QString fullPath = walker.fileInfo().absoluteFilePath();
 
             // Add this item (only if it can be displayed)
-            VApplicationInfo *info = new VApplicationInfo(fullPath);
+            QApplicationInfo *info = new QApplicationInfo(fullPath);
             if (info->isValid() && !info->isHidden() && info->isExecutable()) {
                 // Append item to the model
                 beginInsertRows(QModelIndex(), m_apps.size(), m_apps.size());

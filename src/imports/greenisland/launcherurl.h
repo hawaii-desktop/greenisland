@@ -26,8 +26,6 @@
 #ifndef LAUNCHERURL_H
 #define LAUNCHERURL_H
 
-#include <VBookmark>
-
 #include "launcheritem.h"
 
 class LauncherUrl : public LauncherItem
@@ -35,7 +33,6 @@ class LauncherUrl : public LauncherItem
     Q_OBJECT
 public:
     explicit LauncherUrl();
-    LauncherUrl(const VBookmark &bookmark);
 
     virtual LauncherItem::ItemType type() const {
         return LauncherItem::UrlLauncherItem;
@@ -57,7 +54,6 @@ public:
     Q_INVOKABLE virtual void createMenuActions();
 
 private:
-    VBookmark m_bookmark;
     bool m_active;
     bool m_running;
 

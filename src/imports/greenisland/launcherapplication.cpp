@@ -26,8 +26,7 @@
 #include <QAction>
 #include <QStringList>
 
-#include <VApplicationInfo>
-#include <VBookmark>
+#include <QtXdg/QApplicationInfo>
 
 #include "launcherapplication.h"
 
@@ -47,18 +46,6 @@ LauncherApplication::LauncherApplication(const QString &desktopFile)
     m_removable = true;
 
     setDesktopFile(desktopFile);
-}
-
-LauncherApplication::LauncherApplication(const VBookmark &bookmark)
-    : LauncherItem()
-{
-    initialize();
-
-    m_sticky = true;
-    m_editable = bookmark.metaDataItem("IsEditable") == "true";
-    m_removable = bookmark.metaDataItem("IsRemovable") == "true";
-
-    setDesktopFile(bookmark.url().toLocalFile());
 }
 
 LauncherApplication::~LauncherApplication()
@@ -168,7 +155,7 @@ void LauncherApplication::setDesktopFile(const QString &desktopFile)
         emit desktopFileChanged(m_desktopFile);
 
         delete m_appInfo;
-        m_appInfo = new VApplicationInfo(m_desktopFile);
+        m_appInfo = new QApplicationInfo(m_desktopFile);
         connect(m_appInfo, SIGNAL(nameChanged(QString)),
                 this, SLOT(slotNameChanged()));
         connect(m_appInfo, SIGNAL(iconNameChanged(QString)),

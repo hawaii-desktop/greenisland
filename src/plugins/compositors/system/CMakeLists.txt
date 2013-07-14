@@ -1,7 +1,6 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
-    ${VibeCore_INCLUDE_DIRS}
     ${WAYLAND_SERVER_INCLUDE_DIR}
     ${CMAKE_SOURCE_DIR}/headers
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
@@ -51,7 +50,6 @@ set_target_properties(system PROPERTIES
     LINK_FLAGS -L${WAYLAND_SERVER_LIBDIR}
 )
 target_link_libraries(system
-    ${VibeCore_LIBRARIES}
     ${WAYLAND_SERVER_LIBRARIES}
     GreenIsland
 )

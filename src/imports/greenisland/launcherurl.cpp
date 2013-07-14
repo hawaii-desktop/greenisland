@@ -35,26 +35,16 @@ LauncherUrl::LauncherUrl()
     initialize();
 }
 
-LauncherUrl::LauncherUrl(const VBookmark &bookmark)
-    : LauncherItem()
-{
-    initialize();
-    m_bookmark = bookmark;
-}
-
 QString LauncherUrl::label() const
 {
-    return m_bookmark.text();
 }
 
 QString LauncherUrl::iconName() const
 {
-    return m_bookmark.icon();
 }
 
 QUrl LauncherUrl::url() const
 {
-    return m_bookmark.url();
 }
 
 bool LauncherUrl::isActive() const
@@ -79,12 +69,10 @@ bool LauncherUrl::isDraggable() const
 
 bool LauncherUrl::isEditable() const
 {
-    return m_bookmark.metaDataItem("IsEditable") == "true";
 }
 
 bool LauncherUrl::isRemovable() const
 {
-    return m_bookmark.metaDataItem("IsRemovable") == "true";
 }
 
 void LauncherUrl::activate()

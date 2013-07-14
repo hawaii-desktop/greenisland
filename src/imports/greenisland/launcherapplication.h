@@ -28,8 +28,7 @@
 
 #include "launcheritem.h"
 
-class VApplicationInfo;
-class VBookmark;
+class QApplicationInfo;
 
 class LauncherApplication : public LauncherItem
 {
@@ -41,7 +40,6 @@ class LauncherApplication : public LauncherItem
 public:
     explicit LauncherApplication();
     LauncherApplication(const QString &desktopFile);
-    LauncherApplication(const VBookmark &bookmark);
     ~LauncherApplication();
 
     virtual LauncherItem::ItemType type() const {
@@ -86,7 +84,7 @@ signals:
 private:
     bool m_sticky;
     QString m_desktopFile;
-    VApplicationInfo *m_appInfo;
+    QApplicationInfo *m_appInfo;
     bool m_active;
     bool m_running;
     bool m_urgent;
