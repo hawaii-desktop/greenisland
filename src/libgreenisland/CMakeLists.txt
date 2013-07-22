@@ -5,13 +5,9 @@ include_directories(
 )
 
 set(SOURCES
-    vindicator.cpp
-    vindicatorplugin.cpp
 )
 
 set(HEADERS
-    vindicator.h
-    vindicatorplugin.h
     vgreenislandglobal.h
 )
 

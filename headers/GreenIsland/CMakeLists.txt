@@ -1,6 +1,4 @@
 set(HEADERS
-    VIndicator
-    VIndicatorPlugin
     VGreenIslandGlobal
 )
 
