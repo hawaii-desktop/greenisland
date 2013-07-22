@@ -17,8 +17,8 @@ set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSI
 # Installation directories
 include(GNUInstallDirs)
 
-# Important macros
-include(MacroLogFeature)
+# Macro to print feature summary
+include(FeatureSummary)
 
 # Our CMake modules
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
@@ -84,14 +84,6 @@ find_package(Qt5AccountsService REQUIRED)
 if(NOT Qt5AccountsService_FOUND)
     message(FATAL_ERROR "Qt5AccountsService module is required!")
 endif()
-macro_log_feature(Qt5DBus_FOUND "Qt5DBus" "Support for Qt5DBus" "http://qt-project.org" "")
-macro_log_feature(Qt5Gui_FOUND "Qt5Gui" "Support for Qt5Gui" "http://qt-project.org" "")
-macro_log_feature(Qt5Widgets_FOUND "Qt5Widgets" "Support for Qt5Widgets" "http://qt-project.org" "")
-macro_log_feature(Qt5Qml_FOUND "Qt5Qml" "Support for Qt5Qml" "http://qt-project.org" "")
-macro_log_feature(Qt5Quick_FOUND "Qt5Quick" "Support for Qt5Quick" "http://qt-project.org" "")
-macro_log_feature(Qt5Compositor_FOUND "Qt5Compositor" "Support for Qt5Compositor" "http://qt-project.org" "")
-macro_log_feature(Qt5Xdg_FOUND "Qt5Xdg" "Support for Qt5Xdg" "http://qt-project.org" "")
-macro_log_feature(Qt5AccountsService_FOUND "Qt5AccountsService" "Support for Qt5AccountsService" "http://qt-project.org" "")
 
 # Find Qt imports dir
 get_target_property(QMAKE_EXECUTABLE Qt5::qmake LOCATION)
@@ -120,5 +112,5 @@ add_subdirectory(data)
 add_subdirectory(headers)
 add_subdirectory(src)
 
-# Display featute log
-macro_display_feature_log()
+# Display featute summary
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
