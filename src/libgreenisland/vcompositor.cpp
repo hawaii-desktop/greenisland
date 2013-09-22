@@ -36,8 +36,8 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-VCompositor::VCompositor(QWindow *window)
-    : QWaylandCompositor(window)
+VCompositor::VCompositor(QWindow *window, const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
+    : QWaylandCompositor(window, socketName, extensions)
 {
 }
 

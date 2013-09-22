@@ -34,7 +34,8 @@
 class GREENISLAND_EXPORT VCompositor : public QWaylandCompositor
 {
 public:
-    explicit VCompositor(QWindow *window = 0);
+    explicit VCompositor(QWindow *window = 0, const char *socketName = 0,
+                         QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
     ~VCompositor();
 
     void showGraphicsInfo();
