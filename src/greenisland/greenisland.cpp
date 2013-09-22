@@ -84,7 +84,7 @@ GreenIsland::GreenIsland(int &argc, char **argv)
 VCompositor *GreenIsland::loadCompositor(const QString &name, const QRect &geometry)
 {
     // Load plugins
-    QDir pluginsDir(QStringLiteral("%1/greenisland/compositors").arg(INSTALL_PLUGINSDIR));
+    QDir pluginsDir(QStringLiteral("%1/hawaii/plugins/greenisland/compositors").arg(INSTALL_LIBDIR));
     foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
         QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
         QJsonValue keys = loader.metaData()["MetaData"];
