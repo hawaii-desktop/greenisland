@@ -63,6 +63,12 @@ static void logMessageHandler(QtMsgType type, const QMessageLogContext &context,
         text = QString("[%1] \033[31mFATAL\033[0m %2\n").arg(timestamp).arg(msg);
         stream = stderr;
         break;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    case QtTraceMsg:
+        text = QString("[%1] %2\n").arg(timestamp).arg(msg);
+        stream = stdout;
+        break;
+#endif
     }
 
     fprintf(stream, text.toLatin1().constData());
