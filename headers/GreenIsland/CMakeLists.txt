@@ -6,7 +6,6 @@ if(Qt5Compositor_FOUND)
     set(HEADERS
         ${HEADERS}
         VCompositor
-        VCompositorPlugin
     )
 endif()
 

@@ -15,12 +15,10 @@ if(Qt5Compositor_FOUND)
     set(SOURCES
         ${SOURCES}
         vcompositor.cpp
-        vcompositorplugin.cpp
     )
     set(HEADERS
         ${HEADERS}
         vcompositor.h
-        vcompositorplugin.h
     )
 endif()
 

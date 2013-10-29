@@ -34,8 +34,6 @@
 #include <QJsonValue>
 #include <QStringList>
 
-#include <VCompositorPlugin>
-
 #include "greenisland.h"
 #include "cmakedirs.h"
 
@@ -85,27 +83,6 @@ GreenIsland::GreenIsland(int &argc, char **argv)
 
     // Custom log message handler
     qInstallMessageHandler(logMessageHandler);
-}
-
-VCompositor *GreenIsland::loadCompositor(const QString &name, const QRect &geometry)
-{
-    // Load plugins
-    QDir pluginsDir(QStringLiteral("%1/hawaii/plugins/greenisland/compositors").arg(INSTALL_LIBDIR));
-    foreach(QString fileName, pluginsDir.entryList(QDir::Files)) {
-        QPluginLoader loader(pluginsDir.absoluteFilePath(fileName));
-        QJsonValue keys = loader.metaData()["MetaData"];
-
-        if (keys.toObject()["Keys"].toArray().contains(QJsonValue(name))) {
-            VCompositorPlugin *plugin = qobject_cast<VCompositorPlugin *>(
-                        loader.instance());
-            if (!plugin)
-                continue;
-
-            return plugin->create(name, geometry);
-        }
-    }
-
-    return 0;
 }
 
 #include "moc_greenisland.cpp"

@@ -132,9 +132,6 @@ int main(int argc, char *argv[])
     else
         qDebug() << "OS: Unknown";
 
-    // Shell plugin (defaults to desktop for the moment)
-    QString pluginName = QStringLiteral("desktop");
-
     // Command line arguments
     QStringList arguments = QCoreApplication::instance()->arguments();
 
@@ -144,7 +141,6 @@ int main(int argc, char *argv[])
         printf("Arguments are:\n");
         printf("\t--fullscreen\t\trun in fullscreen mode\n");
         printf("\t--synthesize-touch\tsynthesize touch for unhandled mouse events\n");
-        printf("\t--plugin NAME\t\tuse the NAME shell plugin (default 'desktop')\n");
         return 0;
     }
 
@@ -155,40 +151,12 @@ int main(int argc, char *argv[])
     if (arguments.contains(QLatin1String("--synthesize-touch")))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
-    // Compositor plugin argument
-    int pluginArg = arguments.indexOf(QLatin1String("--plugin"));
-    if (pluginArg != -1 && pluginArg + 1 < arguments.size())
-        pluginName = arguments.at(pluginArg + 1).toLocal8Bit();
-
     // Window geometry
     QRect geometry;
     if (arguments.contains(QLatin1String("--fullscreen")))
         geometry = QGuiApplication::primaryScreen()->geometry();
     else
         geometry = QGuiApplication::primaryScreen()->availableGeometry();
-
-    // Load the compositor plugin
-    VCompositor *compositor = app.loadCompositor(pluginName, geometry);
-    if (!compositor)
-        qFatal("Unable to run the compositor because the '%s' plugin was not found",
-               pluginName.toLocal8Bit().constData());
-
-    // Ensure the compositor renders into a window
-    if (!compositor->window())
-        qFatal("The compositor '%s' doesn't render into a window",
-               pluginName.toLocal8Bit().constData());
-
-    // Set window title
-    compositor->window()->setTitle(QLatin1String("Green Island"));
-
-    // Run the shell
-    compositor->runShell();
-
-    // Show the compositor
-    if (arguments.contains(QLatin1String("--fullscreen")))
-        compositor->window()->showFullScreen();
-    else
-        compositor->window()->showMaximized();
 
     return app.exec();
 }
