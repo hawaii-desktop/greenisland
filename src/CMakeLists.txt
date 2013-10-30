@@ -1,3 +1,4 @@
+add_subdirectory(declarative)
 add_subdirectory(libgreenisland)
 if(Qt5Compositor_FOUND)
     add_subdirectory(greenisland)
