@@ -55,7 +55,7 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$")
 endif()
 
 # Find Qt5
-find_package(Qt5 5.1.0 REQUIRED COMPONENTS DBus Gui Widgets Qml Quick)
+find_package(Qt5 5.2 REQUIRED COMPONENTS DBus Gui Widgets Qml Quick)
 find_package(Qt5Compositor)
 
 # Find pkg-config
