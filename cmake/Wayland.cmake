@@ -48,7 +48,7 @@ function(WAYLAND_ADD_PROTOCOL_CLIENT _sources _protocol _basename)
 
     add_custom_command(OUTPUT "${_code}"
         COMMAND ${WAYLAND_SCANNER_EXECUTABLE} code < ${_infile} > ${_code}
-        DEPENDS ${_infile} VERBATIM)
+        DEPENDS ${_infile} ${_client_header} VERBATIM)
 
     list(APPEND ${_sources} "${_client_header}" "${_code}")
     set(${_sources} ${${_sources}} PARENT_SCOPE)
