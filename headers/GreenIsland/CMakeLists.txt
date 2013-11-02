@@ -1,13 +1,8 @@
 set(HEADERS
+    Compositor
     GreenIslandGlobal
+    Utilities
 )
-
-if(Qt5Compositor_FOUND)
-    set(HEADERS
-        ${HEADERS}
-        Compositor
-    )
-endif()
 
 install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/GreenIsland)
 

@@ -6,11 +6,13 @@ include_directories(
 
 set(SOURCES
     greenislandcompositor.cpp
+    greenislandutilities.cpp
 )
 
 set(HEADERS
     greenislandglobal.h
     greenislandcompositor.h
+    greenislandutilities.h
 )
 
 add_library(GreenIsland SHARED ${SOURCES})
