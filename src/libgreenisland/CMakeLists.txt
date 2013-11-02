@@ -5,30 +5,16 @@ include_directories(
 )
 
 set(SOURCES
+    greenislandcompositor.cpp
 )
 
 set(HEADERS
     greenislandglobal.h
+    greenislandcompositor.h
 )
 
-if(Qt5Compositor_FOUND)
-    set(SOURCES
-        ${SOURCES}
-        greenislandcompositor.cpp
-    )
-    set(HEADERS
-        ${HEADERS}
-        greenislandcompositor.h
-    )
-endif()
-
 add_library(GreenIsland SHARED ${SOURCES})
-if(Qt5Compositor_FOUND)
-    set(GreenIsland_MODULES Quick Compositor)
-else()
-    set(GreenIsland_MODULES Quick)
-endif()
-qt5_use_modules(GreenIsland ${GreenIsland_MODULES})
+qt5_use_modules(GreenIsland Quick Compositor)
 set_target_properties(GreenIsland PROPERTIES
     VERSION ${GREENISLAND_VERSION_STRING}
     SOVERSION ${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH})
