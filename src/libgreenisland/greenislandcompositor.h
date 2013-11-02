@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of libGreenIsland.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -24,15 +24,31 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef VGREENISLANDGLOBAL_H
-#define VGREENISLANDGLOBAL_H
+#ifndef GREENISLANDCOMPOSITOR_H
+#define GREENISLANDCOMPOSITOR_H
 
-#include <qglobal.h>
+#include <QtCompositor/QWaylandCompositor>
 
-#if defined(GREENISLAND_LIB)
-#  define GREENISLAND_EXPORT Q_DECL_EXPORT
-#else
-#  define GREENISLAND_EXPORT Q_DECL_IMPORT
-#endif
+#include <GreenIsland/GreenIslandGlobal>
 
-#endif // VGREENISLANDGLOBAL_H
+namespace GreenIsland {
+
+class GREENISLAND_EXPORT Compositor : public QWaylandCompositor
+{
+public:
+    explicit Compositor(QWindow *window = 0, const char *socketName = 0,
+                        QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
+    ~Compositor();
+
+    void showGraphicsInfo();
+
+    virtual void runShell();
+    virtual void closeShell();
+
+private:
+    void logExtensions(const QString &label, const QString &extensions);
+};
+
+}
+
+#endif // GREENISLANDCOMPOSITOR_H

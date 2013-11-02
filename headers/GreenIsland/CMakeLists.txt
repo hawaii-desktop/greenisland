@@ -1,11 +1,11 @@
 set(HEADERS
-    VGreenIslandGlobal
+    GreenIslandGlobal
 )
 
 if(Qt5Compositor_FOUND)
     set(HEADERS
         ${HEADERS}
-        VCompositor
+        Compositor
     )
 endif()
 

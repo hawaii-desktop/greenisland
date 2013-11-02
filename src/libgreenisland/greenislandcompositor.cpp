@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of libGreenIsland.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -24,29 +24,31 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QDebug>
-#include <QGuiApplication>
-#include <QOpenGLFunctions>
-#include <QStringList>
+#include <QtCore/QDebug>
+#include <QtCore/QStringList>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QOpenGLFunctions>
 
 #include <qpa/qplatformnativeinterface.h>
 
-#include "vcompositor.h"
+#include "greenislandcompositor.h"
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-VCompositor::VCompositor(QWindow *window, const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
+using namespace GreenIsland;
+
+Compositor::Compositor(QWindow *window, const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
     : QWaylandCompositor(window, socketName, extensions)
 {
 }
 
-VCompositor::~VCompositor()
+Compositor::~Compositor()
 {
     closeShell();
 }
 
-void VCompositor::showGraphicsInfo()
+void Compositor::showGraphicsInfo()
 {
     const char *str;
 
@@ -86,15 +88,15 @@ void VCompositor::showGraphicsInfo()
                   str ? QString(str) : QStringLiteral("(null)"));
 }
 
-void VCompositor::runShell()
+void Compositor::runShell()
 {
 }
 
-void VCompositor::closeShell()
+void Compositor::closeShell()
 {
 }
 
-void VCompositor::logExtensions(const QString &label, const QString &extensions)
+void Compositor::logExtensions(const QString &label, const QString &extensions)
 {
     QString msg = label;
     QStringList parts = extensions.split(QLatin1Char(' '));

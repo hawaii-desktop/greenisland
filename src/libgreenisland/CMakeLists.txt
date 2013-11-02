@@ -8,17 +8,17 @@ set(SOURCES
 )
 
 set(HEADERS
-    vgreenislandglobal.h
+    greenislandglobal.h
 )
 
 if(Qt5Compositor_FOUND)
     set(SOURCES
         ${SOURCES}
-        vcompositor.cpp
+        greenislandcompositor.cpp
     )
     set(HEADERS
         ${HEADERS}
-        vcompositor.h
+        greenislandcompositor.h
     )
 endif()
 
