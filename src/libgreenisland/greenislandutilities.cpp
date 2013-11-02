@@ -30,6 +30,8 @@
 
 #include <unistd.h>
 
+namespace GreenIsland {
+
 int convertPermission(const QFileInfo &fileInfo)
 {
     int p = 0;
@@ -93,3 +95,4 @@ void verifyXdgRuntimeDir()
     }
 }
 
+}
