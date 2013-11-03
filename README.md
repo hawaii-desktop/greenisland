@@ -4,13 +4,16 @@ Green Island
 This is Green Island, a support library to make Qt-based Wayland
 compositors development easier.
 
+The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
+
 The API is based on QtCompositor which is shipped by the
 qtwayland module.
 
 Green Island is used by the Hawaii desktop environment to make its own
 Wayland compositor.
 
-The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
+You can find a compositor with the Hawaii [shell](https://github.com/mauios/hawaii-shell).
+More compositors will be available here.
 
 ## Dependencies
 
