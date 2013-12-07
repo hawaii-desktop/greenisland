@@ -38,6 +38,8 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
+Q_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR, "greenisland.compositor")
+
 using namespace GreenIsland;
 
 /*
@@ -73,23 +75,29 @@ void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
 {
     switch (error) {
     case QProcess::FailedToStart:
-        qWarning("The shell process failed to start.\n"
-                 "Either the invoked program is missing, or you may have insufficient permissions to run it.");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "The shell process failed to start.\n"
+                << "Either the invoked program is missing, or you may have insufficient permissions to run it.";
         break;
     case QProcess::Crashed:
-        qWarning("The shell process crashed some time after starting successfully.");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "The shell process crashed some time after starting successfully.";
         break;
     case QProcess::Timedout:
-        qWarning("The shell process timedout.\n");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "The shell process timedout.\n";
         break;
     case QProcess::WriteError:
-        qWarning("An error occurred when attempting to write to the shell process.");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "An error occurred when attempting to write to the shell process.";
         break;
     case QProcess::ReadError:
-        qWarning("An error occurred when attempting to read from the shell process.");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "An error occurred when attempting to read from the shell process.";
         break;
     case QProcess::UnknownError:
-        qWarning("Unknown error starting the shell process!");
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "Unknown error starting the shell process!";
         break;
     }
 
@@ -113,7 +121,7 @@ void CompositorPrivate::_q_shellReadyReadStandardError()
 
 void CompositorPrivate::_q_shellAboutToClose()
 {
-    qDebug() << "Shell is about to close...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Shell is about to close...";
 }
 
 /*
@@ -168,35 +176,37 @@ void Compositor::showGraphicsInfo()
         EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window());
         if (display) {
             str = eglQueryString(display, EGL_VERSION);
-            qDebug("EGL version: %s", str ? str : "(null)");
+            qCDebug(GREENISLAND_COMPOSITOR) << "EGL version:" << str;
 
             str = eglQueryString(display, EGL_VENDOR);
-            qDebug("EGL vendor: %s", str ? str : "(null)");
+            qCDebug(GREENISLAND_COMPOSITOR) << "EGL vendor:" << str;
 
             str = eglQueryString(display, EGL_CLIENT_APIS);
-            qDebug("EGL client APIs: %s", str ? str : "(null)");
+            qCDebug(GREENISLAND_COMPOSITOR) << "EGL client APIs:" << str;
 
             str = eglQueryString(display, EGL_EXTENSIONS);
-            logExtensions(QStringLiteral("EGL extensions:"),
-                          str ? QString(str) : QStringLiteral("(null)"));
+            QStringList extensions = QString(str).split(QLatin1Char(' '));
+            qCDebug(GREENISLAND_COMPOSITOR) << "EGL extensions:"
+                                            << qPrintable(extensions.join(QStringLiteral("\n\t")));
         }
     }
 
     str = (char *)glGetString(GL_VERSION);
-    qDebug("GL version: %s", str ? str : "(null)");
+    qCDebug(GREENISLAND_COMPOSITOR) << "GL version:" << str;
 
     str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
-    qDebug("GLSL version: %s", str ? str : "(null)");
+    qCDebug(GREENISLAND_COMPOSITOR) << "GLSL version:" << str;
 
     str = (char *)glGetString(GL_VENDOR);
-    qDebug("GL vendor: %s", str ? str : "(null)");
+    qCDebug(GREENISLAND_COMPOSITOR) << "GL vendor:" << str;
 
     str = (char *)glGetString(GL_RENDERER);
-    qDebug("GL renderer: %s", str ? str : "(null)");
+    qCDebug(GREENISLAND_COMPOSITOR) << "GL renderer:" << str;
 
     str = (char *)glGetString(GL_EXTENSIONS);
-    logExtensions(QStringLiteral("GL extensions:"),
-                  str ? QString(str) : QStringLiteral("(null)"));
+    QStringList extensions = QString(str).split(QLatin1Char(' '));
+    qCDebug(GREENISLAND_COMPOSITOR) << "GL extensions:"
+                                    << qPrintable(extensions.join(QStringLiteral("\n\t")));
 }
 
 void Compositor::runShell(const QStringList &arguments)
@@ -233,23 +243,6 @@ void Compositor::resizeEvent(QResizeEvent *event)
     // Scale compositor output to window's size
     QQuickView::resizeEvent(event);
     QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
-}
-
-void Compositor::logExtensions(const QString &label, const QString &extensions)
-{
-    QString msg = label;
-    QStringList parts = extensions.split(QLatin1Char(' '));
-
-    for (int i = 0; i < parts.size(); i++) {
-        QString part = parts.at(i);
-
-        if (msg.size() + part.size() + 15 > 78)
-            msg += QLatin1Char('\n') + QStringLiteral("               ") + part;
-        else
-            msg += QStringLiteral(" ") + part;
-    }
-
-    qDebug() << qPrintable(msg.trimmed());
 }
 
 #include "moc_greenislandcompositor.cpp"

@@ -27,11 +27,14 @@
 #ifndef GREENISLANDCOMPOSITOR_H
 #define GREENISLANDCOMPOSITOR_H
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QProcess>
 #include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandCompositor>
 
 #include <GreenIsland/GreenIslandGlobal>
+
+Q_DECLARE_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR)
 
 namespace GreenIsland {
 
@@ -70,8 +73,6 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_shellAboutToClose())
 
     CompositorPrivate *const d_ptr;
-
-    void logExtensions(const QString &label, const QString &extensions);
 };
 
 }
