@@ -33,14 +33,96 @@
 #include <qpa/qplatformnativeinterface.h>
 
 #include "greenislandcompositor.h"
+#include "greenislandcompositor_p.h"
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
 using namespace GreenIsland;
 
+/*
+ * CompositorPrivate
+ */
+
+CompositorPrivate::CompositorPrivate(Compositor *parent)
+    : q_ptr(parent)
+    , shellProcess(nullptr)
+{
+}
+
+CompositorPrivate::~CompositorPrivate()
+{
+    closeShell();
+}
+
+void CompositorPrivate::closeShell()
+{
+    if (!shellProcess)
+        return;
+
+    shellProcess->close();
+    delete shellProcess;
+    shellProcess = nullptr;
+}
+
+void CompositorPrivate::_q_shellStarted()
+{
+}
+
+void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
+{
+    switch (error) {
+    case QProcess::FailedToStart:
+        qWarning("The shell process failed to start.\n"
+                 "Either the invoked program is missing, or you may have insufficient permissions to run it.");
+        break;
+    case QProcess::Crashed:
+        qWarning("The shell process crashed some time after starting successfully.");
+        break;
+    case QProcess::Timedout:
+        qWarning("The shell process timedout.\n");
+        break;
+    case QProcess::WriteError:
+        qWarning("An error occurred when attempting to write to the shell process.");
+        break;
+    case QProcess::ReadError:
+        qWarning("An error occurred when attempting to read from the shell process.");
+        break;
+    case QProcess::UnknownError:
+        qWarning("Unknown error starting the shell process!");
+        break;
+    }
+
+    // Don't need it anymore because it failed
+    shellProcess->close();
+    delete shellProcess;
+    shellProcess = nullptr;
+}
+
+void CompositorPrivate::_q_shellReadyReadStandardOutput()
+{
+    if (shellProcess)
+        printf("%s", shellProcess->readAllStandardOutput().constData());
+}
+
+void CompositorPrivate::_q_shellReadyReadStandardError()
+{
+    if (shellProcess)
+        fprintf(stderr, "%s", shellProcess->readAllStandardError().constData());
+}
+
+void CompositorPrivate::_q_shellAboutToClose()
+{
+    qDebug() << "Shell is about to close...";
+}
+
+/*
+ * Compositor
+ */
+
 Compositor::Compositor(const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
     : QWaylandCompositor(this, socketName, extensions)
+    , d_ptr(new CompositorPrivate(this))
 {
     // Default window title
     setTitle(QLatin1String("GreenIsland"));
@@ -58,7 +140,23 @@ Compositor::Compositor(const char *socketName, QWaylandCompositor::ExtensionFlag
 
 Compositor::~Compositor()
 {
-    closeShell();
+    delete d_ptr;
+}
+
+QString Compositor::shellFileName() const
+{
+    Q_D(const Compositor);
+    return d->shellFileName;
+}
+
+void Compositor::setShellFileName(const QString &fileName)
+{
+    Q_D(Compositor);
+
+    if (d->shellFileName != fileName) {
+        d->shellFileName = fileName;
+        Q_EMIT shellFileNameChanged(fileName);
+    }
 }
 
 void Compositor::showGraphicsInfo()
@@ -101,12 +199,33 @@ void Compositor::showGraphicsInfo()
                   str ? QString(str) : QStringLiteral("(null)"));
 }
 
-void Compositor::runShell()
+void Compositor::runShell(const QStringList &arguments)
 {
+    Q_D(Compositor);
+
+    // Sanity check
+    if (d->shellFileName.isEmpty() || d->shellProcess)
+        return;
+
+    // Run the shell client process
+    d->shellProcess = new QProcess(this);
+    connect(d->shellProcess, SIGNAL(started()),
+            this, SLOT(_q_shellStarted()));
+    connect(d->shellProcess, SIGNAL(error(QProcess::ProcessError)),
+            this, SLOT(_q_shellFailed(QProcess::ProcessError)));
+    connect(d->shellProcess, SIGNAL(readyReadStandardOutput()),
+            this, SLOT(_q_shellReadyReadStandardOutput()));
+    connect(d->shellProcess, SIGNAL(readyReadStandardError()),
+            this, SLOT(_q_shellReadyReadStandardError()));
+    connect(d->shellProcess, SIGNAL(aboutToClose()),
+            this, SLOT(_q_shellAboutToClose()));
+    d->shellProcess->start(d->shellFileName, arguments, QIODevice::ReadOnly);
 }
 
 void Compositor::closeShell()
 {
+    Q_D(Compositor);
+    d->closeShell();
 }
 
 void Compositor::resizeEvent(QResizeEvent *event)
@@ -132,3 +251,5 @@ void Compositor::logExtensions(const QString &label, const QString &extensions)
 
     qDebug() << qPrintable(msg.trimmed());
 }
+
+#include "moc_greenislandcompositor.cpp"

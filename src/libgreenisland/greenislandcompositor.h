@@ -27,6 +27,7 @@
 #ifndef GREENISLANDCOMPOSITOR_H
 #define GREENISLANDCOMPOSITOR_H
 
+#include <QtCore/QProcess>
 #include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandCompositor>
 
@@ -34,23 +35,42 @@
 
 namespace GreenIsland {
 
+class CompositorPrivate;
+
 class GREENISLAND_EXPORT Compositor : public QQuickView, public QWaylandCompositor
 {
     Q_OBJECT
+    Q_PROPERTY(QString shellFileName READ shellFileName WRITE setShellFileName NOTIFY shellFileNameChanged)
+    Q_DECLARE_PRIVATE(Compositor)
 public:
     explicit Compositor(const char *socketName = 0,
                         QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
     ~Compositor();
 
+    QString shellFileName() const;
+    void setShellFileName(const QString &fileName);
+
     void showGraphicsInfo();
 
-    virtual void runShell();
-    virtual void closeShell();
+    void runShell(const QStringList &arguments = QStringList());
+    void closeShell();
+
+Q_SIGNALS:
+    void shellFileNameChanged(const QString &fileName);
+    void ready();
 
 protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    Q_PRIVATE_SLOT(d_func(), void _q_shellStarted())
+    Q_PRIVATE_SLOT(d_func(), void _q_shellFailed(QProcess::ProcessError error))
+    Q_PRIVATE_SLOT(d_func(), void _q_shellReadyReadStandardOutput())
+    Q_PRIVATE_SLOT(d_func(), void _q_shellReadyReadStandardError())
+    Q_PRIVATE_SLOT(d_func(), void _q_shellAboutToClose())
+
+    CompositorPrivate *const d_ptr;
+
     void logExtensions(const QString &label, const QString &extensions);
 };
 
