@@ -27,16 +27,18 @@
 #ifndef GREENISLANDCOMPOSITOR_H
 #define GREENISLANDCOMPOSITOR_H
 
+#include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandCompositor>
 
 #include <GreenIsland/GreenIslandGlobal>
 
 namespace GreenIsland {
 
-class GREENISLAND_EXPORT Compositor : public QWaylandCompositor
+class GREENISLAND_EXPORT Compositor : public QQuickView, public QWaylandCompositor
 {
+    Q_OBJECT
 public:
-    explicit Compositor(QWindow *window = 0, const char *socketName = 0,
+    explicit Compositor(const char *socketName = 0,
                         QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
     ~Compositor();
 
@@ -44,6 +46,9 @@ public:
 
     virtual void runShell();
     virtual void closeShell();
+
+protected:
+    void resizeEvent(QResizeEvent *event);
 
 private:
     void logExtensions(const QString &label, const QString &extensions);

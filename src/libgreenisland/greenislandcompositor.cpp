@@ -28,6 +28,7 @@
 #include <QtCore/QStringList>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QOpenGLFunctions>
+#include <QtQml/QQmlContext>
 
 #include <qpa/qplatformnativeinterface.h>
 
@@ -38,9 +39,21 @@
 
 using namespace GreenIsland;
 
-Compositor::Compositor(QWindow *window, const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
-    : QWaylandCompositor(window, socketName, extensions)
+Compositor::Compositor(const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
+    : QWaylandCompositor(this, socketName, extensions)
 {
+    // Default window title
+    setTitle(QLatin1String("GreenIsland"));
+
+    // Allow QML to access this compositor
+    rootContext()->setContextProperty("compositor", this);
+
+    // Default settings
+    setResizeMode(QQuickView::SizeRootObjectToView);
+    setColor(Qt::black);
+
+    // Create platform window
+    winId();
 }
 
 Compositor::~Compositor()
@@ -94,6 +107,13 @@ void Compositor::runShell()
 
 void Compositor::closeShell()
 {
+}
+
+void Compositor::resizeEvent(QResizeEvent *event)
+{
+    // Scale compositor output to window's size
+    QQuickView::resizeEvent(event);
+    QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
 }
 
 void Compositor::logExtensions(const QString &label, const QString &extensions)
