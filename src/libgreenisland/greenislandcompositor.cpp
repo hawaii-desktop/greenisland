@@ -238,6 +238,25 @@ void Compositor::closeShell()
     d->closeShell();
 }
 
+void Compositor::surfaceCreated(QWaylandSurface *surface)
+{
+    connect(surface, &QWaylandSurface::mapped, [=]() {
+        Q_EMIT surfaceMapped(surface);
+    });
+    connect(surface, &QWaylandSurface::unmapped, [=]() {
+        Q_EMIT surfaceUnmapped(surface);
+    });
+    connect(surface, &QObject::destroyed, [=](QObject *object) {
+        QWaylandSurface *surface = static_cast<QWaylandSurface *>(object);
+        Q_EMIT surfaceDestroyed(surface);
+    });
+}
+
+void Compositor::surfaceAboutToBeDestroyed(QWaylandSurface *surface)
+{
+    // TODO:
+}
+
 void Compositor::resizeEvent(QResizeEvent *event)
 {
     // Scale compositor output to window's size

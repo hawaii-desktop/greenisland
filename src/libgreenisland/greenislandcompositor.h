@@ -31,6 +31,7 @@
 #include <QtCore/QProcess>
 #include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandCompositor>
+#include <QtCompositor/QWaylandSurface>
 
 #include <GreenIsland/GreenIslandGlobal>
 
@@ -58,9 +59,16 @@ public:
     void runShell(const QStringList &arguments = QStringList());
     void closeShell();
 
+    virtual void surfaceCreated(QWaylandSurface *surface);
+    virtual void surfaceAboutToBeDestroyed(QWaylandSurface *surface);
+
 Q_SIGNALS:
     void shellFileNameChanged(const QString &fileName);
     void ready();
+
+    void surfaceMapped(QWaylandSurface *surface);
+    void surfaceUnmapped(QWaylandSurface *surface);
+    void surfaceDestroyed(QWaylandSurface *surface);
 
 protected:
     void resizeEvent(QResizeEvent *event);
