@@ -24,25 +24,34 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtQml/QQmlExtensionPlugin>
-#include <QtQml/QQmlComponent>
+#ifndef SURFACEITEM_H
+#define SURFACEITEM_H
 
-#include "fpscounter.h"
-#include "surfaceitem.h"
+#include <QtCompositor/QWaylandSurfaceItem>
 
-class GreenIslandPlugin : public QQmlExtensionPlugin
+class SurfaceItemPrivate;
+
+class SurfaceItem : public QWaylandSurfaceItem
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface/1.0")
+    Q_DECLARE_PRIVATE(SurfaceItem)
+    Q_PROPERTY(bool unresponsive READ isUnresponsive NOTIFY unresponsiveChanged)
 public:
-    void registerTypes(const char *uri);
+    SurfaceItem(QQuickItem *parent = 0);
+    SurfaceItem(QWaylandSurface *surface, QQuickItem *parent = 0);
+    ~SurfaceItem();
+
+    bool isUnresponsive() const;
+
+Q_SIGNALS:
+    void unresponsiveChanged(bool value);
+
+protected:
+    void mousePressEvent(QMouseEvent *event);
+    void touchEvent(QTouchEvent *event);
+
+private:
+    SurfaceItemPrivate *const d_ptr;
 };
 
-void GreenIslandPlugin::registerTypes(const char *uri)
-{
-    // @uri GreenIsland
-    qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
-    qmlRegisterType<SurfaceItem>(uri, 1, 0, "SurfaceItem");
-}
-
-#include "plugin.moc"
+#endif // SURFACEITEM_H

@@ -2,3 +2,4 @@ module GreenIsland
 plugin greenislandplugin
 ContrastEffect 1.0 ContrastEffect.qml
 SurfaceRenderer 1.0 SurfaceRenderer.qml
+WindowItem 1.0 WindowItem.qml

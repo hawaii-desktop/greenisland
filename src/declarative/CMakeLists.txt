@@ -6,6 +6,7 @@ include_directories(
 set(SOURCES
     plugin.cpp
     fpscounter.cpp
+    surfaceitem.cpp
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
@@ -18,6 +19,7 @@ set(MODULE_FILES
     qmldir
     ContrastEffect.qml
     SurfaceRenderer.qml
+    WindowItem.qml
 )
 install(FILES ${MODULE_FILES}
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/hawaii/qml/GreenIsland)
