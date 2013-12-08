@@ -33,6 +33,22 @@ SurfaceItem {
     clientRenderingEnabled: true
     touchEventsEnabled: true
     opacity: 0.0
+    transform: [
+        Scale {
+            id: createScaleTransform
+            origin.x: surfaceItem.width / 2
+            origin.y: surfaceItem.height / 2
+            xScale: 0.01
+            yScale: 0.1
+        },
+        Scale {
+            id: destroyScaleTransform
+            origin.x: surfaceItem.width / 2
+            origin.y: surfaceItem.height / 2
+            xScale: 1.0
+            yScale: 1.0
+        }
+    ]
     states: [
         State {
             name: "focused"
@@ -84,5 +100,71 @@ SurfaceItem {
             enabled: surfaceItem.animationsEnabled
             NumberAnimation { easing.type: Easing.Linear; duration: 250 }
         }
+    }
+
+    ParallelAnimation {
+        id: createAnimation
+
+        NumberAnimation {
+            target: surfaceItem
+            property: "opacity"
+            easing.type: Easing.Linear
+            to: 1.0
+            duration: 250
+        }
+
+        NumberAnimation {
+            target: createScaleTransform
+            property: "xScale"
+            easing.type: Easing.OutExpo
+            to: 1.0
+            duration: 350
+        }
+
+        NumberAnimation {
+            target: createScaleTransform
+            property: "yScale"
+            easing.type: Easing.OutExpo
+            to: 1.0
+            duration: 350
+        }
+    }
+
+    ParallelAnimation {
+        id: destroyAnimation
+
+        NumberAnimation {
+            target: destroyScaleTransform
+            property: "xScale"
+            easing.type: Easing.Linear
+            to: 0.0
+            duration: 250
+        }
+
+        NumberAnimation {
+            target: destroyScaleTransform
+            property: "yScale"
+            easing.type: Easing.Linear
+            to: 0.0
+            duration: 250
+        }
+
+        NumberAnimation {
+            target: surfaceItem
+            property: "opacity"
+            easing.type: Easing.Linear
+            to: 0.0
+            duration: 300
+        }
+    }
+
+    function runCreateAnimation() {
+        if (surfaceItem.animationsEnabled)
+            createAnimation.start();
+    }
+
+    function runDestroyAnimation() {
+        if (surfaceItem.animationsEnabled)
+            destroyAnimation.start();
     }
 }
