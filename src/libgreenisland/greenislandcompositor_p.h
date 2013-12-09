@@ -48,6 +48,7 @@ public:
 
     Compositor *q_ptr;
 
+    Compositor::State state;
     QString shellFileName;
     QProcess *shellProcess;
 };

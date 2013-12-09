@@ -48,6 +48,7 @@ using namespace GreenIsland;
 
 CompositorPrivate::CompositorPrivate(Compositor *parent)
     : q_ptr(parent)
+    , state(Compositor::CompositorActive)
     , shellProcess(nullptr)
 {
 }
@@ -149,6 +150,22 @@ Compositor::Compositor(const char *socketName, QWaylandCompositor::ExtensionFlag
 Compositor::~Compositor()
 {
     delete d_ptr;
+}
+
+Compositor::State Compositor::state() const
+{
+    Q_D(const Compositor);
+    return d->state;
+}
+
+void Compositor::setState(Compositor::State state)
+{
+    Q_D(Compositor);
+
+    if (d->state != state) {
+        d->state = state;
+        Q_EMIT stateChanged(state);
+    }
 }
 
 QString Compositor::shellFileName() const

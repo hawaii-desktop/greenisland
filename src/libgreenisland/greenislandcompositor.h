@@ -44,12 +44,28 @@ class CompositorPrivate;
 class GREENISLAND_EXPORT Compositor : public QQuickView, public QWaylandCompositor
 {
     Q_OBJECT
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(QString shellFileName READ shellFileName WRITE setShellFileName NOTIFY shellFileNameChanged)
+    Q_ENUMS(State)
     Q_DECLARE_PRIVATE(Compositor)
 public:
+    enum State {
+        //! Compositor is active.
+        CompositorActive,
+        //! Shell unlock called on activity.
+        CompositorIdle,
+        //! No rendering, no frame events.
+        CompositorOffscreen,
+        //! Same as CompositorOffscreen, but also set DPMS
+        CompositorSleeping
+    };
+
     explicit Compositor(const char *socketName = 0,
                         QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
     ~Compositor();
+
+    State state() const;
+    void setState(Compositor::State state);
 
     QString shellFileName() const;
     void setShellFileName(const QString &fileName);
@@ -63,6 +79,7 @@ public:
     virtual void surfaceAboutToBeDestroyed(QWaylandSurface *surface);
 
 Q_SIGNALS:
+    void stateChanged(Compositor::State state);
     void shellFileNameChanged(const QString &fileName);
     void ready();
 
