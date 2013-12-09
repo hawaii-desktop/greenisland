@@ -50,7 +50,12 @@ CompositorPrivate::CompositorPrivate(Compositor *parent)
     : q_ptr(parent)
     , state(Compositor::CompositorActive)
     , shellProcess(nullptr)
+    , idleTimer(new QTimer(parent))
+    , idleInhibit(0)
 {
+    // Idle set to 5 minutes by default
+    // TODO: Let custom compositors change the timeout
+    idleTimer->setInterval(5*60000);
 }
 
 CompositorPrivate::~CompositorPrivate()
@@ -255,6 +260,28 @@ void Compositor::closeShell()
     d->closeShell();
 }
 
+void Compositor::startIdleTimer()
+{
+    Q_D(Compositor);
+
+    // Change state to idle
+    connect(d->idleTimer, &QTimer::timeout, [=]() {
+        // Just return if idle is inhibited by some activity
+        if (d->idleInhibit > 0)
+            return;
+
+        // Change compositor state
+        setState(Compositor::CompositorIdle);
+    });
+    d->idleTimer->start();
+}
+
+void Compositor::stopIdleTimer()
+{
+    Q_D(Compositor);
+    d->idleTimer->stop();
+}
+
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
     connect(surface, &QWaylandSurface::mapped, [=]() {
@@ -272,6 +299,88 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 void Compositor::surfaceAboutToBeDestroyed(QWaylandSurface *surface)
 {
     // TODO:
+}
+
+void Compositor::keyPressEvent(QKeyEvent *event)
+{
+    Q_D(Compositor);
+
+    // Inhibit idle
+    d->idleInhibit++;
+
+    // Continue processing this event
+    QQuickView::keyPressEvent(event);
+}
+
+void Compositor::keyReleaseEvent(QKeyEvent *event)
+{
+    Q_D(Compositor);
+
+    // Release idle
+    d->idleInhibit--;
+
+    // Continue processing this event
+    QQuickView::keyReleaseEvent(event);
+}
+
+void Compositor::mousePressEvent(QMouseEvent *event)
+{
+    Q_D(Compositor);
+
+    // Inhibit idle
+    d->idleInhibit++;
+
+    // Continue processing this event
+    QQuickView::mousePressEvent(event);
+}
+
+void Compositor::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_D(Compositor);
+
+    // Release idle
+    d->idleInhibit--;
+
+    // Continue processing this event
+    QQuickView::mouseReleaseEvent(event);
+}
+
+void Compositor::mouseMoveEvent(QMouseEvent *event)
+{
+    Q_D(Compositor);
+
+    // Inhibit idle
+    d->idleInhibit++;
+
+    // Continue processing this event
+    QQuickView::mouseMoveEvent(event);
+}
+
+void Compositor::wheelEvent(QWheelEvent *event)
+{
+    Q_D(Compositor);
+
+    // Inhibit idle
+    d->idleInhibit++;
+
+    // Continue processing this event
+    QQuickView::wheelEvent(event);
+}
+
+void Compositor::touchEvent(QTouchEvent *event)
+{
+    Q_D(Compositor);
+
+    if (event->type() == QEvent::TouchEnd) {
+        // Release idle
+        d->idleInhibit--;
+    } else {
+        // Inhibit idle
+        d->idleInhibit++;
+    }
+
+    // Continue processing this event
+    QQuickView::touchEvent(event);
 }
 
 void Compositor::resizeEvent(QResizeEvent *event)

@@ -28,6 +28,7 @@
 #define GREENISLANDCOMPOSITOR_P_H
 
 #include <QtCore/QProcess>
+#include <QtCore/QTimer>
 
 namespace GreenIsland {
 
@@ -51,6 +52,8 @@ public:
     Compositor::State state;
     QString shellFileName;
     QProcess *shellProcess;
+    QTimer *idleTimer;
+    int idleInhibit;
 };
 
 }

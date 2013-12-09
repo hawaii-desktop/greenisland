@@ -75,6 +75,9 @@ public:
     void runShell(const QStringList &arguments = QStringList());
     void closeShell();
 
+    Q_INVOKABLE void startIdleTimer();
+    Q_INVOKABLE void stopIdleTimer();
+
     virtual void surfaceCreated(QWaylandSurface *surface);
     virtual void surfaceAboutToBeDestroyed(QWaylandSurface *surface);
 
@@ -88,6 +91,17 @@ Q_SIGNALS:
     void surfaceDestroyed(QWaylandSurface *surface);
 
 protected:
+    virtual void keyPressEvent(QKeyEvent *event);
+    virtual void keyReleaseEvent(QKeyEvent *event);
+
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseReleaseEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+
+    virtual void wheelEvent(QWheelEvent *event);
+
+    virtual void touchEvent(QTouchEvent *event);
+
     void resizeEvent(QResizeEvent *event);
 
 private:
