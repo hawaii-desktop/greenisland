@@ -7,6 +7,7 @@ include_directories(
 set(SOURCES
     greenislandcompositor.cpp
     greenislandutilities.cpp
+    gldebug.cpp
 )
 
 set(HEADERS

@@ -27,16 +27,14 @@
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
 #include <QtGui/QGuiApplication>
-#include <QtGui/QOpenGLFunctions>
 #include <QtQml/QQmlContext>
 
 #include <qpa/qplatformnativeinterface.h>
 
 #include "greenislandcompositor.h"
 #include "greenislandcompositor_p.h"
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
+#include "gldebug.h"
+#include "logging.h"
 
 Q_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR, "greenisland.compositor")
 
@@ -196,44 +194,7 @@ void Compositor::setShellFileName(const QString &fileName)
 
 void Compositor::showGraphicsInfo()
 {
-    const char *str;
-
-    QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();
-    if (nativeInterface) {
-        EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window());
-        if (display) {
-            str = eglQueryString(display, EGL_VERSION);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL version:" << str;
-
-            str = eglQueryString(display, EGL_VENDOR);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL vendor:" << str;
-
-            str = eglQueryString(display, EGL_CLIENT_APIS);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL client APIs:" << str;
-
-            str = eglQueryString(display, EGL_EXTENSIONS);
-            QStringList extensions = QString(str).split(QLatin1Char(' '));
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL extensions:"
-                                            << qPrintable(extensions.join(QStringLiteral("\n\t")));
-        }
-    }
-
-    str = (char *)glGetString(GL_VERSION);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL version:" << str;
-
-    str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GLSL version:" << str;
-
-    str = (char *)glGetString(GL_VENDOR);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL vendor:" << str;
-
-    str = (char *)glGetString(GL_RENDERER);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL renderer:" << str;
-
-    str = (char *)glGetString(GL_EXTENSIONS);
-    QStringList extensions = QString(str).split(QLatin1Char(' '));
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL extensions:"
-                                    << qPrintable(extensions.join(QStringLiteral("\n\t")));
+    printGraphicsInformation(window());
 }
 
 void Compositor::runShell(const QStringList &arguments)
