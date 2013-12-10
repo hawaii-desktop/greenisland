@@ -70,6 +70,8 @@ void CompositorPrivate::closeShell()
     shellProcess->close();
     delete shellProcess;
     shellProcess = nullptr;
+
+    Q_Q(Compositor);
     Q_EMIT q->shellClientRunningChanged(false);
 }
 
