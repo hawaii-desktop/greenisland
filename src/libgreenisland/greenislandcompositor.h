@@ -46,6 +46,7 @@ class GREENISLAND_EXPORT Compositor : public QQuickView, public QWaylandComposit
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(QString shellFileName READ shellFileName WRITE setShellFileName NOTIFY shellFileNameChanged)
+    Q_PROPERTY(bool shellClientRunning READ isShellClientRunning NOTIFY shellClientRunningChanged)
     Q_ENUMS(State)
     Q_DECLARE_PRIVATE(Compositor)
 public:
@@ -75,6 +76,8 @@ public:
     void runShell(const QStringList &arguments = QStringList());
     void closeShell();
 
+    bool isShellClientRunning() const;
+
     Q_INVOKABLE void startIdleTimer();
     Q_INVOKABLE void stopIdleTimer();
 
@@ -84,6 +87,7 @@ public:
 Q_SIGNALS:
     void stateChanged(Compositor::State state);
     void shellFileNameChanged(const QString &fileName);
+    void shellClientRunningChanged(bool value);
     void ready();
 
     void surfaceMapped(QWaylandSurface *surface);

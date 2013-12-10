@@ -75,10 +75,14 @@ void CompositorPrivate::closeShell()
 
 void CompositorPrivate::_q_shellStarted()
 {
+    Q_Q(Compositor);
+    Q_EMIT q->shellClientRunningChanged(true);
 }
 
 void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
 {
+    Q_Q(Compositor);
+
     switch (error) {
     case QProcess::FailedToStart:
         qCWarning(GREENISLAND_COMPOSITOR)
@@ -111,6 +115,7 @@ void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
     shellProcess->close();
     delete shellProcess;
     shellProcess = nullptr;
+    Q_EMIT q->shellClientRunningChanged(false);
 }
 
 void CompositorPrivate::_q_shellReadyReadStandardOutput()
@@ -258,6 +263,12 @@ void Compositor::closeShell()
 {
     Q_D(Compositor);
     d->closeShell();
+}
+
+bool Compositor::isShellClientRunning() const
+{
+    Q_D(const Compositor);
+    return (d->shellProcess != nullptr);
 }
 
 void Compositor::startIdleTimer()
