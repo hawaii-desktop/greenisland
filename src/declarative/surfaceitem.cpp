@@ -55,7 +55,7 @@ public:
         // Ping the surface to see whether it's responsive, if a pong
         // doesn't arrive before pingTimeout is trigger we know the
         // surface is unresponsive and mark the container's flag
-        if (q->surface()) {
+        if (q->surface() && q->paintEnabled()) {
             QObject::connect(q->surface(), &QWaylandSurface::pong, [=]() {
                 timer->stop();
 
@@ -103,11 +103,13 @@ void SurfaceItem::mousePressEvent(QMouseEvent *event)
 {
     Q_D(SurfaceItem);
 
-    // Give focus to this surface when the mouse is pressed
-    takeFocus();
+    if (surface() && paintEnabled()) {
+        // Give focus to this surface when the mouse is pressed
+        takeFocus();
 
-    // Check whether the surface is responsive or not
-    d->pingSurface();
+        // Check whether the surface is responsive or not
+        d->pingSurface();
+    }
 
     // Continue with normal event handling
     QWaylandSurfaceItem::mousePressEvent(event);
@@ -117,7 +119,7 @@ void SurfaceItem::touchEvent(QTouchEvent *event)
 {
     Q_D(SurfaceItem);
 
-    if (touchEventsEnabled() && surface()) {
+    if (surface() && paintEnabled() && touchEventsEnabled()) {
         if (event->type() == QEvent::TouchBegin) {
             // Give focus to this surface at every tap on the surface
             takeFocus();
