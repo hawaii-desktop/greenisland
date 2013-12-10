@@ -50,6 +50,7 @@ public:
     Compositor *q_ptr;
 
     Compositor::State state;
+    QList<QWaylandSurface *> surfaces;
     QString shellFileName;
     QProcess *shellProcess;
     QTimer *idleTimer;

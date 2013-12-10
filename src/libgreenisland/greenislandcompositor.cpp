@@ -192,6 +192,12 @@ void Compositor::setShellFileName(const QString &fileName)
     }
 }
 
+QList<QWaylandSurface *> Compositor::surfaces() const
+{
+    Q_D(const Compositor);
+    return d->surfaces;
+}
+
 void Compositor::showGraphicsInfo()
 {
     printGraphicsInformation(window());
@@ -256,6 +262,10 @@ void Compositor::stopIdleTimer()
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
+    Q_D(Compositor);
+
+    d->surfaces.append(surface);
+
     connect(surface, &QWaylandSurface::mapped, [=]() {
         Q_EMIT surfaceMapped(surface);
     });
@@ -264,6 +274,7 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     });
     connect(surface, &QObject::destroyed, [=](QObject *object) {
         QWaylandSurface *surface = static_cast<QWaylandSurface *>(object);
+        d->surfaces.removeOne(surface);
         Q_EMIT surfaceDestroyed(surface);
     });
 }

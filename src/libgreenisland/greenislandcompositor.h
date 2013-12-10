@@ -71,6 +71,8 @@ public:
     QString shellFileName() const;
     void setShellFileName(const QString &fileName);
 
+    QList<QWaylandSurface *> surfaces() const;
+
     void showGraphicsInfo();
 
     void runShell(const QStringList &arguments = QStringList());
