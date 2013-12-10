@@ -49,12 +49,12 @@ CompositorPrivate::CompositorPrivate(Compositor *parent)
     : q_ptr(parent)
     , state(Compositor::CompositorActive)
     , shellProcess(nullptr)
+    , idleInterval(5*60000)
     , idleTimer(new QTimer(parent))
     , idleInhibit(0)
 {
-    // Idle set to 5 minutes by default
-    // TODO: Let custom compositors change the timeout
-    idleTimer->setInterval(5*60000);
+    // Set default idle interval
+    idleTimer->setInterval(idleInterval);
 }
 
 CompositorPrivate::~CompositorPrivate()
@@ -70,6 +70,11 @@ void CompositorPrivate::closeShell()
     shellProcess->close();
     delete shellProcess;
     shellProcess = nullptr;
+}
+
+void CompositorPrivate::dpms(bool on)
+{
+    // TODO
 }
 
 void CompositorPrivate::_q_shellStarted()
@@ -171,7 +176,43 @@ void Compositor::setState(Compositor::State state)
 {
     Q_D(Compositor);
 
+    if (state == Compositor::CompositorActive && d->state == state) {
+        d->idleInhibit = 0;
+        d->idleTimer->start();
+        return;
+    }
+
     if (d->state != state) {
+        switch (state) {
+        case Compositor::CompositorActive:
+            switch (d->state) {
+            case Compositor::CompositorSleeping:
+                d->dpms(true);
+            default:
+                Q_EMIT wake();
+                d->idleInhibit = 0;
+                d->idleTimer->start();
+            }
+        case Compositor::CompositorIdle:
+            Q_EMIT idle();
+            d->idleInhibit = 0;
+            d->idleTimer->stop();
+            break;
+        case Compositor::CompositorOffscreen:
+            switch (d->state) {
+            case Compositor::CompositorSleeping:
+                d->dpms(true);
+            default:
+                d->idleInhibit = 0;
+                d->idleTimer->stop();
+            }
+        case Compositor::CompositorSleeping:
+            d->idleInhibit = 0;
+            d->idleTimer->stop();
+            d->dpms(false);
+            break;
+        }
+
         d->state = state;
         Q_EMIT stateChanged(state);
     }
@@ -237,6 +278,21 @@ bool Compositor::isShellClientRunning() const
 {
     Q_D(const Compositor);
     return (d->shellProcess != nullptr);
+}
+
+quint32 Compositor::idleInterval() const
+{
+    Q_D(const Compositor);
+    return d->idleInterval;
+}
+
+void Compositor::setIdleInterval(quint32 msecs)
+{
+    Q_D(Compositor);
+    d->idleInterval = msecs;
+    d->idleTimer->setInterval(d->idleInterval);
+    if (d->idleTimer->isActive())
+        d->idleTimer->start();
 }
 
 void Compositor::startIdleTimer()
@@ -345,10 +401,8 @@ void Compositor::mouseReleaseEvent(QMouseEvent *event)
 
 void Compositor::mouseMoveEvent(QMouseEvent *event)
 {
-    Q_D(Compositor);
-
-    // Inhibit idle
-    d->idleInhibit++;
+    // Wake up the compositor
+    setState(Compositor::CompositorActive);
 
     // Continue processing this event
     QQuickView::mouseMoveEvent(event);
@@ -356,10 +410,8 @@ void Compositor::mouseMoveEvent(QMouseEvent *event)
 
 void Compositor::wheelEvent(QWheelEvent *event)
 {
-    Q_D(Compositor);
-
-    // Inhibit idle
-    d->idleInhibit++;
+    // Wake up the compositor
+    setState(Compositor::CompositorActive);
 
     // Continue processing this event
     QQuickView::wheelEvent(event);

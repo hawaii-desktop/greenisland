@@ -80,6 +80,9 @@ public:
 
     bool isShellClientRunning() const;
 
+    quint32 idleInterval() const;
+    void setIdleInterval(quint32 msecs);
+
     Q_INVOKABLE void startIdleTimer();
     Q_INVOKABLE void stopIdleTimer();
 
@@ -93,11 +96,15 @@ Q_SIGNALS:
     void stateChanged(Compositor::State state);
     void shellFileNameChanged(const QString &fileName);
     void shellClientRunningChanged(bool value);
-    void ready();
 
     void surfaceMapped(QWaylandSurface *surface);
     void surfaceUnmapped(QWaylandSurface *surface);
     void surfaceDestroyed(QWaylandSurface *surface);
+
+    void ready();
+
+    void idle();
+    void wake();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *event);

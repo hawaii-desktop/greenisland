@@ -41,6 +41,8 @@ public:
 
     void closeShell();
 
+    void dpms(bool on);
+
     void _q_shellStarted();
     void _q_shellFailed(QProcess::ProcessError error);
     void _q_shellReadyReadStandardOutput();
@@ -53,6 +55,7 @@ public:
     QList<QWaylandSurface *> surfaces;
     QString shellFileName;
     QProcess *shellProcess;
+    quint32 idleInterval;
     QTimer *idleTimer;
     int idleInhibit;
 };
