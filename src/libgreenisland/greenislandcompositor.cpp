@@ -26,6 +26,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
+#include <QtCompositor/QWaylandSurfaceItem>
 #include <QtGui/QGuiApplication>
 #include <QtQml/QQmlContext>
 
@@ -282,6 +283,20 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 void Compositor::surfaceAboutToBeDestroyed(QWaylandSurface *surface)
 {
     // TODO:
+}
+
+void Compositor::damageAll()
+{
+#ifdef QT_COMPOSITOR_QUICK
+    Q_D(Compositor);
+
+    for (QWaylandSurface *surface: d->surfaces) {
+        if (surface->surfaceItem())
+            surface->surfaceItem()->setDamagedFlag(true);
+    }
+#else
+    qCWarning() << "Can't damage surfaces because QtQuick support is not built in";
+#endif
 }
 
 void Compositor::keyPressEvent(QKeyEvent *event)

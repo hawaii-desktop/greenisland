@@ -86,6 +86,9 @@ public:
     virtual void surfaceCreated(QWaylandSurface *surface);
     virtual void surfaceAboutToBeDestroyed(QWaylandSurface *surface);
 
+public Q_SLOTS:
+    void damageAll();
+
 Q_SIGNALS:
     void stateChanged(Compositor::State state);
     void shellFileNameChanged(const QString &fileName);

@@ -4,6 +4,10 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/headers/GreenIsland
 )
 
+add_definitions(
+    -DQT_COMPOSITOR_QUICK
+)
+
 set(SOURCES
     greenislandcompositor.cpp
     greenislandutilities.cpp
