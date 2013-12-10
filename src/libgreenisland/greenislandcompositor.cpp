@@ -38,6 +38,7 @@
 #include "logging.h"
 
 Q_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR, "greenisland.compositor")
+Q_LOGGING_CATEGORY(GREENISLAND_CLIENT, "greenisland.client")
 
 using namespace GreenIsland;
 
@@ -128,13 +129,13 @@ void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
 void CompositorPrivate::_q_shellReadyReadStandardOutput()
 {
     if (shellProcess)
-        printf("%s", shellProcess->readAllStandardOutput().constData());
+        qCDebug(GREENISLAND_CLIENT) << qPrintable(shellProcess->readAllStandardOutput().trimmed());
 }
 
 void CompositorPrivate::_q_shellReadyReadStandardError()
 {
     if (shellProcess)
-        fprintf(stderr, "%s", shellProcess->readAllStandardError().constData());
+        qCDebug(GREENISLAND_CLIENT) << qPrintable(shellProcess->readAllStandardError().trimmed());
 }
 
 void CompositorPrivate::_q_shellAboutToClose()
