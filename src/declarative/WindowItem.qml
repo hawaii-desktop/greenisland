@@ -33,22 +33,6 @@ SurfaceItem {
     clientRenderingEnabled: true
     touchEventsEnabled: true
     opacity: 0.0
-    transform: [
-        Scale {
-            id: createScaleTransform
-            origin.x: surfaceItem.width / 2
-            origin.y: surfaceItem.height / 2
-            xScale: 0.01
-            yScale: 0.1
-        },
-        Scale {
-            id: destroyScaleTransform
-            origin.x: surfaceItem.width / 2
-            origin.y: surfaceItem.height / 2
-            xScale: 1.0
-            yScale: 1.0
-        }
-    ]
     states: [
         State {
             name: "focused"
@@ -102,6 +86,14 @@ SurfaceItem {
         }
     }
 
+    Scale {
+        id: mapScaleTransform
+        origin.x: surfaceItem.width / 2
+        origin.y: surfaceItem.height / 2
+        xScale: 0.01
+        yScale: 0.1
+    }
+
     ParallelAnimation {
         id: createAnimation
 
@@ -113,40 +105,64 @@ SurfaceItem {
             duration: 250
         }
 
-        NumberAnimation {
-            target: createScaleTransform
-            property: "xScale"
-            easing.type: Easing.OutExpo
-            to: 1.0
-            duration: 350
-        }
+        SequentialAnimation {
+            ScriptAction {
+                script: surfaceItem.transform = mapScaleTransform
+            }
 
-        NumberAnimation {
-            target: createScaleTransform
-            property: "yScale"
-            easing.type: Easing.OutExpo
-            to: 1.0
-            duration: 350
+            ParallelAnimation {
+                NumberAnimation {
+                    target: mapScaleTransform
+                    property: "xScale"
+                    easing.type: Easing.OutExpo
+                    to: 1.0
+                    duration: 350
+                }
+
+                NumberAnimation {
+                    target: mapScaleTransform
+                    property: "yScale"
+                    easing.type: Easing.OutExpo
+                    to: 1.0
+                    duration: 350
+                }
+            }
         }
+    }
+
+    Scale {
+        id: destroyScaleTransform
+        origin.x: surfaceItem.width / 2
+        origin.y: surfaceItem.height / 2
+        xScale: 1.0
+        yScale: 1.0
     }
 
     ParallelAnimation {
         id: destroyAnimation
 
-        NumberAnimation {
-            target: destroyScaleTransform
-            property: "xScale"
-            easing.type: Easing.Linear
-            to: 0.0
-            duration: 250
-        }
+        SequentialAnimation {
+            ScriptAction {
+                script: surfaceItem.transform = destroyScaleTransform
+            }
 
-        NumberAnimation {
-            target: destroyScaleTransform
-            property: "yScale"
-            easing.type: Easing.Linear
-            to: 0.0
-            duration: 250
+            ParallelAnimation {
+                NumberAnimation {
+                    target: destroyScaleTransform
+                    property: "xScale"
+                    easing.type: Easing.Linear
+                    to: 0.0
+                    duration: 250
+                }
+
+                NumberAnimation {
+                    target: destroyScaleTransform
+                    property: "yScale"
+                    easing.type: Easing.Linear
+                    to: 0.0
+                    duration: 250
+                }
+            }
         }
 
         NumberAnimation {
