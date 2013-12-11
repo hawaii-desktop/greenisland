@@ -26,6 +26,7 @@
 
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
+import WaylandCompositor 1.0
 import GreenIsland 1.0
 
 SurfaceItem {
@@ -87,7 +88,7 @@ SurfaceItem {
     }
 
     Scale {
-        id: mapScaleTransform
+        id: toplevelScaleTransform
         origin.x: surfaceItem.width / 2
         origin.y: surfaceItem.height / 2
         xScale: 0.01
@@ -95,7 +96,7 @@ SurfaceItem {
     }
 
     ParallelAnimation {
-        id: createAnimation
+        id: toplevelMapAnimation
 
         NumberAnimation {
             target: surfaceItem
@@ -107,12 +108,12 @@ SurfaceItem {
 
         SequentialAnimation {
             ScriptAction {
-                script: surfaceItem.transform = mapScaleTransform
+                script: surfaceItem.transform = toplevelScaleTransform
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: mapScaleTransform
+                    target: toplevelScaleTransform
                     property: "xScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
@@ -120,11 +121,55 @@ SurfaceItem {
                 }
 
                 NumberAnimation {
-                    target: mapScaleTransform
+                    target: toplevelScaleTransform
                     property: "yScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
                     duration: 350
+                }
+            }
+        }
+    }
+
+    Scale {
+        id: popupScaleTransform
+        origin.x: surfaceItem.width / 2
+        origin.y: surfaceItem.height / 2
+        xScale: 0.9
+        yScale: 0.9
+    }
+
+    ParallelAnimation {
+        id: popupMapAnimation
+
+        NumberAnimation {
+            target: surfaceItem
+            property: "opacity"
+            easing.type: Easing.Linear
+            to: 1.0
+            duration: 150
+        }
+
+        SequentialAnimation {
+            ScriptAction {
+                script: surfaceItem.transform = popupScaleTransform
+            }
+
+            ParallelAnimation {
+                NumberAnimation {
+                    target: popupScaleTransform
+                    property: "xScale"
+                    easing.type: Easing.OutQuad
+                    to: 1.0
+                    duration: 150
+                }
+
+                NumberAnimation {
+                    target: popupScaleTransform
+                    property: "yScale"
+                    easing.type: Easing.OutQuad
+                    to: 1.0
+                    duration: 150
                 }
             }
         }
@@ -175,8 +220,17 @@ SurfaceItem {
     }
 
     function runCreateAnimation() {
-        if (surfaceItem.animationsEnabled)
-            createAnimation.start();
+        if (surfaceItem.animationsEnabled) {
+            switch (surfaceItem.surface.windowType) {
+            case WaylandSurface.Toplevel:
+            case WaylandSurface.Transient:
+                toplevelMapAnimation.start();
+                break;
+            case WaylandSurface.Popup:
+                popupMapAnimation.start();
+                break;
+            }
+        }
     }
 
     function runDestroyAnimation() {
