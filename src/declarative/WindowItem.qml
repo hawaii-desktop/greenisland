@@ -88,7 +88,7 @@ SurfaceItem {
     }
 
     Scale {
-        id: toplevelScaleTransform
+        id: toplevelMapransform
         origin.x: surfaceItem.width / 2
         origin.y: surfaceItem.height / 2
         xScale: 0.01
@@ -108,12 +108,12 @@ SurfaceItem {
 
         SequentialAnimation {
             ScriptAction {
-                script: surfaceItem.transform = toplevelScaleTransform
+                script: surfaceItem.transform = toplevelMapransform
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: toplevelScaleTransform
+                    target: toplevelMapransform
                     property: "xScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
@@ -121,7 +121,7 @@ SurfaceItem {
                 }
 
                 NumberAnimation {
-                    target: toplevelScaleTransform
+                    target: toplevelMapransform
                     property: "yScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
@@ -132,7 +132,7 @@ SurfaceItem {
     }
 
     Scale {
-        id: popupScaleTransform
+        id: popupMapTransform
         origin.x: surfaceItem.width / 2
         origin.y: surfaceItem.height / 2
         xScale: 0.9
@@ -152,12 +152,12 @@ SurfaceItem {
 
         SequentialAnimation {
             ScriptAction {
-                script: surfaceItem.transform = popupScaleTransform
+                script: surfaceItem.transform = popupMapTransform
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: popupScaleTransform
+                    target: popupMapTransform
                     property: "xScale"
                     easing.type: Easing.OutQuad
                     to: 1.0
@@ -165,7 +165,7 @@ SurfaceItem {
                 }
 
                 NumberAnimation {
-                    target: popupScaleTransform
+                    target: popupMapTransform
                     property: "yScale"
                     easing.type: Easing.OutQuad
                     to: 1.0
@@ -176,7 +176,7 @@ SurfaceItem {
     }
 
     Scale {
-        id: destroyScaleTransform
+        id: destroyTransform
         origin.x: surfaceItem.width / 2
         origin.y: surfaceItem.height / 2
         xScale: 1.0
@@ -188,12 +188,12 @@ SurfaceItem {
 
         SequentialAnimation {
             ScriptAction {
-                script: surfaceItem.transform = destroyScaleTransform
+                script: surfaceItem.transform = destroyTransform
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: destroyScaleTransform
+                    target: destroyTransform
                     property: "xScale"
                     easing.type: Easing.Linear
                     to: 0.0
@@ -201,7 +201,7 @@ SurfaceItem {
                 }
 
                 NumberAnimation {
-                    target: destroyScaleTransform
+                    target: destroyTransform
                     property: "yScale"
                     easing.type: Easing.Linear
                     to: 0.0
@@ -219,7 +219,7 @@ SurfaceItem {
         }
     }
 
-    function runCreateAnimation() {
+    function runMapAnimation() {
         if (surfaceItem.animationsEnabled) {
             switch (surfaceItem.surface.windowType) {
             case WaylandSurface.Toplevel:
