@@ -88,7 +88,7 @@ SurfaceItem {
     }
 
     Scale {
-        id: toplevelMapransform
+        id: toplevelMapTransform
         origin.x: surfaceItem.width / 2
         origin.y: surfaceItem.height / 2
         xScale: 0.01
@@ -108,12 +108,12 @@ SurfaceItem {
 
         SequentialAnimation {
             ScriptAction {
-                script: surfaceItem.transform = toplevelMapransform
+                script: surfaceItem.transform = toplevelMapTransform
             }
 
             ParallelAnimation {
                 NumberAnimation {
-                    target: toplevelMapransform
+                    target: toplevelMapTransform
                     property: "xScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
@@ -121,7 +121,7 @@ SurfaceItem {
                 }
 
                 NumberAnimation {
-                    target: toplevelMapransform
+                    target: toplevelMapTransform
                     property: "yScale"
                     easing.type: Easing.OutExpo
                     to: 1.0
