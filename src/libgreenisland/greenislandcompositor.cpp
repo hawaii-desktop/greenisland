@@ -147,7 +147,7 @@ void CompositorPrivate::_q_shellAboutToClose()
  * Compositor
  */
 
-Compositor::Compositor(const char *socketName, QWaylandCompositor::ExtensionFlag extensions)
+Compositor::Compositor(const char *socketName, ExtensionFlags extensions)
     : QWaylandCompositor(this, socketName, extensions)
     , d_ptr(new CompositorPrivate(this))
 {

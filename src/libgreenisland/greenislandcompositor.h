@@ -62,7 +62,7 @@ public:
     };
 
     explicit Compositor(const char *socketName = 0,
-                        QWaylandCompositor::ExtensionFlag extensions = QWaylandCompositor::DefaultExtensions);
+                        ExtensionFlags extensions = DefaultExtensions | SubSurfaceExtension);
     ~Compositor();
 
     State state() const;
