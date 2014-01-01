@@ -31,8 +31,6 @@ import GreenIsland 1.0
 
 SurfaceItem {
     id: surfaceItem
-    clientRenderingEnabled: true
-    touchEventsEnabled: true
     opacity: 0.0
     states: [
         State {
