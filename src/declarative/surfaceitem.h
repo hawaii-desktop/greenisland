@@ -35,16 +35,10 @@ class SurfaceItem : public QWaylandSurfaceItem
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(SurfaceItem)
-    Q_PROPERTY(bool unresponsive READ isUnresponsive NOTIFY unresponsiveChanged)
 public:
     SurfaceItem(QQuickItem *parent = 0);
     SurfaceItem(QWaylandSurface *surface, QQuickItem *parent = 0);
     ~SurfaceItem();
-
-    bool isUnresponsive() const;
-
-Q_SIGNALS:
-    void unresponsiveChanged(bool value);
 
 protected:
     void mousePressEvent(QMouseEvent *event);

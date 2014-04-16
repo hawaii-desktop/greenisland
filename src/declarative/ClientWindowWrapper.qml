@@ -24,47 +24,36 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "surfaceitem.h"
+import QtQuick 2.0
+import GreenIsland 1.0
 
-class SurfaceItemPrivate
-{
-    Q_DECLARE_PUBLIC(SurfaceItem)
-public:
-    SurfaceItemPrivate(SurfaceItem *parent)
-        : q_ptr(parent)
-    {
+WindowWrapper {
+    property bool unresponsive: false
+
+    Timer {
+        id: pingPongTimer
+        interval: 200
+        onTriggered: unresponsive = true
     }
 
-    SurfaceItem *const q_ptr;
-};
+    Connections {
+        target: window.surface
+        onPong: {
+            // Surface replied with a pong this means it's responsive
+            pingPoingTimer.running = false;
+            unresponsive = false;
+        }
+    }
 
-SurfaceItem::SurfaceItem(QQuickItem *parent)
-    : QWaylandSurfaceItem(parent)
-    , d_ptr(new SurfaceItemPrivate(this))
-{
+    function pingSurface() {
+        // Ping logic applies only to windows actually painted
+        if (!window.paintEnabled)
+            return;
+
+        // Ping the surface to see whether it's responsive, if a pong
+        // doesn't arrive before the timeout is trigger we know the
+        // surface is unresponsive and raise the flag
+        window.surface.ping();
+        pingPongTimer.running = true;
+    }
 }
-
-SurfaceItem::SurfaceItem(QWaylandSurface *surface, QQuickItem *parent)
-    : QWaylandSurfaceItem(surface, parent)
-    , d_ptr(new SurfaceItemPrivate(this))
-{
-}
-
-SurfaceItem::~SurfaceItem()
-{
-    delete d_ptr;
-}
-
-void SurfaceItem::mousePressEvent(QMouseEvent *event)
-{
-    // Continue with normal event handling
-    QWaylandSurfaceItem::mousePressEvent(event);
-}
-
-void SurfaceItem::touchEvent(QTouchEvent *event)
-{
-    // Continue with normal event handling
-    QWaylandSurfaceItem::touchEvent(event);
-}
-
-#include "moc_surfaceitem.cpp"

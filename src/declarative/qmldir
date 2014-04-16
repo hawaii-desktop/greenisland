@@ -1,5 +1,7 @@
 module GreenIsland
 plugin greenislandplugin
+ClientWindowWrapper 1.0 ClientWindowWrapper.qml
 ContrastEffect 1.0 ContrastEffect.qml
 SurfaceRenderer 1.0 SurfaceRenderer.qml
 WindowItem 1.0 WindowItem.qml
+WindowWrapper 1.0 WindowWrapper.qml

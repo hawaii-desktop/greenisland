@@ -24,47 +24,30 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "surfaceitem.h"
+import QtQuick 2.0
+import WaylandCompositor 1.0
+import GreenIsland 1.0
 
-class SurfaceItemPrivate
-{
-    Q_DECLARE_PUBLIC(SurfaceItem)
-public:
-    SurfaceItemPrivate(SurfaceItem *parent)
-        : q_ptr(parent)
-    {
+Item {
+    id: wrapper
+    width: window.width
+    height: window.height
+    onVisibleChanged: window.clientRenderingEnabled = visible
+
+    property WaylandSurfaceItem window
+    property int role: window.surface.windowProperties.role
+
+    // Render item taking care of y inverted surfaces
+    SurfaceRenderer {
+        id: renderer
     }
 
-    SurfaceItem *const q_ptr;
-};
+    Component.onCompleted: {
+        // Reparent the actual surface item
+        window.parent = wrapper;
 
-SurfaceItem::SurfaceItem(QQuickItem *parent)
-    : QWaylandSurfaceItem(parent)
-    , d_ptr(new SurfaceItemPrivate(this))
-{
+        // Setup surface renderer
+        renderer.anchors.fill = window;
+        renderer.source = window;
+    }
 }
-
-SurfaceItem::SurfaceItem(QWaylandSurface *surface, QQuickItem *parent)
-    : QWaylandSurfaceItem(surface, parent)
-    , d_ptr(new SurfaceItemPrivate(this))
-{
-}
-
-SurfaceItem::~SurfaceItem()
-{
-    delete d_ptr;
-}
-
-void SurfaceItem::mousePressEvent(QMouseEvent *event)
-{
-    // Continue with normal event handling
-    QWaylandSurfaceItem::mousePressEvent(event);
-}
-
-void SurfaceItem::touchEvent(QTouchEvent *event)
-{
-    // Continue with normal event handling
-    QWaylandSurfaceItem::touchEvent(event);
-}
-
-#include "moc_surfaceitem.cpp"
