@@ -29,12 +29,13 @@
 
 #include <QtCompositor/QWaylandSurfaceItem>
 
+#include <GreenIsland/GreenIslandGlobal>
+
 class SurfaceItemPrivate;
 
-class SurfaceItem : public QWaylandSurfaceItem
+class GREENISLAND_EXPORT SurfaceItem : public QWaylandSurfaceItem
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(SurfaceItem)
 public:
     SurfaceItem(QQuickItem *parent = 0);
     SurfaceItem(QWaylandSurface *surface, QQuickItem *parent = 0);
@@ -42,9 +43,11 @@ public:
 
 protected:
     void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
     void touchEvent(QTouchEvent *event);
 
 private:
+    Q_DECLARE_PRIVATE(SurfaceItem)
     SurfaceItemPrivate *const d_ptr;
 };
 

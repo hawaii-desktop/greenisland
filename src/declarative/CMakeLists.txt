@@ -6,7 +6,6 @@ include_directories(
 set(SOURCES
     plugin.cpp
     fpscounter.cpp
-    surfaceitem.cpp
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})

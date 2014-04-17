@@ -24,17 +24,22 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QDebug>
+#include <QtCompositor/QWaylandCompositor>
+#include <QtCompositor/QWaylandInputDevice>
+
 #include "surfaceitem.h"
 
 class SurfaceItemPrivate
 {
-    Q_DECLARE_PUBLIC(SurfaceItem)
 public:
     SurfaceItemPrivate(SurfaceItem *parent)
         : q_ptr(parent)
     {
     }
 
+protected:
+    Q_DECLARE_PUBLIC(SurfaceItem)
     SurfaceItem *const q_ptr;
 };
 
@@ -57,8 +62,27 @@ SurfaceItem::~SurfaceItem()
 
 void SurfaceItem::mousePressEvent(QMouseEvent *event)
 {
-    // Continue with normal event handling
-    QWaylandSurfaceItem::mousePressEvent(event);
+QWaylandSurfaceItem::mousePressEvent(event);
+return;
+    if (surface()) {
+        QWaylandInputDevice *inputDevice = surface()->compositor()->defaultInputDevice();
+        if (inputDevice->mouseFocus() != surface())
+            inputDevice->setMouseFocus(surface(), event->pos(), event->globalPos());
+        inputDevice->sendMousePressEvent(event->button(), event->pos(), event->globalPos());
+    } else {
+        event->ignore();
+    }
+}
+
+void SurfaceItem::mouseMoveEvent(QMouseEvent *event)
+{
+    if (surface() && surface()->surfaceItem()) {
+qDebug() << "*******MOVE*" << event->pos() << event->globalPos();
+surface()->surfaceItem()->takeFocus();
+QWaylandSurfaceItem::mouseMoveEvent(event);
+    } else {
+        event->ignore();
+    }
 }
 
 void SurfaceItem::touchEvent(QTouchEvent *event)

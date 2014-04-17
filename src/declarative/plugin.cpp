@@ -28,7 +28,6 @@
 #include <QtQml/QQmlComponent>
 
 #include "fpscounter.h"
-#include "surfaceitem.h"
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -42,7 +41,6 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 {
     // @uri GreenIsland
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
-    qmlRegisterType<SurfaceItem>(uri, 1, 0, "SurfaceItem");
 }
 
 #include "plugin.moc"

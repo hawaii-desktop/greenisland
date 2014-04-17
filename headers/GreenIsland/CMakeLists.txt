@@ -1,6 +1,7 @@
 set(HEADERS
     Compositor
     GreenIslandGlobal
+    SurfaceItem
     Utilities
 )
 

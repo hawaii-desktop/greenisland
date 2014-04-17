@@ -12,12 +12,14 @@ set(SOURCES
     greenislandcompositor.cpp
     greenislandutilities.cpp
     gldebug.cpp
+    surfaceitem.cpp
 )
 
 set(HEADERS
     greenislandglobal.h
     greenislandcompositor.h
     greenislandutilities.h
+    surfaceitem.h
 )
 
 add_library(GreenIsland SHARED ${SOURCES})
