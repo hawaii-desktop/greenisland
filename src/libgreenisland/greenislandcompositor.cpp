@@ -238,12 +238,6 @@ void Compositor::setShellFileName(const QString &fileName)
     }
 }
 
-QList<QWaylandSurface *> Compositor::surfaces() const
-{
-    Q_D(const Compositor);
-    return d->surfaces;
-}
-
 void Compositor::showGraphicsInfo()
 {
     printGraphicsInformation(window());
