@@ -81,6 +81,18 @@ void CompositorPrivate::dpms(bool on)
     // TODO
 }
 
+void CompositorPrivate::_q_startFrame()
+{
+    Q_Q(Compositor);
+    q->frameStarted();
+}
+
+void CompositorPrivate::_q_sendCallbacks()
+{
+    Q_Q(Compositor);
+    q->sendFrameCallbacks(q->surfaces());
+}
+
 void CompositorPrivate::_q_shellStarted()
 {
     Q_Q(Compositor);
@@ -163,6 +175,12 @@ Compositor::Compositor(const char *socketName, ExtensionFlags extensions)
 
     // Create platform window
     winId();
+
+    // Connect signals
+    connect(this, SIGNAL(beforeSynchronizing()),
+            this, SLOT(_q_startFrame), Qt::DirectConnection);
+    connect(this, SIGNAL(afterRendering()),
+            this, SLOT(_q_sendCallbacks()));
 }
 
 Compositor::~Compositor()

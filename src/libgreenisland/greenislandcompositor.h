@@ -119,6 +119,9 @@ protected:
     void resizeEvent(QResizeEvent *event);
 
 private:
+    Q_PRIVATE_SLOT(d_func(), void _q_startFrame())
+    Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
+
     Q_PRIVATE_SLOT(d_func(), void _q_shellStarted())
     Q_PRIVATE_SLOT(d_func(), void _q_shellFailed(QProcess::ProcessError error))
     Q_PRIVATE_SLOT(d_func(), void _q_shellReadyReadStandardOutput())

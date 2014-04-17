@@ -43,6 +43,9 @@ public:
 
     void dpms(bool on);
 
+    void _q_startFrame();
+    void _q_sendCallbacks();
+
     void _q_shellStarted();
     void _q_shellFailed(QProcess::ProcessError error);
     void _q_shellReadyReadStandardOutput();
