@@ -178,7 +178,7 @@ Compositor::Compositor(const char *socketName, ExtensionFlags extensions)
 
     // Connect signals
     connect(this, SIGNAL(beforeSynchronizing()),
-            this, SLOT(_q_startFrame), Qt::DirectConnection);
+            this, SLOT(_q_startFrame()), Qt::DirectConnection);
     connect(this, SIGNAL(afterRendering()),
             this, SLOT(_q_sendCallbacks()));
 }
