@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -40,14 +40,6 @@
 
 #include "cmakedirs.h"
 #include "compositor.h"
-#include "panelmanager.h"
-#include "shell.h"
-#include "shellsurface.h"
-#include "clientwindow.h"
-#include "workspace.h"
-#include "notifications.h"
-#include "screensaver.h"
-#include "keymap.h"
 
 /*
  * CompositorPrivate
@@ -58,17 +50,8 @@ class CompositorPrivate
 public:
     CompositorPrivate(Compositor *self);
 
-    void closeShell();
     void dpms(bool on);
 
-    void _q_shellStarted();
-    void _q_shellFailed(QProcess::ProcessError error);
-    void _q_shellReadyReadStandardOutput();
-    void _q_shellReadyReadStandardError();
-    void _q_shellAboutToClose();
-
-    QString shellFileName;
-    QProcess *shellProcess;
     Compositor::State state;
 
 protected:
@@ -77,90 +60,14 @@ protected:
 };
 
 CompositorPrivate::CompositorPrivate(Compositor *self)
-    : shellProcess(nullptr)
-    , state(Compositor::Active)
+    : state(Compositor::Active)
     , q_ptr(self)
 {
-    shellFileName = QStringLiteral(INSTALL_LIBEXECDIR "/starthawaii");
-}
-
-void CompositorPrivate::closeShell()
-{
-    if (!shellProcess)
-        return;
-
-    shellProcess->close();
-    delete shellProcess;
-    shellProcess = nullptr;
-
-    Q_Q(Compositor);
-    Q_EMIT q->shellClientRunningChanged();
 }
 
 void CompositorPrivate::dpms(bool on)
 {
     // TODO
-}
-void CompositorPrivate::_q_shellStarted()
-{
-    Q_Q(Compositor);
-    Q_EMIT q->shellClientRunningChanged();
-}
-
-void CompositorPrivate::_q_shellFailed(QProcess::ProcessError error)
-{
-    Q_Q(Compositor);
-
-    switch (error) {
-    case QProcess::FailedToStart:
-        qWarning()
-                << "The shell process failed to start.\n"
-                << "Either the invoked program is missing, or you may have insufficient permissions to run it.";
-        break;
-    case QProcess::Crashed:
-        qWarning()
-                << "The shell process crashed some time after starting successfully.";
-        break;
-    case QProcess::Timedout:
-        qWarning()
-                << "The shell process timedout.\n";
-        break;
-    case QProcess::WriteError:
-        qWarning()
-                << "An error occurred when attempting to write to the shell process.";
-        break;
-    case QProcess::ReadError:
-        qWarning()
-                << "An error occurred when attempting to read from the shell process.";
-        break;
-    case QProcess::UnknownError:
-        qWarning()
-                << "Unknown error starting the shell process!";
-        break;
-    }
-
-    // Don't need it anymore because it failed
-    shellProcess->close();
-    delete shellProcess;
-    shellProcess = nullptr;
-    Q_EMIT q->shellClientRunningChanged();
-}
-
-void CompositorPrivate::_q_shellReadyReadStandardOutput()
-{
-    if (shellProcess)
-        qDebug() << qPrintable(shellProcess->readAllStandardOutput().trimmed());
-}
-
-void CompositorPrivate::_q_shellReadyReadStandardError()
-{
-    if (shellProcess)
-        qDebug() << qPrintable(shellProcess->readAllStandardError().trimmed());
-}
-
-void CompositorPrivate::_q_shellAboutToClose()
-{
-    qDebug() << "Shell is about to close...";
 }
 
 /*
@@ -170,70 +77,19 @@ void CompositorPrivate::_q_shellAboutToClose()
 Compositor::Compositor(QWindow *window)
     : QWaylandCompositor(window)
     , d_ptr(new CompositorPrivate(this))
-    , m_shellReady(false)
     , m_cursorSurface(nullptr)
     , m_cursorHotspotX(0)
     , m_cursorHotspotY(0)
 {
-    // Create interfaces
-    m_notifications = new Notifications(waylandDisplay());
-    m_screenSaver = new ScreenSaver(waylandDisplay());
-    m_screenSaver->setCompositor(this);
-    m_panelManager = new PanelManager(waylandDisplay());
-    m_shellSurface = new ShellSurface(waylandDisplay());
-    m_shell = new Shell(waylandDisplay());
-    m_shell->setCompositor(this);
-    connect(m_shell, &Shell::ready, [=]() {
-        // Shell is ready and we can start handling input events
-        m_shellReady = true;
-
-        // Fade in the desktop
-        Q_EMIT ready();
-    });
-    connect(m_shell, &Shell::lockedChanged, [=](bool value) {
-        if (value)
-            Q_EMIT locked();
-        else
-            Q_EMIT unlocked();
-    });
-    connect(m_shell, SIGNAL(workspaceAdded()),
-            this, SIGNAL(workspaceAdded()));
 }
 
 Compositor::~Compositor()
 {
-    stopShell();
-
+#if 0
     qDeleteAll(m_clientWindows);
     qDeleteAll(m_workspaces);
-    delete m_screenSaver;
-    delete m_notifications;
-    delete m_panelManager;
-    delete m_shellSurface;
-    delete m_shell;
+#endif
     delete d_ptr;
-}
-
-QString Compositor::shellFileName() const
-{
-    Q_D(const Compositor);
-    return d->shellFileName;
-}
-
-void Compositor::setShellFileName(const QString &fileName)
-{
-    Q_D(Compositor);
-
-    if (d->shellFileName != fileName) {
-        d->shellFileName = fileName;
-        Q_EMIT shellFileNameChanged();
-    }
-}
-
-bool Compositor::isShellClientRunning() const
-{
-    Q_D(const Compositor);
-    return (d->shellProcess != nullptr);
 }
 
 Compositor::State Compositor::state() const
@@ -288,26 +144,12 @@ void Compositor::setState(Compositor::State state)
     }
 }
 
-Shell *Compositor::shell() const
-{
-    return m_shell;
-}
-
-ShellSurface *Compositor::shellSurface() const
-{
-    return m_shellSurface;
-}
-
-ScreenSaver *Compositor::screenSaver() const
-{
-    return m_screenSaver;
-}
-
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
     if (!surface || !surface->hasShellSurface())
         return;
 
+#if 0
     // Create application window instance
     ClientWindow *appWindow = new ClientWindow(waylandDisplay());
     appWindow->setSurface(surface);
@@ -323,6 +165,7 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
             }
         }
     });
+#endif
 }
 
 QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
@@ -367,43 +210,12 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     return pos;
 }
 
-void Compositor::startShell()
-{
-    Q_D(Compositor);
-
-    // Sanity check
-    if (d->shellFileName.isEmpty() || d->shellProcess)
-        return;
-
-    // Run the shell client process
-    d->shellProcess = new QProcess(this);
-    connect(d->shellProcess, SIGNAL(started()),
-            this, SLOT(_q_shellStarted()));
-    connect(d->shellProcess, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(_q_shellFailed(QProcess::ProcessError)));
-    connect(d->shellProcess, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(_q_shellReadyReadStandardOutput()));
-    connect(d->shellProcess, SIGNAL(readyReadStandardError()),
-            this, SLOT(_q_shellReadyReadStandardError()));
-    connect(d->shellProcess, SIGNAL(aboutToClose()),
-            this, SLOT(_q_shellAboutToClose()));
-    d->shellProcess->start(d->shellFileName, QStringList(), QIODevice::ReadOnly);
-}
-
-void Compositor::stopShell()
-{
-    Q_D(Compositor);
-    d->closeShell();
-}
-
 void Compositor::lockSession()
 {
-    m_shell->lockSession();
 }
 
 void Compositor::unlockSession()
 {
-    m_shell->unlockSession();
 }
 
 #if 0

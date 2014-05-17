@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -42,8 +42,6 @@ class Notifications;
 class Compositor : public QObject, public QWaylandCompositor
 {
     Q_OBJECT
-    Q_PROPERTY(QString shellFileName READ shellFileName WRITE setShellFileName NOTIFY shellFileNameChanged)
-    Q_PROPERTY(bool shellClientRunning READ isShellClientRunning NOTIFY shellClientRunningChanged)
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_ENUMS(State WindowRole)
 public:
@@ -75,25 +73,14 @@ public:
     explicit Compositor(QWindow *window = 0);
     ~Compositor();
 
-    QString shellFileName() const;
-    void setShellFileName(const QString &fileName);
-
-    bool isShellClientRunning() const;
-
     State state() const;
     void setState(State state);
-
-    Shell *shell() const;
-    ShellSurface *shellSurface() const;
-    ScreenSaver *screenSaver() const;
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
     QPointF calculateInitialPosition(QWaylandSurface *surface);
 
 Q_SIGNALS:
-    void shellFileNameChanged();
-    void shellClientRunningChanged();
     void stateChanged();
 
     void idleInhibitResetRequested();
@@ -114,9 +101,6 @@ Q_SIGNALS:
     void workspaceAdded();
 
 public Q_SLOTS:
-    void startShell();
-    void stopShell();
-
     void lockSession();
     void unlockSession();
 
@@ -127,23 +111,11 @@ private:
     Q_DECLARE_PRIVATE(Compositor)
     CompositorPrivate *const d_ptr;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_shellStarted())
-    Q_PRIVATE_SLOT(d_func(), void _q_shellFailed(QProcess::ProcessError error))
-    Q_PRIVATE_SLOT(d_func(), void _q_shellReadyReadStandardOutput())
-    Q_PRIVATE_SLOT(d_func(), void _q_shellReadyReadStandardError())
-    Q_PRIVATE_SLOT(d_func(), void _q_shellAboutToClose())
-
 private:
-    Notifications *m_notifications;
-    ScreenSaver *m_screenSaver;
-    PanelManager *m_panelManager;
-    ShellSurface *m_shellSurface;
-    Shell *m_shell;
-
+#if 0
     QList<ClientWindow *> m_clientWindows;
     QList<Workspace *> m_workspaces;
-
-    bool m_shellReady;
+#endif
 
     // Cursor
     QWaylandSurface *m_cursorSurface;

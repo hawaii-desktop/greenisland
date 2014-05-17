@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -31,12 +31,11 @@
 #include <QtGui/QWindow>
 #include <QtQml/QQmlApplicationEngine>
 
-#include <GreenIsland/Utilities>
-
 #include "compositor.h"
 #include "config.h"
 #include "logging.h"
 #include "registration.h"
+#include "utilities.h"
 
 #if HAVE_SYSTEMD
 #  include <systemd/sd-daemon.h>
@@ -46,10 +45,10 @@ int main(int argc, char *argv[])
 {
     // Application
     QGuiApplication app(argc, argv);
-    app.setApplicationName("Hawaii Compositor");
-    app.setApplicationVersion(HAWAII_SHELL_VERSION_STRING);
-    app.setOrganizationDomain("hawaii.org");
-    app.setOrganizationName("Hawaii");
+    app.setApplicationName("Green Island");
+    app.setApplicationVersion(GREENISLAND_VERSION_STRING);
+    app.setOrganizationDomain("maui-project.org");
+    app.setOrganizationName("Maui");
 
     // Check whether XDG_RUNTIME_DIR is ok or not
     GreenIsland::verifyXdgRuntimeDir();

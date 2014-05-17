@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Green Island.
+ * This file is part of Hawaii Shell.
  *
- * Copyright (C) 2013-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,15 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WORKSPACE_H
-#define WORKSPACE_H
+#ifndef GREENISLAND_CONFIG_H
+#define GREENISLAND_CONFIG_H
 
-#include "qwayland-server-hawaii.h"
+#define GREENISLAND_VERSION_STRING "@GREENISLAND_VERSION_STRING@"
 
-class Workspace : public QtWaylandServer::hawaii_workspace
-{
-public:
-    Workspace();
-};
+#cmakedefine01 HAVE_SYSTEMD
 
-#endif // WORKSPACE_H
+#endif // GREENISLAND_CONFIG_H
