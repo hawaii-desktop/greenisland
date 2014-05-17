@@ -27,7 +27,8 @@
 #ifndef COMPOSITOR_H
 #define COMPOSITOR_H
 
-#include <QtCompositor/QWaylandCompositor>
+#include <QtQuick/QQuickView>
+#include <QtCompositor/QWaylandQuickCompositor>
 
 class CompositorPrivate;
 class Shell;
@@ -39,10 +40,11 @@ class PanelManager;
 class ScreenSaver;
 class Notifications;
 
-class Compositor : public QObject, public QWaylandCompositor
+class Compositor : public QQuickView, public QWaylandQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+    Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_ENUMS(State WindowRole)
 public:
     enum State {
@@ -70,11 +72,14 @@ public:
         BackgroundRole
     };
 
-    explicit Compositor(QWindow *window = 0);
+    explicit Compositor();
     ~Compositor();
 
     State state() const;
     void setState(State state);
+
+    int idleInterval() const;
+    void setIdleInterval(int value);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
@@ -82,6 +87,7 @@ public:
 
 Q_SIGNALS:
     void stateChanged();
+    void idleIntervalChanged();
 
     void idleInhibitResetRequested();
     void idleTimerStartRequested();

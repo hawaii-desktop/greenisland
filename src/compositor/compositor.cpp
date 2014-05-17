@@ -38,6 +38,7 @@
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 
+#include "bufferattacher.h"
 #include "cmakedirs.h"
 #include "compositor.h"
 
@@ -53,6 +54,7 @@ public:
     void dpms(bool on);
 
     Compositor::State state;
+    int idleInterval;
 
 protected:
     Q_DECLARE_PUBLIC(Compositor)
@@ -61,6 +63,7 @@ protected:
 
 CompositorPrivate::CompositorPrivate(Compositor *self)
     : state(Compositor::Active)
+    , idleInterval(5 * 60000)
     , q_ptr(self)
 {
 }
@@ -74,13 +77,23 @@ void CompositorPrivate::dpms(bool on)
  * Compositor
  */
 
-Compositor::Compositor(QWindow *window)
-    : QWaylandCompositor(window)
+Compositor::Compositor()
+    : QWaylandQuickCompositor(this, 0, DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
     , m_cursorSurface(nullptr)
     , m_cursorHotspotX(0)
     , m_cursorHotspotY(0)
 {
+    setSource(QUrl("qrc:/qml/Compositor.qml"));
+    setResizeMode(QQuickView::SizeRootObjectToView);
+    setColor(Qt::black);
+    winId();
+
+    Q_D(Compositor);
+    rootObject()->setProperty("idleInterval", d->idleInterval);
+
+    connect(this, SIGNAL(afterRendering()),
+            this, SLOT(sendCallbacks()));
 }
 
 Compositor::~Compositor()
@@ -144,9 +157,26 @@ void Compositor::setState(Compositor::State state)
     }
 }
 
+int Compositor::idleInterval() const
+{
+    Q_D(const Compositor);
+    return d->idleInterval;
+}
+
+void Compositor::setIdleInterval(int value)
+{
+    Q_D(Compositor);
+
+    if (d->idleInterval != value) {
+        d->idleInterval = value;
+        rootObject()->setProperty("idleInterval", d->idleInterval);
+        Q_EMIT idleIntervalChanged();
+    }
+}
+
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
-    if (!surface || !surface->hasShellSurface())
+    if (!surface)
         return;
 
 #if 0
@@ -259,13 +289,16 @@ void Compositor::keyPressEvent(QKeyEvent *event)
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
     if ((m_cursorSurface != surface) && surface) {
+        // Set surface role
         surface->setWindowProperty(QStringLiteral("role"), CursorRole);
 
-        connect(surface, &QWaylandSurface::damaged, [=](const QRegion &region) {
+        connect(surface, &QWaylandSurface::configure, [=](bool) {
             if (!m_cursorSurface)
                 return;
 
-            QCursor cursor(QPixmap::fromImage(m_cursorSurface->image()), m_cursorHotspotX, m_cursorHotspotY);
+            QImage image = static_cast<BufferAttacher *>(m_cursorSurface->bufferAttacher())->image();
+            QCursor cursor(QPixmap::fromImage(image), m_cursorHotspotX, m_cursorHotspotY);
+
             static bool cursorIsSet = false;
             if (cursorIsSet) {
                 QGuiApplication::changeOverrideCursor(cursor);
@@ -278,6 +311,8 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         m_cursorSurface = surface;
         m_cursorHotspotX = hotspotX;
         m_cursorHotspotY = hotspotY;
+        if (!m_cursorSurface->bufferAttacher())
+            m_cursorSurface->setBufferAttacher(new BufferAttacher());
     }
 }
 

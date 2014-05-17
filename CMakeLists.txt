@@ -62,7 +62,8 @@ find_package(Qt5 5.2 REQUIRED COMPONENTS DBus Gui Qml Quick Compositor)
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
 
-# Find EGL and GLESv2 libraries
+# Find OpenGL libraries
+pkg_check_modules(GL gl REQUIRED)
 pkg_check_modules(EGL egl REQUIRED)
 pkg_check_modules(GLESV2 glesv2 REQUIRED)
 

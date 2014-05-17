@@ -34,7 +34,6 @@
 #include "compositor.h"
 #include "config.h"
 #include "logging.h"
-#include "registration.h"
 #include "utilities.h"
 
 #if HAVE_SYSTEMD
@@ -84,38 +83,30 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
-    // Register QML types
-    registerQmlTypes();
+    // Create the compositor
+    Compositor *compositor = new Compositor();
 
-    // Application engine
-    QQmlApplicationEngine engine(QUrl("qrc:/qml/Compositor.qml"));
-    QWindow *window = qobject_cast<QWindow *>(engine.rootObjects().first());
-    if (!window) {
-        qFatal("Compositor has no top level element that inhertis from Window!");
-        return 1;
-    }
-
-    // Set screen
-    window->setScreen(QGuiApplication::primaryScreen());
+    // Assign the window to the primary screen
+    compositor->setScreen(QGuiApplication::primaryScreen());
 
     // Set window geometry
-    window->setGeometry(QRect(window->screen()->geometry().topLeft(),
-                              QSize(1920, 1080)));
+    compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
+                                  QSize(1920, 1080)));
 
     // Parse command line
     parser.process(app);
     if (parser.isSet(synthesizeOption))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
     if (parser.isSet(fullScreenOption)) {
-        window->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-        window->setVisibility(QWindow::FullScreen);
+        compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+        compositor->setVisibility(QWindow::FullScreen);
     }
     int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)
-        window->setProperty("idleInterval", idleInterval * 1000);
+        compositor->setIdleInterval(idleInterval * 1000);
 
     // Show compositor window
-    window->show();
+    compositor->show();
 
 #if HAVE_SYSTEMD
     sd_notifyf(0,
