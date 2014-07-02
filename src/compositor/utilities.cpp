@@ -68,7 +68,7 @@ void verifyXdgRuntimeDir()
                     "Refer to your distribution on how to get it, or read\n"
                     "http://www.freedesktop.org/wiki/Specifications/basedir-spec\n"
                     "on how to implement it.\n");
-        qFatal(msg.toUtf8());
+        qFatal("%s", qPrintable(msg));
     }
 
     QFileInfo fileInfo(dirName);
@@ -77,7 +77,7 @@ void verifyXdgRuntimeDir()
         QString msg = QObject::tr(
                     "The XDG_RUNTIME_DIR environment variable is set to "
                     "\"%1\", which doesn't exist.\n").arg(dirName.constData());
-        qFatal(msg.toUtf8());
+        qFatal("%s", qPrintable(msg));
     }
 
     if (convertPermission(fileInfo) != 700 || fileInfo.ownerId() != getuid()) {
@@ -91,7 +91,7 @@ void verifyXdgRuntimeDir()
                 .arg(getuid())
                 .arg(fileInfo.ownerId())
                 .arg(fileInfo.owner());
-        qFatal(msg.toUtf8());
+        qFatal("%s\n", qPrintable(msg));
     }
 }
 
