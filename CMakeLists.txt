@@ -1,6 +1,6 @@
 project(GreenIsland)
 
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.12)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -14,14 +14,15 @@ set(GREENISLAND_VERSION_MINOR 2)
 set(GREENISLAND_VERSION_PATCH 90)
 set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH}")
 
+# ECM setup
+find_package(ECM 0.0.10 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
 # Installation directories
-include(GNUInstallDirs)
+include(KDEInstallDirs)
 
 # Macro to print feature summary
 include(FeatureSummary)
-
-# Our CMake modules
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 # Include Wayland macros
 include(Wayland)
