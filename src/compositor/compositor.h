@@ -86,6 +86,9 @@ public:
     QPointF calculateInitialPosition(QWaylandSurface *surface);
 
 Q_SIGNALS:
+    void surfaceMapped(QVariant surface);
+    void surfaceUnmapped(QVariant surface);
+
     void stateChanged();
     void idleIntervalChanged();
 
@@ -127,6 +130,11 @@ private:
     QWaylandSurface *m_cursorSurface;
     int m_cursorHotspotX;
     int m_cursorHotspotY;
+
+    Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
+    Q_PRIVATE_SLOT(d_func(), void _q_surfaceDestroyed(QObject *object))
+    Q_PRIVATE_SLOT(d_func(), void _q_surfaceMapped())
+    Q_PRIVATE_SLOT(d_func(), void _q_surfaceUnmapped())
 };
 
 #endif // COMPOSITOR_H

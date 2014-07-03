@@ -53,6 +53,12 @@ public:
 
     void dpms(bool on);
 
+    void _q_sendCallbacks();
+
+    void _q_surfaceDestroyed(QObject *object);
+    void _q_surfaceMapped();
+    void _q_surfaceUnmapped();
+
     Compositor::State state;
     int idleInterval;
 
@@ -73,6 +79,36 @@ void CompositorPrivate::dpms(bool on)
     // TODO
 }
 
+void CompositorPrivate::_q_sendCallbacks()
+{
+    Q_Q(Compositor);
+    q->sendFrameCallbacks(q->surfaces());
+}
+
+void CompositorPrivate::_q_surfaceDestroyed(QObject *object)
+{
+    Q_Q(Compositor);
+
+    QWaylandQuickSurface *surface = static_cast<QWaylandQuickSurface *>(q->sender());
+    Q_EMIT q->surfaceUnmapped(QVariant::fromValue(surface));
+}
+
+void CompositorPrivate::_q_surfaceMapped()
+{
+    Q_Q(Compositor);
+
+    QWaylandQuickSurface *surface = qobject_cast<QWaylandQuickSurface *>(q->sender());
+    Q_EMIT q->surfaceMapped(QVariant::fromValue(surface));
+}
+
+void CompositorPrivate::_q_surfaceUnmapped()
+{
+    Q_Q(Compositor);
+
+    QWaylandQuickSurface *surface = qobject_cast<QWaylandQuickSurface *>(q->sender());
+    Q_EMIT q->surfaceUnmapped(QVariant::fromValue(surface));
+}
+
 /*
  * Compositor
  */
@@ -88,12 +124,14 @@ Compositor::Compositor()
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
     winId();
+    addDefaultShell();
 
     Q_D(Compositor);
+    rootContext()->setContextProperty("compositor", this);
     rootObject()->setProperty("idleInterval", d->idleInterval);
 
     connect(this, SIGNAL(afterRendering()),
-            this, SLOT(sendCallbacks()));
+            this, SLOT(_q_sendCallbacks()));
 }
 
 Compositor::~Compositor()
@@ -178,6 +216,10 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
     if (!surface)
         return;
+
+    connect(surface, SIGNAL(destroyed(QObject*)), this, SLOT(_q_surfaceDestroyed(QObject*)));
+    connect(surface, SIGNAL(mapped()), this, SLOT(_q_surfaceMapped()));
+    connect(surface, SIGNAL(unmapped()), this, SLOT(_q_surfaceUnmapped()));
 
 #if 0
     // Create application window instance
