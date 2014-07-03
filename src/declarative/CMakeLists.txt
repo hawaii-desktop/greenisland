@@ -12,7 +12,7 @@ add_library(greenislandplugin SHARED ${SOURCES})
 qt5_use_modules(greenislandplugin Qml)
 
 install(TARGETS greenislandplugin LIBRARY
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/hawaii/qml/GreenIsland)
+    DESTINATION ${QML_INSTALL_DIR}/GreenIsland)
 
 set(MODULE_FILES
     qmldir
@@ -23,4 +23,4 @@ set(MODULE_FILES
     WindowWrapper.qml
 )
 install(FILES ${MODULE_FILES}
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/hawaii/qml/GreenIsland)
+    DESTINATION ${QML_INSTALL_DIR}/GreenIsland)
