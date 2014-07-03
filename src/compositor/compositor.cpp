@@ -120,6 +120,9 @@ Compositor::Compositor()
     , m_cursorHotspotX(0)
     , m_cursorHotspotY(0)
 {
+    qmlRegisterType<Compositor>();
+    rootContext()->setContextProperty("compositor", this);
+
     setSource(QUrl("qrc:/qml/Compositor.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
@@ -127,7 +130,6 @@ Compositor::Compositor()
     addDefaultShell();
 
     Q_D(Compositor);
-    rootContext()->setContextProperty("compositor", this);
     rootObject()->setProperty("idleInterval", d->idleInterval);
 
     connect(this, SIGNAL(afterRendering()),
