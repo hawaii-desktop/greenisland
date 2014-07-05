@@ -120,7 +120,7 @@ Compositor::Compositor()
     , m_cursorHotspotX(0)
     , m_cursorHotspotY(0)
 {
-    qmlRegisterType<Compositor>();
+    qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
     rootContext()->setContextProperty("compositor", this);
 
     setSource(QUrl("qrc:/qml/Compositor.qml"));
