@@ -32,7 +32,6 @@
 #include <QtQml/QQmlContext>
 #include <QtQuick/QQuickItem>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
 #include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
@@ -256,6 +255,16 @@ void Compositor::setIdleInhibit(int value)
         d->idleInhibit = value;
         Q_EMIT idleInhibitChanged();
     }
+}
+
+QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
+{
+    if (!surface) {
+        qWarning() << "First view of null surface requested!";
+        return nullptr;
+    }
+
+    return static_cast<QWaylandSurfaceItem *>(surface->views().first());
 }
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)

@@ -29,6 +29,7 @@
 
 #include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandQuickCompositor>
+#include <QtCompositor/QWaylandSurfaceItem>
 
 class CompositorPrivate;
 class Shell;
@@ -84,6 +85,8 @@ public:
 
     int idleInhibit() const;
     void setIdleInhibit(int value);
+
+    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
