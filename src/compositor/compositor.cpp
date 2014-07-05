@@ -117,10 +117,11 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 
 void CompositorPrivate::_q_surfaceDestroyed(QObject *object)
 {
+    Q_UNUSED(object);
     Q_Q(Compositor);
 
     QWaylandQuickSurface *surface = static_cast<QWaylandQuickSurface *>(q->sender());
-    Q_EMIT q->surfaceUnmapped(QVariant::fromValue(surface));
+    Q_EMIT q->surfaceDestroyed(QVariant::fromValue(surface));
 }
 
 void CompositorPrivate::_q_surfaceMapped()

@@ -95,6 +95,7 @@ public:
 Q_SIGNALS:
     void surfaceMapped(QVariant surface);
     void surfaceUnmapped(QVariant surface);
+    void surfaceDestroyed(QVariant surface);
 
     void stateChanged();
     void idleIntervalChanged();
