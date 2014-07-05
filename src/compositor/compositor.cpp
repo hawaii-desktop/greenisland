@@ -61,6 +61,7 @@ public:
 
     Compositor::State state;
     int idleInterval;
+    int idleInhibit;
 
 protected:
     Q_DECLARE_PUBLIC(Compositor)
@@ -70,6 +71,7 @@ protected:
 CompositorPrivate::CompositorPrivate(Compositor *self)
     : state(Compositor::Active)
     , idleInterval(5 * 60000)
+    , idleInhibit(0)
     , q_ptr(self)
 {
 }
@@ -128,9 +130,6 @@ Compositor::Compositor()
     setColor(Qt::black);
     winId();
     addDefaultShell();
-
-    Q_D(Compositor);
-    rootObject()->setProperty("idleInterval", d->idleInterval);
 
     connect(this, SIGNAL(afterRendering()),
             this, SLOT(_q_sendCallbacks()));
@@ -213,8 +212,23 @@ void Compositor::setIdleInterval(int value)
 
     if (d->idleInterval != value) {
         d->idleInterval = value;
-        rootObject()->setProperty("idleInterval", d->idleInterval);
         Q_EMIT idleIntervalChanged();
+    }
+}
+
+int Compositor::idleInhibit() const
+{
+    Q_D(const Compositor);
+    return d->idleInhibit;
+}
+
+void Compositor::setIdleInhibit(int value)
+{
+    Q_D(Compositor);
+
+    if (d->idleInhibit != value) {
+        d->idleInhibit = value;
+        Q_EMIT idleInhibitChanged();
     }
 }
 
@@ -333,6 +347,52 @@ void Compositor::keyPressEvent(QKeyEvent *event)
     QWaylandCompositor::keyPressEvent(event);
 }
 #endif
+
+void Compositor::keyPressEvent(QKeyEvent *event)
+{
+    Q_D(Compositor);
+    d->idleInhibit++;
+
+    QQuickView::keyPressEvent(event);
+}
+
+void Compositor::keyReleaseEvent(QKeyEvent *event)
+{
+    Q_D(Compositor);
+    d->idleInhibit--;
+
+    QQuickView::keyReleaseEvent(event);
+}
+
+void Compositor::mousePressEvent(QMouseEvent *event)
+{
+    Q_D(Compositor);
+    d->idleInhibit++;
+
+    QQuickView::mousePressEvent(event);
+}
+
+void Compositor::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_D(Compositor);
+    d->idleInhibit--;
+
+    QQuickView::mouseReleaseEvent(event);
+}
+
+void Compositor::mouseMoveEvent(QMouseEvent *event)
+{
+    setState(Active);
+
+    QQuickView::mouseMoveEvent(event);
+}
+
+void Compositor::wheelEvent(QWheelEvent *event)
+{
+    setState(Active);
+
+    QQuickView::wheelEvent(event);
+}
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {

@@ -45,6 +45,7 @@ class Compositor : public QQuickView, public QWaylandQuickCompositor
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
+    Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
     Q_ENUMS(State WindowRole)
 public:
     enum State {
@@ -81,6 +82,9 @@ public:
     int idleInterval() const;
     void setIdleInterval(int value);
 
+    int idleInhibit() const;
+    void setIdleInhibit(int value);
+
     virtual void surfaceCreated(QWaylandSurface *surface);
 
     QPointF calculateInitialPosition(QWaylandSurface *surface);
@@ -91,6 +95,7 @@ Q_SIGNALS:
 
     void stateChanged();
     void idleIntervalChanged();
+    void idleInhibitChanged();
 
     void idleInhibitResetRequested();
     void idleTimerStartRequested();
@@ -114,6 +119,15 @@ public Q_SLOTS:
     void unlockSession();
 
 protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
+    void wheelEvent(QWheelEvent *event);
+
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
 
 private:
