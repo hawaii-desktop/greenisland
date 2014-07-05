@@ -141,6 +141,7 @@ private:
 #endif
 
     Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
+    Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceDestroyed(QObject *object))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceMapped())
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceUnmapped())

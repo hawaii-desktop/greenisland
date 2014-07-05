@@ -55,6 +55,8 @@ public:
 
     void _q_sendCallbacks();
 
+    void _q_updateCursor(bool hasBuffer);
+
     void _q_surfaceDestroyed(QObject *object);
     void _q_surfaceMapped();
     void _q_surfaceUnmapped();
@@ -93,6 +95,25 @@ void CompositorPrivate::_q_sendCallbacks()
 {
     Q_Q(Compositor);
     q->sendFrameCallbacks(q->surfaces());
+}
+
+void CompositorPrivate::_q_updateCursor(bool hasBuffer)
+{
+    Q_UNUSED(hasBuffer);
+
+    if (!cursorSurface)
+        return;
+
+    QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
+    QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
+
+    static bool cursorIsSet = false;
+    if (cursorIsSet) {
+        QGuiApplication::changeOverrideCursor(cursor);
+    } else {
+        QGuiApplication::setOverrideCursor(cursor);
+        cursorIsSet = true;
+    }
 }
 
 void CompositorPrivate::_q_surfaceDestroyed(QObject *object)
@@ -407,28 +428,16 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         // Set surface role
         surface->setWindowProperty(QStringLiteral("role"), CursorRole);
 
-        connect(surface, &QWaylandSurface::configure, [=](bool) {
-            if (!d->cursorSurface)
-                return;
-
-            QImage image = static_cast<BufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
-            QCursor cursor(QPixmap::fromImage(image), d->cursorHotspotX, d->cursorHotspotY);
-
-            static bool cursorIsSet = false;
-            if (cursorIsSet) {
-                QGuiApplication::changeOverrideCursor(cursor);
-            } else {
-                QGuiApplication::setOverrideCursor(cursor);
-                cursorIsSet = true;
-            }
-        });
-
-        d->cursorSurface = surface;
-        d->cursorHotspotX = hotspotX;
-        d->cursorHotspotY = hotspotY;
-        if (!d->cursorSurface->bufferAttacher())
-            d->cursorSurface->setBufferAttacher(new BufferAttacher());
+        // Update cursor
+        connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }
+
+    // Setup cursor
+    d->cursorSurface = surface;
+    d->cursorHotspotX = hotspotX;
+    d->cursorHotspotY = hotspotY;
+    if (!d->cursorSurface->bufferAttacher())
+        d->cursorSurface->setBufferAttacher(new BufferAttacher());
 }
 
 #include "moc_compositor.cpp"
