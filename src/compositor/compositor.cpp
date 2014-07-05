@@ -134,6 +134,10 @@ Compositor::Compositor()
 
     connect(this, SIGNAL(afterRendering()),
             this, SLOT(_q_sendCallbacks()));
+
+    // FIXME: Fade in immediately, when there will be a protocol for the shell
+    // we will fade in as soon as it tells us it's ready
+    Q_EMIT fadeIn();
 }
 
 Compositor::~Compositor()
