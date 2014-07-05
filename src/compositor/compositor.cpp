@@ -433,6 +433,9 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 {
     Q_D(Compositor);
 
+    // FIXME: Temporary disable this because it crashes on GLX
+    return;
+
     if ((d->cursorSurface != surface) && surface) {
         // Set surface role
         surface->setWindowProperty(QStringLiteral("role"), CursorRole);
