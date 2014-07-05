@@ -140,11 +140,6 @@ private:
     QList<Workspace *> m_workspaces;
 #endif
 
-    // Cursor
-    QWaylandSurface *m_cursorSurface;
-    int m_cursorHotspotX;
-    int m_cursorHotspotY;
-
     Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceDestroyed(QObject *object))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceMapped())

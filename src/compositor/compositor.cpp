@@ -63,6 +63,11 @@ public:
     int idleInterval;
     int idleInhibit;
 
+    // Cursor
+    QWaylandSurface *cursorSurface;
+    int cursorHotspotX;
+    int cursorHotspotY;
+
 protected:
     Q_DECLARE_PUBLIC(Compositor)
     Compositor *const q_ptr;
@@ -72,6 +77,9 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     : state(Compositor::Active)
     , idleInterval(5 * 60000)
     , idleInhibit(0)
+    , cursorSurface(nullptr)
+    , cursorHotspotX(0)
+    , cursorHotspotY(0)
     , q_ptr(self)
 {
 }
@@ -118,9 +126,6 @@ void CompositorPrivate::_q_surfaceUnmapped()
 Compositor::Compositor()
     : QWaylandQuickCompositor(this, 0, DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
-    , m_cursorSurface(nullptr)
-    , m_cursorHotspotX(0)
-    , m_cursorHotspotY(0)
 {
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
     rootContext()->setContextProperty("compositor", this);
@@ -396,16 +401,18 @@ void Compositor::wheelEvent(QWheelEvent *event)
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
-    if ((m_cursorSurface != surface) && surface) {
+    Q_D(Compositor);
+
+    if ((d->cursorSurface != surface) && surface) {
         // Set surface role
         surface->setWindowProperty(QStringLiteral("role"), CursorRole);
 
         connect(surface, &QWaylandSurface::configure, [=](bool) {
-            if (!m_cursorSurface)
+            if (!d->cursorSurface)
                 return;
 
-            QImage image = static_cast<BufferAttacher *>(m_cursorSurface->bufferAttacher())->image();
-            QCursor cursor(QPixmap::fromImage(image), m_cursorHotspotX, m_cursorHotspotY);
+            QImage image = static_cast<BufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
+            QCursor cursor(QPixmap::fromImage(image), d->cursorHotspotX, d->cursorHotspotY);
 
             static bool cursorIsSet = false;
             if (cursorIsSet) {
@@ -416,11 +423,11 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
             }
         });
 
-        m_cursorSurface = surface;
-        m_cursorHotspotX = hotspotX;
-        m_cursorHotspotY = hotspotY;
-        if (!m_cursorSurface->bufferAttacher())
-            m_cursorSurface->setBufferAttacher(new BufferAttacher());
+        d->cursorSurface = surface;
+        d->cursorHotspotX = hotspotX;
+        d->cursorHotspotY = hotspotY;
+        if (!d->cursorSurface->bufferAttacher())
+            d->cursorSurface->setBufferAttacher(new BufferAttacher());
     }
 }
 
