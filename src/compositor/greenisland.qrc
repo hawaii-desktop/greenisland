@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>images/wallpaper.png</file>
+        <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
         <file>qml/Layers.qml</file>
         <file>qml/SurfaceRenderer.qml</file>
