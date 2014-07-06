@@ -2,6 +2,11 @@ project(GreenIsland)
 
 cmake_minimum_required(VERSION 2.8.12)
 
+# Silence CMake 3.0 warnings
+if(POLICY CMP0043)
+    cmake_policy(SET CMP0043 OLD)
+endif()
+
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
