@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>images/wallpaper.png</file>
+        <file>qml/qmldir</file>
         <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
         <file>qml/Layers.qml</file>
@@ -8,5 +9,6 @@
         <file>qml/WaylandWindow.qml</file>
         <file>qml/Workspace.qml</file>
         <file>qml/Workspaces.qml</file>
+        <file>qml/WorkspacesLinearView.qml</file>
     </qresource>
 </RCC>
