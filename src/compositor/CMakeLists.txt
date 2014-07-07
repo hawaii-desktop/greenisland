@@ -13,7 +13,9 @@ configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 # Create the cmakedirs.h header file
 configure_file(cmakedirs.h.in ${CMAKE_CURRENT_BINARY_DIR}/cmakedirs.h)
 
-add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
+if(USE_OPENGL)
+    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
+endif()
 
 set(SOURCES
     bufferattacher.cpp
@@ -28,8 +30,13 @@ qt5_add_resources(RESOURCES greenisland.qrc)
 add_executable(greenisland ${SOURCES} ${RESOURCES})
 qt5_use_modules(greenisland Quick Compositor)
 
-set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${GL_LIBDIR})
-target_link_libraries(greenisland ${GL_LIBRARIES})
+if(USE_OPENGL)
+    set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${GL_LIBDIR})
+    target_link_libraries(greenisland ${GL_LIBRARIES})
+else()
+    set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${EGL_LIBDIR})
+    target_link_libraries(greenisland ${EGL_LIBRARIES})
+endif()
 
 if(systemd_FOUND)
     set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${systemd_LIBDIR})

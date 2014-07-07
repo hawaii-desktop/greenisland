@@ -52,8 +52,10 @@ public:
     QImage image() const;
 
     QWaylandBufferRef bufferRef;
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     GLuint texture;
     bool ownTexture;
+#endif
 };
 
 #endif // BUFFERATTACHER_H
