@@ -90,7 +90,7 @@ public:
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
-    QPointF calculateInitialPosition(QWaylandSurface *surface);
+    Q_INVOKABLE QPointF calculateInitialPosition(QWaylandSurface *surface);
 
 Q_SIGNALS:
     void surfaceMapped(QVariant surface);
