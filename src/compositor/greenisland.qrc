@@ -16,5 +16,6 @@
         <file>qml/Workspace.qml</file>
         <file>qml/Workspaces.qml</file>
         <file>qml/WorkspacesLinearView.qml</file>
+        <file>qml/ScreenView.qml</file>
     </qresource>
 </RCC>
