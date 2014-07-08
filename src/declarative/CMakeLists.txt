@@ -18,7 +18,6 @@ set(MODULE_FILES
     qmldir
     ClientWindowWrapper.qml
     ContrastEffect.qml
-    SurfaceRenderer.qml
     WindowItem.qml
     WindowWrapper.qml
 )
