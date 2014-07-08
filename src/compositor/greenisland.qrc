@@ -9,6 +9,9 @@
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
         <file>qml/WaylandShellWindow.qml</file>
+        <file>qml/ToplevelWindowAnimation.qml</file>
+        <file>qml/TransientWindowAnimation.qml</file>
+        <file>qml/PopupWindowAnimation.qml</file>
         <file>qml/Workspace.qml</file>
         <file>qml/Workspaces.qml</file>
         <file>qml/WorkspacesLinearView.qml</file>
