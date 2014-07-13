@@ -143,8 +143,8 @@ void CompositorPrivate::_q_surfaceUnmapped()
  * Compositor
  */
 
-Compositor::Compositor()
-    : QWaylandQuickCompositor(this, 0, DefaultExtensions | SubSurfaceExtension)
+Compositor::Compositor(const QString &socket)
+    : QWaylandQuickCompositor(this, socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");

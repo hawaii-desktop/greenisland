@@ -66,6 +66,12 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
 
+    // Wayland socket
+    QCommandLineOption socketOption(QStringList() << QStringLiteral("s") << QStringLiteral("socket"),
+                                    QCoreApplication::translate("Command line parser", "Wayland socket"),
+                                    QCoreApplication::translate("Command line parser", "name"));
+    parser.addOption(socketOption);
+
     // Synthesize touch for unhandled mouse events
     QCommandLineOption synthesizeOption(QStringLiteral("synthesize-touch"),
                                         QCoreApplication::translate("Command line parser", "Synthesize touch for unhandled mouse events"));
@@ -83,8 +89,31 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
+    // Parse command line
+    parser.process(app);
+
+    // If a socket is passed it means that we are nesting into
+    // another compositor, let's do some checks
+    const QString socket = parser.value(socketOption);
+    if (!socket.isEmpty()) {
+        // We need wayland QPA plugin
+        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+            qWarning() << "By passing the \"--socket\" argument you are requesting to nest"
+                     << "this compositor into another, but you forgot to pass "
+                     << "also \"-platform wayland\"!";
+#if HAVE_SYSTEMD
+            sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
+#endif
+            return 1;
+        }
+    }
+
+    // Set application attributes
+    if (parser.isSet(synthesizeOption))
+        app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
+
     // Create the compositor
-    Compositor *compositor = new Compositor();
+    Compositor *compositor = new Compositor(socket);
 
     // Assign the window to the primary screen
     compositor->setScreen(QGuiApplication::primaryScreen());
@@ -93,10 +122,7 @@ int main(int argc, char *argv[])
     compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
                                   QSize(1920, 1080)));
 
-    // Parse command line
-    parser.process(app);
-    if (parser.isSet(synthesizeOption))
-        app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
+    // Compositor options
     if (parser.isSet(fullScreenOption)) {
         compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
         compositor->setVisibility(QWindow::FullScreen);

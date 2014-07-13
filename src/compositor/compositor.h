@@ -74,7 +74,7 @@ public:
         BackgroundRole
     };
 
-    explicit Compositor();
+    explicit Compositor(const QString &socket = QString());
     ~Compositor();
 
     State state() const;
