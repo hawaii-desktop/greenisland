@@ -40,6 +40,7 @@
 #include "bufferattacher.h"
 #include "cmakedirs.h"
 #include "compositor.h"
+#include "screenmodel.h"
 
 /*
  * CompositorPrivate
@@ -148,6 +149,7 @@ Compositor::Compositor(const QString &socket)
     , d_ptr(new CompositorPrivate(this))
 {
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
+    qmlRegisterType<ScreenModel>("GreenIsland.Core", 1, 0, "ScreenModel");
     rootContext()->setContextProperty("compositor", this);
 
     setSource(QUrl("qrc:/qml/Compositor.qml"));

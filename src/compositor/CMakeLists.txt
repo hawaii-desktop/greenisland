@@ -22,6 +22,7 @@ set(SOURCES
     compositor.cpp
     logging.cpp
     main.cpp
+    screenmodel.cpp
     utilities.cpp
 )
 
