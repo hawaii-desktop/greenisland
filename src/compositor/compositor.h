@@ -134,6 +134,8 @@ protected:
 
     void wheelEvent(QWheelEvent *event);
 
+    void resizeEvent(QResizeEvent *event);
+
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
 
 private:

@@ -438,6 +438,12 @@ void Compositor::wheelEvent(QWheelEvent *event)
     QQuickView::wheelEvent(event);
 }
 
+void Compositor::resizeEvent(QResizeEvent *event)
+{
+    QQuickView::resizeEvent(event);
+    QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
+}
+
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
     Q_D(Compositor);
