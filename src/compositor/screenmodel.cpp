@@ -53,6 +53,7 @@ private:
 ScreenModelPrivate::ScreenModelPrivate(ScreenModel *self)
     : q_ptr(self)
 {
+    initialize(true);
 }
 
 void ScreenModelPrivate::initialize(bool first)
