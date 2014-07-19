@@ -3,10 +3,8 @@
         <file>images/wallpaper.png</file>
         <file>images/corner-ripple-ltr.png</file>
         <file>images/corner-ripple-rtl.png</file>
-        <file>qml/qmldir</file>
         <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
-        <file>qml/Layers.qml</file>
         <file>qml/HotCorner.qml</file>
         <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WaylandWindow.qml</file>
@@ -17,7 +15,7 @@
         <file>qml/TransientWindowAnimation.qml</file>
         <file>qml/PopupWindowAnimation.qml</file>
         <file>qml/Workspace.qml</file>
-        <file>qml/Workspaces.qml</file>
+        <file>qml/WorkspacesView.qml</file>
         <file>qml/WorkspacesLinearView.qml</file>
         <file>qml/ScreenView.qml</file>
     </qresource>
