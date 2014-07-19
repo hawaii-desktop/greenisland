@@ -311,15 +311,17 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     // TODO: Do something clever for touch too
     QPointF pos = defaultInputDevice()->handle()->pointerDevice()->currentPosition();
 
-    // Find the target output (the one where the coordinates are in)
-    // FIXME: QtWayland::Compositor should give us a list of outputs and then we
-    // can scroll the list and find the output that contains the coordinates;
-    // targetOutput then would be a pointer to an Output
-    QtWayland::Compositor *compositor = static_cast<QWaylandCompositor *>(this)->handle();
-    bool targetOutput = compositor->outputGeometry().contains(pos.toPoint());
+    // Find the target screen (the one where the coordinates are in)
+    QScreen *targetScreen = Q_NULLPTR;
+    for (QScreen *screen: QGuiApplication::screens()) {
+        if (screen->geometry().contains(pos.toPoint())) {
+            targetScreen = screen;
+            break;
+        }
+    }
 
     // Just move the surface to a random position if we can't find a target output
-    if (!targetOutput) {
+    if (!targetScreen) {
         pos.setX(10 + qrand() % 400);
         pos.setY(10 + qrand() % 400);
         return pos;
@@ -328,10 +330,9 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     // Valid range within output where the surface will still be onscreen.
     // If this is negative it means that the surface is bigger than
     // output in this case we fallback to 0,0 in available geometry space.
-    // FIXME: When we have an Output we need a way to check the available
-    // geometry (which is the portion of screen that is not used by panels)
-    int rangeX = compositor->outputGeometry().width() - surface->size().width();
-    int rangeY = compositor->outputGeometry().height() - surface->size().height();
+    // FIXME: Should really use available geometry
+    int rangeX = targetScreen->size().width() - surface->size().width();
+    int rangeY = targetScreen->size().height() - surface->size().height();
 
     int dx = 0, dy = 0;
     if (rangeX > 0)
@@ -340,8 +341,9 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
         dy = qrand() % rangeY;
 
     // Set surface position
-    pos.setX(compositor->outputGeometry().x() + dx);
-    pos.setY(compositor->outputGeometry().y() + dy);
+    // FIXME: Should really use available geometry
+    pos.setX(targetScreen->geometry().x() + dx);
+    pos.setY(targetScreen->geometry().y() + dy);
 
     return pos;
 }
