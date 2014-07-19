@@ -32,8 +32,10 @@
 #include <QtQml/QQmlApplicationEngine>
 
 #include "compositor.h"
+#include "compositorapp.h"
 #include "config.h"
 #include "logging.h"
+#include "screenmodel.h"
 #include "utilities.h"
 
 #if HAVE_SYSTEMD
@@ -43,7 +45,7 @@
 int main(int argc, char *argv[])
 {
     // Application
-    QGuiApplication app(argc, argv);
+    CompositorApp app(argc, argv);
     app.setApplicationName("Green Island");
     app.setApplicationVersion(GREENISLAND_VERSION_STRING);
     app.setOrganizationDomain("maui-project.org");
@@ -89,6 +91,24 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
+    // Screen count
+    QCommandLineOption screenCountOption(QStringLiteral("screen-count"),
+                                         QCoreApplication::translate("Command line parser", "Screen count"),
+                                         QCoreApplication::translate("Command line parser", "num"));
+    parser.addOption(screenCountOption);
+
+    // Screen width
+    QCommandLineOption widthOption(QStringLiteral("width"),
+                                   QCoreApplication::translate("Command line parser", "Screen width"),
+                                   QCoreApplication::translate("Command line parser", "num"));
+    parser.addOption(widthOption);
+
+    // Screen height
+    QCommandLineOption heightOption(QStringLiteral("height"),
+                                    QCoreApplication::translate("Command line parser", "Screen height"),
+                                    QCoreApplication::translate("Command line parser", "num"));
+    parser.addOption(heightOption);
+
     // Parse command line
     parser.process(app);
 
@@ -99,8 +119,8 @@ int main(int argc, char *argv[])
         // We need wayland QPA plugin
         if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qWarning() << "By passing the \"--socket\" argument you are requesting to nest"
-                     << "this compositor into another, but you forgot to pass "
-                     << "also \"-platform wayland\"!";
+                       << "this compositor into another, but you forgot to pass "
+                       << "also \"-platform wayland\"!";
 #if HAVE_SYSTEMD
             sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
 #endif
@@ -112,20 +132,42 @@ int main(int argc, char *argv[])
     if (parser.isSet(synthesizeOption))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
+    // Fake screen size and count
+    if (parser.isSet(screenCountOption)) {
+        bool ok;
+
+        int count = parser.value(screenCountOption).toInt(&ok);
+        if (!ok || count < 1)
+            count = 1;
+
+        int width = parser.value(widthOption).toInt(&ok);
+        if (!ok)
+            width = 1024;
+
+        int height = parser.value(heightOption).toInt(&ok);
+        if (!ok)
+            height = 768;
+
+        app.setFakeScreenCount(count);
+        app.setFakeScreenSize(QSize(width, height));
+    }
+
     // Create the compositor
     Compositor *compositor = new Compositor(socket);
-
-    // Assign the window to the primary screen
     compositor->setScreen(QGuiApplication::primaryScreen());
 
-    // Set window geometry
-    compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
-                                  QSize(1920, 1080)));
-
     // Compositor options
-    if (parser.isSet(fullScreenOption)) {
-        compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-        compositor->setVisibility(QWindow::FullScreen);
+    if (parser.isSet(screenCountOption)) {
+        compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
+                                      app.fakeScreenSize()));
+    } else {
+        if (parser.isSet(fullScreenOption)) {
+            compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
+            compositor->setVisibility(QWindow::FullScreen);
+        } else {
+            compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
+                                          QSize(1920, 1080)));
+        }
     }
     int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)

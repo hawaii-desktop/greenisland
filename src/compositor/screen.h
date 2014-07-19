@@ -24,42 +24,42 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#ifndef SCREEN_H
+#define SCREEN_H
 
-#include <QtCore/QAbstractListModel>
+#include <QtCore/QObject>
 
-class ScreenModelPrivate;
+class ScreenPrivate;
 
-class ScreenModel : public QAbstractListModel
+class Screen : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
+    Q_PROPERTY(QRect geometry READ geometry NOTIFY geometryChanged)
 public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        PrimaryRole,
-        GeometryRole
-    };
+    explicit Screen(QObject *parent = Q_NULLPTR);
+    ~Screen();
 
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
-
-    QRect totalGeometry() const;
-
-    QHash<int, QByteArray> roleNames() const;
-
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
+    QString name() const;
+    bool isPrimary() const;
+    QRect geometry() const;
 
 Q_SIGNALS:
-    void totalGeometryChanged();
+    void nameChanged();
+    void primaryChanged();
+    void geometryChanged();
 
 private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
+    friend class FakeScreenBackend;
+    friend class QScreenBackend;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
+    Q_DECLARE_PRIVATE(Screen)
+    ScreenPrivate *const d_ptr;
+
+    void setName(const QString &name);
+    void setPrimary(bool value);
+    void setGeometry(const QRect &rect);
 };
 
-#endif // SCREENMODEL_H
+#endif // SCREEN_H

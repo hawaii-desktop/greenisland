@@ -24,10 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtGui/QGuiApplication>
-#include <QtGui/QScreen>
+#include <QtCore/QRect>
 
+#include "compositorapp.h"
 #include "screenmodel.h"
+
+#include "fakescreenbackend.h"
+#include "qscreenbackend.h"
 
 /*
  * ScreenModelPrivate
@@ -38,12 +41,10 @@ class ScreenModelPrivate
 public:
     ScreenModelPrivate(ScreenModel *self);
 
+    ScreenBackend *backend;
     QRect totalGeometry;
 
-    void initialize(bool first);
-
-    void _q_geometryChanged(const QRect &rect);
-    void _q_screenDestroyed(QObject *object);
+    void _q_screensChanged();
 
 private:
     Q_DECLARE_PUBLIC(ScreenModel)
@@ -53,42 +54,30 @@ private:
 ScreenModelPrivate::ScreenModelPrivate(ScreenModel *self)
     : q_ptr(self)
 {
-    initialize(true);
+    CompositorApp *app = qobject_cast<CompositorApp *>(qApp);
+
+    // Backend
+    if (app->fakeScreenCount() > 0)
+        backend = new FakeScreenBackend(self);
+    else
+        backend = new QScreenBackend(self);
+
+    // Initialize
+    _q_screensChanged();
 }
 
-void ScreenModelPrivate::initialize(bool first)
+void ScreenModelPrivate::_q_screensChanged()
 {
     Q_Q(ScreenModel);
 
-    q->beginResetModel();
-
     totalGeometry = QRect();
 
-    for (QScreen *screen: QGuiApplication::screens()) {
+    for (int i = 0; i < backend->count(); i++) {
+        Screen *screen = backend->screenAt(i);
         totalGeometry = totalGeometry.united(screen->geometry());
-
-        if (first)
-            q->connect(screen, SIGNAL(geometryChanged(QRect)),
-                       q, SLOT(_q_geometryChanged(QRect)));
-        q->connect(screen, SIGNAL(destroyed(QObject*)),
-                   q, SLOT(_q_screenDestroyed(QObject*)));
     }
 
-    q->endResetModel();
-
     Q_EMIT q->totalGeometryChanged();
-}
-
-void ScreenModelPrivate::_q_geometryChanged(const QRect &rect)
-{
-    Q_UNUSED(rect);
-    initialize(false);
-}
-
-void ScreenModelPrivate::_q_screenDestroyed(QObject *object)
-{
-    Q_UNUSED(object);
-    initialize(false);
 }
 
 /*
@@ -99,6 +88,14 @@ ScreenModel::ScreenModel(QObject *parent)
     : QAbstractListModel(parent)
     , d_ptr(new ScreenModelPrivate(this))
 {
+    Q_D(ScreenModel);
+
+    connect(d->backend, SIGNAL(screenAdded()),
+            this, SLOT(_q_screensChanged()));
+    connect(d->backend, SIGNAL(screenChangedGeometry()),
+            this, SLOT(_q_screensChanged()));
+    connect(d->backend, SIGNAL(screenRemoved()),
+            this, SLOT(_q_screensChanged()));
 }
 
 ScreenModel::~ScreenModel()
@@ -124,23 +121,25 @@ QHash<int, QByteArray> ScreenModel::roleNames() const
 int ScreenModel::rowCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
-    return QGuiApplication::screens().size();
+    Q_D(const ScreenModel);
+
+    return d->backend->count();
 }
 
 QVariant ScreenModel::data(const QModelIndex &index, int role) const
 {
-    QList<QScreen *> screens = QGuiApplication::screens();
+    Q_D(const ScreenModel);
 
-    if (!index.isValid() || index.row() >= screens.size())
+    if (!index.isValid() || index.row() >= d->backend->count())
         return QVariant();
 
-    QScreen *screen = screens.at(index.row());
+    Screen *screen = d->backend->screenAt(index.row());
 
     switch (role) {
     case NameRole:
         return screen->name();
     case PrimaryRole:
-        return QGuiApplication::primaryScreen() == screen;
+        return screen->isPrimary();
     case GeometryRole:
         return screen->geometry();
     default:

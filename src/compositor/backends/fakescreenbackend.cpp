@@ -24,42 +24,41 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#include <QtCore/QRect>
 
-#include <QtCore/QAbstractListModel>
+#include "fakescreenbackend.h"
+#include "compositorapp.h"
 
-class ScreenModelPrivate;
-
-class ScreenModel : public QAbstractListModel
+FakeScreenBackend::FakeScreenBackend(QObject *parent)
+    : ScreenBackend(parent)
 {
-    Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
-public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        PrimaryRole,
-        GeometryRole
-    };
+    CompositorApp *app = qobject_cast<CompositorApp *>(qApp);
 
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
+    QPoint pt(0, 0);
+    for (int i = 0; i < count(); i++) {
+        Screen *screen = new Screen(this);
+        screen->setName(QString("FakeScreen%1").arg(i));
+        screen->setPrimary(i == 0);
+        screen->setGeometry(QRect(pt, app->fakeScreenSize()));
+        pt.setX(pt.x() + app->fakeScreenSize().width());
+        m_screens.append(screen);
+    }
+}
 
-    QRect totalGeometry() const;
+FakeScreenBackend::~FakeScreenBackend()
+{
+    qDeleteAll(m_screens);
+}
 
-    QHash<int, QByteArray> roleNames() const;
+int FakeScreenBackend::count() const
+{
+    CompositorApp *app = qobject_cast<CompositorApp *>(qApp);
+    return app->fakeScreenCount();
+}
 
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
+Screen *FakeScreenBackend::screenAt(int index)
+{
+    return m_screens.at(index);
+}
 
-Q_SIGNALS:
-    void totalGeometryChanged();
-
-private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
-
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
-};
-
-#endif // SCREENMODEL_H
+#include "moc_fakescreenbackend.cpp"

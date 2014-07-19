@@ -1,6 +1,7 @@
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/backends
 )
 
 if(systemd_FOUND)
@@ -20,10 +21,15 @@ endif()
 set(SOURCES
     bufferattacher.cpp
     compositor.cpp
+    compositorapp.cpp
     logging.cpp
     main.cpp
+    screen.cpp
+    screenbackend.cpp
     screenmodel.cpp
     utilities.cpp
+    backends/fakescreenbackend.cpp
+    backends/qscreenbackend.cpp
 )
 
 qt5_add_resources(RESOURCES greenisland.qrc)

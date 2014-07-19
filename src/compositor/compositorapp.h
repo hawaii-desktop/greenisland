@@ -24,42 +24,26 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#ifndef COMPOSITORAPP_H
+#define COMPOSITORAPP_H
 
-#include <QtCore/QAbstractListModel>
+#include <QtGui/QGuiApplication>
 
-class ScreenModelPrivate;
-
-class ScreenModel : public QAbstractListModel
+class CompositorApp : public QGuiApplication
 {
     Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
 public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        PrimaryRole,
-        GeometryRole
-    };
+    explicit CompositorApp(int &argc, char **argv);
 
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
+    int fakeScreenCount() const;
+    void setFakeScreenCount(int count);
 
-    QRect totalGeometry() const;
-
-    QHash<int, QByteArray> roleNames() const;
-
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-
-Q_SIGNALS:
-    void totalGeometryChanged();
+    QSize fakeScreenSize() const;
+    void setFakeScreenSize(const QSize &size);
 
 private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
-
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
+    int m_fakeScreenCount;
+    QSize m_fakeScreenSize;
 };
 
-#endif // SCREENMODEL_H
+#endif // COMPOSITORAPP_H

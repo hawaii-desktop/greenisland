@@ -38,6 +38,7 @@ class ClientWindow;
 class Workspace;
 class Grab;
 class PanelManager;
+class ScreenModel;
 class ScreenSaver;
 class Notifications;
 
@@ -85,6 +86,8 @@ public:
 
     int idleInhibit() const;
     void setIdleInhibit(int value);
+
+    ScreenModel *screenModel() const;
 
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
 
@@ -148,6 +151,7 @@ private:
     QList<Workspace *> m_workspaces;
 #endif
 
+    Q_PRIVATE_SLOT(d_func(), void _q_resizeCompositor())
     Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceDestroyed(QObject *object))

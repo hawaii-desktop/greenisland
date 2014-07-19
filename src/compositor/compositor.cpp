@@ -53,6 +53,8 @@ public:
 
     void dpms(bool on);
 
+    void _q_resizeCompositor();
+
     void _q_sendCallbacks();
 
     void _q_updateCursor(bool hasBuffer);
@@ -70,6 +72,8 @@ public:
     int cursorHotspotX;
     int cursorHotspotY;
 
+    ScreenModel *screenModel;
+
 protected:
     Q_DECLARE_PUBLIC(Compositor)
     Compositor *const q_ptr;
@@ -82,6 +86,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorSurface(nullptr)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
+    , screenModel(new ScreenModel(self))
     , q_ptr(self)
 {
 }
@@ -89,6 +94,13 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 void CompositorPrivate::dpms(bool on)
 {
     // TODO
+}
+
+void CompositorPrivate::_q_resizeCompositor()
+{
+    Q_Q(Compositor);
+
+    q->setGeometry(screenModel->totalGeometry());
 }
 
 void CompositorPrivate::_q_sendCallbacks()
@@ -148,9 +160,16 @@ Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(this, socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
+    Q_D(Compositor);
+
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
-    qmlRegisterType<ScreenModel>("GreenIsland.Core", 1, 0, "ScreenModel");
     rootContext()->setContextProperty("compositor", this);
+    rootContext()->setContextProperty("screenModel", d->screenModel);
+
+    // Resize output geometry every time the screen setup changes
+    connect(d->screenModel, SIGNAL(totalGeometryChanged()),
+            this, SLOT(_q_resizeCompositor()));
+    d->_q_resizeCompositor();
 
     setSource(QUrl("qrc:/qml/Compositor.qml"));
     setResizeMode(QQuickView::SizeRootObjectToView);
@@ -266,6 +285,12 @@ void Compositor::setIdleInhibit(int value)
     }
 }
 
+ScreenModel *Compositor::screenModel() const
+{
+    Q_D(const Compositor);
+    return d->screenModel;
+}
+
 QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 {
     if (!surface) {
@@ -306,22 +331,27 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 
 QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
 {
+    Q_D(Compositor);
+
     // As a heuristic place the new window on the same output as the
     // pointer. Falling back to the output containing 0,0.
     // TODO: Do something clever for touch too
     QPointF pos = defaultInputDevice()->handle()->pointerDevice()->currentPosition();
 
     // Find the target screen (the one where the coordinates are in)
-    QScreen *targetScreen = Q_NULLPTR;
-    for (QScreen *screen: QGuiApplication::screens()) {
-        if (screen->geometry().contains(pos.toPoint())) {
-            targetScreen = screen;
+    // FIXME: Should really use available geometry
+    QRect geometry;
+    bool targetScreenFound = false;
+    for (int i = 0; i < d->screenModel->rowCount(QModelIndex()); i++) {
+        geometry = d->screenModel->data(QModelIndex(), ScreenModel::GeometryRole).toRect();
+        if (geometry.contains(pos.toPoint())) {
+            targetScreenFound = true;
             break;
         }
     }
 
     // Just move the surface to a random position if we can't find a target output
-    if (!targetScreen) {
+    if (!targetScreenFound) {
         pos.setX(10 + qrand() % 400);
         pos.setY(10 + qrand() % 400);
         return pos;
@@ -330,9 +360,8 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     // Valid range within output where the surface will still be onscreen.
     // If this is negative it means that the surface is bigger than
     // output in this case we fallback to 0,0 in available geometry space.
-    // FIXME: Should really use available geometry
-    int rangeX = targetScreen->size().width() - surface->size().width();
-    int rangeY = targetScreen->size().height() - surface->size().height();
+    int rangeX = geometry.size().width() - surface->size().width();
+    int rangeY = geometry.size().height() - surface->size().height();
 
     int dx = 0, dy = 0;
     if (rangeX > 0)
@@ -341,9 +370,8 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
         dy = qrand() % rangeY;
 
     // Set surface position
-    // FIXME: Should really use available geometry
-    pos.setX(targetScreen->geometry().x() + dx);
-    pos.setY(targetScreen->geometry().y() + dy);
+    pos.setX(geometry.x() + dx);
+    pos.setY(geometry.y() + dy);
 
     return pos;
 }
@@ -444,6 +472,7 @@ void Compositor::resizeEvent(QResizeEvent *event)
 {
     QQuickView::resizeEvent(event);
     QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
+    qDebug("Resize output geometry to %dx%d", width(), height());
 }
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)

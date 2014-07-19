@@ -24,42 +24,37 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#include "compositorapp.h"
 
-#include <QtCore/QAbstractListModel>
-
-class ScreenModelPrivate;
-
-class ScreenModel : public QAbstractListModel
+CompositorApp::CompositorApp(int &argc, char **argv)
+    : QGuiApplication(argc, argv)
+    , m_fakeScreenCount(0)
+    , m_fakeScreenSize(QSize(1024, 768))
 {
-    Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
-public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        PrimaryRole,
-        GeometryRole
-    };
+}
 
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
+int CompositorApp::fakeScreenCount() const
+{
+    return m_fakeScreenCount;
+}
 
-    QRect totalGeometry() const;
+void CompositorApp::setFakeScreenCount(int count)
+{
+    m_fakeScreenCount = count;
+}
 
-    QHash<int, QByteArray> roleNames() const;
+QSize CompositorApp::fakeScreenSize() const
+{
+    return m_fakeScreenSize;
+}
 
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
+void CompositorApp::setFakeScreenSize(const QSize &size)
+{
+    m_fakeScreenSize = size;
+    // FIXME: When total geometry is calculated we cannot change the window
+    // size and thus the output geometry on Xorg, so we calculate it
+    // set the geometry based on fakeScreenSize from main()
+    m_fakeScreenSize.setWidth(size.width() * m_fakeScreenCount);
+}
 
-Q_SIGNALS:
-    void totalGeometryChanged();
-
-private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
-
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
-};
-
-#endif // SCREENMODEL_H
+#include "moc_compositorapp.cpp"

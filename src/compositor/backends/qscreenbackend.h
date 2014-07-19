@@ -24,42 +24,31 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#ifndef QSCREENBACKEND_H
+#define QSCREENBACKEND_H
 
-#include <QtCore/QAbstractListModel>
+#include "screenbackend.h"
 
-class ScreenModelPrivate;
-
-class ScreenModel : public QAbstractListModel
+class QScreenBackend : public ScreenBackend
 {
     Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
 public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        PrimaryRole,
-        GeometryRole
-    };
+    explicit QScreenBackend(QObject *parent = Q_NULLPTR);
+    ~QScreenBackend();
 
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
+    int count() const;
 
-    QRect totalGeometry() const;
-
-    QHash<int, QByteArray> roleNames() const;
-
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-
-Q_SIGNALS:
-    void totalGeometryChanged();
+    Screen *screenAt(int index);
 
 private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
+    QList<Screen *> m_screens;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
+    void initialize();
+
+private Q_SLOTS:
+    void slotGeometryChanged(const QRect &rect);
+    void slotScreenAdded(QScreen *qscreen);
+    void slotScreenDestroyed(QObject *object);
 };
 
-#endif // SCREENMODEL_H
+#endif // QSCREENBACKEND_H
