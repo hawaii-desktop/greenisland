@@ -18,6 +18,7 @@
         <file>qml/WorkspacesView.qml</file>
         <file>qml/WorkspacesLinearView.qml</file>
         <file>qml/ScreenView.qml</file>
+        <file>qml/Effects.qml</file>
         <file>qml/PresentWindowsGrid.qml</file>
     </qresource>
 </RCC>
