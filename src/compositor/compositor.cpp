@@ -181,11 +181,10 @@ Compositor::Compositor(const QString &socket)
             this, SLOT(_q_sendCallbacks()));
 
     // TODO: Load workspaces number from config
+    //Q_EMIT workspaceAdded();
+    //Q_EMIT workspaceAdded();
+    //Q_EMIT workspaceAdded();
     Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceSelected(0);
 
     // FIXME: Fade in immediately, when there will be a protocol for the shell
     // we will fade in as soon as it tells us it's ready
