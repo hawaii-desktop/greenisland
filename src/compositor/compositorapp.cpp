@@ -51,10 +51,6 @@ QSize CompositorApp::fakeScreenSize() const
 void CompositorApp::setFakeScreenSize(const QSize &size)
 {
     m_fakeScreenSize = size;
-    // FIXME: When total geometry is calculated we cannot change the window
-    // size and thus the output geometry on Xorg, so we calculate it
-    // set the geometry based on fakeScreenSize from main()
-    m_fakeScreenSize.setWidth(size.width() * m_fakeScreenCount);
 }
 
 #include "moc_compositorapp.cpp"

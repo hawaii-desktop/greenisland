@@ -158,8 +158,10 @@ int main(int argc, char *argv[])
 
     // Compositor options
     if (parser.isSet(screenCountOption)) {
+        const QSize newSize(app.fakeScreenSize().width() * app.fakeScreenCount(),
+                            app.fakeScreenSize().height());
         compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
-                                      app.fakeScreenSize()));
+                                      newSize));
     } else {
         if (parser.isSet(fullScreenOption)) {
             compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
