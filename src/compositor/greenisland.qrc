@@ -3,12 +3,14 @@
         <file>images/wallpaper.png</file>
         <file>images/corner-ripple-ltr.png</file>
         <file>images/corner-ripple-rtl.png</file>
+        <file>images/closebutton.png</file>
         <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
         <file>qml/HotCorner.qml</file>
         <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
+        <file>qml/WaylandClientWindowChrome.qml</file>
         <file>qml/WaylandShellWindow.qml</file>
         <file>qml/WindowAnimation.qml</file>
         <file>qml/ToplevelWindowAnimation.qml</file>
