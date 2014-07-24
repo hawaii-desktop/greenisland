@@ -16,10 +16,7 @@ install(TARGETS greenislandplugin LIBRARY
 
 set(MODULE_FILES
     qmldir
-    ClientWindowWrapper.qml
     ContrastEffect.qml
-    WindowItem.qml
-    WindowWrapper.qml
 )
 install(FILES ${MODULE_FILES}
     DESTINATION ${QML_INSTALL_DIR}/GreenIsland)
