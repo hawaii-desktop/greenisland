@@ -22,5 +22,6 @@
         <file>qml/ScreenView.qml</file>
         <file>qml/Effects.qml</file>
         <file>qml/PresentWindowsGrid.qml</file>
+        <file>qml/overlays/UnresponsiveOverlay.qml</file>
     </qresource>
 </RCC>
