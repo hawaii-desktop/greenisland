@@ -10,7 +10,6 @@
         <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
-        <file>qml/WaylandClientWindowChrome.qml</file>
         <file>qml/WaylandShellWindow.qml</file>
         <file>qml/WindowAnimation.qml</file>
         <file>qml/ToplevelWindowAnimation.qml</file>
@@ -21,7 +20,8 @@
         <file>qml/WorkspacesLinearView.qml</file>
         <file>qml/ScreenView.qml</file>
         <file>qml/Effects.qml</file>
-        <file>qml/PresentWindowsGrid.qml</file>
+        <file>qml/effects/presentwindowsgrid/PresentWindowsGrid.qml</file>
+        <file>qml/effects/presentwindowsgrid/WindowChrome.qml</file>
         <file>qml/overlays/UnresponsiveOverlay.qml</file>
     </qresource>
 </RCC>
