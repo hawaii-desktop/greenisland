@@ -11,6 +11,7 @@
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
         <file>qml/WaylandShellWindow.qml</file>
+        <file>qml/WaylandWindowChrome.qml</file>
         <file>qml/WindowAnimation.qml</file>
         <file>qml/ToplevelWindowAnimation.qml</file>
         <file>qml/TransientWindowAnimation.qml</file>
