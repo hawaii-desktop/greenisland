@@ -35,7 +35,10 @@ set(SOURCES
 qt5_add_resources(RESOURCES greenisland.qrc)
 
 add_executable(greenisland ${SOURCES} ${RESOURCES})
-qt5_use_modules(greenisland Quick Compositor)
+target_link_libraries(greenisland
+    Qt5::Quick
+    Qt5::Compositor
+)
 
 if(USE_OPENGL)
     set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${GL_LIBDIR})
