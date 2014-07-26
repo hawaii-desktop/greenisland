@@ -6,7 +6,6 @@
         <file>images/closebutton.png</file>
         <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
-        <file>qml/HotCorner.qml</file>
         <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
@@ -19,11 +18,12 @@
         <file>qml/Workspace.qml</file>
         <file>qml/WorkspacesView.qml</file>
         <file>qml/WorkspacesLinearView.qml</file>
-        <file>qml/ScreenView.qml</file>
         <file>qml/Effects.qml</file>
         <file>qml/effects/presentwindowsgrid/PresentWindowsGrid.qml</file>
         <file>qml/effects/presentwindowsgrid/WindowChrome.qml</file>
         <file>qml/overlays/UnresponsiveOverlay.qml</file>
+        <file>qml/screen/ScreenView.qml</file>
         <file>qml/screen/ScreenZoom.qml</file>
+        <file>qml/screen/HotCorner.qml</file>
     </qresource>
 </RCC>
