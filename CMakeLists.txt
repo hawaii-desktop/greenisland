@@ -66,9 +66,13 @@ endif()
 
 # Minimum version requirements
 set(QT_MIN_VERSION "5.3.0")
+set(KF5_MIN_VERSION "5.0.0")
 
 # Find Qt5
 find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS DBus Gui Qml Quick Compositor)
+
+# Find KF5
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Screen)
 
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
