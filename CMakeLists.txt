@@ -64,8 +64,11 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
+# Minimum version requirements
+set(QT_MIN_VERSION "5.3.0")
+
 # Find Qt5
-find_package(Qt5 5.2 REQUIRED COMPONENTS DBus Gui Qml Quick Compositor)
+find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS DBus Gui Qml Quick Compositor)
 
 # Find pkg-config
 find_package(PkgConfig "0.22" REQUIRED)
