@@ -24,5 +24,6 @@
         <file>qml/effects/presentwindowsgrid/PresentWindowsGrid.qml</file>
         <file>qml/effects/presentwindowsgrid/WindowChrome.qml</file>
         <file>qml/overlays/UnresponsiveOverlay.qml</file>
+        <file>qml/screen/ScreenZoom.qml</file>
     </qresource>
 </RCC>
