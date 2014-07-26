@@ -32,7 +32,6 @@
 #include <QtQml/QQmlApplicationEngine>
 
 #include "compositor.h"
-#include "compositorapp.h"
 #include "config.h"
 #include "logging.h"
 #include "screenmodel.h"
@@ -45,7 +44,7 @@
 int main(int argc, char *argv[])
 {
     // Application
-    CompositorApp app(argc, argv);
+    QGuiApplication app(argc, argv);
     app.setApplicationName("Green Island");
     app.setApplicationVersion(GREENISLAND_VERSION_STRING);
     app.setOrganizationDomain("maui-project.org");
@@ -91,23 +90,11 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
-    // Screen count
-    QCommandLineOption screenCountOption(QStringLiteral("screen-count"),
-                                         QCoreApplication::translate("Command line parser", "Screen count"),
-                                         QCoreApplication::translate("Command line parser", "num"));
-    parser.addOption(screenCountOption);
-
-    // Screen width
-    QCommandLineOption widthOption(QStringLiteral("width"),
-                                   QCoreApplication::translate("Command line parser", "Screen width"),
-                                   QCoreApplication::translate("Command line parser", "num"));
-    parser.addOption(widthOption);
-
-    // Screen height
-    QCommandLineOption heightOption(QStringLiteral("height"),
-                                    QCoreApplication::translate("Command line parser", "Screen height"),
-                                    QCoreApplication::translate("Command line parser", "num"));
-    parser.addOption(heightOption);
+    // Fake screen configuration
+    QCommandLineOption fakeScreenOption(QStringLiteral("fake-screen"),
+                                         QCoreApplication::translate("Command line parser", "Use fake screen configuration"),
+                                         QCoreApplication::translate("Command line parser", "filename"));
+    parser.addOption(fakeScreenOption);
 
     // Parse command line
     parser.process(app);
@@ -132,36 +119,28 @@ int main(int argc, char *argv[])
     if (parser.isSet(synthesizeOption))
         app.setAttribute(Qt::AA_SynthesizeTouchForUnhandledMouseEvents, true);
 
-    // Fake screen size and count
-    if (parser.isSet(screenCountOption)) {
-        bool ok;
-
-        int count = parser.value(screenCountOption).toInt(&ok);
-        if (!ok || count < 1)
-            count = 1;
-
-        int width = parser.value(widthOption).toInt(&ok);
-        if (!ok)
-            width = 1024;
-
-        int height = parser.value(heightOption).toInt(&ok);
-        if (!ok)
-            height = 768;
-
-        app.setFakeScreenCount(count);
-        app.setFakeScreenSize(QSize(width, height));
+    // Fake screen configuration
+    if (parser.isSet(fakeScreenOption)) {
+        // Use fake backend for KSCreen
+        qputenv("KSCREEN_BACKEND", QByteArray("Fake"));
+        qputenv("TEST_DATA", parser.value(fakeScreenOption).toUtf8());
     }
 
     // Create the compositor
     Compositor *compositor = new Compositor(socket);
     compositor->setScreen(QGuiApplication::primaryScreen());
 
+    // Create screen model
+    ScreenModel *screenModel = new ScreenModel(compositor);
+    compositor->setScreenModel(screenModel);
+
+    // Run the compositor QML code
+    compositor->run();
+
     // Compositor options
-    if (parser.isSet(screenCountOption)) {
-        const QSize newSize(app.fakeScreenSize().width() * app.fakeScreenCount(),
-                            app.fakeScreenSize().height());
+    if (parser.isSet(fakeScreenOption)) {
         compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
-                                      newSize));
+                                      screenModel->totalGeometry().size()));
     } else {
         if (parser.isSet(fullScreenOption)) {
             compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());

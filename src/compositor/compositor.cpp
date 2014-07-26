@@ -63,6 +63,8 @@ public:
     void _q_surfaceMapped();
     void _q_surfaceUnmapped();
 
+    bool running;
+
     Compositor::State state;
     int idleInterval;
     int idleInhibit;
@@ -80,13 +82,14 @@ protected:
 };
 
 CompositorPrivate::CompositorPrivate(Compositor *self)
-    : state(Compositor::Active)
+    : running(false)
+    , state(Compositor::Active)
     , idleInterval(5 * 60000)
     , idleInhibit(0)
     , cursorSurface(nullptr)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
-    , screenModel(new ScreenModel(self))
+    , screenModel(Q_NULLPTR)
     , q_ptr(self)
 {
 }
@@ -160,35 +163,11 @@ Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(this, socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
-    Q_D(Compositor);
-
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
     rootContext()->setContextProperty("compositor", this);
-    rootContext()->setContextProperty("screenModel", d->screenModel);
-
-    // Resize output geometry every time the screen setup changes
-    connect(d->screenModel, SIGNAL(totalGeometryChanged()),
-            this, SLOT(_q_resizeCompositor()));
-    d->_q_resizeCompositor();
-
-    setSource(QUrl("qrc:/qml/Compositor.qml"));
-    setResizeMode(QQuickView::SizeRootObjectToView);
-    setColor(Qt::black);
-    winId();
-    addDefaultShell();
 
     connect(this, SIGNAL(afterRendering()),
             this, SLOT(_q_sendCallbacks()));
-
-    // TODO: Load workspaces number from config
-    //Q_EMIT workspaceAdded();
-    //Q_EMIT workspaceAdded();
-    //Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-
-    // FIXME: Fade in immediately, when there will be a protocol for the shell
-    // we will fade in as soon as it tells us it's ready
-    Q_EMIT fadeIn();
 }
 
 Compositor::~Compositor()
@@ -288,6 +267,44 @@ ScreenModel *Compositor::screenModel() const
 {
     Q_D(const Compositor);
     return d->screenModel;
+}
+
+void Compositor::setScreenModel(ScreenModel *model)
+{
+    Q_D(Compositor);
+
+    d->screenModel = model;
+    rootContext()->setContextProperty("screenModel", d->screenModel);
+
+    // Resize output geometry every time the screen setup changes
+    connect(d->screenModel, SIGNAL(totalGeometryChanged()),
+            this, SLOT(_q_resizeCompositor()));
+}
+
+void Compositor::run()
+{
+    Q_D(Compositor);
+
+    if (d->running)
+        return;
+
+    setSource(QUrl("qrc:/qml/Compositor.qml"));
+    setResizeMode(QQuickView::SizeRootObjectToView);
+    setColor(Qt::black);
+    winId();
+    addDefaultShell();
+
+    // TODO: Load workspaces number from config
+    //Q_EMIT workspaceAdded();
+    //Q_EMIT workspaceAdded();
+    //Q_EMIT workspaceAdded();
+    Q_EMIT workspaceAdded();
+
+    // FIXME: Fade in immediately, when there will be a protocol for the shell
+    // we will fade in as soon as it tells us it's ready
+    Q_EMIT fadeIn();
+
+    d->running = true;
 }
 
 QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)

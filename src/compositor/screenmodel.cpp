@@ -25,12 +25,20 @@
  ***************************************************************************/
 
 #include <QtCore/QRect>
+#include <QtCore/QTimer>
+#include <KScreen/Config>
+#include <KScreen/ConfigMonitor>
+#include <KScreen/Screen>
 
-#include "compositorapp.h"
 #include "screenmodel.h"
 
-#include "fakescreenbackend.h"
-#include "qscreenbackend.h"
+static bool outputLess(KScreen::Output *a, KScreen::Output *b)
+{
+    return ((a->isEnabled() && !b->isEnabled())
+            || (a->isEnabled() == b->isEnabled() && (a->isPrimary() && !b->isPrimary()))
+            || (a->isPrimary() == b->isPrimary() && (a->pos().x() < b->pos().x()
+                                                     || (a->pos().x() == b->pos().x() && a->pos().y() < b->pos().y()))));
+}
 
 /*
  * ScreenModelPrivate
@@ -41,10 +49,21 @@ class ScreenModelPrivate
 public:
     ScreenModelPrivate(ScreenModel *self);
 
-    ScreenBackend *backend;
+    KScreen::Config *config;
+    QList<KScreen::Output *> outputs;
     QRect totalGeometry;
 
-    void _q_screensChanged();
+    QList<KScreen::Output*> sortOutputs(const QHash<int, KScreen::Output*> &outputs) const;
+
+    void addOutput(KScreen::Output *output);
+    void removeOutput(KScreen::Output *output);
+
+    void _q_screenSizeChanged();
+    void _q_outputAdded(KScreen::Output *output);
+    void _q_outputRemoved(int id);
+    void _q_outputEnabledChanged();
+    void _q_primaryChanged();
+    void _q_geometryChanged();
 
 private:
     Q_DECLARE_PUBLIC(ScreenModel)
@@ -54,30 +73,108 @@ private:
 ScreenModelPrivate::ScreenModelPrivate(ScreenModel *self)
     : q_ptr(self)
 {
-    CompositorApp *app = qobject_cast<CompositorApp *>(qApp);
-
-    // Backend
-    if (app->fakeScreenCount() > 0)
-        backend = new FakeScreenBackend(self);
-    else
-        backend = new QScreenBackend(self);
-
-    // Initialize
-    _q_screensChanged();
+    // Load current configuration
+    config = KScreen::Config::current();
 }
 
-void ScreenModelPrivate::_q_screensChanged()
+QList<KScreen::Output *> ScreenModelPrivate::sortOutputs(const QHash<int, KScreen::Output *> &outputs) const
+{
+    QList<KScreen::Output *> ret = outputs.values();
+    std::sort(ret.begin(), ret.end(), outputLess);
+    return ret;
+}
+
+void ScreenModelPrivate::addOutput(KScreen::Output *output)
 {
     Q_Q(ScreenModel);
 
-    totalGeometry = QRect();
+    q->connect(output, SIGNAL(isEnabledChanged()),
+               q, SLOT(_q_outputEnabledChanged()),
+               Qt::UniqueConnection);
+    q->connect(output, SIGNAL(isPrimaryChanged()),
+               q, SLOT(_q_primaryChanged()),
+               Qt::UniqueConnection);
+    q->connect(output, SIGNAL(posChanged()),
+               q, SLOT(_q_geometryChanged()),
+               Qt::UniqueConnection);
+    q->connect(output, SIGNAL(currentModeIdChanged()),
+               q, SLOT(_q_geometryChanged()));
 
-    for (int i = 0; i < backend->count(); i++) {
-        Screen *screen = backend->screenAt(i);
-        totalGeometry = totalGeometry.united(screen->geometry());
-    }
+    q->beginInsertRows(QModelIndex(), outputs.size(), outputs.size());
+    outputs.append(output);
+    q->endInsertRows();
+}
 
+void ScreenModelPrivate::removeOutput(KScreen::Output *output)
+{
+    Q_Q(ScreenModel);
+
+    int row = outputs.indexOf(output);
+
+    q->beginRemoveRows(QModelIndex(), row, row);
+    outputs.removeOne(output);
+    q->endRemoveRows();
+}
+
+void ScreenModelPrivate::_q_screenSizeChanged()
+{
+    Q_Q(ScreenModel);
+
+    totalGeometry = QRect(QPoint(0, 0), config->screen()->currentSize());
     Q_EMIT q->totalGeometryChanged();
+}
+
+void ScreenModelPrivate::_q_outputAdded(KScreen::Output *output)
+{
+    addOutput(output);
+}
+
+void ScreenModelPrivate::_q_outputRemoved(int id)
+{
+    for (KScreen::Output *output: outputs) {
+        if (output->id() == id) {
+            removeOutput(output);
+            return;
+        }
+    }
+}
+
+void ScreenModelPrivate::_q_outputEnabledChanged()
+{
+    Q_Q(ScreenModel);
+
+    KScreen::Output *output = qobject_cast<KScreen::Output *>(q->sender());
+
+    if (output->isEnabled())
+        addOutput(output);
+    else
+        removeOutput(output);
+}
+
+void ScreenModelPrivate::_q_primaryChanged()
+{
+    Q_Q(ScreenModel);
+
+    KScreen::Output *output = qobject_cast<KScreen::Output *>(q->sender());
+
+    if (outputs.contains(output)) {
+        int row = outputs.indexOf(output);
+        QModelIndex index = q->index(row);
+        Q_EMIT q->dataChanged(index, index, QVector<int>() << ScreenModel::PrimaryRole);
+    }
+}
+
+void ScreenModelPrivate::_q_geometryChanged()
+{
+    Q_Q(ScreenModel);
+
+    KScreen::Output *output = qobject_cast<KScreen::Output *>(q->sender());
+
+    if (outputs.contains(output)) {
+        int row = outputs.indexOf(output);
+        QModelIndex index = q->index(row);
+        Q_EMIT q->dataChanged(index, index, QVector<int>() << ScreenModel::GeometryRole);
+    }
 }
 
 /*
@@ -90,12 +187,21 @@ ScreenModel::ScreenModel(QObject *parent)
 {
     Q_D(ScreenModel);
 
-    connect(d->backend, SIGNAL(screenAdded()),
-            this, SLOT(_q_screensChanged()));
-    connect(d->backend, SIGNAL(screenChangedGeometry()),
-            this, SLOT(_q_screensChanged()));
-    connect(d->backend, SIGNAL(screenRemoved()),
-            this, SLOT(_q_screensChanged()));
+    // Add configuration to the monitor
+    KScreen::ConfigMonitor::instance()->addConfig(d->config);
+
+    // Connect signals
+    connect(d->config->screen(), SIGNAL(currentSizeChanged()),
+            this, SLOT(_q_screenSizeChanged()));
+    connect(d->config, SIGNAL(outputAdded(KScreen::Output*)),
+            this, SLOT(_q_outputAdded(KScreen::Output*)));
+    connect(d->config, SIGNAL(outputRemoved(int)),
+            this, SLOT(_q_outputRemoved(int)));
+
+    // Initialize model
+    for (KScreen::Output *output: d->sortOutputs(d->config->outputs()))
+        d->addOutput(output);
+    d->_q_screenSizeChanged();
 }
 
 ScreenModel::~ScreenModel()
@@ -123,25 +229,25 @@ int ScreenModel::rowCount(const QModelIndex &parent) const
     Q_UNUSED(parent);
     Q_D(const ScreenModel);
 
-    return d->backend->count();
+    return d->outputs.size();
 }
 
 QVariant ScreenModel::data(const QModelIndex &index, int role) const
 {
     Q_D(const ScreenModel);
 
-    if (!index.isValid() || index.row() >= d->backend->count())
+    if (!index.isValid() || index.row() >= d->outputs.size())
         return QVariant();
 
-    Screen *screen = d->backend->screenAt(index.row());
+    KScreen::Output *output = d->outputs.at(index.row());
 
     switch (role) {
     case NameRole:
-        return screen->name();
+        return output->name();
     case PrimaryRole:
-        return screen->isPrimary();
+        return output->isPrimary();
     case GeometryRole:
-        return screen->geometry();
+        return output->geometry();
     default:
         break;
     }

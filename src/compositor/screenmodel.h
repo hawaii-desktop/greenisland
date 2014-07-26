@@ -31,6 +31,10 @@
 
 class ScreenModelPrivate;
 
+namespace KScreen {
+class Output;
+}
+
 class ScreenModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -59,7 +63,12 @@ private:
     Q_DECLARE_PRIVATE(ScreenModel)
     ScreenModelPrivate *const d_ptr;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_screensChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_screenSizeChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(KScreen::Output *output))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputEnabledChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_primaryChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_geometryChanged())
 };
 
 #endif // SCREENMODEL_H

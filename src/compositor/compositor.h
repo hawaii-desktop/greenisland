@@ -88,6 +88,9 @@ public:
     void setIdleInhibit(int value);
 
     ScreenModel *screenModel() const;
+    void setScreenModel(ScreenModel *model);
+
+    void run();
 
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
 
