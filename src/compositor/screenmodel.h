@@ -43,6 +43,7 @@ public:
     enum Roles {
         NameRole = Qt::UserRole + 1,
         PrimaryRole,
+        RotationRole,
         GeometryRole
     };
 
@@ -67,6 +68,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(KScreen::Output *output))
     Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
     Q_PRIVATE_SLOT(d_func(), void _q_outputEnabledChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_rotationChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_primaryChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_geometryChanged())
 };

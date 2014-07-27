@@ -63,6 +63,7 @@ public:
     void _q_outputRemoved(int id);
     void _q_outputEnabledChanged();
     void _q_primaryChanged();
+    void _q_rotationChanged();
     void _q_geometryChanged();
 
 private:
@@ -164,6 +165,19 @@ void ScreenModelPrivate::_q_primaryChanged()
     }
 }
 
+void ScreenModelPrivate::_q_rotationChanged()
+{
+    Q_Q(ScreenModel);
+
+    KScreen::Output *output = qobject_cast<KScreen::Output *>(q->sender());
+
+    if (outputs.contains(output)) {
+        int row = outputs.indexOf(output);
+        QModelIndex index = q->index(row);
+        Q_EMIT q->dataChanged(index, index, QVector<int>() << ScreenModel::RotationRole);
+    }
+}
+
 void ScreenModelPrivate::_q_geometryChanged()
 {
     Q_Q(ScreenModel);
@@ -220,6 +234,7 @@ QHash<int, QByteArray> ScreenModel::roleNames() const
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
     roles[PrimaryRole] = "primary";
+    roles[RotationRole] = "rotation";
     roles[GeometryRole] = "geometry";
     return roles;
 }
@@ -246,8 +261,27 @@ QVariant ScreenModel::data(const QModelIndex &index, int role) const
         return output->name();
     case PrimaryRole:
         return output->isPrimary();
+    case RotationRole:
+        switch (output->rotation()) {
+        case KScreen::Output::None:
+            return qreal(0);
+        case KScreen::Output::Left:
+            return qreal(270);
+        case KScreen::Output::Inverted:
+            return qreal(180);
+        case KScreen::Output::Right:
+            return qreal(90);
+        }
     case GeometryRole:
-        return output->geometry();
+        switch (output->rotation()) {
+        case KScreen::Output::None:
+        case KScreen::Output::Inverted:
+            return output->geometry();
+        case KScreen::Output::Left:
+        case KScreen::Output::Right:
+            return QRect(output->pos(),
+                         QSize(output->geometry().size().height(), output->geometry().size().width()));
+        }
     default:
         break;
     }
