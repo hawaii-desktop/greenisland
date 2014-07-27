@@ -42,6 +42,7 @@ class ScreenModel : public QAbstractListModel
 public:
     enum Roles {
         NameRole = Qt::UserRole + 1,
+        NumberRole,
         PrimaryRole,
         RotationRole,
         GeometryRole

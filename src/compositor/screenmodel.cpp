@@ -233,6 +233,7 @@ QHash<int, QByteArray> ScreenModel::roleNames() const
 {
     QHash<int, QByteArray> roles;
     roles[NameRole] = "name";
+    roles[NumberRole] = "number";
     roles[PrimaryRole] = "primary";
     roles[RotationRole] = "rotation";
     roles[GeometryRole] = "geometry";
@@ -259,6 +260,8 @@ QVariant ScreenModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case NameRole:
         return output->name();
+    case NumberRole:
+        return output->id();
     case PrimaryRole:
         return output->isPrimary();
     case RotationRole:
