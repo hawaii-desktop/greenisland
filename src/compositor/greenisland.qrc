@@ -23,6 +23,7 @@
         <file>qml/effects/presentwindowsgrid/WindowChrome.qml</file>
         <file>qml/overlays/UnresponsiveOverlay.qml</file>
         <file>qml/screen/ScreenView.qml</file>
+        <file>qml/screen/OutputInfo.qml</file>
         <file>qml/screen/ScreenZoom.qml</file>
         <file>qml/screen/HotCorner.qml</file>
         <file>qml/screen/HotCorners.qml</file>
