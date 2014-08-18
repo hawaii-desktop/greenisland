@@ -27,22 +27,13 @@
 #ifndef COMPOSITOR_H
 #define COMPOSITOR_H
 
-#include <QtQuick/QQuickView>
 #include <QtCompositor/QWaylandQuickCompositor>
 #include <QtCompositor/QWaylandSurfaceItem>
 
 class CompositorPrivate;
-class Shell;
-class ShellSurface;
-class ClientWindow;
-class Workspace;
-class Grab;
-class PanelManager;
-class ScreenModel;
-class ScreenSaver;
-class Notifications;
+class ScreenManager;
 
-class Compositor : public QQuickView, public QWaylandQuickCompositor
+class Compositor : public QWaylandQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
@@ -87,12 +78,14 @@ public:
     int idleInhibit() const;
     void setIdleInhibit(int value);
 
-    ScreenModel *screenModel() const;
-    void setScreenModel(ScreenModel *model);
+    ScreenManager *screenManager() const;
 
     void run();
 
+    Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
+
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandQuickSurface *surface, QWaylandOutput *output);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
@@ -131,17 +124,6 @@ public Q_SLOTS:
     void unlockSession();
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-
-    void wheelEvent(QWheelEvent *event);
-
-    void resizeEvent(QResizeEvent *event);
-
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
 
 private:
@@ -154,12 +136,11 @@ private:
     QList<Workspace *> m_workspaces;
 #endif
 
-    Q_PRIVATE_SLOT(d_func(), void _q_resizeCompositor())
-    Q_PRIVATE_SLOT(d_func(), void _q_sendCallbacks())
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceDestroyed(QObject *object))
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceMapped())
     Q_PRIVATE_SLOT(d_func(), void _q_surfaceUnmapped())
+    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *output))
 };
 
 #endif // COMPOSITOR_H

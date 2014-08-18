@@ -1,0 +1,167 @@
+/****************************************************************************
+ * This file is part of Green Island.
+ *
+ * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *
+ * Author(s):
+ *    Pier Luigi Fiorini
+ *
+ * $BEGIN_LICENSE:GPL2+$
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * $END_LICENSE$
+ ***************************************************************************/
+
+#include <QtQml/QQmlContext>
+
+#include "outputwindow.h"
+#include "compositor.h"
+#include "output.h"
+
+OutputWindow::OutputWindow(Compositor *compositor)
+    : QQuickView()
+    , m_compositor(compositor)
+    , m_output(Q_NULLPTR)
+{
+    // Register QML types
+    qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
+
+    // Setup window
+    setColor(Qt::black);
+    winId();
+
+    // Send frame callbacks after rendering
+    connect(this, &QQuickView::afterRendering,
+            this, &OutputWindow::sendCallbacks);
+
+    // Show the window as soon as QML is loaded
+    connect(this, &QQuickView::statusChanged,
+            this, &OutputWindow::componentStatusChanged);
+}
+
+Output *OutputWindow::output() const
+{
+    return m_output;
+}
+
+void OutputWindow::setOutput(Output *output)
+{
+    // Prevent assigning another output that doesn't know about this window
+    if (m_output)
+        return;
+
+    // Save output reference
+    m_output = output;
+
+    // Make compositor instance available to QML
+    rootContext()->setContextProperty("compositor", m_compositor);
+
+    // Add a context property to reference this window
+    rootContext()->setContextProperty("_greenisland_window", this);
+
+    // Add a context property to reference the output
+    rootContext()->setContextProperty("_greenisland_output", m_output);
+
+    // Load QML and setup window
+    setResizeMode(QQuickView::SizeRootObjectToView);
+    setSource(QUrl("qrc:/qml/Compositor.qml"));
+}
+
+void OutputWindow::keyPressEvent(QKeyEvent *event)
+{
+    m_compositor->setIdleInhibit(m_compositor->idleInhibit() + 1);
+
+#if 0
+    // Decode key event
+    uint32_t modifiers = 0;
+    uint32_t key = 0;
+
+    if (event->modifiers() & Qt::ControlModifier)
+        modifiers |= MODIFIER_CTRL;
+    if (event->modifiers() & Qt::AltModifier)
+        modifiers |= MODIFIER_ALT;
+    if (event->modifiers() & Qt::MetaModifier)
+        modifiers |= MODIFIER_SUPER;
+    if (event->modifiers() & Qt::ShiftModifier)
+        modifiers |= MODIFIER_SHIFT;
+
+    int k = 0;
+    while (keyTable[k]) {
+        if (event->key() == (int)keyTable[k]) {
+            key = keyTable[k + 1];
+            break;
+        }
+        k += 2;
+    }
+
+    // Look for a matching key binding
+    for (KeyBinding *keyBinding: m_shell->keyBindings()) {
+        if (keyBinding->modifiers() == modifiers && keyBinding->key() == key) {
+            keyBinding->send_triggered();
+            break;
+        }
+    }
+#endif
+
+    QQuickView::keyPressEvent(event);
+}
+
+void OutputWindow::keyReleaseEvent(QKeyEvent *event)
+{
+    m_compositor->setIdleInhibit(m_compositor->idleInhibit() - 1);
+
+    QQuickView::keyReleaseEvent(event);
+}
+
+void OutputWindow::mousePressEvent(QMouseEvent *event)
+{
+    m_compositor->setIdleInhibit(m_compositor->idleInhibit() + 1);
+
+    QQuickView::mousePressEvent(event);
+}
+
+void OutputWindow::mouseReleaseEvent(QMouseEvent *event)
+{
+    m_compositor->setIdleInhibit(m_compositor->idleInhibit() - 1);
+
+    QQuickView::mouseReleaseEvent(event);
+}
+
+void OutputWindow::mouseMoveEvent(QMouseEvent *event)
+{
+    m_compositor->setState(Compositor::Active);
+
+    QQuickView::mouseMoveEvent(event);
+}
+
+void OutputWindow::wheelEvent(QWheelEvent *event)
+{
+    m_compositor->setState(Compositor::Active);
+
+    QQuickView::wheelEvent(event);
+}
+
+void OutputWindow::sendCallbacks()
+{
+    m_compositor->sendFrameCallbacks(m_compositor->surfaces());
+}
+
+void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
+{
+    if (status == QQuickView::Ready)
+        show();
+}
+
+#include "moc_outputwindow.cpp"

@@ -28,13 +28,11 @@
 #include <QtCore/QCommandLineParser>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
-#include <QtGui/QWindow>
 #include <QtQml/QQmlApplicationEngine>
 
 #include "compositor.h"
 #include "config.h"
 #include "logging.h"
-#include "screenmodel.h"
 #include "utilities.h"
 
 #if HAVE_SYSTEMD
@@ -77,11 +75,6 @@ int main(int argc, char *argv[])
     QCommandLineOption synthesizeOption(QStringLiteral("synthesize-touch"),
                                         QCoreApplication::translate("Command line parser", "Synthesize touch for unhandled mouse events"));
     parser.addOption(synthesizeOption);
-
-    // Full screen option
-    QCommandLineOption fullScreenOption(QStringLiteral("fullscreen"),
-                                        QCoreApplication::translate("Command line parser", "Full screen compositor window"));
-    parser.addOption(fullScreenOption);
 
     // Idle time
     QCommandLineOption idleTimeOption(QStringList() << QStringLiteral("i") << QStringLiteral("idle-time"),
@@ -128,34 +121,14 @@ int main(int argc, char *argv[])
 
     // Create the compositor
     Compositor *compositor = new Compositor(socket);
-    compositor->setScreen(QGuiApplication::primaryScreen());
-
-    // Create screen model
-    ScreenModel *screenModel = new ScreenModel(compositor);
-    compositor->setScreenModel(screenModel);
 
     // Run the compositor QML code
     compositor->run();
 
     // Compositor options
-    if (parser.isSet(fakeScreenOption)) {
-        compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
-                                      screenModel->totalGeometry().size()));
-    } else {
-        if (parser.isSet(fullScreenOption)) {
-            compositor->setGeometry(QGuiApplication::primaryScreen()->availableGeometry());
-            compositor->setVisibility(QWindow::FullScreen);
-        } else {
-            compositor->setGeometry(QRect(compositor->screen()->geometry().topLeft(),
-                                          QSize(1920, 1080)));
-        }
-    }
     int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)
         compositor->setIdleInterval(idleInterval * 1000);
-
-    // Show compositor window
-    compositor->show();
 
 #if HAVE_SYSTEMD
     sd_notifyf(0,

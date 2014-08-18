@@ -24,54 +24,33 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMODEL_H
-#define SCREENMODEL_H
+#ifndef SCREENMANAGER_H
+#define SCREENMANAGER_H
 
-#include <QtCore/QAbstractListModel>
-
-class ScreenModelPrivate;
+#include <QtCore/QObject>
 
 namespace KScreen {
 class Output;
 }
 
-class ScreenModel : public QAbstractListModel
+class Compositor;
+class ScreenManagerPrivate;
+
+class ScreenManager : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QRect totalGeometry READ totalGeometry NOTIFY totalGeometryChanged)
 public:
-    enum Roles {
-        NameRole = Qt::UserRole + 1,
-        NumberRole,
-        PrimaryRole,
-        RotationRole,
-        GeometryRole
-    };
-
-    explicit ScreenModel(QObject *parent = 0);
-    ~ScreenModel();
-
-    QRect totalGeometry() const;
-
-    QHash<int, QByteArray> roleNames() const;
-
-    int rowCount(const QModelIndex &parent) const;
-    QVariant data(const QModelIndex &index, int role) const;
-
-Q_SIGNALS:
-    void totalGeometryChanged();
+    explicit ScreenManager(Compositor *compositor);
+    ~ScreenManager();
 
 private:
-    Q_DECLARE_PRIVATE(ScreenModel)
-    ScreenModelPrivate *const d_ptr;
+    Q_DECLARE_PRIVATE(ScreenManager)
+    ScreenManagerPrivate *const d_ptr;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_screenSizeChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_configurationChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(KScreen::Output *output))
     Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
     Q_PRIVATE_SLOT(d_func(), void _q_outputEnabledChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_rotationChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_primaryChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_geometryChanged())
 };
 
-#endif // SCREENMODEL_H
+#endif // SCREENMANAGER_H

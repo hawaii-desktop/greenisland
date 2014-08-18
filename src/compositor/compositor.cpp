@@ -29,18 +29,21 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
 #include <QtCore/QVariantMap>
-#include <QtQml/QQmlContext>
 #include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandInputDevice>
+#include <QtCompositor/QWaylandOutput>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
+#include <QtCompositor/private/qwlsurface_p.h>
 
 #include "bufferattacher.h"
 #include "cmakedirs.h"
 #include "compositor.h"
-#include "screenmodel.h"
+#include "windowview.h"
+#include "screenmanager.h"
 
 /*
  * CompositorPrivate
@@ -53,15 +56,12 @@ public:
 
     void dpms(bool on);
 
-    void _q_resizeCompositor();
-
-    void _q_sendCallbacks();
-
     void _q_updateCursor(bool hasBuffer);
 
     void _q_surfaceDestroyed(QObject *object);
     void _q_surfaceMapped();
     void _q_surfaceUnmapped();
+    void _q_outputRemoved(QWaylandOutput *output);
 
     bool running;
 
@@ -74,7 +74,7 @@ public:
     int cursorHotspotX;
     int cursorHotspotY;
 
-    ScreenModel *screenModel;
+    ScreenManager *screenManager;
 
 protected:
     Q_DECLARE_PUBLIC(Compositor)
@@ -89,27 +89,14 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorSurface(nullptr)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
-    , screenModel(Q_NULLPTR)
     , q_ptr(self)
 {
+    screenManager = new ScreenManager(self);
 }
 
 void CompositorPrivate::dpms(bool on)
 {
     // TODO
-}
-
-void CompositorPrivate::_q_resizeCompositor()
-{
-    Q_Q(Compositor);
-
-    q->setGeometry(screenModel->totalGeometry());
-}
-
-void CompositorPrivate::_q_sendCallbacks()
-{
-    Q_Q(Compositor);
-    q->sendFrameCallbacks(q->surfaces());
 }
 
 void CompositorPrivate::_q_updateCursor(bool hasBuffer)
@@ -155,19 +142,33 @@ void CompositorPrivate::_q_surfaceUnmapped()
     Q_EMIT q->surfaceUnmapped(QVariant::fromValue(surface));
 }
 
+void CompositorPrivate::_q_outputRemoved(QWaylandOutput *output)
+{
+    Q_Q(Compositor);
+
+    // Remove all views created for this output
+    for (QWaylandSurface *surface: q->surfaces()) {
+        for (QWaylandSurfaceView *surfaceView: surface->views()) {
+            WindowView *view = static_cast<WindowView *>(surfaceView);
+            if (!view)
+                continue;
+
+            if (view->output() == output)
+                view->deleteLater();
+        }
+    }
+}
+
 /*
  * Compositor
  */
 
 Compositor::Compositor(const QString &socket)
-    : QWaylandQuickCompositor(this, socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
+    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
-    qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
-    rootContext()->setContextProperty("compositor", this);
-
-    connect(this, SIGNAL(afterRendering()),
-            this, SLOT(_q_sendCallbacks()));
+    connect(this, SIGNAL(outputRemoved(QWaylandOutput*)),
+            this, SLOT(_q_outputRemoved(QWaylandOutput*)));
 }
 
 Compositor::~Compositor()
@@ -263,22 +264,10 @@ void Compositor::setIdleInhibit(int value)
     }
 }
 
-ScreenModel *Compositor::screenModel() const
+ScreenManager *Compositor::screenManager() const
 {
     Q_D(const Compositor);
-    return d->screenModel;
-}
-
-void Compositor::setScreenModel(ScreenModel *model)
-{
-    Q_D(Compositor);
-
-    d->screenModel = model;
-    rootContext()->setContextProperty("screenModel", d->screenModel);
-
-    // Resize output geometry every time the screen setup changes
-    connect(d->screenModel, SIGNAL(totalGeometryChanged()),
-            this, SLOT(_q_resizeCompositor()));
+    return d->screenManager;
 }
 
 void Compositor::run()
@@ -288,10 +277,6 @@ void Compositor::run()
     if (d->running)
         return;
 
-    setSource(QUrl("qrc:/qml/Compositor.qml"));
-    setResizeMode(QQuickView::SizeRootObjectToView);
-    setColor(Qt::black);
-    winId();
     addDefaultShell();
 
     // TODO: Load workspaces number from config
@@ -307,6 +292,25 @@ void Compositor::run()
     d->running = true;
 }
 
+QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
+{
+    // TODO: Views should probably ordered by z-index in order to really
+    // pick the first view with that global coordinates
+
+    for (QtWayland::Surface *surface: m_compositor->surfaces()) {
+        for (QWaylandSurfaceView *surfaceView: surface->waylandSurface()->views()) {
+            WindowView *view = static_cast<WindowView *>(surfaceView);
+
+            if (!view)
+                continue;
+            if (view->globalGeometry().contains(globalPosition))
+                return view;
+        }
+    }
+
+    return Q_NULLPTR;
+}
+
 QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 {
     if (!surface) {
@@ -315,6 +319,32 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
     }
 
     return static_cast<QWaylandSurfaceItem *>(surface->views().first());
+}
+
+QWaylandSurfaceItem *Compositor::viewForOutput(QWaylandQuickSurface *surface, QWaylandOutput *output)
+{
+    if (!surface) {
+        qWarning() << "View for a null surface requested!";
+        return Q_NULLPTR;
+    }
+
+    if (!output) {
+        qWarning() << "View for a null output requested!";
+        return Q_NULLPTR;
+    }
+
+    // Search a view for this output
+    for (QWaylandSurfaceView *surfaceView: surface->views()) {
+        WindowView *view = static_cast<WindowView *>(surfaceView);
+        if (!view)
+            continue;
+
+        if (view->output() == output)
+            return view;
+    }
+
+    // None was found: create one
+    return new WindowView(surface, output);
 }
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
@@ -355,11 +385,10 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     QPointF pos = defaultInputDevice()->handle()->pointerDevice()->currentPosition();
 
     // Find the target screen (the one where the coordinates are in)
-    // FIXME: Should really use available geometry
     QRect geometry;
     bool targetScreenFound = false;
-    for (int i = 0; i < d->screenModel->rowCount(QModelIndex()); i++) {
-        geometry = d->screenModel->data(QModelIndex(), ScreenModel::GeometryRole).toRect();
+    for (int i = 0; i < outputs().size(); i++) {
+        geometry = outputs().at(i)->availableGeometry();
         if (geometry.contains(pos.toPoint())) {
             targetScreenFound = true;
             break;
@@ -398,97 +427,6 @@ void Compositor::lockSession()
 
 void Compositor::unlockSession()
 {
-}
-
-#if 0
-void Compositor::keyPressEvent(QKeyEvent *event)
-{
-    // Decode key event
-    uint32_t modifiers = 0;
-    uint32_t key = 0;
-
-    if (event->modifiers() & Qt::ControlModifier)
-        modifiers |= MODIFIER_CTRL;
-    if (event->modifiers() & Qt::AltModifier)
-        modifiers |= MODIFIER_ALT;
-    if (event->modifiers() & Qt::MetaModifier)
-        modifiers |= MODIFIER_SUPER;
-    if (event->modifiers() & Qt::ShiftModifier)
-        modifiers |= MODIFIER_SHIFT;
-
-    int k = 0;
-    while (keyTable[k]) {
-        if (event->key() == (int)keyTable[k]) {
-            key = keyTable[k + 1];
-            break;
-        }
-        k += 2;
-    }
-
-    // Look for a matching key binding
-    for (KeyBinding *keyBinding: m_shell->keyBindings()) {
-        if (keyBinding->modifiers() == modifiers && keyBinding->key() == key) {
-            keyBinding->send_triggered();
-            break;
-        }
-    }
-
-    // Call overridden method
-    QWaylandCompositor::keyPressEvent(event);
-}
-#endif
-
-void Compositor::keyPressEvent(QKeyEvent *event)
-{
-    Q_D(Compositor);
-    d->idleInhibit++;
-
-    QQuickView::keyPressEvent(event);
-}
-
-void Compositor::keyReleaseEvent(QKeyEvent *event)
-{
-    Q_D(Compositor);
-    d->idleInhibit--;
-
-    QQuickView::keyReleaseEvent(event);
-}
-
-void Compositor::mousePressEvent(QMouseEvent *event)
-{
-    Q_D(Compositor);
-    d->idleInhibit++;
-
-    QQuickView::mousePressEvent(event);
-}
-
-void Compositor::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_D(Compositor);
-    d->idleInhibit--;
-
-    QQuickView::mouseReleaseEvent(event);
-}
-
-void Compositor::mouseMoveEvent(QMouseEvent *event)
-{
-    setState(Active);
-
-    QQuickView::mouseMoveEvent(event);
-}
-
-void Compositor::wheelEvent(QWheelEvent *event)
-{
-    setState(Active);
-
-    QQuickView::wheelEvent(event);
-}
-
-void Compositor::resizeEvent(QResizeEvent *event)
-{
-    QQuickView::resizeEvent(event);
-    QWaylandCompositor::setOutputGeometry(QRect(0, 0, width(), height()));
-    qDebug("Resize output geometry to %dx%d", width(), height());
 }
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)

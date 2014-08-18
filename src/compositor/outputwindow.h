@@ -1,5 +1,5 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Green Island.
  *
  * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
@@ -24,21 +24,42 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-import QtQuick 2.0
+#ifndef GREENISLAND_OUTPUTWINDOW_H
+#define GREENISLAND_OUTPUTWINDOW_H
 
-Image {
-    property alias effects: effects
+#include <QtQuick/QQuickView>
 
-    id: root
-    source: "../images/wallpaper.png"
-    fillMode: Image.Tile
-    onParentChanged: {
-        width = parent.width;
-        height = parent.height;
-    }
+class Compositor;
+class Output;
 
-    Effects {
-        id: effects
-        workspace: root
-    }
-}
+class OutputWindow : public QQuickView
+{
+    Q_OBJECT
+public:
+    explicit OutputWindow(Compositor *compositor);
+
+    Compositor *compositor() const;
+
+    Output *output() const;
+    void setOutput(Output *output);
+
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+
+    void wheelEvent(QWheelEvent *event);
+
+private:
+    Compositor *m_compositor;
+    Output *m_output;
+
+private Q_SLOTS:
+    void sendCallbacks();
+    void componentStatusChanged(const QQuickView::Status &status);
+};
+
+#endif // GREENISLAND_OUTPUTWINDOW_H

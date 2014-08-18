@@ -22,7 +22,10 @@ set(SOURCES
     compositor.cpp
     logging.cpp
     main.cpp
-    screenmodel.cpp
+    output.cpp
+    outputwindow.cpp
+    windowview.cpp
+    screenmanager.cpp
     utilities.cpp
 )
 
