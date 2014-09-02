@@ -45,6 +45,8 @@
 #include "windowview.h"
 #include "screenmanager.h"
 
+#include "protocols/xdg-shell/xdgshell.h"
+
 /*
  * CompositorPrivate
  */
@@ -279,6 +281,8 @@ void Compositor::run()
     if (d->running)
         return;
 
+    // Add global interfaces
+    addGlobalInterface(new XdgShell());
     addDefaultShell();
 
     // TODO: Load workspaces number from config

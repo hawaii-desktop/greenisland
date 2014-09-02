@@ -1,5 +1,5 @@
 #=============================================================================
-# Copyright (C) 2012-2013 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+# Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,9 @@
 #=============================================================================
 
 find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner)
+
+include(FeatureSummary)
+add_feature_info("wayland-scanner" WAYLAND_SCANNER_EXECUTABLE "Required for generating Wayland protocols")
 
 # wayland_add_protocol_client(outfiles inputfile basename)
 function(WAYLAND_ADD_PROTOCOL_CLIENT _sources _protocol _basename)

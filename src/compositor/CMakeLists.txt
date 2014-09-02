@@ -27,6 +27,26 @@ set(SOURCES
     windowview.cpp
     screenmanager.cpp
     utilities.cpp
+    protocols/xdg-shell/xdgshell.cpp
+    protocols/xdg-shell/xdgsurface.cpp
+    protocols/xdg-shell/xdgsurfacegrabber.cpp
+    protocols/xdg-shell/xdgsurfacemovegrabber.cpp
+    protocols/xdg-shell/xdgsurfaceresizegrabber.cpp
+    protocols/xdg-shell/xdgpopup.cpp
+    protocols/xdg-shell/xdgpopupgrabber.cpp
+)
+
+wayland_add_protocol_client(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
+    xdg-shell
+)
+wayland_add_protocol_server(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
+    xdg-shell
+)
+qtwayland_add_protocol_server(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
+    xdg-shell xdg_
 )
 
 qt5_add_resources(RESOURCES greenisland.qrc)
@@ -36,6 +56,8 @@ target_link_libraries(greenisland
     Qt5::Quick
     Qt5::Compositor
     KF5::Screen
+    Wayland::Client
+    Wayland::Server
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")

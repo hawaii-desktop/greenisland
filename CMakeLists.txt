@@ -63,15 +63,13 @@ include(KDECompilerSettings)
 # Macro to print feature summary
 include(FeatureSummary)
 
-# Include Wayland macros
-include(Wayland)
-
 # Require at least gcc 4.8
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     if ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8")
         message(SEND_ERROR "Version ${CMAKE_CXX_COMPILER_VERSION} of the ${CMAKE_CXX_COMPILER_ID} C++ compiler is not supported. Please use version 4.8 or later.")
     endif()
-    # adjusting CMAKE_C_FLAGS to get wayland protocols to compile
+
+    # Adjusting CMAKE_C_FLAGS to get wayland protocols to compile
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu90")
 endif()
 
@@ -106,14 +104,16 @@ set_package_properties(EGL PROPERTIES
     PURPOSE "Required to build Green Island with EGL support")
 
 # Wayland
-find_package(Wayland 1.5 COMPONENTS Client Server Egl Cursor)
+find_package(Wayland 1.5 COMPONENTS Client Server)
 set_package_properties(Wayland PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required to build Green Island")
 add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
-add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for EGL support")
-add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for mouse pointer cursor support")
+
+# Include Wayland macros
+include(Wayland)
+include(QtWayland)
 
 # Subdirectories
 add_subdirectory(src)
