@@ -103,6 +103,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 {
     Q_UNUSED(hasBuffer);
 
+#if 0
     if (!cursorSurface)
         return;
 
@@ -116,6 +117,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
         QGuiApplication::setOverrideCursor(cursor);
         cursorIsSet = true;
     }
+#endif
 }
 
 void CompositorPrivate::_q_surfaceDestroyed(QObject *object)
