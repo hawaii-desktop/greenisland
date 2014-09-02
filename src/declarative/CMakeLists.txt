@@ -9,7 +9,7 @@ set(SOURCES
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
-qt5_use_modules(greenislandplugin Qml)
+target_link_libraries(greenislandplugin Qt5::Qml Qt5::Quick)
 
 install(TARGETS greenislandplugin LIBRARY
     DESTINATION ${QML_INSTALL_DIR}/GreenIsland)
