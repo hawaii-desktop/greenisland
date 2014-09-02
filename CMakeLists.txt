@@ -21,19 +21,6 @@ set(GREENISLAND_VERSION_MINOR 2)
 set(GREENISLAND_VERSION_PATCH 90)
 set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH}")
 
-# ECM setup
-find_package(ECM 0.0.10 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
-
-# Installation directories
-include(KDEInstallDirs)
-
-# Macro to print feature summary
-include(FeatureSummary)
-
-# Include Wayland macros
-include(Wayland)
-
 # Add custom uninstall target
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
@@ -64,6 +51,30 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
+# ECM setup
+find_package(ECM 0.0.10 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+# KDE macros
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings)
+
+# Macro to print feature summary
+include(FeatureSummary)
+
+# Include Wayland macros
+include(Wayland)
+
+# Require at least gcc 4.8
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if ("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8")
+        message(SEND_ERROR "Version ${CMAKE_CXX_COMPILER_VERSION} of the ${CMAKE_CXX_COMPILER_ID} C++ compiler is not supported. Please use version 4.8 or later.")
+    endif()
+    # adjusting CMAKE_C_FLAGS to get wayland protocols to compile
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu90")
+endif()
+
 # Minimum version requirements
 set(QT_MIN_VERSION "5.3.0")
 set(KF5_MIN_VERSION "5.0.0")
@@ -74,17 +85,35 @@ find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS DBus Gui Qml Quick Compos
 # Find KF5
 find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Screen)
 
-# Find pkg-config
-find_package(PkgConfig "0.22" REQUIRED)
+# GL requirements
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+    find_package(OpenGL)
+    set_package_properties(OpenGL PROPERTIES
+        DESCRIPTION "The OpenGL libraries"
+        URL "http://www.opengl.org"
+        TYPE REQUIRED)
+else()
+    find_package(OpenGLES)
+    set_package_properties(OpenGLES PROPERTIES
+        DESCRIPTION "The OpenGLES libraries"
+        URL "http://www.khronos.org/opengles"
+        TYPE REQUIRED)
+endif()
 
-# Find OpenGL libraries
-pkg_check_modules(GL gl REQUIRED)
-pkg_check_modules(EGL egl REQUIRED)
-pkg_check_modules(GLESV2 glesv2 REQUIRED)
+find_package(EGL)
+set_package_properties(EGL PROPERTIES
+    TYPE RUNTIME
+    PURPOSE "Required to build Green Island with EGL support")
 
-# Find Wayland libraries
-pkg_check_modules(WAYLAND_CLIENT wayland-client REQUIRED)
-pkg_check_modules(WAYLAND_SERVER wayland-server REQUIRED)
+# Wayland
+find_package(Wayland 1.5 COMPONENTS Client Server Egl Cursor)
+set_package_properties(Wayland PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Required to build Green Island")
+add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
+add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
+add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for EGL support")
+add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for mouse pointer cursor support")
 
 # Subdirectories
 add_subdirectory(src)

@@ -13,7 +13,7 @@ configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 # Create the cmakedirs.h header file
 configure_file(cmakedirs.h.in ${CMAKE_CURRENT_BINARY_DIR}/cmakedirs.h)
 
-if(USE_OPENGL)
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
 endif()
 
@@ -38,7 +38,7 @@ target_link_libraries(greenisland
     KF5::Screen
 )
 
-if(USE_OPENGL)
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${GL_LIBDIR})
     target_link_libraries(greenisland ${GL_LIBRARIES})
 else()
