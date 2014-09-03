@@ -26,6 +26,7 @@
 
 #include <QtQuick/QQuickItem>
 #include <QtCompositor/QWaylandCompositor>
+#include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlextendedsurface_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
@@ -185,11 +186,34 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Ping:
         m_shell->pingSurface(this);
         return true;
+    case Move:
+        moveWindow(m_surface->compositor()->defaultInputDevice());
+        return true;
     default:
         break;
     }
 
     return false;
+}
+
+void XdgSurface::moveWindow(QWaylandInputDevice *device)
+{
+    if (m_moveGrabber || m_resizeGrabber) {
+        qWarning() << "Unable to move surface: a move or resize operation was already requested!";
+        return;
+    }
+
+    // Can't move if the window is maximized or full screen
+    if (m_state == Maximized || m_state == FullScreen)
+        return;
+
+    // TODO: When maximized we should change state back to normal,
+    // restore the size and start the move grab
+
+    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+
+    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->currentPosition() - m_view->globalGeometry().topLeft());
+    pointer->startGrab(m_moveGrabber);
 }
 
 void XdgSurface::surface_destroy(Resource *resource)
@@ -245,23 +269,7 @@ void XdgSurface::surface_move(Resource *resource, wl_resource *seat, uint32_t se
     Q_UNUSED(resource);
     Q_UNUSED(serial);
 
-    if (m_moveGrabber || m_resizeGrabber) {
-        qWarning() << "Unable to move surface: a move or resize operation was already requested!";
-        return;
-    }
-
-    // Can't resize if the window is maximized or full screen
-    if (m_state == Maximized || m_state == FullScreen)
-        return;
-
-    // TODO: When maximized we should change state back to normal,
-    // restore the size and start the move grab
-
-    QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
-    QtWayland::Pointer *pointer = device->pointerDevice();
-
-    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_view->globalGeometry().topLeft());
-    pointer->startGrab(m_moveGrabber);
+    moveWindow(QtWayland::InputDevice::fromSeatResource(seat)->handle());
 }
 
 void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t serial, uint32_t edges)

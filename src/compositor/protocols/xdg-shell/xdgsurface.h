@@ -33,6 +33,7 @@
 #include "xdgshell.h"
 
 class QQuickItem;
+class QWaylandInputDevice;
 
 class WindowView;
 class XdgSurfaceMoveGrabber;
@@ -47,6 +48,10 @@ public:
         Normal = 0,
         Maximized,
         FullScreen
+    };
+
+    enum Operation {
+        Move = QWaylandSurfaceOp::UserType
     };
 
     struct Changes {
@@ -109,6 +114,10 @@ private:
     QRectF m_savedGeometry;
 
     QMap<uint32_t, Changes> m_pendingChanges;
+
+
+    void moveWindow(QWaylandInputDevice *device);
+
 
     void surface_destroy(Resource *resource) Q_DECL_OVERRIDE;
 
