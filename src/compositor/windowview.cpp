@@ -31,6 +31,7 @@
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "windowview.h"
+#include "output.h"
 
 WindowView::WindowView(QWaylandQuickSurface *surface, QWaylandOutput *output, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
@@ -96,20 +97,26 @@ QRectF WindowView::globalGeometry() const
 
 void WindowView::setGlobalGeometry(const QRectF &g)
 {
-    if (m_globalGeometry != g) {
-        m_globalGeometry = g;
-        Q_EMIT globalGeometryChanged();
+    if (m_globalGeometry == g)
+        return;
 
-        // WindowView is a child to the QtQuick window representation,
-        // when the latter is moved or resized it updates the globalGeometry
-        // property with window geometry in global coordinate space.
-        // We check globalGeometry against the output this view is in
-        // to determine whether the window has entered or left the output
-        if (QRectF(output()->geometry()).intersects(m_globalGeometry))
-            sendEnter(output());
-        else
-            sendLeave(output());
-    }
+    if (parentItem())
+        parentItem()->setPosition(qobject_cast<Output *>(output())->mapToOutput(g.topLeft()));
+    else
+        qWarning() << "Unable to set global geometry because view" << this << "has no parent";
+
+    // WindowView is a child to the QtQuick window representation,
+    // when the latter is moved or resized it updates the globalGeometry
+    // property with window geometry in global coordinate space.
+    // We check globalGeometry against the output this view is in
+    // to determine whether the window has entered or left the output
+    if (QRectF(output()->geometry()).intersects(g))
+        sendEnter(output());
+    else
+        sendLeave(output());
+
+    m_globalGeometry = g;
+    Q_EMIT globalGeometryChanged();
 }
 
 void WindowView::sendEnter(QWaylandOutput *output)
