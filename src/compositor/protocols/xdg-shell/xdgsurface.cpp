@@ -65,11 +65,9 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
         m_surface->setMapped(hasBuffer);
     });
 
-#if 0
     // Set visibility
     if (m_surface->handle()->extendedSurface())
         m_surface->handle()->extendedSurface()->setVisibility(QWindow::Windowed, false);
-#endif
 }
 
 uint32_t XdgSurface::nextSerial() const
@@ -168,12 +166,10 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
         send_close();
         return true;
     case QWaylandSurfaceOp::SetVisibility:
-#if 0
         if (m_surface->handle()->extendedSurface()) {
             m_surface->handle()->extendedSurface()->setVisibility(static_cast<QWaylandSurfaceSetVisibilityOp *>(op)->visibility());
             return true;
         }
-#endif
         return false;
     case QWaylandSurfaceOp::Resize: {
         Changes changes;
@@ -232,11 +228,9 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
     QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
     m_surface->handle()->setTransientParent(parent->handle());
 
-#if 0
     // Set visibility
     if (m_surface->handle()->extendedSurface())
         m_surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
-#endif
 }
 
 void XdgSurface::surface_set_title(Resource *resource, const QString &title)

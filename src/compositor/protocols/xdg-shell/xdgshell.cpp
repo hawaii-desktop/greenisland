@@ -92,10 +92,8 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);
 
-#if 0
     if (surface->handle()->extendedSurface())
         surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
-#endif
 
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seatResource);
 
