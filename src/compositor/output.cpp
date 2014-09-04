@@ -76,7 +76,7 @@ void OutputPrivate::_q_currentModeIdChanged()
         q->setTransform(QWaylandOutput::Transform180);
         break;
     case KScreen::Output::Right:
-        q->setTransform(QWaylandOutput::TransformFlipped270);
+        q->setTransform(QWaylandOutput::Transform270);
         break;
     }
 
