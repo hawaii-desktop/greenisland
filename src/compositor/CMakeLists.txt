@@ -27,6 +27,12 @@ set(SOURCES
     windowview.cpp
     screenmanager.cpp
     utilities.cpp
+    protocols/wl-shell/wlshell.cpp
+    protocols/wl-shell/wlshellsurface.cpp
+    protocols/wl-shell/wlshellsurfacegrabber.cpp
+    protocols/wl-shell/wlshellsurfacepopupgrabber.cpp
+    protocols/wl-shell/wlshellsurfacemovegrabber.cpp
+    protocols/wl-shell/wlshellsurfaceresizegrabber.cpp
     protocols/xdg-shell/xdgshell.cpp
     protocols/xdg-shell/xdgsurface.cpp
     protocols/xdg-shell/xdgsurfacegrabber.cpp

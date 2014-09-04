@@ -45,6 +45,7 @@
 #include "windowview.h"
 #include "screenmanager.h"
 
+#include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
 /*
@@ -282,8 +283,8 @@ void Compositor::run()
         return;
 
     // Add global interfaces
+    addGlobalInterface(new WlShell());
     addGlobalInterface(new XdgShell());
-    addDefaultShell();
 
     // TODO: Load workspaces number from config
     //Q_EMIT workspaceAdded();
