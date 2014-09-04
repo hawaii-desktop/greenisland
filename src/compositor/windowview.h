@@ -51,6 +51,9 @@ public:
 Q_SIGNALS:
     void globalGeometryChanged();
 
+protected:
+    void mouseReleaseEvent(QMouseEvent *event);
+
 private:
     QWaylandOutput *m_output;
     QRectF m_globalGeometry;

@@ -119,6 +119,17 @@ void WindowView::setGlobalGeometry(const QRectF &g)
     Q_EMIT globalGeometryChanged();
 }
 
+void WindowView::mouseReleaseEvent(QMouseEvent *event)
+{
+    QWaylandSurfaceItem::mouseReleaseEvent(event);
+
+    if (surface()) {
+        // Raise window when clicked, whether to assign focus
+        // is decided from QML
+        Q_EMIT surface()->raiseRequested();
+    }
+}
+
 void WindowView::sendEnter(QWaylandOutput *output)
 {
     //qDebug() << "Enter" << output;
