@@ -73,6 +73,11 @@ WlShellSurface::~WlShellSurface()
     }
 }
 
+QWaylandSurface::WindowType WlShellSurface::type() const
+{
+    return m_surface->windowType();
+}
+
 WlShellSurface::State WlShellSurface::state() const
 {
     return m_state;
@@ -88,7 +93,7 @@ QQuickItem *WlShellSurface::window() const
     return m_view->parentItem();
 }
 
-QQuickItem *WlShellSurface::transientParent() const
+WindowView *WlShellSurface::parentView() const
 {
     QWaylandSurface *transientParent = m_surface->transientParent();
     if (!transientParent)
@@ -100,8 +105,16 @@ QQuickItem *WlShellSurface::transientParent() const
             continue;
 
         if (view->output() == m_view->output())
-            return view->parentItem();
+            return view;
     }
+
+    return Q_NULLPTR;
+}
+
+QQuickItem *WlShellSurface::parentWindow() const
+{
+    if (parentView() && parentView()->parentItem())
+        return parentView()->parentItem();
 
     return Q_NULLPTR;
 }
@@ -130,7 +143,12 @@ void WlShellSurface::setGeometry(const QRectF &geometry)
     }
 }
 
-void WlShellSurface::setOffset(const QPointF &pt)
+QPointF WlShellSurface::transientOffset() const
+{
+    return m_surface->transientOffset();
+}
+
+void WlShellSurface::setTransientOffset(const QPointF &pt)
 {
     m_surface->handle()->setTransientOffset(pt.x(), pt.y());
 }

@@ -28,6 +28,7 @@
 #include <QtQuick/QQuickItem>
 
 #include "wlshellsurfacemovegrabber.h"
+#include "windowview.h"
 
 WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurface, const QPointF &offset)
     : WlShellSurfaceGrabber(shellSurface)
@@ -49,22 +50,39 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
     // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
 
-    // Move the window representation
-    if (m_shellSurface->state() == WlShellSurface::Maximized) {
-        // Maximized windows if dragged are restored to the original position,
-        // but we want to do that with a threshold to avoid unintended grabs
-        QPointF threshold(m_offset + QPointF(20, 20));
-        if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
-            m_shellSurface->restore();
+    // Top level windows
+    if (m_shellSurface->type() == QWaylandSurface::Toplevel) {
+        // Move the window representation
+        if (m_shellSurface->state() == WlShellSurface::Maximized) {
+            // Maximized windows if dragged are restored to the original position,
+            // but we want to do that with a threshold to avoid unintended grabs
+            QPointF threshold(m_offset + QPointF(20, 20));
+            if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
+                m_shellSurface->restore();
+                m_shellSurface->setPosition(pt);
+            }
+        } else {
             m_shellSurface->setPosition(pt);
         }
-    } else {
-        m_shellSurface->setPosition(pt);
     }
 
-    // Set transient window offset
-    if (m_shellSurface->transientParent())
-        m_shellSurface->setOffset(pt - m_shellSurface->transientParent()->position());
+    // Move parent, transient will be moved automatically preserving its offset
+    // because it's a child QML item
+    WindowView *parentView = m_shellSurface->parentView();
+    if (parentView) {
+        QPointF delta = pt - m_shellSurface->transientOffset();
+
+        QRectF geometry(parentView->globalGeometry());
+        geometry.setTopLeft(delta);
+
+        for (QWaylandSurfaceView *surfaceView: parentView->surface()->views()) {
+            WindowView *view = static_cast<WindowView *>(surfaceView);
+            if (!view)
+                continue;
+
+            view->setGlobalGeometry(geometry);
+        }
+    }
 }
 
 void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)

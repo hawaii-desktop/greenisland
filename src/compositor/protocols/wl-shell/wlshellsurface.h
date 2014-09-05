@@ -60,18 +60,22 @@ public:
                             wl_client *client, uint32_t id);
     ~WlShellSurface();
 
+    QWaylandSurface::WindowType type() const;
+
     State state() const;
     void setState(const State &state);
 
     WindowView *view() const;
-
     QQuickItem *window() const;
-    QQuickItem *transientParent() const;
+
+    WindowView *parentView() const;
+    QQuickItem *parentWindow() const;
 
     void setPosition(const QPointF &pt);
     void setGeometry(const QRectF &geometry);
 
-    void setOffset(const QPointF &pt);
+    QPointF transientOffset() const;
+    void setTransientOffset(const QPointF &pt);
 
     void restore();
 
