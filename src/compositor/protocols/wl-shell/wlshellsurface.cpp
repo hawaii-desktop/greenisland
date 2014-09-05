@@ -73,6 +73,11 @@ WlShellSurface::~WlShellSurface()
     }
 }
 
+WlShellSurface::State WlShellSurface::state() const
+{
+    return m_state;
+}
+
 WindowView *WlShellSurface::view() const
 {
     return m_view;
@@ -114,9 +119,39 @@ void WlShellSurface::setPosition(const QPointF &pt)
     }
 }
 
+void WlShellSurface::setGeometry(const QRectF &geometry)
+{
+    for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
+        WindowView *view = static_cast<WindowView *>(surfaceView);
+        if (!view)
+            continue;
+
+        view->setGlobalGeometry(geometry);
+    }
+}
+
 void WlShellSurface::setOffset(const QPointF &pt)
 {
     m_surface->handle()->setTransientOffset(pt.x(), pt.y());
+}
+
+void WlShellSurface::restore()
+{
+    // Makes sense only for maximized windows
+    if (m_state == Normal)
+        return;
+
+    // Restore previous geometry
+    m_prevState = m_state;
+    m_state = Normal;
+    setGeometry(m_prevGlobalGeometry);
+
+    // Actually resize it
+    requestResize(m_prevGlobalGeometry.size().toSize());
+
+    // Set visibility accordingly
+    if (m_surface->handle()->extendedSurface())
+        m_surface->handle()->extendedSurface()->setVisibility(QWindow::Windowed, false);
 }
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
@@ -158,8 +193,8 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
         return;
     }
 
-    // Can't move if the window is maximized or full screen
-    if (m_state == Maximized || m_state == FullScreen)
+    // Can't move if the window is full screen
+    if (m_state == FullScreen)
         return;
 
     // TODO: When maximized we should change state back to normal,
@@ -254,14 +289,7 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
     if (m_state == Maximized || m_state == FullScreen) {
         m_prevState = m_state;
         m_state = Normal;
-
-        for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view)
-                continue;
-            qDebug() << view->globalGeometry() << m_prevGlobalGeometry;
-            view->setGlobalGeometry(m_prevGlobalGeometry);
-        }
+        setGeometry(m_prevGlobalGeometry);
     }
 
     if (m_surface->handle()->extendedSurface())
@@ -308,12 +336,7 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
 
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
-    for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-        view->setGlobalGeometry(output->geometry());
-    }
+    setGeometry(output->geometry());
 
     // Set state
     m_prevState = m_state;
@@ -374,12 +397,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
-    for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-        view->setGlobalGeometry(output->availableGeometry());
-    }
+    setGeometry(output->availableGeometry());
 
     // Set state
     m_prevState = m_state;

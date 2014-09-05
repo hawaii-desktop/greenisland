@@ -60,14 +60,20 @@ public:
                             wl_client *client, uint32_t id);
     ~WlShellSurface();
 
+    State state() const;
+    void setState(const State &state);
+
     WindowView *view() const;
 
     QQuickItem *window() const;
     QQuickItem *transientParent() const;
 
     void setPosition(const QPointF &pt);
+    void setGeometry(const QRectF &geometry);
 
     void setOffset(const QPointF &pt);
+
+    void restore();
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;

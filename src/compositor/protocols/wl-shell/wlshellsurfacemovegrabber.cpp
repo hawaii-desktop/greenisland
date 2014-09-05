@@ -46,9 +46,21 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
     QCursor cursor(Qt::ClosedHandCursor);
     QGuiApplication::setOverrideCursor(cursor);
 
-    // Move the window representation
+    // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
-    m_shellSurface->setPosition(pt);
+
+    // Move the window representation
+    if (m_shellSurface->state() == WlShellSurface::Maximized) {
+        // Maximized windows if dragged are restored to the original position,
+        // but we want to do that with a threshold to avoid unintended grabs
+        QPointF threshold(m_offset + QPointF(20, 20));
+        if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
+            m_shellSurface->restore();
+            m_shellSurface->setPosition(pt);
+        }
+    } else {
+        m_shellSurface->setPosition(pt);
+    }
 
     // Set transient window offset
     if (m_shellSurface->transientParent())
