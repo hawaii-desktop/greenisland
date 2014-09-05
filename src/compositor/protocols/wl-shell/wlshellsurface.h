@@ -63,7 +63,6 @@ public:
     QWaylandSurface::WindowType type() const;
 
     State state() const;
-    void setState(const State &state);
 
     WindowView *view() const;
     QQuickItem *window() const;
