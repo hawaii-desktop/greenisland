@@ -113,8 +113,7 @@ add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
 add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 
 # Include Wayland macros
-include(Wayland)
-include(QtWayland)
+include(ECMWayland)
 
 # Subdirectories
 add_subdirectory(headers)

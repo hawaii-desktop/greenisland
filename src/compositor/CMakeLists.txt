@@ -39,30 +39,16 @@ set(SOURCES
     protocols/xdg-shell/xdgpopupgrabber.cpp
 )
 
-wayland_add_protocol_client(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
-    xdg-shell
-)
-wayland_add_protocol_server(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
-    xdg-shell
-)
-qtwayland_add_protocol_server(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
-    xdg-shell xdg_
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
+    BASENAME xdg-shell
+    PREFIX xdg_
 )
 
-wayland_add_protocol_client(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
-    fullscreen-shell
-)
-wayland_add_protocol_server(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
-    fullscreen-shell
-)
-qtwayland_add_protocol_client(SOURCES
-    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
-    fullscreen-shell _wl_
+ecm_add_qtwayland_client_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
+    BASENAME fullscreen-shell
+    PREFIX _wl_
 )
 
 qt5_add_resources(RESOURCES greenisland.qrc)
