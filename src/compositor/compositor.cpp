@@ -122,22 +122,6 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 #endif
 }
 
-void CompositorPrivate::_q_surfaceMapped()
-{
-    Q_Q(Compositor);
-
-    QWaylandQuickSurface *surface = qobject_cast<QWaylandQuickSurface *>(q->sender());
-    Q_EMIT q->surfaceMapped(QVariant::fromValue(surface));
-}
-
-void CompositorPrivate::_q_surfaceUnmapped()
-{
-    Q_Q(Compositor);
-
-    QWaylandQuickSurface *surface = qobject_cast<QWaylandQuickSurface *>(q->sender());
-    Q_EMIT q->surfaceUnmapped(QVariant::fromValue(surface));
-}
-
 void CompositorPrivate::_q_outputRemoved(QWaylandOutput *output)
 {
     Q_Q(Compositor);
@@ -351,8 +335,12 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     if (!surface)
         return;
 
-    connect(surface, SIGNAL(mapped()), this, SLOT(_q_surfaceMapped()));
-    connect(surface, SIGNAL(unmapped()), this, SLOT(_q_surfaceUnmapped()));
+    connect(surface, &QWaylandSurface::mapped, [=]() {
+        Q_EMIT surfaceMapped(QVariant::fromValue(surface));
+    });
+    connect(surface, &QWaylandSurface::unmapped, [=]() {
+        Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
+    });
 
 #if 0
     // Create application window instance
