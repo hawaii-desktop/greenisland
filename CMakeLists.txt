@@ -116,6 +116,7 @@ include(Wayland)
 include(QtWayland)
 
 # Subdirectories
+add_subdirectory(headers)
 add_subdirectory(src)
 
 # Display featute summary

@@ -1,4 +1,5 @@
 include_directories(
+    ${CMAKE_BINARY_DIR}/headers
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
 )
@@ -6,12 +7,6 @@ include_directories(
 if(systemd_FOUND)
     include_directories(${systemd_INCLUDE_DIRS})
 endif()
-
-# Create the config.h header file
-configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-# Create the cmakedirs.h header file
-configure_file(cmakedirs.h.in ${CMAKE_CURRENT_BINARY_DIR}/cmakedirs.h)
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
@@ -79,4 +74,4 @@ if(systemd_FOUND)
     target_link_libraries(greenisland ${systemd_LIBRARIES})
 endif()
 
-install(TARGETS greenisland DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(TARGETS greenisland DESTINATION ${BIN_INSTALL_DIR})
