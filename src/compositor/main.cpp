@@ -32,6 +32,7 @@
 
 #include "compositor.h"
 #include "config.h"
+#include "globalregistry.h"
 #include "logging.h"
 #include "utilities.h"
 
@@ -118,6 +119,10 @@ int main(int argc, char *argv[])
         qputenv("KSCREEN_BACKEND", QByteArray("Fake"));
         qputenv("TEST_DATA", parser.value(fakeScreenOption).toUtf8());
     }
+
+    // Bind to globals such as full screen shell if we are a Wayland client
+    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
+        GlobalRegistry::instance()->start();
 
     // Create the compositor
     Compositor *compositor = new Compositor(socket);

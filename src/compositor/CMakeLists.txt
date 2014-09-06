@@ -15,6 +15,7 @@ endif()
 set(SOURCES
     bufferattacher.cpp
     compositor.cpp
+    globalregistry.cpp
     logging.cpp
     main.cpp
     output.cpp
@@ -22,6 +23,7 @@ set(SOURCES
     windowview.cpp
     screenmanager.cpp
     utilities.cpp
+    protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/wl-shell/wlshell.cpp
     protocols/wl-shell/wlshellsurface.cpp
     protocols/wl-shell/wlshellsurfacegrabber.cpp
@@ -48,6 +50,19 @@ wayland_add_protocol_server(SOURCES
 qtwayland_add_protocol_server(SOURCES
     ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
     xdg-shell xdg_
+)
+
+wayland_add_protocol_client(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
+    fullscreen-shell
+)
+wayland_add_protocol_server(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
+    fullscreen-shell
+)
+qtwayland_add_protocol_client(SOURCES
+    ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
+    fullscreen-shell _wl_
 )
 
 qt5_add_resources(RESOURCES greenisland.qrc)
