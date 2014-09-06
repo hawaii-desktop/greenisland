@@ -1,0 +1,77 @@
+{
+    "screen" :
+    {
+        "id" : 1,
+        "maxSize" : {
+            "width" : 8192,
+            "height" : 8192
+        },
+        "minSize" : {
+            "width" : 320,
+            "height" : 200
+        },
+        "currentSize" : {
+            "width" : 2048,
+            "height" : 768
+        }
+    },
+    "outputs" :
+    [
+        {
+            "id" : 1,
+            "name" : "Fake1",
+            "type" : "LVDS",
+            "modes" :
+            [
+                {
+                    "id" : 1,
+                    "name" : "1024x640",
+                    "refreshRate" : 60,
+                    "size" : {
+                        "width" : 1024,
+                        "height" : 640
+                    }
+                }
+            ],
+            "pos" : {
+                "x" : 0,
+                "y" : 0
+            },
+            "currentModeId" : 1,
+            "preferredModes" : [ 1 ],
+            "rotation" : 1,
+            "connected" : true,
+            "enabled" : true,
+            "primary" : true,
+            "edid" : "AP///////wBMLcMFMzJGRQkUAQMOMx14Ku6Ro1RMmSYPUFQjCACBAIFAgYCVAKlAswABAQEBAjqAGHE4LUBYLEUA/h8RAAAeAAAA/QA4PB5REQAKICAgICAgAAAA/ABTeW5jTWFzdGVyCiAgAAAA/wBIOU1aMzAyMTk2CiAgAC4="
+        },
+        {
+            "id" : 2,
+            "name" : "Fake2",
+            "type" : "HDMI",
+            "modes" :
+            [
+                {
+                    "id" : 1,
+                    "name" : "1024x768",
+                    "refreshRate" : 60,
+                    "size" : {
+                        "width" : 1024,
+                        "height" : 768
+                    }
+                }
+            ],
+            "pos" : {
+                "x" : 1024,
+                "y" : 0
+            },
+            "currentModeId" : 1,
+            "preferredModes" : [ 1 ],
+            "rotation" : 1,
+            "connected" : true,
+            "enabled" : true,
+            "primary" : false,
+            "edid" : "AP///////wAQrBbwTExLQQ4WAQOANCB46h7Frk80sSYOUFSlSwCBgKlA0QBxTwEBAQEBAQEBKDyAoHCwI0AwIDYABkQhAAAaAAAA/wBGNTI1TTI0NUFLTEwKAAAA/ABERUxMIFUyNDEwCiAgAAAA/QA4TB5REQAKICAgICAgAToCAynxUJAFBAMCBxYBHxITFCAVEQYjCQcHZwMMABAAOC2DAQAA4wUDAQI6gBhxOC1AWCxFAAZEIQAAHgEdgBhxHBYgWCwlAAZEIQAAngEdAHJR0B4gbihVAAZEIQAAHowK0Iog4C0QED6WAAZEIQAAGAAAAAAAAAAAAAAAAAAAPg=="
+        }
+    ]
+}
