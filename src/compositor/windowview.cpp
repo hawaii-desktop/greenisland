@@ -30,6 +30,7 @@
 #include <QtCompositor/private/qwloutput_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "compositor.h"
 #include "windowview.h"
 #include "output.h"
 
@@ -37,6 +38,13 @@ WindowView::WindowView(QWaylandQuickSurface *surface, QWaylandOutput *output, QQ
     : QWaylandSurfaceItem(surface, parent)
     , m_output(output)
 {
+    // Inform the compositor QML implementation that the surface was destroyed
+    // because all window representations must be destroyed as well
+    connect(this, &WindowView::surfaceDestroyed, [=]() {
+        Compositor *compositor = static_cast<Compositor *>(surface->compositor());
+        Q_EMIT compositor->surfaceDestroyed(QVariant::fromValue(surface));
+    });
+
 #if 0
     // Update global geometry ourselves every time the parent has changed
     // TODO: All of this should be done only when the window is moved or resized by the user

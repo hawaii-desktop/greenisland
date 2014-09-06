@@ -61,7 +61,6 @@ public:
 
     void _q_updateCursor(bool hasBuffer);
 
-    void _q_surfaceDestroyed(QObject *object);
     void _q_surfaceMapped();
     void _q_surfaceUnmapped();
     void _q_outputRemoved(QWaylandOutput *output);
@@ -121,14 +120,6 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
         cursorIsSet = true;
     }
 #endif
-}
-
-void CompositorPrivate::_q_surfaceDestroyed(QObject *object)
-{
-    Q_Q(Compositor);
-
-    QWaylandQuickSurface *surface = static_cast<QWaylandQuickSurface *>(object);
-    Q_EMIT q->surfaceDestroyed(QVariant::fromValue(surface));
 }
 
 void CompositorPrivate::_q_surfaceMapped()
@@ -360,7 +351,6 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     if (!surface)
         return;
 
-    connect(surface, SIGNAL(destroyed(QObject*)), this, SLOT(_q_surfaceDestroyed(QObject*)));
     connect(surface, SIGNAL(mapped()), this, SLOT(_q_surfaceMapped()));
     connect(surface, SIGNAL(unmapped()), this, SLOT(_q_surfaceUnmapped()));
 
