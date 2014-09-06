@@ -74,14 +74,14 @@ target_link_libraries(greenisland
     KF5::Screen
     Wayland::Client
     Wayland::Server
+    Wayland::Egl
+    EGL::EGL
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${GL_LIBDIR})
-    target_link_libraries(greenisland ${GL_LIBRARIES})
+    target_link_libraries(greenisland ${OPENGL_LIBRARIES})
 else()
-    set_target_properties(greenisland PROPERTIES LINK_FLAGS -L${EGL_LIBDIR})
-    target_link_libraries(greenisland ${EGL_LIBRARIES})
+    target_link_libraries(greenisland ${OPENGLES_LIBRARIES})
 endif()
 
 if(systemd_FOUND)

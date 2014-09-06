@@ -104,12 +104,13 @@ set_package_properties(EGL PROPERTIES
     PURPOSE "Required to build Green Island with EGL support")
 
 # Wayland
-find_package(Wayland 1.5 COMPONENTS Client Server)
+find_package(Wayland 1.5 COMPONENTS Client Server Egl)
 set_package_properties(Wayland PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required to build Green Island")
 add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
+add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 
 # Include Wayland macros
 include(Wayland)
