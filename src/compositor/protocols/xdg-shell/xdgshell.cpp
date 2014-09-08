@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlextendedsurface_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
@@ -91,9 +90,6 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
 
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);
-
-    if (surface->handle()->extendedSurface())
-        surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
 
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seatResource);
 

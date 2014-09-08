@@ -28,7 +28,6 @@
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlextendedsurface_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -64,10 +63,6 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
         m_surface->setMapped(hasBuffer);
     });
-
-    // Set visibility
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::Windowed, false);
 }
 
 uint32_t XdgSurface::nextSerial() const
@@ -165,12 +160,6 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Close:
         send_close();
         return true;
-    case QWaylandSurfaceOp::SetVisibility:
-        if (m_surface->handle()->extendedSurface()) {
-            m_surface->handle()->extendedSurface()->setVisibility(static_cast<QWaylandSurfaceSetVisibilityOp *>(op)->visibility());
-            return true;
-        }
-        return false;
     case QWaylandSurfaceOp::Resize: {
         Changes changes;
         changes.active = m_view->hasFocus();
@@ -227,10 +216,6 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
     // Assign transient parent
     QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
     m_surface->handle()->setTransientParent(parent->handle());
-
-    // Set visibility
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
 }
 
 void XdgSurface::surface_set_title(Resource *resource, const QString &title)

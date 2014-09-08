@@ -26,7 +26,6 @@
 
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/private/qwlextendedsurface_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -166,10 +165,6 @@ void WlShellSurface::restore()
 
     // Actually resize it
     requestResize(m_prevGlobalGeometry.size().toSize());
-
-    // Set visibility accordingly
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::Windowed, false);
 }
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
@@ -309,9 +304,6 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
         m_state = Normal;
         setGeometry(m_prevGlobalGeometry);
     }
-
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::Windowed, false);
 }
 
 void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource *parentResource,
@@ -327,9 +319,6 @@ void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource
         m_surface->handle()->setTransientInactive(true);
 
     setSurfaceType(QWaylandSurface::Transient);
-
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
 }
 
 void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t method,
@@ -359,9 +348,6 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     // Set state
     m_prevState = m_state;
     m_state = FullScreen;
-
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::FullScreen, false);
 }
 
 void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *seat,
@@ -379,9 +365,6 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
     m_surface->handle()->setTransientOffset(x, y);
 
     setSurfaceType(QWaylandSurface::Popup);
-
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::AutomaticVisibility, false);
 
     // Map popup
     connect(m_surface, &QWaylandSurface::mapped, [=]() {
@@ -420,9 +403,6 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     // Set state
     m_prevState = m_state;
     m_state = Maximized;
-
-    if (m_surface->handle()->extendedSurface())
-        m_surface->handle()->extendedSurface()->setVisibility(QWindow::Maximized, false);
 }
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)
