@@ -45,6 +45,7 @@
 #include "windowview.h"
 #include "screenmanager.h"
 
+#include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
@@ -258,6 +259,7 @@ void Compositor::run()
         return;
 
     // Add global interfaces
+    addGlobalInterface(new PlasmaShell());
     addGlobalInterface(new WlShell());
     addGlobalInterface(new XdgShell());
 
