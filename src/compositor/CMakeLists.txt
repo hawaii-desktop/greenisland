@@ -23,6 +23,7 @@ set(SOURCES
     outputwindow.cpp
     windowview.cpp
     screenmanager.cpp
+    shellwindowview.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/plasma/plasmashell.cpp
