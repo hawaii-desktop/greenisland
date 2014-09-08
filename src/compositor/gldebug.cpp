@@ -38,6 +38,24 @@
 
 namespace GreenIsland {
 
+static QString wordWrap(const QString &str, int wrapAt = 55)
+{
+    QString tmpStr = str;
+    int curLen = wrapAt;
+
+    while (curLen < str.length()) {
+        int spacePos = tmpStr.indexOf(' ', curLen);
+        if (spacePos == -1)
+            spacePos = tmpStr.indexOf(' ', curLen);
+        if (spacePos != -1) {
+            tmpStr.replace(spacePos, 1, "\n\t");
+            curLen = spacePos + wrapAt + 1;
+        }
+    }
+
+    return tmpStr;
+}
+
 void printGraphicsInformation(QWindow *window)
 {
     if (!window)
@@ -68,7 +86,7 @@ void printGraphicsInformation(QWindow *window)
             str = eglQueryString(display, EGL_EXTENSIONS);
             QStringList extensions = QString(str).split(QLatin1Char(' '));
             qCDebug(GREENISLAND_COMPOSITOR) << "EGL extensions:"
-                                            << qPrintable(extensions.join(QStringLiteral("\n\t")));
+                                            << qPrintable(wordWrap(extensions.join(" ")));
         }
     }
 
@@ -87,7 +105,7 @@ void printGraphicsInformation(QWindow *window)
     str = (char *)glGetString(GL_EXTENSIONS);
     QStringList extensions = QString(str).split(QLatin1Char(' '));
     qCDebug(GREENISLAND_COMPOSITOR) << "GL extensions:"
-                                    << qPrintable(extensions.join(QStringLiteral("\n\t")));
+                                    << qPrintable(wordWrap(extensions.join(" ")));
 }
 
 }
