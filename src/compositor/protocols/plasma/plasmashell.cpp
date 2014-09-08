@@ -32,6 +32,7 @@
 
 #include "output.h"
 #include "plasmashell.h"
+#include "plasmasurface.h"
 #include "windowview.h"
 
 PlasmaShell::PlasmaShell()
@@ -50,60 +51,43 @@ void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
     add(client, id);
 }
 
-void PlasmaShell::shell_set_position(Resource *resource, wl_resource *outputResource,
+void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
+                       wl_resource *surfaceResource)
+{
+    Q_UNUSED(resource);
+
+    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    if (!surface) {
+        qWarning() << "Unable to retrieve surface from resource!";
+        return;
+    }
+
+    new PlasmaSurface(this, surface, resource->client(), id);
+}
+
+void PlasmaShell::shell_set_global_position(Resource *resource,
                         wl_resource *surfaceResource, int32_t x, int32_t y)
 {
     Q_UNUSED(resource);
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-
-    // We have only one view for shell windows
-    if (surface->views().size() != 1)
-        return;
-
-    // Move view to global coordinates
-    QWaylandSurfaceItem *view = static_cast<QWaylandSurfaceItem *>(surface->views().at(0));
-
-    Output *output = qobject_cast<Output *>(Output::fromResource(outputResource));
-    view->setPosition(output->mapToGlobal(QPointF(x, y)));
-}
-
-void PlasmaShell::shell_set_surface_role(Resource *resource, wl_resource *output,
-                            wl_resource *surfaceResource, uint32_t role)
-{
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-
-    // Role can be set only once
-    if (surface->views().size() > 0)
-        return;
-
-    // Create a surface item
-    QWaylandQuickSurface *quickSurface = qobject_cast<QWaylandQuickSurface *>(surface);
-    if (!quickSurface) {
-        qWarning() << "Surface" << surface << "doesn't inherit from QWaylandQuickSurface";
+    if (!surface) {
+        qWarning() << "Unable to retrieve surface from resource!";
         return;
     }
-    QWaylandSurfaceItem *view = new QWaylandSurfaceItem(quickSurface);
 
-    // Set position according to the role
-    switch (role) {
-    case QtWaylandServer::org_kde_plasma_shell::role_desktop:
-        view->setPosition(QPointF(0, 0));
-        break;
-    case QtWaylandServer::org_kde_plasma_shell::role_dashboard:
-        view->setPosition(QPointF(0, 0));
-        break;
-    case QtWaylandServer::org_kde_plasma_shell::role_lock:
-        view->setPosition(QPointF(0, 0));
-        break;
-    case QtWaylandServer::org_kde_plasma_shell::role_notification:
-        view->setPosition(QPointF(0, 0));
-        break;
-    case QtWaylandServer::org_kde_plasma_shell::role_overlay:
-        view->setPosition(QPointF(0, 0));
-        break;
-    default:
-        break;
+    // We have only one view for shell windows
+    for (QWaylandSurfaceView *surfaceView: surface->views()) {
+        WindowView *view = static_cast<WindowView *>(surfaceView);
+        if (!view)
+            continue;
+
+        QPointF pos = qobject_cast<Output *>(view->output())->mapToOutput(QPointF(x, y));
+
+        QRectF geometry = view->globalGeometry();
+        geometry.setTopLeft(pos);
+
+        view->setGlobalGeometry(geometry);
     }
 }
 

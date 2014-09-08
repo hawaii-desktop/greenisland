@@ -27,6 +27,7 @@ set(SOURCES
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/plasma/plasmashell.cpp
+    protocols/plasma/plasmasurface.cpp
     protocols/wl-shell/wlshell.cpp
     protocols/wl-shell/wlshellsurface.cpp
     protocols/wl-shell/wlshellsurfacegrabber.cpp

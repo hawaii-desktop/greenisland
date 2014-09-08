@@ -41,14 +41,13 @@ public:
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
 
 private:
-    void shell_set_position(Resource *resource, wl_resource *outputResource,
+    void shell_get_surface(Resource *resource, uint32_t id,
+                           wl_resource *surfaceResource) Q_DECL_OVERRIDE;
+    void shell_set_global_position(Resource *resource,
                             wl_resource *surfaceResource,
                             int32_t x, int32_t y) Q_DECL_OVERRIDE;
     //void shell_set_screen_edge(Resource *resource, wl_resource *surface, uint32_t screen_edge) Q_DECL_OVERRIDE;
     //void shell_set_grab_surface(Resource *resource, wl_resource *surface) Q_DECL_OVERRIDE;
-    void shell_set_surface_role(Resource *resource, wl_resource *output,
-                                wl_resource *surfaceResource,
-                                uint32_t role) Q_DECL_OVERRIDE;
     //void shell_lock(Resource *resource) Q_DECL_OVERRIDE;
     //void shell_unlock(Resource *resource) Q_DECL_OVERRIDE;
     void shell_desktop_ready(Resource *resource) Q_DECL_OVERRIDE;
