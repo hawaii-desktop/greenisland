@@ -26,4 +26,4 @@
 
 #include "logging.h"
 
-Q_LOGGING_CATEGORY(HAWAII_COMPOSITOR, "hawaii.compositor")
+Q_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR, "greenisland.compositor")

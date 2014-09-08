@@ -58,6 +58,7 @@ private:
     Output *m_output;
 
 private Q_SLOTS:
+    void printInfo();
     void sendCallbacks();
     void componentStatusChanged(const QQuickView::Status &status);
 };

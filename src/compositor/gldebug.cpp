@@ -43,6 +43,13 @@ void printGraphicsInformation(QWindow *window)
     if (!window)
         return;
 
+    static bool alreadyShown = false;
+
+    if (alreadyShown)
+        return;
+
+    alreadyShown = true;
+
     const char *str;
 
     QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();

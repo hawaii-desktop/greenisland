@@ -26,9 +26,10 @@
 
 #include <QtQml/QQmlContext>
 
-#include "outputwindow.h"
 #include "compositor.h"
+#include "gldebug.h"
 #include "output.h"
+#include "outputwindow.h"
 
 OutputWindow::OutputWindow(Compositor *compositor)
     : QQuickView()
@@ -49,6 +50,10 @@ OutputWindow::OutputWindow(Compositor *compositor)
     // Show the window as soon as QML is loaded
     connect(this, &QQuickView::statusChanged,
             this, &OutputWindow::componentStatusChanged);
+
+    connect(this, SIGNAL(sceneGraphInitialized()),
+            this, SLOT(printInfo()),
+            Qt::DirectConnection);
 }
 
 Output *OutputWindow::output() const
@@ -151,6 +156,11 @@ void OutputWindow::wheelEvent(QWheelEvent *event)
     m_compositor->setState(Compositor::Active);
 
     QQuickView::wheelEvent(event);
+}
+
+void OutputWindow::printInfo()
+{
+    GreenIsland::printGraphicsInformation(this);
 }
 
 void OutputWindow::sendCallbacks()

@@ -16,6 +16,7 @@ set(SOURCES
     bufferattacher.cpp
     compositor.cpp
     globalregistry.cpp
+    gldebug.cpp
     logging.cpp
     main.cpp
     output.cpp
