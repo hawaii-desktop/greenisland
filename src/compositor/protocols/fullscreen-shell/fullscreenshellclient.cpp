@@ -71,8 +71,7 @@ void FullScreenShellClient::showOutput(Output *output)
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
-    ::_wl_fullscreen_shell_mode_feedback *feedback =
-            present_surface_for_mode(wlSurface, wlOutput, output->refreshRate());
+    present_surface(wlSurface, present_method_default, wlOutput);
 }
 
 void FullScreenShellClient::hideOutput(Output *output)
@@ -87,7 +86,7 @@ void FullScreenShellClient::hideOutput(Output *output)
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
-    present_surface_for_mode(Q_NULLPTR, wlOutput, 0);
+    present_surface(Q_NULLPTR, present_method_default, wlOutput);
 }
 
 void FullScreenShellClient::fullscreen_shell_capability(uint32_t capability)
