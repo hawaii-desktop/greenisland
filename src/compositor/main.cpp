@@ -86,8 +86,8 @@ int main(int argc, char *argv[])
 
     // Fake screen configuration
     QCommandLineOption fakeScreenOption(QStringLiteral("fake-screen"),
-                                         QCoreApplication::translate("Command line parser", "Use fake screen configuration"),
-                                         QCoreApplication::translate("Command line parser", "filename"));
+                                        QCoreApplication::translate("Command line parser", "Use fake screen configuration"),
+                                        QCoreApplication::translate("Command line parser", "filename"));
     parser.addOption(fakeScreenOption);
 
     // Parse command line
@@ -115,6 +115,17 @@ int main(int argc, char *argv[])
 
     // Fake screen configuration
     if (parser.isSet(fakeScreenOption)) {
+        // Need a real backend, possibly QScreen or native Wayland when nested
+        if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+            qWarning() << "Fake screen configuration is not allowed when Green Island"
+                       << "is nested into another compositor, please use the QScreen"
+                       << "or Wayland backend for KScreen!";
+#if HAVE_SYSTEMD
+            sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
+#endif
+            return 1;
+        }
+
         // Use fake backend for KSCreen
         qputenv("KSCREEN_BACKEND", QByteArray("Fake"));
         qputenv("TEST_DATA", parser.value(fakeScreenOption).toUtf8());
