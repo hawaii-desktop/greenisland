@@ -87,7 +87,7 @@ void GlobalRegistry::globalCreate(void *data, wl_registry *registry,
         return;
     }
 
-    if (strcmp(interface, "_wl_fullscreen_shell") && version == 1)
+    if (strcmp(interface, "_wl_fullscreen_shell") == 0 && version == 1)
         self->m_fullScreenShell = new FullScreenShellClient(id, version);
 }
 
