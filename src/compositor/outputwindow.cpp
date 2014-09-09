@@ -64,6 +64,9 @@ OutputWindow::OutputWindow(Compositor *compositor)
     FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
 
     if (fsh) {
+        // Disable decorations
+        setFlags(flags() | Qt::BypassWindowManagerHint);
+
         // Present output window when using full screen shell
         connect(this, &QQuickView::visibleChanged, [=](bool value) {
             if (value)
