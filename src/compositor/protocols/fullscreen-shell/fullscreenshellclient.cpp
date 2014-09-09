@@ -26,6 +26,7 @@
 
 #include <QtGui/QGuiApplication>
 #include <QtGui/qpa/qplatformnativeinterface.h>
+#include <QtGui/QScreen>
 #include <QtCompositor/private/qwloutput_p.h>
 
 #include "fullscreenshellclient.h"
@@ -66,8 +67,19 @@ void FullScreenShellClient::showOutput(Output *output)
     if (!wlSurface)
         qFatal("Unable to get wl_surface from output window, aborting...");
 
-    wl_output *wlOutput = static_cast<wl_output *>(wl_resource_get_user_data(
-                                                       output->handle()->resource()->handle));
+    QScreen *found = Q_NULLPTR;
+    for (QScreen *screen: QGuiApplication::screens()) {
+        if (screen->name() == output->name()) {
+            found = screen;
+            break;
+        }
+    }
+
+    if (!found)
+        qFatal("Can't find a QScreen for \"%s\"", qPrintable(output->name()));
+
+    wl_output *wlOutput = static_cast<wl_output *>(
+                native->nativeResourceForScreen("output", found));
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
@@ -81,8 +93,24 @@ void FullScreenShellClient::hideOutput(Output *output)
         return;
     }
 
-    wl_output *wlOutput = static_cast<wl_output *>(wl_resource_get_user_data(
-                                                       output->handle()->resource()->handle));
+    QPlatformNativeInterface *native =
+            QGuiApplication::platformNativeInterface();
+    if (!native)
+        qFatal("Platform native interface not found, aborting...");
+
+    QScreen *found = Q_NULLPTR;
+    for (QScreen *screen: QGuiApplication::screens()) {
+        if (screen->name() == output->name()) {
+            found = screen;
+            break;
+        }
+    }
+
+    if (!found)
+        qFatal("Can't find a QScreen for \"%s\"", qPrintable(output->name()));
+
+    wl_output *wlOutput = static_cast<wl_output *>(
+                native->nativeResourceForScreen("output", found));
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
