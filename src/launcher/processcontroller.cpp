@@ -168,10 +168,10 @@ void ProcessController::compositorFinished(int code, const QProcess::ExitStatus 
             m_fullScreenShell->kill();
         m_fullScreenShell->deleteLater();
         m_fullScreenShell = Q_NULLPTR;
-    } else {
-        // Quit
-        qApp->quit();
     }
+
+    // Quit
+    qApp->quit();
 }
 
 void ProcessController::fullScreenShellFinished(int code, const QProcess::ExitStatus &status)
