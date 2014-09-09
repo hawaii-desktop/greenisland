@@ -28,8 +28,11 @@
 
 #include "compositor.h"
 #include "gldebug.h"
+#include "globalregistry.h"
 #include "output.h"
 #include "outputwindow.h"
+
+#include "protocols/fullscreen-shell/fullscreenshellclient.h"
 
 OutputWindow::OutputWindow(Compositor *compositor)
     : QQuickView()
@@ -54,6 +57,21 @@ OutputWindow::OutputWindow(Compositor *compositor)
     connect(this, SIGNAL(sceneGraphInitialized()),
             this, SLOT(printInfo()),
             Qt::DirectConnection);
+
+    // Retrieve full screen shell client object, this will be available
+    // only when Green Island is nested into another compositor
+    // that supports the fullscreen-shell interface
+    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
+
+    if (fsh) {
+        // Present output window when using full screen shell
+        connect(this, &QQuickView::visibleChanged, [=](bool value) {
+            if (value)
+                fsh->showOutput(m_output);
+            else
+                fsh->hideOutput(m_output);
+        });
+    }
 }
 
 Output *OutputWindow::output() const

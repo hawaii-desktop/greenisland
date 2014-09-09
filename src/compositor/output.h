@@ -42,7 +42,6 @@ class Output : public QWaylandOutput
     Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
 public:
     explicit Output(Compositor *compositor, KScreen::Output *output);
-    ~Output();
 
     Compositor *compositor() const;
 

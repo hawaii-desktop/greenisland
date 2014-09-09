@@ -27,10 +27,8 @@
 #include <QtCore/QtMath>
 
 #include "compositor.h"
-#include "globalregistry.h"
 #include "output.h"
 #include "outputwindow.h"
-#include "protocols/fullscreen-shell/fullscreenshellclient.h"
 
 /*
  * OutputPrivate
@@ -137,15 +135,6 @@ Output::Output(Compositor *compositor, KScreen::Output *output)
     OutputWindow *outputWindow = qobject_cast<OutputWindow *>(window());
     if (outputWindow)
         outputWindow->setOutput(this);
-    if (GlobalRegistry::fullScreenShell())
-        GlobalRegistry::fullScreenShell()->showOutput(this);
-}
-
-Output::~Output()
-{
-    // Inform full screen shell that this output is gone
-    if (GlobalRegistry::fullScreenShell())
-        GlobalRegistry::fullScreenShell()->hideOutput(this);
 }
 
 Compositor *Output::compositor() const
