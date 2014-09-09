@@ -26,6 +26,8 @@
 
 #include <QtCore/QCoreApplication>
 #include <QDebug>
+#include <QtCore/QFile>
+#include <QtCore/QFileSystemWatcher>
 
 #include "cmakedirs.h"
 #include "processcontroller.h"
@@ -43,8 +45,10 @@ ProcessController::ProcessController(QObject *parent)
     connect(m_compositor, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(compositorFinished(int,QProcess::ExitStatus)));
 
-    // Calculate Wayland socket suffix
-    m_socketSuffix = randomString();
+    // Wayland sockets
+    QString random = randomString();
+    m_compositorSocket = QStringLiteral(GREENISLAND_SOCKET) + random;
+    m_fullScreenShellSocket = QStringLiteral(FULLSCREEN_SHELL_SOCKET) + random;
 }
 
 bool ProcessController::isFullScreenShellEnabled() const
@@ -67,8 +71,12 @@ void ProcessController::setFullScreenShellEnabled(bool value)
         m_fullScreenShell->setProgram(QStringLiteral("weston"));
         m_fullScreenShell->setArguments(QStringList()
                                         << QStringLiteral("--shell=fullscreen-shell.so")
-                                        << QStringLiteral("--socket=" FULLSCREEN_SHELL_SOCKET) + m_socketSuffix);
-        connect(m_fullScreenShell, SIGNAL(started()), this, SLOT(startCompositor()));
+                                        << QStringLiteral("--socket=") + m_fullScreenShellSocket);
+
+        m_fullScreenShellWatcher = new QFileSystemWatcher(this);
+        m_fullScreenShellWatcher->addPath(QString::fromUtf8(qgetenv("XDG_RUNTIME_DIR")));
+        connect(m_fullScreenShellWatcher, SIGNAL(directoryChanged(QString)),
+                this, SLOT(directoryChanged(QString)));
     }
 }
 
@@ -136,11 +144,10 @@ void ProcessController::startCompositor()
         m_compositor->setArguments(QStringList()
                                    << QStringLiteral("-platform")
                                    << QStringLiteral("wayland")
-                                   << QStringLiteral("--socket=" GREENISLAND_SOCKET) + m_socketSuffix);
+                                   << QStringLiteral("--socket=") + m_compositorSocket);
 
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-        env.insert(QStringLiteral("WAYLAND_DISPLAY"),
-                   QStringLiteral(FULLSCREEN_SHELL_SOCKET) + m_socketSuffix);
+        env.insert(QStringLiteral("WAYLAND_DISPLAY"), m_fullScreenShellSocket);
         env.insert(QStringLiteral("KSCREEN_BACKEND"), QStringLiteral("QScreen"));
         m_compositor->setProcessEnvironment(env);
     }
@@ -152,6 +159,24 @@ void ProcessController::startCompositor()
         qFatal("Compositor won't start, aborting...");
         compositorFinished(0, QProcess::NormalExit);
     }
+}
+
+void ProcessController::directoryChanged(const QString &path)
+{
+    Q_UNUSED(path);
+
+    // Don't start until the full screen shell compositor is up
+    const QString socketFileName = path + QStringLiteral("/") +
+            m_fullScreenShellSocket;
+    if (!QFile::exists(socketFileName))
+        return;
+
+    // Socket is here, let's bring the compositor up but first disconnect
+    // and destroy the file system watcher otherwise this slot gets
+    // called over and over again
+    m_fullScreenShellWatcher->disconnect(this);
+    m_fullScreenShellWatcher->deleteLater();
+    startCompositor();
 }
 
 void ProcessController::compositorFinished(int code, const QProcess::ExitStatus &status)
