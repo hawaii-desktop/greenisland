@@ -141,6 +141,7 @@ void ProcessController::startCompositor()
         QProcessEnvironment env;
         env.insert(QStringLiteral("WAYLAND_DISPLAY"),
                    QStringLiteral(FULLSCREEN_SHELL_SOCKET) + m_socketSuffix);
+        env.insert(QStringLiteral("KSCREEN_BACKEND"), QStringLiteral("QScreen"));
         m_compositor->setProcessEnvironment(env);
     }
 
