@@ -70,6 +70,16 @@ uint32_t XdgSurface::nextSerial() const
     return wl_display_next_serial(m_surface->handle()->compositor()->display()->handle());
 }
 
+QWaylandSurface::WindowType XdgSurface::type() const
+{
+    return m_surface->windowType();
+}
+
+XdgSurface::State XdgSurface::state() const
+{
+    return m_state;
+}
+
 WindowView *XdgSurface::view() const
 {
     return m_view;
@@ -80,7 +90,7 @@ QQuickItem *XdgSurface::window() const
     return m_view->parentItem();
 }
 
-QQuickItem *XdgSurface::transientParent() const
+WindowView *XdgSurface::parentView() const
 {
     QWaylandSurface *transientParent = m_surface->transientParent();
     if (!transientParent)
@@ -92,8 +102,16 @@ QQuickItem *XdgSurface::transientParent() const
             continue;
 
         if (view->output() == m_view->output())
-            return view->parentItem();
+            return view;
     }
+
+    return Q_NULLPTR;
+}
+
+QQuickItem *XdgSurface::parentWindow() const
+{
+    if (parentView() && parentView()->parentItem())
+        return parentView()->parentItem();
 
     return Q_NULLPTR;
 }
@@ -111,6 +129,39 @@ void XdgSurface::setPosition(const QPointF &pt)
     }
 }
 
+QPointF XdgSurface::transientOffset() const
+{
+    return m_surface->transientOffset();
+}
+
+void XdgSurface::setTransientOffset(const QPointF &pt)
+{
+    m_surface->handle()->setTransientOffset(pt.x(), pt.y());
+}
+
+void XdgSurface::restore()
+{
+    restoreAt(m_savedGeometry.topLeft());
+}
+
+void XdgSurface::restoreAt(const QPointF &pos)
+{
+    // Makes sense only for maximized windows
+    if (m_state == Normal)
+        return;
+
+    // Restore previous geometry
+    Changes changes;
+    changes.newState = true;
+    changes.active = m_view->hasFocus();
+    changes.state = Normal;
+    changes.moving = true;
+    changes.resizing = true;
+    changes.position = pos;
+    changes.size = m_savedGeometry.size();
+    requestConfigure(changes);
+}
+
 void XdgSurface::resetMoveGrab()
 {
     m_moveGrabber = Q_NULLPTR;
@@ -119,11 +170,6 @@ void XdgSurface::resetMoveGrab()
 void XdgSurface::resetResizeGrab()
 {
     m_resizeGrabber = Q_NULLPTR;
-}
-
-void XdgSurface::setOffset(const QPointF &pt)
-{
-    m_surface->handle()->setTransientOffset(pt.x(), pt.y());
 }
 
 void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)

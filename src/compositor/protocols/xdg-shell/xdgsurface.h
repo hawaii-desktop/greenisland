@@ -82,17 +82,26 @@ public:
 
     uint32_t nextSerial() const;
 
-    WindowView *view() const;
+    QWaylandSurface::WindowType type() const;
 
+    State state() const;
+
+    WindowView *view() const;
     QQuickItem *window() const;
-    QQuickItem *transientParent() const;
+
+    WindowView *parentView() const;
+    QQuickItem *parentWindow() const;
 
     void setPosition(const QPointF &pt);
 
+    QPointF transientOffset() const;
+    void setTransientOffset(const QPointF &pt);
+
+    void restore();
+    void restoreAt(const QPointF &pos);
+
     void resetMoveGrab();
     void resetResizeGrab();
-
-    void setOffset(const QPointF &pt);
 
     void requestConfigure(const Changes &changes);
 

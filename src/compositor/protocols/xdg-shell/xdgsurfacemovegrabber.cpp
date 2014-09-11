@@ -28,6 +28,7 @@
 #include <QtQuick/QQuickItem>
 
 #include "xdgsurfacemovegrabber.h"
+#include "windowview.h"
 
 XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPointF &offset)
     : XdgSurfaceGrabber(shellSurface)
@@ -46,13 +47,41 @@ void XdgSurfaceMoveGrabber::motion(uint32_t time)
     QCursor cursor(Qt::ClosedHandCursor);
     QGuiApplication::setOverrideCursor(cursor);
 
-    // Move the window representation
+    // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
-    m_shellSurface->setPosition(pt);
 
-    // Set transient window offset
-    if (m_shellSurface->transientParent())
-        m_shellSurface->setOffset(pt - m_shellSurface->transientParent()->position());
+    // Top level windows
+    if (m_shellSurface->type() == QWaylandSurface::Toplevel) {
+        // Move the window representation
+        if (m_shellSurface->state() == XdgSurface::Maximized) {
+            // Maximized windows if dragged are restored to the original position,
+            // but we want to do that with a threshold to avoid unintended grabs
+            QPointF threshold(m_offset + QPointF(20, 20));
+            if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
+                m_shellSurface->restoreAt(pt);
+            }
+        } else {
+            m_shellSurface->setPosition(pt);
+        }
+    }
+
+    // Move parent, transient will be moved automatically preserving its offset
+    // because it's a child QML item
+    WindowView *parentView = m_shellSurface->parentView();
+    if (parentView) {
+        QPointF delta = pt - m_shellSurface->transientOffset();
+
+        QRectF geometry(parentView->globalGeometry());
+        geometry.setTopLeft(delta);
+
+        for (QWaylandSurfaceView *surfaceView: parentView->surface()->views()) {
+            WindowView *view = static_cast<WindowView *>(surfaceView);
+            if (!view)
+                continue;
+
+            view->setGlobalGeometry(geometry);
+        }
+    }
 }
 
 void XdgSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
