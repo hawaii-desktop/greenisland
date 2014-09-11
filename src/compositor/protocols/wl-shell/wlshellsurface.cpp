@@ -215,10 +215,7 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
-    // Convert pointer coordinates to global space
-    QPointF pos(m_view->globalGeometry().topLeft() + pointer->currentPosition());
-
-    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pos - m_view->globalGeometry().topLeft());
+    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_view->globalGeometry().topLeft());
     pointer->startGrab(m_moveGrabber);
 }
 
