@@ -32,9 +32,8 @@
 
 #include "compositor.h"
 #include "windowview.h"
-#include "output.h"
 
-WindowView::WindowView(QWaylandQuickSurface *surface, QWaylandOutput *output, QQuickItem *parent)
+WindowView::WindowView(QWaylandQuickSurface *surface, Output *output, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
     , m_output(output)
 {
@@ -69,12 +68,12 @@ WindowView::WindowView(QWaylandQuickSurface *surface, QWaylandOutput *output, QQ
 #endif
 }
 
-QWaylandOutput *WindowView::output() const
+Output *WindowView::output() const
 {
     return m_output;
 }
 
-QWaylandOutput *WindowView::mainOutput() const
+Output *WindowView::mainOutput() const
 {
     // Find the output that contains the biggest part of this window,
     // that is the main output and it will be used by effects such as
@@ -95,7 +94,7 @@ QWaylandOutput *WindowView::mainOutput() const
         }
     }
 
-    return main;
+    return qobject_cast<Output *>(main);
 }
 
 QRectF WindowView::globalGeometry() const
@@ -109,7 +108,7 @@ void WindowView::setGlobalGeometry(const QRectF &g)
         return;
 
     if (parentItem())
-        parentItem()->setPosition(qobject_cast<Output *>(output())->mapToOutput(g.topLeft()));
+        parentItem()->setPosition(output()->mapToOutput(g.topLeft()));
     else
         qWarning() << "Unable to set global geometry because view" << this << "has no parent";
 
@@ -138,7 +137,7 @@ void WindowView::mouseReleaseEvent(QMouseEvent *event)
     }
 }
 
-void WindowView::sendEnter(QWaylandOutput *output)
+void WindowView::sendEnter(Output *output)
 {
     //qDebug() << "Enter" << output;
 
@@ -146,7 +145,7 @@ void WindowView::sendEnter(QWaylandOutput *output)
         surface()->handle()->send_enter(resource->handle);
 }
 
-void WindowView::sendLeave(QWaylandOutput *output)
+void WindowView::sendLeave(Output *output)
 {
     //qDebug() << "Leave" << output;
 

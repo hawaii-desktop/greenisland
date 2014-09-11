@@ -31,6 +31,7 @@
 #include <QtCompositor/QWaylandSurfaceItem>
 
 class CompositorPrivate;
+class Output;
 class ScreenManager;
 
 class Compositor : public QWaylandQuickCompositor
@@ -85,7 +86,7 @@ public:
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
 
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandQuickSurface *surface, QWaylandOutput *output);
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandQuickSurface *surface, Output *output);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
@@ -137,7 +138,7 @@ private:
 #endif
 
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
-    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *output))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *_output))
 };
 
 #endif // COMPOSITOR_H

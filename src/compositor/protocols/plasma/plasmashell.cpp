@@ -82,7 +82,7 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
         if (!view)
             continue;
 
-        QPointF pos = qobject_cast<Output *>(view->output())->mapToOutput(QPointF(x, y));
+        QPointF pos = view->output()->mapToOutput(QPointF(x, y));
 
         QRectF geometry = view->globalGeometry();
         geometry.setTopLeft(pos);

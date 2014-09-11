@@ -29,21 +29,21 @@
 
 #include <QtCompositor/QWaylandSurfaceItem>
 
-class QWaylandOutput;
+#include "output.h"
 
 class WindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
-    Q_PROPERTY(QWaylandOutput *output READ output CONSTANT)
-    Q_PROPERTY(QWaylandOutput *mainOutput READ mainOutput CONSTANT)
+    Q_PROPERTY(Output *output READ output CONSTANT)
+    Q_PROPERTY(Output *mainOutput READ mainOutput CONSTANT)
     Q_PROPERTY(QRectF globalGeometry READ globalGeometry WRITE setGlobalGeometry NOTIFY globalGeometryChanged)
 public:
-    explicit WindowView(QWaylandQuickSurface *surface, QWaylandOutput *output,
+    explicit WindowView(QWaylandQuickSurface *surface, Output *output,
                         QQuickItem *parent = 0);
 
-    QWaylandOutput *output() const;
+    Output *output() const;
 
-    QWaylandOutput *mainOutput() const;
+    Output *mainOutput() const;
 
     QRectF globalGeometry() const;
     void setGlobalGeometry(const QRectF &g);
@@ -55,11 +55,11 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    QWaylandOutput *m_output;
+    Output *m_output;
     QRectF m_globalGeometry;
 
-    void sendEnter(QWaylandOutput *output);
-    void sendLeave(QWaylandOutput *output);
+    void sendEnter(Output *output);
+    void sendLeave(Output *output);
 };
 
 #endif // GREENISLAND_WINDOWVIEW_H

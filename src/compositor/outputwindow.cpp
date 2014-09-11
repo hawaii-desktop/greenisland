@@ -41,6 +41,8 @@ OutputWindow::OutputWindow(Compositor *compositor)
 {
     // Register QML types
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
+    qmlRegisterUncreatableType<Output>("GreenIsland.Core", 1, 0, "Output",
+                                       QStringLiteral("You can't create Output objects"));
 
     // Setup window
     setColor(Qt::black);

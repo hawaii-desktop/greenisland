@@ -434,7 +434,7 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
         return;
 
     // Determine output (either specified output or main output)
-    Output *output = qobject_cast<Output *>(m_view->mainOutput());
+    Output *output = m_view->mainOutput();
     if (outputResource)
         output = qobject_cast<Output *>(Output::fromResource(outputResource));
 

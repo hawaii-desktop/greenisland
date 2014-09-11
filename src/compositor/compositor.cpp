@@ -64,7 +64,7 @@ public:
 
     void _q_surfaceMapped();
     void _q_surfaceUnmapped();
-    void _q_outputRemoved(QWaylandOutput *output);
+    void _q_outputRemoved(QWaylandOutput *_output);
 
     bool running;
 
@@ -123,9 +123,13 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 #endif
 }
 
-void CompositorPrivate::_q_outputRemoved(QWaylandOutput *output)
+void CompositorPrivate::_q_outputRemoved(QWaylandOutput *_output)
 {
     Q_Q(Compositor);
+
+    Output *output = qobject_cast<Output *>(_output);
+    if (!output)
+        return;
 
     // Remove all views created for this output
     for (QWaylandSurface *surface: q->surfaces()) {
@@ -306,7 +310,7 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
     return static_cast<QWaylandSurfaceItem *>(surface->views().first());
 }
 
-QWaylandSurfaceItem *Compositor::viewForOutput(QWaylandQuickSurface *surface, QWaylandOutput *output)
+QWaylandSurfaceItem *Compositor::viewForOutput(QWaylandQuickSurface *surface, Output *output)
 {
     if (!surface) {
         qWarning() << "View for a null surface requested!";
