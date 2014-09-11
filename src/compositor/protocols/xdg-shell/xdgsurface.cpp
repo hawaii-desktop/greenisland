@@ -197,7 +197,7 @@ void XdgSurface::moveWindow(QWaylandInputDevice *device)
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
-    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->currentPosition() - m_view->globalGeometry().topLeft());
+    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_view->globalGeometry().topLeft());
     pointer->startGrab(m_moveGrabber);
 }
 
