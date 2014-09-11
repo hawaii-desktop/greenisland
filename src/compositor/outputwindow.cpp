@@ -31,6 +31,7 @@
 #include "globalregistry.h"
 #include "output.h"
 #include "outputwindow.h"
+#include "surface.h"
 
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
 
@@ -43,6 +44,8 @@ OutputWindow::OutputWindow(Compositor *compositor)
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
     qmlRegisterUncreatableType<Output>("GreenIsland.Core", 1, 0, "Output",
                                        QStringLiteral("You can't create Output objects"));
+    qmlRegisterUncreatableType<Surface>("GreenIsland.Core", 1, 0, "Surface",
+                                        QStringLiteral("You can't create Surface objects"));
 
     // Setup window
     setColor(Qt::black);

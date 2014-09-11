@@ -44,6 +44,7 @@
 #include "compositor.h"
 #include "windowview.h"
 #include "screenmanager.h"
+#include "surface.h"
 
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -281,20 +282,23 @@ void Compositor::run()
     d->running = true;
 }
 
+QWaylandQuickSurface *Compositor::createSurface(wl_client *client, quint32 id)
+{
+    return new Surface(client, id, this);
+}
+
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
 {
     // TODO: Views should probably ordered by z-index in order to really
     // pick the first view with that global coordinates
 
-    for (QtWayland::Surface *surface: m_compositor->surfaces()) {
-        for (QWaylandSurfaceView *surfaceView: surface->waylandSurface()->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
+    for (QtWayland::Surface *curSurface: m_compositor->surfaces()) {
+        Surface *surface = qobject_cast<Surface *>(curSurface->waylandSurface());
+        if (!surface)
+            continue;
 
-            if (!view)
-                continue;
-            if (view->globalGeometry().contains(globalPosition))
-                return view;
-        }
+        if (surface->globalGeometry().contains(globalPosition))
+            return surface->views().at(0);
     }
 
     return Q_NULLPTR;
@@ -310,7 +314,7 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
     return static_cast<QWaylandSurfaceItem *>(surface->views().first());
 }
 
-QWaylandSurfaceItem *Compositor::viewForOutput(QWaylandQuickSurface *surface, Output *output)
+QWaylandSurfaceItem *Compositor::viewForOutput(Surface *surface, Output *output)
 {
     if (!surface) {
         qWarning() << "View for a null surface requested!";

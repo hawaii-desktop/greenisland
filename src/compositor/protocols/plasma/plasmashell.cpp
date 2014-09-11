@@ -33,7 +33,7 @@
 #include "output.h"
 #include "plasmashell.h"
 #include "plasmasurface.h"
-#include "windowview.h"
+#include "surface.h"
 
 PlasmaShell::PlasmaShell()
 {
@@ -76,19 +76,14 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
         return;
     }
 
-    // We have only one view for shell windows
-    for (QWaylandSurfaceView *surfaceView: surface->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-
-        QPointF pos = view->output()->mapToOutput(QPointF(x, y));
-
-        QRectF geometry = view->globalGeometry();
-        geometry.setTopLeft(pos);
-
-        view->setGlobalGeometry(geometry);
+    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    if (!quickSurface) {
+        qWarning("Surface is not for QtQuick usage");
+        return;
     }
+
+    // Set global position
+    quickSurface->setGlobalPosition(QPointF(x, y));
 }
 
 void PlasmaShell::shell_desktop_ready(Resource *resource)

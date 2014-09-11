@@ -24,38 +24,32 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_WINDOWVIEW_H
-#define GREENISLAND_WINDOWVIEW_H
+#include "compositor.h"
+#include "surface.h"
 
-#include <QtCompositor/QWaylandSurfaceItem>
-
-#include "output.h"
-
-class Surface;
-
-class WindowView : public QWaylandSurfaceItem
+Surface::Surface(wl_client *client, quint32 id, Compositor *compositor)
+    : QWaylandQuickSurface(client, id, compositor)
 {
-    Q_OBJECT
-    Q_PROPERTY(Output *output READ output CONSTANT)
-    Q_PROPERTY(Output *mainOutput READ mainOutput CONSTANT)
-public:
-    explicit WindowView(Surface *surface, Output *output, QQuickItem *parent = 0);
+}
 
-    Surface *surface() const;
+QPointF Surface::globalPosition() const
+{
+    return m_globalPos;
+}
 
-    Output *output() const;
+void Surface::setGlobalPosition(const QPointF &pos)
+{
+    if (m_globalPos == pos)
+        return;
 
-    Output *mainOutput() const;
+    m_globalPos = pos;
+    Q_EMIT globalPositionChanged();
+    Q_EMIT globalGeometryChanged();
+}
 
-protected:
-    void mouseReleaseEvent(QMouseEvent *event);
+QRectF Surface::globalGeometry() const
+{
+    return QRectF(m_globalPos, QSizeF(size()));
+}
 
-private:
-    Surface *m_surface;
-    Output *m_output;
-
-    void sendEnter(Output *output);
-    void sendLeave(Output *output);
-};
-
-#endif // GREENISLAND_WINDOWVIEW_H
+#include "moc_surface.cpp"

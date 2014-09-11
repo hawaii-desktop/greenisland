@@ -24,8 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
-
+#include "surface.h"
 #include "wlshell.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"
@@ -58,5 +57,8 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    new WlShellSurface(this, surface, resource->client(), id);
+    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    if (!quickSurface)
+        return;
+    new WlShellSurface(this, quickSurface, resource->client(), id);
 }

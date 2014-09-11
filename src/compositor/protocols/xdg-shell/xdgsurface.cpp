@@ -32,13 +32,14 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "output.h"
+#include "surface.h"
+#include "windowview.h"
 #include "xdgsurface.h"
 #include "xdgsurfacemovegrabber.h"
 #include "xdgsurfaceresizegrabber.h"
-#include "windowview.h"
-#include "output.h"
 
-XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
+XdgSurface::XdgSurface(XdgShell *shell, Surface *surface,
                        wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
     , QtWaylandServer::xdg_surface(client, id)
@@ -50,9 +51,8 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     , m_state(Normal)
 {
     // Create a view for the first output
-    QWaylandQuickSurface *quickSurface = static_cast<QWaylandQuickSurface *>(m_surface);
     Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new WindowView(quickSurface, output);
+    m_view = new WindowView(surface, output);
 
     // This is a toplevel window by default
     m_surface->handle()->setTransientParent(Q_NULLPTR);
@@ -78,6 +78,11 @@ QWaylandSurface::WindowType XdgSurface::type() const
 XdgSurface::State XdgSurface::state() const
 {
     return m_state;
+}
+
+Surface *XdgSurface::surface() const
+{
+    return m_surface;
 }
 
 WindowView *XdgSurface::view() const
@@ -114,19 +119,6 @@ QQuickItem *XdgSurface::parentWindow() const
         return parentView()->parentItem();
 
     return Q_NULLPTR;
-}
-
-void XdgSurface::setPosition(const QPointF &pt)
-{
-    for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-
-        QRectF geometry = view->globalGeometry();
-        geometry.setTopLeft(pt);
-        view->setGlobalGeometry(geometry);
-    }
 }
 
 QPointF XdgSurface::transientOffset() const
@@ -243,7 +235,7 @@ void XdgSurface::moveWindow(QWaylandInputDevice *device)
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
-    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_view->globalGeometry().topLeft());
+    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_surface->globalPosition());
     pointer->startGrab(m_moveGrabber);
 }
 
@@ -341,7 +333,7 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
 
     // Set global space geometry
     bool changed = false;
-    QRectF geometry = m_view->globalGeometry();
+    QRectF geometry = m_surface->globalGeometry();
     if (changes.moving && !changes.position.isNull()) {
         geometry.setTopLeft(changes.position);
         changed = true;
@@ -351,16 +343,9 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
         changed = true;
     }
     if (changed) {
-        // Save global space geometry
-        m_savedGeometry = m_view->globalGeometry();
-
-        // Actually change it
-        for (QWaylandSurfaceView *surfaceView: m_surface->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view)
-                continue;
-            view->setGlobalGeometry(geometry);
-        }
+        // Save global space geometry and set position
+        m_savedGeometry = m_surface->globalGeometry();
+        m_surface->setGlobalPosition(geometry.topLeft());
     }
 }
 

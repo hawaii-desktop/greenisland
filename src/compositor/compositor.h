@@ -33,6 +33,7 @@
 class CompositorPrivate;
 class Output;
 class ScreenManager;
+class Surface;
 
 class Compositor : public QWaylandQuickCompositor
 {
@@ -83,10 +84,12 @@ public:
 
     void run();
 
+    QWaylandQuickSurface *createSurface(wl_client *client, quint32 id) Q_DECL_OVERRIDE;
+
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
 
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandQuickSurface *surface, Output *output);
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(Surface *surface, Output *output);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 

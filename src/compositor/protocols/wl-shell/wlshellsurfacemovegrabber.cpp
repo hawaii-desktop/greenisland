@@ -27,6 +27,7 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
+#include "surface.h"
 #include "wlshellsurfacemovegrabber.h"
 #include "windowview.h"
 
@@ -59,30 +60,18 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
             QPointF threshold(m_offset + QPointF(20, 20));
             if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
                 m_shellSurface->restore();
-                m_shellSurface->setPosition(pt);
+                m_shellSurface->surface()->setGlobalPosition(pt);
             }
         } else {
-            m_shellSurface->setPosition(pt);
+            m_shellSurface->surface()->setGlobalPosition(pt);
         }
     }
 
     // Move parent, transient will be moved automatically preserving its offset
     // because it's a child QML item
     WindowView *parentView = m_shellSurface->parentView();
-    if (parentView) {
-        QPointF delta = pt - m_shellSurface->transientOffset();
-
-        QRectF geometry(parentView->globalGeometry());
-        geometry.setTopLeft(delta);
-
-        for (QWaylandSurfaceView *surfaceView: parentView->surface()->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view)
-                continue;
-
-            view->setGlobalGeometry(geometry);
-        }
-    }
+    if (parentView && parentView->surface())
+        parentView->surface()->setGlobalPosition(pt - m_shellSurface->transientOffset());
 }
 
 void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)

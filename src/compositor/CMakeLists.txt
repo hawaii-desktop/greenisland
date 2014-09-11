@@ -24,6 +24,7 @@ set(SOURCES
     windowview.cpp
     screenmanager.cpp
     shellwindowview.cpp
+    surface.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/plasma/plasmashell.cpp

@@ -35,6 +35,7 @@
 class QQuickItem;
 class QWaylandInputDevice;
 
+class Surface;
 class WindowView;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
@@ -77,7 +78,7 @@ public:
         QSizeF size;
     };
 
-    explicit XdgSurface(XdgShell *shell, QWaylandSurface *surface,
+    explicit XdgSurface(XdgShell *shell, Surface *surface,
                         wl_client *client, uint32_t id);
 
     uint32_t nextSerial() const;
@@ -85,6 +86,8 @@ public:
     QWaylandSurface::WindowType type() const;
 
     State state() const;
+
+    Surface *surface() const;
 
     WindowView *view() const;
     QQuickItem *window() const;
@@ -110,7 +113,7 @@ protected:
 
 private:
     XdgShell *m_shell;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     WindowView *m_view;
 
     XdgSurfaceMoveGrabber *m_moveGrabber;

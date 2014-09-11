@@ -36,6 +36,7 @@
 
 class QWaylandInputDevice;
 
+class Surface;
 class WindowView;
 class WlShellSurfaceMoveGrabber;
 class WlShellSurfaceResizeGrabber;
@@ -56,7 +57,7 @@ public:
         Move = QWaylandSurfaceOp::UserType
     };
 
-    explicit WlShellSurface(WlShell *shell, QWaylandSurface *surface,
+    explicit WlShellSurface(WlShell *shell, Surface *surface,
                             wl_client *client, uint32_t id);
     ~WlShellSurface();
 
@@ -64,14 +65,13 @@ public:
 
     State state() const;
 
+    Surface *surface() const;
+
     WindowView *view() const;
     QQuickItem *window() const;
 
     WindowView *parentView() const;
     QQuickItem *parentWindow() const;
-
-    void setPosition(const QPointF &pt);
-    void setGeometry(const QRectF &geometry);
 
     QPointF transientOffset() const;
     void setTransientOffset(const QPointF &pt);
@@ -83,7 +83,7 @@ protected:
 
 private:
     WlShell *m_shell;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     WindowView *m_view;
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;

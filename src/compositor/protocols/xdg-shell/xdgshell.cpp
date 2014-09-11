@@ -28,6 +28,7 @@
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "surface.h"
 #include "xdgshell.h"
 #include "xdgsurface.h"
 #include "xdgpopup.h"
@@ -76,7 +77,10 @@ void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
 void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    new XdgSurface(this, surface, resource->client(), id);
+    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    if (!quickSurface)
+        return;
+    new XdgSurface(this, quickSurface, resource->client(), id);
 }
 
 void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource *surfaceResource,

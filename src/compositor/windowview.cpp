@@ -32,40 +32,42 @@
 
 #include "compositor.h"
 #include "windowview.h"
+#include "surface.h"
 
-WindowView::WindowView(QWaylandQuickSurface *surface, Output *output, QQuickItem *parent)
+WindowView::WindowView(Surface *surface, Output *output, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
+    , m_surface(surface)
     , m_output(output)
 {
     // Inform the compositor QML implementation that the surface was destroyed
     // because all window representations must be destroyed as well
     connect(this, &WindowView::surfaceDestroyed, [=]() {
-        Compositor *compositor = static_cast<Compositor *>(surface->compositor());
-        Q_EMIT compositor->surfaceDestroyed(QVariant::fromValue(surface));
+        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
+        Q_EMIT compositor->surfaceDestroyed(QVariant::fromValue(m_surface));
     });
 
-#if 0
-    // Update global geometry ourselves every time the parent has changed
-    // TODO: All of this should be done only when the window is moved or resized by the user
-    // so I leave it commented out for now
-    connect(this, &QQuickItem::parentChanged, [=](QQuickItem *newParent) {
-        if (!newParent)
-            return;
+    // Change window position and send enter/leave events to the output
+    connect(m_surface, &Surface::globalGeometryChanged, [=]() {
+        // WindowView is a child of the QtQuick window representation that is
+        // the one who holds the position on screen
+        if (parentItem())
+            parentItem()->setPosition(m_output->mapToOutput(m_surface->globalPosition()));
+        else
+            qWarning("Unable to move this view because it has no window representation");
 
-        connect(newParent, &WindowView::xChanged, [=]() {
-            m_globalGeometry.setX(newParent->position().x());
-        });
-        connect(newParent, &WindowView::yChanged, [=]() {
-            m_globalGeometry.setY(newParent->position().y());
-        });
-        connect(newParent, &WindowView::widthChanged, [=]() {
-            m_globalGeometry.setWidth(newParent->width());
-        });
-        connect(newParent, &WindowView::heightChanged, [=]() {
-            m_globalGeometry.setHeight(newParent->height());
-        });
+        // Global position is changed every time the window is moved,
+        // check against output geometry to see if it enters or leave
+        // the output
+        if (QRectF(m_output->geometry()).intersects(m_surface->globalGeometry()))
+            sendEnter(m_output);
+        else
+            sendLeave(m_output);
     });
-#endif
+}
+
+Surface *WindowView::surface() const
+{
+    return m_surface;
 }
 
 Output *WindowView::output() const
@@ -79,11 +81,12 @@ Output *WindowView::mainOutput() const
     // that is the main output and it will be used by effects such as
     // present windows to present only windows for the output it is
     // running on (effects run once for each output)
+    QRectF geometry(m_surface->globalPosition(), QSizeF(width(), height()));
     int maxArea = 0, area = 0;
     QWaylandOutput *main = Q_NULLPTR;
 
     for (QWaylandOutput *output: compositor()->outputs()) {
-        QRectF intersection = QRectF(output->geometry()).intersected(m_globalGeometry);
+        QRectF intersection = QRectF(output->geometry()).intersected(geometry);
 
         if (intersection.isValid()) {
             area = intersection.width() * intersection.height();
@@ -95,35 +98,6 @@ Output *WindowView::mainOutput() const
     }
 
     return qobject_cast<Output *>(main);
-}
-
-QRectF WindowView::globalGeometry() const
-{
-    return m_globalGeometry;
-}
-
-void WindowView::setGlobalGeometry(const QRectF &g)
-{
-    if (m_globalGeometry == g)
-        return;
-
-    if (parentItem())
-        parentItem()->setPosition(output()->mapToOutput(g.topLeft()));
-    else
-        qWarning() << "Unable to set global geometry because view" << this << "has no parent";
-
-    // WindowView is a child to the QtQuick window representation,
-    // when the latter is moved or resized it updates the globalGeometry
-    // property with window geometry in global coordinate space.
-    // We check globalGeometry against the output this view is in
-    // to determine whether the window has entered or left the output
-    if (QRectF(output()->geometry()).intersects(g))
-        sendEnter(output());
-    else
-        sendLeave(output());
-
-    m_globalGeometry = g;
-    Q_EMIT globalGeometryChanged();
 }
 
 void WindowView::mouseReleaseEvent(QMouseEvent *event)

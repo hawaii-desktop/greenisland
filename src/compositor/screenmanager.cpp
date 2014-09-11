@@ -31,9 +31,10 @@
 #include <KScreen/ConfigMonitor>
 #include <KScreen/Screen>
 
-#include "screenmanager.h"
 #include "compositor.h"
 #include "output.h"
+#include "screenmanager.h"
+#include "surface.h"
 #include "windowview.h"
 
 static bool outputLess(KScreen::Output *a, KScreen::Output *b)
@@ -192,10 +193,8 @@ void ScreenManagerPrivate::moveWindows(const QList<QQuickItem *> &items, const Q
         qreal y = (item->y() * primaryOutput->geometry().height()) / removedGeometry.height();
         item->setPosition(QPointF(x, y));
 
-        // Recalculate geometry in global space coordinates
-        QRectF globalGeometry(view->globalGeometry());
-        globalGeometry.setTopLeft(primaryOutput->mapToGlobal(QPointF(x, y)));
-        view->setGlobalGeometry(globalGeometry);
+        // Set new global position
+        view->surface()->setGlobalPosition(primaryOutput->mapToGlobal(QPointF(x, y)));
     }
 }
 
