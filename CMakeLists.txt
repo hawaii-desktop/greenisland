@@ -51,6 +51,11 @@ if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$")
     add_definitions(-DQT_NO_DEBUG_OUTPUT)
 endif()
 
+# Enable QML debugger for debug or release with debug info builds
+if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
+    add_definitions(-DQT_QML_DEBUG)
+endif()
+
 # ECM setup
 find_package(ECM 0.0.10 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
