@@ -8,9 +8,7 @@ if(systemd_FOUND)
     include_directories(${systemd_INCLUDE_DIRS})
 endif()
 
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
-endif()
+add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
 
 set(SOURCES
     bufferattacher.cpp

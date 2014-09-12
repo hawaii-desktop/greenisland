@@ -39,13 +39,11 @@
 ****************************************************************************/
 
 #include <QtGui/QImage>
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-#  include <QtGui/QOpenGLFunctions>
-#endif
+#include <QtGui/QOpenGLFunctions>
+#include <QDebug>
 
 #include "bufferattacher.h"
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
 static GLuint textureFromImage(const QImage &image)
 {
     GLuint texture = 0;
@@ -56,11 +54,9 @@ static GLuint textureFromImage(const QImage &image)
     glBindTexture(GL_TEXTURE_2D, 0);
     return texture;
 }
-#endif
 
 void BufferAttacher::attach(const QWaylandBufferRef &ref)
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
     if (bufferRef) {
         if (ownTexture)
             glDeleteTextures(1, &texture);
@@ -79,9 +75,6 @@ void BufferAttacher::attach(const QWaylandBufferRef &ref)
             ownTexture = false;
         }
     }
-#else
-    bufferRef = ref;
-#endif
 }
 
 QImage BufferAttacher::image() const

@@ -105,10 +105,7 @@ void CompositorPrivate::dpms(bool on)
 
 void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 {
-    Q_UNUSED(hasBuffer);
-
-#if 0
-    if (!cursorSurface)
+    if (!hasBuffer || !cursorSurface)
         return;
 
     QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
@@ -121,7 +118,6 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
         QGuiApplication::setOverrideCursor(cursor);
         cursorIsSet = true;
     }
-#endif
 }
 
 void CompositorPrivate::_q_outputRemoved(QWaylandOutput *_output)
@@ -429,8 +425,12 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 {
     Q_D(Compositor);
 
-    // FIXME: Temporary disable this because it crashes on GLX
-    return;
+    // Setup cursor
+    d->cursorSurface = surface;
+    d->cursorHotspotX = hotspotX;
+    d->cursorHotspotY = hotspotY;
+    if (!d->cursorSurface->bufferAttacher())
+        d->cursorSurface->setBufferAttacher(new BufferAttacher());
 
     if ((d->cursorSurface != surface) && surface) {
         // Set surface role
@@ -439,13 +439,6 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         // Update cursor
         connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }
-
-    // Setup cursor
-    d->cursorSurface = surface;
-    d->cursorHotspotX = hotspotX;
-    d->cursorHotspotY = hotspotY;
-    if (!d->cursorSurface->bufferAttacher())
-        d->cursorSurface->setBufferAttacher(new BufferAttacher());
 }
 
 #include "moc_compositor.cpp"
