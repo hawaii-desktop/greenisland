@@ -34,6 +34,8 @@
 #include <wayland-client.h>
 #include <wayland-server.h>
 
+namespace GreenIsland {
+
 Q_GLOBAL_STATIC(GlobalRegistry, s_globalRegistry)
 
 GlobalRegistry::GlobalRegistry()
@@ -112,3 +114,5 @@ const struct wl_registry_listener GlobalRegistry::m_listener = {
     GlobalRegistry::globalCreate,
     GlobalRegistry::globalRemove
 };
+
+}

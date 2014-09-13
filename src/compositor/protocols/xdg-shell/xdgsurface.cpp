@@ -33,13 +33,15 @@
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "output.h"
-#include "surface.h"
+#include "quicksurface.h"
 #include "windowview.h"
 #include "xdgsurface.h"
 #include "xdgsurfacemovegrabber.h"
 #include "xdgsurfaceresizegrabber.h"
 
-XdgSurface::XdgSurface(XdgShell *shell, Surface *surface,
+namespace GreenIsland {
+
+XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
                        wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
     , QtWaylandServer::xdg_surface(client, id)
@@ -60,7 +62,7 @@ XdgSurface::XdgSurface(XdgShell *shell, Surface *surface,
     setSurfaceType(QWaylandSurface::Toplevel);
 
     // Map surface
-    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+    connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
         m_surface->setMapped(hasBuffer);
     });
 }
@@ -80,7 +82,7 @@ XdgSurface::State XdgSurface::state() const
     return m_state;
 }
 
-Surface *XdgSurface::surface() const
+QuickSurface *XdgSurface::surface() const
 {
     return m_surface;
 }
@@ -461,6 +463,8 @@ void XdgSurface::surface_set_minimized(Resource *resource)
     m_minimized = true;
     if (window())
         window()->setVisible(false);
+}
+
 }
 
 #include "moc_xdgsurface.cpp"

@@ -30,6 +30,8 @@
 struct wl_registry;
 struct wl_registry_listener;
 
+namespace GreenIsland {
+
 class FullScreenShellClient;
 
 class GlobalRegistry
@@ -56,5 +58,7 @@ private:
 
     static const struct wl_registry_listener m_listener;
 };
+
+}
 
 #endif // GLOBALREGISTRY_H

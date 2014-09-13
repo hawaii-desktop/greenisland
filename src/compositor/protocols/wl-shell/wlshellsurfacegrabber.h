@@ -31,6 +31,8 @@
 
 #include "wlshellsurface.h"
 
+namespace GreenIsland {
+
 class WlShellSurfaceGrabber : public QtWayland::PointerGrabber
 {
 public:
@@ -39,5 +41,7 @@ public:
 protected:
     WlShellSurface *m_shellSurface;
 };
+
+}
 
 #endif // WLSHELLSURFACEGRABBER_H

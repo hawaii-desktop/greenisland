@@ -65,6 +65,8 @@
 #include "wlshellsurfacepopupgrabber.h"
 #include "wlshellsurface.h"
 
+namespace GreenIsland {
+
 WlShellSurfacePopupGrabber::WlShellSurfacePopupGrabber(QtWayland::InputDevice *inputDevice)
     : QtWayland::PointerGrabber()
     , m_inputDevice(inputDevice)
@@ -130,4 +132,6 @@ void WlShellSurfacePopupGrabber::button(uint32_t time, Qt::MouseButton button, u
 
     if (state == QtWaylandServer::wl_pointer::button_state_released)
         m_initialUp = false;
+}
+
 }

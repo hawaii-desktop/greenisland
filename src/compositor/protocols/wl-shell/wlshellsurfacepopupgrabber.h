@@ -29,6 +29,8 @@
 
 #include <QtCompositor/private/qwlpointer_p.h>
 
+namespace GreenIsland {
+
 class WlShellSurface;
 
 class WlShellSurfacePopupGrabber : public QtWayland::PointerGrabber
@@ -53,5 +55,7 @@ private:
 
     friend class WlShellSurface;
 };
+
+}
 
 #endif // WLSHELLSURFACEPOPUPGRABBER_H

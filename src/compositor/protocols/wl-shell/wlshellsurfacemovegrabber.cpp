@@ -27,9 +27,11 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
-#include "surface.h"
+#include "quicksurface.h"
 #include "wlshellsurfacemovegrabber.h"
 #include "windowview.h"
+
+namespace GreenIsland {
 
 WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurface, const QPointF &offset)
     : WlShellSurfaceGrabber(shellSurface)
@@ -90,4 +92,6 @@ void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, ui
         QCursor cursor(Qt::OpenHandCursor);
         QGuiApplication::setOverrideCursor(cursor);
     }
+}
+
 }

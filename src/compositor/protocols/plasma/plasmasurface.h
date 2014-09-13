@@ -32,6 +32,8 @@
 
 #include "plasmashell.h"
 
+namespace GreenIsland {
+
 class ShellWindowView;
 
 class PlasmaSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::org_kde_plasma_surface
@@ -56,5 +58,7 @@ private:
     void surface_set_role(Resource *resource,
                           uint32_t role) Q_DECL_OVERRIDE;
 };
+
+}
 
 #endif // PLASMASURFACE_H

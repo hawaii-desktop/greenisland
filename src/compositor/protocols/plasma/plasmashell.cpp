@@ -33,7 +33,9 @@
 #include "output.h"
 #include "plasmashell.h"
 #include "plasmasurface.h"
-#include "surface.h"
+#include "quicksurface.h"
+
+namespace GreenIsland {
 
 PlasmaShell::PlasmaShell()
 {
@@ -76,7 +78,7 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
         return;
     }
 
-    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
     if (!quickSurface) {
         qWarning("Surface is not for QtQuick usage");
         return;
@@ -89,4 +91,6 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
 void PlasmaShell::shell_desktop_ready(Resource *resource)
 {
     Q_UNUSED(resource);
+}
+
 }

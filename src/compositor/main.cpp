@@ -133,10 +133,10 @@ int main(int argc, char *argv[])
 
     // Bind to globals such as full screen shell if we are a Wayland client
     if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
-        GlobalRegistry::instance()->start();
+        GreenIsland::GlobalRegistry::instance()->start();
 
     // Create the compositor
-    Compositor *compositor = new Compositor(socket);
+    GreenIsland::Compositor *compositor = new GreenIsland::Compositor(socket);
 
     // Run the compositor QML code
     compositor->run();

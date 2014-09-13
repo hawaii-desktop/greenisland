@@ -33,6 +33,8 @@
 #include "globalregistry.h"
 #include "output.h"
 
+namespace GreenIsland {
+
 FullScreenShellClient::FullScreenShellClient(quint32 id, quint32 version)
     : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id, version)
     , m_id(id)
@@ -129,4 +131,6 @@ void FullScreenShellClient::fullscreen_shell_capability(uint32_t capability)
     default:
         break;
     }
+}
+
 }

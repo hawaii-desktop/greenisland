@@ -31,7 +31,9 @@
 
 #include "output.h"
 
-class Surface;
+namespace GreenIsland {
+
+class QuickSurface;
 
 class WindowView : public QWaylandSurfaceItem
 {
@@ -39,9 +41,9 @@ class WindowView : public QWaylandSurfaceItem
     Q_PROPERTY(Output *output READ output CONSTANT)
     Q_PROPERTY(Output *mainOutput READ mainOutput CONSTANT)
 public:
-    explicit WindowView(Surface *surface, Output *output, QQuickItem *parent = 0);
+    explicit WindowView(QuickSurface *surface, Output *output, QQuickItem *parent = 0);
 
-    Surface *surface() const;
+    QuickSurface *surface() const;
 
     Output *output() const;
 
@@ -51,11 +53,13 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    Surface *m_surface;
+    QuickSurface *m_surface;
     Output *m_output;
 
     void sendEnter(Output *output);
     void sendLeave(Output *output);
 };
+
+}
 
 #endif // GREENISLAND_WINDOWVIEW_H

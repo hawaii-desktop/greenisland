@@ -35,7 +35,9 @@
 class QQuickItem;
 class QWaylandInputDevice;
 
-class Surface;
+namespace GreenIsland {
+
+class QuickSurface;
 class WindowView;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
@@ -78,7 +80,7 @@ public:
         QSizeF size;
     };
 
-    explicit XdgSurface(XdgShell *shell, Surface *surface,
+    explicit XdgSurface(XdgShell *shell, QuickSurface *surface,
                         wl_client *client, uint32_t id);
 
     uint32_t nextSerial() const;
@@ -87,7 +89,7 @@ public:
 
     State state() const;
 
-    Surface *surface() const;
+    GreenIsland::QuickSurface *surface() const;
 
     WindowView *view() const;
     QQuickItem *window() const;
@@ -113,7 +115,7 @@ protected:
 
 private:
     XdgShell *m_shell;
-    Surface *m_surface;
+    QuickSurface *m_surface;
     WindowView *m_view;
 
     XdgSurfaceMoveGrabber *m_moveGrabber;
@@ -163,5 +165,7 @@ private:
 
     void surface_set_minimized(Resource *resource) Q_DECL_OVERRIDE;
 };
+
+}
 
 #endif // XDGSURFACE_H

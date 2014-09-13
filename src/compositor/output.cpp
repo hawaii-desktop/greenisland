@@ -30,6 +30,8 @@
 #include "output.h"
 #include "outputwindow.h"
 
+namespace GreenIsland {
+
 /*
  * OutputPrivate
  */
@@ -176,6 +178,8 @@ QPointF Output::mapToOutput(const QPointF &pt)
 QPointF Output::mapToGlobal(const QPointF &pt)
 {
     return geometry().topLeft() + pt;
+}
+
 }
 
 #include "moc_output.cpp"

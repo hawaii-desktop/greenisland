@@ -29,6 +29,8 @@
 
 #include <QtQuick/QQuickView>
 
+namespace GreenIsland {
+
 class Compositor;
 class Output;
 
@@ -62,5 +64,7 @@ private Q_SLOTS:
     void sendCallbacks();
     void componentStatusChanged(const QQuickView::Status &status);
 };
+
+}
 
 #endif // GREENISLAND_OUTPUTWINDOW_H

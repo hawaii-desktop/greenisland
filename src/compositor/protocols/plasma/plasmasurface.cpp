@@ -30,6 +30,8 @@
 #include "plasmasurface.h"
 #include "shellwindowview.h"
 
+namespace GreenIsland {
+
 PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
                              wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
@@ -107,4 +109,6 @@ void PlasmaSurface::surface_set_role(Resource *resource,
     default:
         break;
     }
+}
+
 }

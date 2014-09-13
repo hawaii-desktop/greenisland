@@ -26,7 +26,11 @@
 
 #include "xdgsurfacegrabber.h"
 
+namespace GreenIsland {
+
 XdgSurfaceGrabber::XdgSurfaceGrabber(XdgSurface *shellSurface)
     : m_shellSurface(shellSurface)
 {
+}
+
 }

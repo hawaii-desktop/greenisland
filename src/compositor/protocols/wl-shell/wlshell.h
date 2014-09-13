@@ -35,6 +35,8 @@ namespace QtWayland {
 class InputDevice;
 }
 
+namespace GreenIsland {
+
 class WlShellSurface;
 class WlShellSurfacePopupGrabber;
 
@@ -56,5 +58,7 @@ private:
 
     friend class WlShellSurface;
 };
+
+}
 
 #endif // WLSHELL_H

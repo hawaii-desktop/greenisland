@@ -24,32 +24,36 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "compositor.h"
-#include "surface.h"
+#ifndef QUICKSURFACE_H
+#define QUICKSURFACE_H
 
-Surface::Surface(wl_client *client, quint32 id, Compositor *compositor)
-    : QWaylandQuickSurface(client, id, compositor)
+#include <QtCompositor/QWaylandQuickSurface>
+
+namespace GreenIsland {
+
+class Compositor;
+
+class QuickSurface : public QWaylandQuickSurface
 {
+    Q_OBJECT
+    Q_PROPERTY(QPointF globalPosition READ globalPosition WRITE setGlobalPosition NOTIFY globalPositionChanged)
+    Q_PROPERTY(QRectF globalGeometry READ globalGeometry NOTIFY globalGeometryChanged)
+public:
+    explicit QuickSurface(wl_client *client, quint32 id, Compositor *compositor);
+
+    QPointF globalPosition() const;
+    void setGlobalPosition(const QPointF &pos);
+
+    QRectF globalGeometry() const;
+
+Q_SIGNALS:
+    void globalPositionChanged();
+    void globalGeometryChanged();
+
+private:
+    QPointF m_globalPos;
+};
+
 }
 
-QPointF Surface::globalPosition() const
-{
-    return m_globalPos;
-}
-
-void Surface::setGlobalPosition(const QPointF &pos)
-{
-    if (m_globalPos == pos)
-        return;
-
-    m_globalPos = pos;
-    Q_EMIT globalPositionChanged();
-    Q_EMIT globalGeometryChanged();
-}
-
-QRectF Surface::globalGeometry() const
-{
-    return QRectF(m_globalPos, QSizeF(size()));
-}
-
-#include "moc_surface.cpp"
+#endif // QUICKSURFACE_H

@@ -30,10 +30,12 @@
 #include <QtCompositor/QWaylandQuickCompositor>
 #include <QtCompositor/QWaylandSurfaceItem>
 
+namespace GreenIsland {
+
 class CompositorPrivate;
 class Output;
+class QuickSurface;
 class ScreenManager;
-class Surface;
 
 class Compositor : public QWaylandQuickCompositor
 {
@@ -88,8 +90,8 @@ public:
 
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
 
-    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(Surface *surface, Output *output);
+    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QuickSurface *surface);
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QuickSurface *surface, Output *output);
 
     virtual void surfaceCreated(QWaylandSurface *surface);
 
@@ -143,5 +145,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
     Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *_output))
 };
+
+}
 
 #endif // COMPOSITOR_H

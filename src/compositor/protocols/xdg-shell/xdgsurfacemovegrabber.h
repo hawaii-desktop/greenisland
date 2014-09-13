@@ -29,6 +29,8 @@
 
 #include "xdgsurfacegrabber.h"
 
+namespace GreenIsland {
+
 class XdgSurfaceMoveGrabber : public XdgSurfaceGrabber
 {
 public:
@@ -41,5 +43,7 @@ public:
 private:
     QPointF m_offset;
 };
+
+}
 
 #endif // XDGSURFACEMOVEGRABBER_H

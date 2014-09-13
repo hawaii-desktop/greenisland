@@ -31,6 +31,8 @@
 
 #include <KScreen/Output>
 
+namespace GreenIsland {
+
 class Compositor;
 class OutputPrivate;
 
@@ -69,5 +71,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_posChanged())
 };
+
+}
 
 #endif // GREENISLAND_OUTPUT_H

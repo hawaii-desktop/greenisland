@@ -31,9 +31,11 @@
 #include "globalregistry.h"
 #include "output.h"
 #include "outputwindow.h"
-#include "surface.h"
+#include "quicksurface.h"
 
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
+
+namespace GreenIsland {
 
 OutputWindow::OutputWindow(Compositor *compositor)
     : QQuickView()
@@ -44,8 +46,8 @@ OutputWindow::OutputWindow(Compositor *compositor)
     qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
     qmlRegisterUncreatableType<Output>("GreenIsland.Core", 1, 0, "Output",
                                        QStringLiteral("You can't create Output objects"));
-    qmlRegisterUncreatableType<Surface>("GreenIsland.Core", 1, 0, "Surface",
-                                        QStringLiteral("You can't create Surface objects"));
+    qmlRegisterUncreatableType<QuickSurface>("GreenIsland.Core", 1, 0, "QuickSurface",
+                                             QStringLiteral("You can't create QuickSurface objects"));
 
     // Setup window
     setColor(Qt::black);
@@ -198,6 +200,8 @@ void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
 {
     if (status == QQuickView::Ready)
         show();
+}
+
 }
 
 #include "moc_outputwindow.cpp"

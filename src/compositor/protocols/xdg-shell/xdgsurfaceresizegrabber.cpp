@@ -29,6 +29,8 @@
 #include "xdgsurfaceresizegrabber.h"
 #include "windowview.h"
 
+namespace GreenIsland {
+
 XdgSurfaceResizeGrabber::XdgSurfaceResizeGrabber(XdgSurface *shellSurface)
     : XdgSurfaceGrabber(shellSurface)
 {
@@ -73,4 +75,6 @@ void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint
         m_shellSurface->resetResizeGrab();
         delete this;
     }
+}
+
 }

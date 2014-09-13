@@ -31,6 +31,8 @@
 
 #include "xdgsurface.h"
 
+namespace GreenIsland {
+
 class XdgSurfaceGrabber : public QtWayland::PointerGrabber
 {
 public:
@@ -39,5 +41,7 @@ public:
 protected:
     XdgSurface *m_shellSurface;
 };
+
+}
 
 #endif // XDGSURFACEGRABBER_H

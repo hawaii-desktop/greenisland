@@ -36,7 +36,9 @@
 
 class QWaylandInputDevice;
 
-class Surface;
+namespace GreenIsland {
+
+class QuickSurface;
 class WindowView;
 class WlShellSurfaceMoveGrabber;
 class WlShellSurfaceResizeGrabber;
@@ -57,7 +59,7 @@ public:
         Move = QWaylandSurfaceOp::UserType
     };
 
-    explicit WlShellSurface(WlShell *shell, Surface *surface,
+    explicit WlShellSurface(WlShell *shell, QuickSurface *surface,
                             wl_client *client, uint32_t id);
     ~WlShellSurface();
 
@@ -65,7 +67,7 @@ public:
 
     State state() const;
 
-    Surface *surface() const;
+    QuickSurface *surface() const;
 
     WindowView *view() const;
     QQuickItem *window() const;
@@ -83,7 +85,7 @@ protected:
 
 private:
     WlShell *m_shell;
-    Surface *m_surface;
+    QuickSurface *m_surface;
     WindowView *m_view;
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;
@@ -131,5 +133,7 @@ private:
     friend class WlShellSurfaceMoveGrabber;
     friend class WlShellSurfaceResizeGrabber;
 };
+
+}
 
 #endif // WLSHELLSURFACE_H

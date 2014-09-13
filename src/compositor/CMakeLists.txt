@@ -19,10 +19,10 @@ set(SOURCES
     main.cpp
     output.cpp
     outputwindow.cpp
+    quicksurface.cpp
     windowview.cpp
     screenmanager.cpp
     shellwindowview.cpp
-    surface.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/plasma/plasmashell.cpp

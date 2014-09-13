@@ -30,6 +30,8 @@
 #include "xdgsurfacegrabber.h"
 #include "qwayland-server-xdg-shell.h"
 
+namespace GreenIsland {
+
 class XdgSurfaceResizeGrabber : public XdgSurfaceGrabber
 {
 public:
@@ -47,5 +49,7 @@ private:
 
     friend class XdgSurface;
 };
+
+}
 
 #endif // XDGSURFACERESIZEGRABBER_H

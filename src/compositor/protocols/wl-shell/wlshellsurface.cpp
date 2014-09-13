@@ -31,14 +31,16 @@
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "output.h"
-#include "surface.h"
+#include "quicksurface.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacemovegrabber.h"
 #include "wlshellsurfaceresizegrabber.h"
 #include "wlshellsurfacepopupgrabber.h"
 #include "windowview.h"
 
-WlShellSurface::WlShellSurface(WlShell *shell, Surface *surface,
+namespace GreenIsland {
+
+WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
                                wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
     , QtWaylandServer::wl_shell_surface(client, id)
@@ -56,7 +58,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, Surface *surface,
     m_view = new WindowView(m_surface, output);
 
     // Map surface
-    connect(m_surface, &Surface::configure, [=](bool hasBuffer) {
+    connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
         m_surface->setMapped(hasBuffer);
     });
 }
@@ -82,7 +84,7 @@ WlShellSurface::State WlShellSurface::state() const
     return m_state;
 }
 
-Surface *WlShellSurface::surface() const
+QuickSurface *WlShellSurface::surface() const
 {
     return m_surface;
 }
@@ -398,4 +400,6 @@ void WlShellSurface::shell_surface_set_class(Resource *resource, const QString &
     Q_UNUSED(resource);
 
     setSurfaceClassName(class_);
+}
+
 }

@@ -29,6 +29,8 @@
 
 #include <QtCompositor/QWaylandSurfaceItem>
 
+namespace GreenIsland {
+
 class Output;
 
 class ShellWindowView : public QWaylandSurfaceItem
@@ -48,5 +50,7 @@ Q_SIGNALS:
 private:
     Output *m_output;
 };
+
+}
 
 #endif // SHELLWINDOWVIEW_H

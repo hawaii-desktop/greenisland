@@ -42,13 +42,15 @@
 #include "bufferattacher.h"
 #include "cmakedirs.h"
 #include "compositor.h"
+#include "quicksurface.h"
 #include "windowview.h"
 #include "screenmanager.h"
-#include "surface.h"
 
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
+
+namespace GreenIsland {
 
 /*
  * CompositorPrivate
@@ -149,6 +151,9 @@ Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
+    qRegisterMetaType<QuickSurface *>("QuickSurface*");
+    qRegisterMetaType<Output *>("Output*");
+
     connect(this, SIGNAL(outputRemoved(QWaylandOutput*)),
             this, SLOT(_q_outputRemoved(QWaylandOutput*)));
 }
@@ -280,7 +285,7 @@ void Compositor::run()
 
 QWaylandQuickSurface *Compositor::createSurface(wl_client *client, quint32 id)
 {
-    return new Surface(client, id, this);
+    return new QuickSurface(client, id, this);
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
@@ -289,7 +294,7 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     // pick the first view with that global coordinates
 
     for (QtWayland::Surface *curSurface: m_compositor->surfaces()) {
-        Surface *surface = qobject_cast<Surface *>(curSurface->waylandSurface());
+        QuickSurface *surface = qobject_cast<QuickSurface *>(curSurface->waylandSurface());
         if (!surface)
             continue;
 
@@ -300,17 +305,17 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     return Q_NULLPTR;
 }
 
-QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
+QWaylandSurfaceItem *Compositor::firstViewOf(QuickSurface *surface)
 {
     if (!surface) {
         qWarning() << "First view of null surface requested!";
         return nullptr;
     }
 
-    return static_cast<QWaylandSurfaceItem *>(surface->views().first());
+    return static_cast<WindowView *>(surface->views().first());
 }
 
-QWaylandSurfaceItem *Compositor::viewForOutput(Surface *surface, Output *output)
+QWaylandSurfaceItem *Compositor::viewForOutput(QuickSurface *surface, Output *output)
 {
     if (!surface) {
         qWarning() << "View for a null surface requested!";
@@ -439,6 +444,8 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         // Update cursor
         connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }
+}
+
 }
 
 #include "moc_compositor.cpp"

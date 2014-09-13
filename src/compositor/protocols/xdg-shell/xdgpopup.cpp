@@ -31,6 +31,8 @@
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
 
+namespace GreenIsland {
+
 XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *surface,
                    wl_client *client, uint32_t id, uint32_t serial)
     : QWaylandSurfaceInterface(surface)
@@ -78,6 +80,8 @@ bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
     }
 
     return false;
+}
+
 }
 
 #include "moc_xdgpopup.cpp"

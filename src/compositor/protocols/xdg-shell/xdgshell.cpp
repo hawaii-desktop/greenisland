@@ -28,11 +28,13 @@
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
-#include "surface.h"
+#include "quicksurface.h"
 #include "xdgshell.h"
 #include "xdgsurface.h"
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
+
+namespace GreenIsland {
 
 XdgShell::XdgShell()
 {
@@ -77,7 +79,7 @@ void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
 void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
     if (!quickSurface)
         return;
     new XdgSurface(this, quickSurface, resource->client(), id);
@@ -111,4 +113,6 @@ void XdgShell::shell_pong(Resource *resource, uint32_t serial)
     // TODO: finish
 
     XdgSurface *surface = m_pings.take(serial);
+}
+
 }

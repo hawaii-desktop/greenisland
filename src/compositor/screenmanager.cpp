@@ -33,8 +33,8 @@
 
 #include "compositor.h"
 #include "output.h"
+#include "quicksurface.h"
 #include "screenmanager.h"
-#include "surface.h"
 #include "windowview.h"
 
 static bool outputLess(KScreen::Output *a, KScreen::Output *b)
@@ -44,6 +44,8 @@ static bool outputLess(KScreen::Output *a, KScreen::Output *b)
             || (a->isPrimary() == b->isPrimary() && (a->pos().x() < b->pos().x()
                                                      || (a->pos().x() == b->pos().x() && a->pos().y() < b->pos().y()))));
 }
+
+namespace GreenIsland {
 
 /*
  * ScreenManagerPrivate
@@ -265,6 +267,8 @@ ScreenManager::ScreenManager(Compositor *compositor)
 ScreenManager::~ScreenManager()
 {
     delete d_ptr;
+}
+
 }
 
 #include "moc_screenmanager.cpp"

@@ -32,6 +32,8 @@
 
 #include "qwayland-server-plasma-shell.h"
 
+namespace GreenIsland {
+
 class PlasmaShell : public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_shell
 {
 public:
@@ -53,5 +55,7 @@ private:
     void shell_desktop_ready(Resource *resource) Q_DECL_OVERRIDE;
     //void shell_present(Resource *resource, wl_array *surfaces) Q_DECL_OVERRIDE;
 };
+
+}
 
 #endif // PLASMASHELL_H

@@ -33,6 +33,8 @@ namespace KScreen {
 class Output;
 }
 
+namespace GreenIsland {
+
 class Compositor;
 class ScreenManagerPrivate;
 
@@ -52,5 +54,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
     Q_PRIVATE_SLOT(d_func(), void _q_outputEnabledChanged())
 };
+
+}
 
 #endif // SCREENMANAGER_H

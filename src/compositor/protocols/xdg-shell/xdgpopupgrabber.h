@@ -29,6 +29,8 @@
 
 #include <QtCompositor/private/qwlpointer_p.h>
 
+namespace GreenIsland {
+
 class XdgPopup;
 
 class XdgPopupGrabber : public QtWayland::PointerGrabber
@@ -53,5 +55,7 @@ private:
 
     friend class XdgPopup;
 };
+
+}
 
 #endif // XDGPOPUPGRABBER_H

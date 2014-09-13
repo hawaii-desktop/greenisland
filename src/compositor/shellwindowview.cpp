@@ -27,6 +27,8 @@
 #include "output.h"
 #include "shellwindowview.h"
 
+namespace GreenIsland {
+
 ShellWindowView::ShellWindowView(QWaylandQuickSurface *surface, Output *output,
                                  QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
@@ -46,6 +48,8 @@ void ShellWindowView::setOutput(Output *output)
 
     m_output = output;
     Q_EMIT outputChanged();
+}
+
 }
 
 #include "moc_shellwindowview.cpp"

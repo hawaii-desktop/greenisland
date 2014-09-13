@@ -31,6 +31,8 @@
 
 #include "wlshellsurfacegrabber.h"
 
+namespace GreenIsland {
+
 class WlShellSurfaceResizeGrabber : public WlShellSurfaceGrabber
 {
 public:
@@ -48,5 +50,7 @@ private:
 
     friend class WlShellSurface;
 };
+
+}
 
 #endif // WLSHELLSURFACERESIZEGRABBER_H

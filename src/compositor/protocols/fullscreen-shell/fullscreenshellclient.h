@@ -31,6 +31,8 @@
 
 struct wl_registry;
 
+namespace GreenIsland {
+
 class Output;
 
 class FullScreenShellClient : public QtWayland::_wl_fullscreen_shell
@@ -59,5 +61,7 @@ private:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FullScreenShellClient::Capabilities)
+
+}
 
 #endif // FULLSCREENSHELLCLIENT_H

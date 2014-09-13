@@ -27,9 +27,11 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
-#include "surface.h"
+#include "quicksurface.h"
 #include "xdgsurfacemovegrabber.h"
 #include "windowview.h"
+
+namespace GreenIsland {
 
 XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPointF &offset)
     : XdgSurfaceGrabber(shellSurface)
@@ -89,4 +91,6 @@ void XdgSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32
         QCursor cursor(Qt::OpenHandCursor);
         QGuiApplication::setOverrideCursor(cursor);
     }
+}
+
 }

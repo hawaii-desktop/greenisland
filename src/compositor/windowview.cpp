@@ -31,10 +31,12 @@
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "compositor.h"
+#include "quicksurface.h"
 #include "windowview.h"
-#include "surface.h"
 
-WindowView::WindowView(Surface *surface, Output *output, QQuickItem *parent)
+namespace GreenIsland {
+
+WindowView::WindowView(QuickSurface *surface, Output *output, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
     , m_surface(surface)
     , m_output(output)
@@ -47,7 +49,7 @@ WindowView::WindowView(Surface *surface, Output *output, QQuickItem *parent)
     });
 
     // Change window position and send enter/leave events to the output
-    connect(m_surface, &Surface::globalGeometryChanged, [=]() {
+    connect(m_surface, &QuickSurface::globalGeometryChanged, [=]() {
         // WindowView is a child of the QtQuick window representation that is
         // the one who holds the position on screen
         if (parentItem())
@@ -65,7 +67,7 @@ WindowView::WindowView(Surface *surface, Output *output, QQuickItem *parent)
     });
 }
 
-Surface *WindowView::surface() const
+QuickSurface *WindowView::surface() const
 {
     return m_surface;
 }
@@ -125,6 +127,8 @@ void WindowView::sendLeave(Output *output)
 
     for (QtWayland::Output::Resource *resource: output->handle()->resourceMap().values())
         surface()->handle()->send_leave(resource->handle);
+}
+
 }
 
 #include "moc_windowview.cpp"

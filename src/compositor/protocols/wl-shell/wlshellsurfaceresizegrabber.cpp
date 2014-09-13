@@ -26,6 +26,8 @@
 
 #include "wlshellsurfaceresizegrabber.h"
 
+namespace GreenIsland {
+
 WlShellSurfaceResizeGrabber::WlShellSurfaceResizeGrabber(WlShellSurface *shellSurface)
     : WlShellSurfaceGrabber(shellSurface)
 {
@@ -66,4 +68,6 @@ void WlShellSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, 
         m_shellSurface->m_resizeGrabber = Q_NULLPTR;
         delete this;
     }
+}
+
 }

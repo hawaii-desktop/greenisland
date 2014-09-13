@@ -44,6 +44,8 @@
 
 #include "bufferattacher.h"
 
+namespace GreenIsland {
+
 static GLuint textureFromImage(const QImage &image)
 {
     GLuint texture = 0;
@@ -82,4 +84,6 @@ QImage BufferAttacher::image() const
     if (!bufferRef || !bufferRef.isShm())
         return QImage();
     return bufferRef.image();
+}
+
 }

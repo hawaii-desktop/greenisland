@@ -44,6 +44,8 @@
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandBufferRef>
 
+namespace GreenIsland {
+
 class BufferAttacher : public QWaylandBufferAttacher
 {
 public:
@@ -55,5 +57,7 @@ public:
     GLuint texture;
     bool ownTexture;
 };
+
+}
 
 #endif // BUFFERATTACHER_H

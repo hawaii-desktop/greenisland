@@ -24,10 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "surface.h"
+#include "quicksurface.h"
 #include "wlshell.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"
+
+namespace GreenIsland {
 
 WlShell::WlShell()
 {
@@ -57,8 +59,10 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    Surface *quickSurface = qobject_cast<Surface *>(surface);
+    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
     if (!quickSurface)
         return;
     new WlShellSurface(this, quickSurface, resource->client(), id);
+}
+
 }

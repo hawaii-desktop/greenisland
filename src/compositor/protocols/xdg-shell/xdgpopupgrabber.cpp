@@ -65,6 +65,8 @@
 #include "xdgpopupgrabber.h"
 #include "xdgpopup.h"
 
+namespace GreenIsland {
+
 XdgPopupGrabber::XdgPopupGrabber(QtWayland::InputDevice *inputDevice)
     : QtWayland::PointerGrabber()
     , m_inputDevice(inputDevice)
@@ -130,4 +132,6 @@ void XdgPopupGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t sta
 
     if (state == QtWaylandServer::wl_pointer::button_state_released)
         m_initialUp = false;
+}
+
 }

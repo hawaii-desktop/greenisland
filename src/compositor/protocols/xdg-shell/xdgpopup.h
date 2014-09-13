@@ -32,6 +32,8 @@
 
 #include "xdgshell.h"
 
+namespace GreenIsland {
+
 class XdgPopupGrabber;
 
 class XdgPopup : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::xdg_popup
@@ -57,5 +59,7 @@ private:
 
     friend class XdgShell;
 };
+
+}
 
 #endif // XDGPOPUP_H

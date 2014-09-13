@@ -26,7 +26,11 @@
 
 #include "wlshellsurfacegrabber.h"
 
+namespace GreenIsland {
+
 WlShellSurfaceGrabber::WlShellSurfaceGrabber(WlShellSurface *shellSurface)
     : m_shellSurface(shellSurface)
 {
+}
+
 }

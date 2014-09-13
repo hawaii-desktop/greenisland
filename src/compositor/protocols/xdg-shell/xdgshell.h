@@ -36,6 +36,8 @@ namespace QtWayland {
 class InputDevice;
 }
 
+namespace GreenIsland {
+
 class XdgSurface;
 class XdgPopupGrabber;
 
@@ -63,5 +65,7 @@ private:
                              uint32_t serial, int32_t x, int32_t y, uint32_t flags)  Q_DECL_OVERRIDE;
     void shell_pong(Resource *resource, uint32_t serial)  Q_DECL_OVERRIDE;
 };
+
+}
 
 #endif // XDGSHELL_H

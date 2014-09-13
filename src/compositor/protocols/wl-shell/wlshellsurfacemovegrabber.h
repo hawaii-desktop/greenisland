@@ -29,6 +29,8 @@
 
 #include "wlshellsurfacegrabber.h"
 
+namespace GreenIsland {
+
 class WlShellSurfaceMoveGrabber : public WlShellSurfaceGrabber
 {
 public:
@@ -41,5 +43,7 @@ public:
 private:
     QPointF m_offset;
 };
+
+}
 
 #endif // WLSHELLSURFACEMOVEGRABBER_H
