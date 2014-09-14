@@ -44,7 +44,7 @@ public:
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
-    explicit FullScreenShellClient(quint32 id, quint32 version);
+    explicit FullScreenShellClient(quint32 id);
 
     quint32 id() const;
 
