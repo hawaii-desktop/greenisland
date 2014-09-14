@@ -36,7 +36,7 @@
 namespace GreenIsland {
 
 FullScreenShellClient::FullScreenShellClient(quint32 id)
-    : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id)
+    : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id, 1)
     , m_id(id)
     , m_capabilities(0)
 {
