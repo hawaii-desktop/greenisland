@@ -9,18 +9,14 @@ set(SOURCES
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
-qt5_use_modules(greenislandplugin Qml)
+target_link_libraries(greenislandplugin Qt5::Qml Qt5::Quick)
 
 install(TARGETS greenislandplugin LIBRARY
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/hawaii/qml/GreenIsland)
+    DESTINATION ${QML_INSTALL_DIR}/GreenIsland)
 
 set(MODULE_FILES
     qmldir
-    ClientWindowWrapper.qml
     ContrastEffect.qml
-    SurfaceRenderer.qml
-    WindowItem.qml
-    WindowWrapper.qml
 )
 install(FILES ${MODULE_FILES}
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/hawaii/qml/GreenIsland)
+    DESTINATION ${QML_INSTALL_DIR}/GreenIsland)

@@ -1,2 +1,3 @@
 add_subdirectory(declarative)
-add_subdirectory(libgreenisland)
+add_subdirectory(compositor)
+add_subdirectory(launcher)
