@@ -36,18 +36,36 @@ class Output;
 class ShellWindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
+    Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(Output *output READ output WRITE setOutput NOTIFY outputChanged)
+    Q_ENUMS(Role)
 public:
+    enum Role {
+        NoneRole = 0,
+        DesktopRole,
+        DashboardRole,
+        PanelRole,
+        PanelConfigRole,
+        OverlayRole,
+        NotificationRole,
+        LockRole
+    };
+
     explicit ShellWindowView(QWaylandQuickSurface *surface, Output *output,
                              QQuickItem *parent = 0);
+
+    Role role() const;
+    void setRole(const Role &role);
 
     Output *output() const;
     void setOutput(Output *output);
 
 Q_SIGNALS:
+    void roleChanged();
     void outputChanged();
 
 private:
+    Role m_role;
     Output *m_output;
 };
 

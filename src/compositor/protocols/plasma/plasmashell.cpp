@@ -58,7 +58,8 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
 {
     Q_UNUSED(resource);
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    QuickSurface *surface = qobject_cast<QuickSurface *>(
+                QuickSurface::fromResource(surfaceResource));
     if (!surface) {
         qWarning() << "Unable to retrieve surface from resource!";
         return;
@@ -72,20 +73,15 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    QuickSurface *surface = qobject_cast<QuickSurface *>(
+                QuickSurface::fromResource(surfaceResource));
     if (!surface) {
         qWarning() << "Unable to retrieve surface from resource!";
         return;
     }
 
-    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
-    if (!quickSurface) {
-        qWarning("Surface is not for QtQuick usage");
-        return;
-    }
-
     // Set global position
-    quickSurface->setGlobalPosition(QPointF(x, y));
+    surface->setGlobalPosition(QPointF(x, y));
 }
 
 void PlasmaShell::shell_desktop_ready(Resource *resource)

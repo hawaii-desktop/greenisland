@@ -45,6 +45,7 @@
 #include "quicksurface.h"
 #include "windowview.h"
 #include "screenmanager.h"
+#include "shellwindowview.h"
 
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -153,6 +154,8 @@ Compositor::Compositor(const QString &socket)
 {
     qRegisterMetaType<QuickSurface *>("QuickSurface*");
     qRegisterMetaType<Output *>("Output*");
+    qRegisterMetaType<WindowView *>("WindowView*");
+    qRegisterMetaType<ShellWindowView *>("ShellWindowView*");
 
     connect(this, SIGNAL(outputRemoved(QWaylandOutput*)),
             this, SLOT(_q_outputRemoved(QWaylandOutput*)));
@@ -438,9 +441,6 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         d->cursorSurface->setBufferAttacher(new BufferAttacher());
 
     if ((d->cursorSurface != surface) && surface) {
-        // Set surface role
-        surface->setWindowProperty(QStringLiteral("role"), CursorRole);
-
         // Update cursor
         connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }

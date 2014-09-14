@@ -43,7 +43,7 @@ class Compositor : public QWaylandQuickCompositor
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
-    Q_ENUMS(State WindowRole)
+    Q_ENUMS(State)
 public:
     enum State {
         //! Compositor is active.
@@ -54,20 +54,6 @@ public:
         Offscreen,
         //! Same as CompositorOffscreen, but also set DPMS
         Sleeping
-    };
-
-    enum WindowRole {
-        ApplicationRole,
-        CursorRole,
-        LockScreenRole,
-        OverlayRole,
-        DialogRole,
-        FullScreenRole,
-        PanelRole,
-        PopupRole,
-        NotificationRole,
-        DesktopRole,
-        BackgroundRole
     };
 
     explicit Compositor(const QString &socket = QString());

@@ -24,28 +24,34 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
+#include <QtCore/QDebug>
 
+#include "compositor.h"
 #include "output.h"
 #include "plasmasurface.h"
+#include "quicksurface.h"
 #include "shellwindowview.h"
 
 namespace GreenIsland {
 
-PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
+PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
                              wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
     , QtWaylandServer::org_kde_plasma_surface(client, id)
     , m_shell(shell)
     , m_surface(surface)
+    , m_role(role_none)
 {
     // Create a view for the first output
-    QWaylandQuickSurface *quickSurface = static_cast<QWaylandQuickSurface *>(m_surface);
     Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new ShellWindowView(quickSurface, output);
+    m_view = new ShellWindowView(m_surface, output);
+    qDebug() << "New Plasma surface" << m_surface;
 
     // Map surface
-    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+    connect(m_surface, &QuickSurface::configure, [&](bool hasBuffer) {
+        // Not until it has a role (unless it's an unmap)
+        if (m_role == role_none && hasBuffer)
+            return;
         m_surface->setMapped(hasBuffer);
     });
 }
@@ -63,8 +69,31 @@ bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
     return false;
 }
 
+ShellWindowView::Role PlasmaSurface::wl2Role(const role &role)
+{
+    switch (role) {
+    case role_desktop:
+        return ShellWindowView::DesktopRole;
+    case role_dashboard:
+        return ShellWindowView::DashboardRole;
+    case role_config:
+        return ShellWindowView::PanelConfigRole;
+    case role_overlay:
+        return ShellWindowView::OverlayRole;
+    case role_notification:
+        return ShellWindowView::NotificationRole;
+    case role_lock:
+        return ShellWindowView::LockRole;
+    default:
+        break;
+    }
+
+    return ShellWindowView::NoneRole;
+}
+
 void PlasmaSurface::surface_destroy(Resource *resource)
 {
+    Q_UNUSED(resource);
 }
 
 void PlasmaSurface::surface_set_output(Resource *resource,
@@ -89,22 +118,26 @@ void PlasmaSurface::surface_set_role(Resource *resource,
 {
     Q_UNUSED(resource);
 
+    // Set role
+    m_role = static_cast<PlasmaSurface::role>(role);
+    m_view->setRole(wl2Role(m_role));
+
     // Set position according to the role
-    switch (role) {
-    case QtWaylandServer::org_kde_plasma_surface::role_desktop:
-        m_view->setPosition(QPointF(0, 0));
+    switch (m_role) {
+    case role_desktop:
+        m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case QtWaylandServer::org_kde_plasma_surface::role_dashboard:
-        m_view->setPosition(QPointF(0, 0));
+    case role_dashboard:
+        m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case QtWaylandServer::org_kde_plasma_surface::role_lock:
-        m_view->setPosition(QPointF(0, 0));
+    case role_lock:
+        m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case QtWaylandServer::org_kde_plasma_surface::role_notification:
-        m_view->setPosition(QPointF(0, 0));
+    case role_notification:
+        m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case QtWaylandServer::org_kde_plasma_surface::role_overlay:
-        m_view->setPosition(QPointF(0, 0));
+    case role_overlay:
+        m_surface->setGlobalPosition(QPointF(0, 0));
         break;
     default:
         break;

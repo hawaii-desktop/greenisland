@@ -32,6 +32,8 @@
 #include "output.h"
 #include "outputwindow.h"
 #include "quicksurface.h"
+#include "windowview.h"
+#include "shellwindowview.h"
 
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
 
@@ -48,6 +50,10 @@ OutputWindow::OutputWindow(Compositor *compositor)
                                        QStringLiteral("You can't create Output objects"));
     qmlRegisterUncreatableType<QuickSurface>("GreenIsland.Core", 1, 0, "QuickSurface",
                                              QStringLiteral("You can't create QuickSurface objects"));
+    qmlRegisterUncreatableType<WindowView>("GreenIsland.Core", 1, 0, "WindowView",
+                                           QStringLiteral("You can't create WindowView objects"));
+    qmlRegisterUncreatableType<ShellWindowView>("GreenIsland.Core", 1, 0, "ShellWindowView",
+                                                QStringLiteral("You can't create ShellWindowView objects"));
 
     // Setup window
     setColor(Qt::black);

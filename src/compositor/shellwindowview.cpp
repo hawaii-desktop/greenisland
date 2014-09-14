@@ -32,8 +32,23 @@ namespace GreenIsland {
 ShellWindowView::ShellWindowView(QWaylandQuickSurface *surface, Output *output,
                                  QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
+    , m_role(NoneRole)
     , m_output(output)
 {
+}
+
+ShellWindowView::Role ShellWindowView::role() const
+{
+    return m_role;
+}
+
+void ShellWindowView::setRole(const Role &role)
+{
+    if (m_role == role)
+        return;
+
+    m_role = role;
+    Q_EMIT roleChanged();
 }
 
 Output *ShellWindowView::output() const
