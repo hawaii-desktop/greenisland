@@ -42,6 +42,7 @@ class ShellWindowView : public QWaylandSurfaceItem
 public:
     enum Role {
         NoneRole = 0,
+        SplashRole,
         DesktopRole,
         DashboardRole,
         PanelRole,

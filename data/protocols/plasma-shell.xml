@@ -171,6 +171,8 @@
 
         If the shell surfaces take a long time to initialize, we avoid
 	showing temporary garbage.
+
+        See also the splash role in org_kde_plasma_surface.set_role.
       </description>
     </request>
 
@@ -250,12 +252,13 @@
 
     <enum name="role">
       <entry name="none" value="0"/>
-      <entry name="desktop" value="1"/>
-      <entry name="dashboard" value="2"/>
-      <entry name="config" value="3"/>
-      <entry name="overlay" value="4"/>
-      <entry name="notification" value="5"/>
-      <entry name="lock" value="6"/>
+      <entry name="splash" value="1"/>
+      <entry name="desktop" value="2"/>
+      <entry name="dashboard" value="3"/>
+      <entry name="config" value="4"/>
+      <entry name="overlay" value="5"/>
+      <entry name="notification" value="6"/>
+      <entry name="lock" value="7"/>
     </enum>
 
     <request name="set_role">
@@ -267,6 +270,29 @@
 
         This request fails if the surface already has a role, this means
         the surface role may be assigned only once.
+
+        == Surfaces with splash role ==
+
+        Splash surfaces are placed above every other surface during the
+        shell startup phase.
+
+        The surfaces are placed according to the output coordinates.
+        No size is imposed to those surfaces, the shell has to resize
+        them according to output size.
+
+        These surfaces are meant to hide the desktop during the startup
+        phase so that the user will always see a ready to work desktop.
+
+        A shell might not create splash surfaces if the compositor reveals
+        the desktop in an alternative fashion, for example with a fade
+        in effect.
+
+        That depends on how much time the desktop usually need to prepare
+        the workspace or specific design decisions.
+        This specification doesn't impose any particular design.
+
+        When the startup phase is finished, the shell will send the
+        org_kde_plasma.desktop_ready request to the compositor.
 
         == Surfaces with desktop role ==
 

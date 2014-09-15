@@ -72,6 +72,8 @@ bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
 ShellWindowView::Role PlasmaSurface::wl2Role(const role &role)
 {
     switch (role) {
+    case role_splash:
+        return ShellWindowView::SplashRole;
     case role_desktop:
         return ShellWindowView::DesktopRole;
     case role_dashboard:
