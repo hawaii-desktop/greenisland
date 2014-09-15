@@ -41,6 +41,7 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
     , m_shell(shell)
     , m_surface(surface)
     , m_role(role_none)
+    , m_deleting(true)
 {
     // Create a view for the first output
     Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
@@ -54,6 +55,16 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
             return;
         m_surface->setMapped(hasBuffer);
     });
+}
+
+PlasmaSurface::~PlasmaSurface()
+{
+    // Don't destroy the resource if the destructor is called
+    // from surface_destroy_resource()
+    if (!m_deleting) {
+        m_deleting = true;
+        wl_resource_destroy(resource()->handle);
+    }
 }
 
 bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
@@ -93,9 +104,25 @@ ShellWindowView::Role PlasmaSurface::wl2Role(const role &role)
     return ShellWindowView::NoneRole;
 }
 
-void PlasmaSurface::surface_destroy(Resource *resource)
+void PlasmaSurface::surface_destroy_resource(Resource *resource)
 {
     Q_UNUSED(resource);
+
+    // We might be called from the destructor, in that case avoid
+    // deleting twice
+    if (!m_deleting) {
+        m_deleting = true;
+        delete this;
+    }
+}
+
+void PlasmaSurface::surface_destroy(Resource *resource)
+{
+    // Unmap surface
+    m_surface->setMapped(false);
+
+    // Destroy this object
+    surface_destroy_resource(resource);
 }
 
 void PlasmaSurface::surface_set_output(Resource *resource,

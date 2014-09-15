@@ -41,6 +41,7 @@ class PlasmaSurface : public QObject, public QWaylandSurfaceInterface, public Qt
 public:
     explicit PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
                            wl_client *client, uint32_t id);
+    ~PlasmaSurface();
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
@@ -50,8 +51,11 @@ private:
     QuickSurface *m_surface;
     ShellWindowView *m_view;
     QtWaylandServer::org_kde_plasma_surface::role m_role;
+    bool m_deleting;
 
     ShellWindowView::Role wl2Role(const role &role);
+
+    void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void surface_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void surface_set_output(Resource *resource,
