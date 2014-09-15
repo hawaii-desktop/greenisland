@@ -30,6 +30,7 @@
 #include <QtCompositor/private/qwloutput_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "compositor.h"
 #include "output.h"
 #include "plasmashell.h"
 #include "plasmasurface.h"
@@ -37,7 +38,8 @@
 
 namespace GreenIsland {
 
-PlasmaShell::PlasmaShell()
+PlasmaShell::PlasmaShell(Compositor *compositor)
+    : m_compositor(compositor)
 {
 }
 
@@ -87,6 +89,8 @@ void PlasmaShell::shell_set_global_position(Resource *resource,
 void PlasmaShell::shell_desktop_ready(Resource *resource)
 {
     Q_UNUSED(resource);
+
+    Q_EMIT m_compositor->fadeIn();
 }
 
 }

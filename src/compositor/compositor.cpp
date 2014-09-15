@@ -268,7 +268,7 @@ void Compositor::run()
         return;
 
     // Add global interfaces
-    addGlobalInterface(new PlasmaShell());
+    addGlobalInterface(new PlasmaShell(this));
     addGlobalInterface(new WlShell());
     addGlobalInterface(new XdgShell());
 
@@ -278,10 +278,6 @@ void Compositor::run()
     Q_EMIT workspaceAdded();
     Q_EMIT workspaceAdded();
     Q_EMIT workspaceSelected(0);
-
-    // FIXME: Fade in immediately, when there will be a protocol for the shell
-    // we will fade in as soon as it tells us it's ready
-    Q_EMIT fadeIn();
 
     d->running = true;
 }
