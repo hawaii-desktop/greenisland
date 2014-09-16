@@ -49,6 +49,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
     , m_moveGrabber(Q_NULLPTR)
     , m_resizeGrabber(Q_NULLPTR)
     , m_popupGrabber(Q_NULLPTR)
+    , m_popupSerial()
     , m_state(Normal)
     , m_prevState(Normal)
     , m_deleting(false)
@@ -60,6 +61,21 @@ WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
     // Map surface
     connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
         m_surface->setMapped(hasBuffer);
+
+        // Grab popup when mapped otherwise break it
+        if (m_surface->windowType() != QuickSurface::Popup)
+            return;
+
+        if (m_popupGrabber) {
+            if (hasBuffer && m_popupGrabber->serial() == m_popupSerial) {
+                m_popupGrabber->addPopup(this);
+            } else {
+                if (m_popupGrabber->m_client)
+                    send_popup_done();
+                m_popupGrabber->removePopup(this);
+                m_popupGrabber->m_client = Q_NULLPTR;
+            }
+        }
     });
 }
 
@@ -212,8 +228,11 @@ void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
     Q_UNUSED(resource);
 
     // Close popup grabber in case it is still going
-    if (m_popupGrabber)
+    if (m_popupGrabber) {
+        send_popup_done();
         m_popupGrabber->removePopup(this);
+        m_popupGrabber->m_client = Q_NULLPTR;
+    }
 
     // Don't delete twice if we are here from the destructor
     if (!m_deleting) {
@@ -342,23 +361,12 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
 
     m_popupGrabber = m_shell->popupGrabberForDevice(device);
+    m_popupSerial = serial;
 
     m_surface->handle()->setTransientParent(QtWayland::Surface::fromResource(parent));
     m_surface->handle()->setTransientOffset(x, y);
 
     setSurfaceType(QWaylandSurface::Popup);
-
-    // Map popup
-    connect(m_surface, &QWaylandSurface::mapped, [=]() {
-        if (m_surface->handle()->mapped() &&
-                m_popupGrabber &&
-                m_popupGrabber->serial() == serial) {
-            m_popupGrabber->addPopup(this);
-        } else {
-            send_popup_done();
-            m_popupGrabber->m_client = Q_NULLPTR;
-        }
-    });
 }
 
 void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource *outputResource)

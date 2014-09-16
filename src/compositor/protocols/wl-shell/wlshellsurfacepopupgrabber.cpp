@@ -82,6 +82,9 @@ uint32_t WlShellSurfacePopupGrabber::serial() const
 
 void WlShellSurfacePopupGrabber::addPopup(WlShellSurface *popup)
 {
+    if (m_popupSurfaces.contains(popup))
+        return;
+
     if (m_popupSurfaces.isEmpty()) {
         m_client = popup->resource()->client();
         m_initialUp = !m_inputDevice->pointerDevice()->buttonPressed();

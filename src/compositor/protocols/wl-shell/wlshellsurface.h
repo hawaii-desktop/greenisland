@@ -90,7 +90,9 @@ private:
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;
     WlShellSurfaceResizeGrabber *m_resizeGrabber;
+
     WlShellSurfacePopupGrabber *m_popupGrabber;
+    uint32_t m_popupSerial;
 
     QSet<uint32_t> m_pings;
 
