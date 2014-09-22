@@ -58,8 +58,6 @@ void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
 void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
                        wl_resource *surfaceResource)
 {
-    Q_UNUSED(resource);
-
     QuickSurface *surface = qobject_cast<QuickSurface *>(
                 QuickSurface::fromResource(surfaceResource));
     if (!surface) {
