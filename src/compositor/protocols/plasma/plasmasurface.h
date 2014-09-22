@@ -47,6 +47,7 @@ protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
 
 private:
+    Compositor *m_compositor;
     PlasmaShell *m_shell;
     QuickSurface *m_surface;
     ShellWindowView *m_view;

@@ -38,6 +38,7 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
                              wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
     , QtWaylandServer::org_kde_plasma_surface(client, id)
+    , m_compositor(qobject_cast<Compositor *>(surface->compositor()))
     , m_shell(shell)
     , m_surface(surface)
     , m_role(role_none)
@@ -150,6 +151,10 @@ void PlasmaSurface::surface_set_role(Resource *resource,
     // Set role
     m_role = static_cast<PlasmaSurface::role>(role);
     m_view->setRole(wl2Role(m_role));
+
+    // Show splash layer when a splash role is set
+    if (m_role == role_splash)
+        Q_EMIT m_compositor->fadeOut();
 
     // Set position according to the role
     switch (m_role) {
