@@ -93,7 +93,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , state(Compositor::Active)
     , idleInterval(5 * 60000)
     , idleInhibit(0)
-    , cursorSurface(nullptr)
+    , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
     , q_ptr(self)
@@ -108,7 +108,7 @@ void CompositorPrivate::dpms(bool on)
 
 void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 {
-    if (!hasBuffer || !cursorSurface)
+    if (!hasBuffer || !cursorSurface || !cursorSurface->bufferAttacher())
         return;
 
     QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
@@ -149,7 +149,7 @@ void CompositorPrivate::_q_outputRemoved(QWaylandOutput *_output)
  */
 
 Compositor::Compositor(const QString &socket)
-    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), DefaultExtensions | SubSurfaceExtension)
+    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | OutputExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     qRegisterMetaType<QuickSurface *>("QuickSurface*");
@@ -430,14 +430,15 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
     Q_D(Compositor);
 
     // Setup cursor
-    d->cursorSurface = surface;
     d->cursorHotspotX = hotspotX;
     d->cursorHotspotY = hotspotY;
-    if (!d->cursorSurface->bufferAttacher())
-        d->cursorSurface->setBufferAttacher(new BufferAttacher());
 
     if ((d->cursorSurface != surface) && surface) {
-        // Update cursor
+        // Buffer attacher
+        d->cursorSurface = surface;
+        d->cursorSurface->setBufferAttacher(new BufferAttacher());
+
+        // Update cursor when mapped
         connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }
 }
