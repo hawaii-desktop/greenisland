@@ -55,6 +55,11 @@ void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
     add(client, id);
 }
 
+QList<PlasmaSurface *> PlasmaShell::surfaces() const
+{
+    return m_surfaces;
+}
+
 void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
                        wl_resource *surfaceResource)
 {
@@ -65,7 +70,13 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
         return;
     }
 
-    new PlasmaSurface(this, surface, resource->client(), id);
+    PlasmaSurface *plasmaSurface = new PlasmaSurface(this, surface, resource->client(), id);
+    m_surfaces.append(plasmaSurface);
+    connect(plasmaSurface, &QObject::destroyed, this,
+            [this, plasmaSurface](QObject *object = 0) {
+        Q_UNUSED(object);
+        m_surfaces.removeOne(plasmaSurface);
+    });
 }
 
 void PlasmaShell::shell_set_global_position(Resource *resource,
@@ -92,3 +103,5 @@ void PlasmaShell::shell_desktop_ready(Resource *resource)
 }
 
 }
+
+#include "moc_plasmashell.cpp"

@@ -41,7 +41,7 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
     , m_compositor(qobject_cast<Compositor *>(surface->compositor()))
     , m_shell(shell)
     , m_surface(surface)
-    , m_role(role_none)
+    , m_role(ShellWindowView::NoneRole)
     , m_deleting(true)
 {
     // Create a view for the first output
@@ -52,7 +52,7 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
     // Map surface
     connect(m_surface, &QuickSurface::configure, [&](bool hasBuffer) {
         // Not until it has a role (unless it's an unmap)
-        if (m_role == role_none && hasBuffer)
+        if (m_role == ShellWindowView::NoneRole && hasBuffer)
             return;
         m_surface->setMapped(hasBuffer);
     });
@@ -68,6 +68,16 @@ PlasmaSurface::~PlasmaSurface()
     }
 }
 
+ShellWindowView::Role PlasmaSurface::role() const
+{
+    return m_role;
+}
+
+ShellWindowView *PlasmaSurface::view() const
+{
+    return m_view;
+}
+
 bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
 {
     switch (op->type()) {
@@ -81,7 +91,7 @@ bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
     return false;
 }
 
-ShellWindowView::Role PlasmaSurface::wl2Role(const role &role)
+ShellWindowView::Role PlasmaSurface::wl2Role(uint32_t role)
 {
     switch (role) {
     case role_splash:
@@ -103,6 +113,30 @@ ShellWindowView::Role PlasmaSurface::wl2Role(const role &role)
     }
 
     return ShellWindowView::NoneRole;
+}
+
+QString PlasmaSurface::role2String(const ShellWindowView::Role &role)
+{
+    switch (role) {
+    case ShellWindowView::SplashRole:
+        return QStringLiteral("Splash");
+    case ShellWindowView::DesktopRole:
+        return QStringLiteral("Desktop");
+    case ShellWindowView::DashboardRole:
+        return QStringLiteral("Dashboard");
+    case ShellWindowView::PanelConfigRole:
+        return QStringLiteral("PanelConfig");
+    case ShellWindowView::OverlayRole:
+        return QStringLiteral("Overlay");
+    case ShellWindowView::NotificationRole:
+        return QStringLiteral("Notification");
+    case ShellWindowView::LockRole:
+        return QStringLiteral("Lock");
+    default:
+        break;
+    }
+
+    return QStringLiteral("None");
 }
 
 void PlasmaSurface::surface_destroy_resource(Resource *resource)
@@ -144,33 +178,56 @@ void PlasmaSurface::surface_set_position(Resource *resource,
 }
 
 void PlasmaSurface::surface_set_role(Resource *resource,
-                                     uint32_t role)
+                                     uint32_t wlRole)
 {
     Q_UNUSED(resource);
 
+    ShellWindowView::Role role = wl2Role(wlRole);
+
+    // Some roles are exclusive
+    switch (role) {
+    case ShellWindowView::SplashRole:
+    case ShellWindowView::DesktopRole:
+    case ShellWindowView::DashboardRole:
+    case ShellWindowView::LockRole:
+        for (PlasmaSurface *s: m_shell->surfaces()) {
+            if (s->role() == role && s->view()->output() == m_view->output()) {
+                const QString msg = QStringLiteral("Surface already has role \"%1\"");
+                const QString errMsg = msg.arg(role2String(role));
+                qWarning("%s", qPrintable(errMsg));
+                wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
+                                       "%s", qPrintable(errMsg));
+                return;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+
     // Set role
-    m_role = static_cast<PlasmaSurface::role>(role);
-    m_view->setRole(wl2Role(m_role));
+    m_role = role;
+    m_view->setRole(m_role);
 
     // Show splash layer when a splash role is set
-    if (m_role == role_splash)
+    if (m_role == ShellWindowView::SplashRole)
         Q_EMIT m_compositor->fadeOut();
 
     // Set position according to the role
     switch (m_role) {
-    case role_desktop:
+    case ShellWindowView::DesktopRole:
         m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case role_dashboard:
+    case ShellWindowView::DashboardRole:
         m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case role_lock:
+    case ShellWindowView::LockRole:
         m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case role_notification:
+    case ShellWindowView::NotificationRole:
         m_surface->setGlobalPosition(QPointF(0, 0));
         break;
-    case role_overlay:
+    case ShellWindowView::OverlayRole:
         m_surface->setGlobalPosition(QPointF(0, 0));
         break;
     default:

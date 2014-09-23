@@ -35,17 +35,22 @@
 namespace GreenIsland {
 
 class Compositor;
+class PlasmaSurface;
 
-class PlasmaShell : public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_shell
+class PlasmaShell : public QObject, public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_shell
 {
+    Q_OBJECT
 public:
     explicit PlasmaShell(Compositor *compositor);
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
 
+    QList<PlasmaSurface *> surfaces() const;
+
 private:
     Compositor *m_compositor;
+    QList<PlasmaSurface *> m_surfaces;
 
     void shell_get_surface(Resource *resource, uint32_t id,
                            wl_resource *surfaceResource) Q_DECL_OVERRIDE;

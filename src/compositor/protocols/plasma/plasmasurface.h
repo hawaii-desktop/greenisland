@@ -38,23 +38,32 @@ class QuickSurface;
 
 class PlasmaSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::org_kde_plasma_surface
 {
+    Q_PROPERTY(ShellWindowView::Role role READ role NOTIFY roleChanged)
 public:
     explicit PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
                            wl_client *client, uint32_t id);
     ~PlasmaSurface();
 
+    ShellWindowView::Role role() const;
+
+    ShellWindowView *view() const;
+
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+
+Q_SIGNALS:
+    void roleChanged();
 
 private:
     Compositor *m_compositor;
     PlasmaShell *m_shell;
     QuickSurface *m_surface;
     ShellWindowView *m_view;
-    QtWaylandServer::org_kde_plasma_surface::role m_role;
+    ShellWindowView::Role m_role;
     bool m_deleting;
 
-    ShellWindowView::Role wl2Role(const role &role);
+    ShellWindowView::Role wl2Role(uint32_t role);
+    QString role2String(const ShellWindowView::Role &role);
 
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -64,7 +73,7 @@ private:
     void surface_set_position(Resource *resource,
                               int32_t x, int32_t y) Q_DECL_OVERRIDE;
     void surface_set_role(Resource *resource,
-                          uint32_t role) Q_DECL_OVERRIDE;
+                          uint32_t wlRole) Q_DECL_OVERRIDE;
 };
 
 }
