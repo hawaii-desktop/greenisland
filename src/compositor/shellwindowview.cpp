@@ -51,6 +51,20 @@ void ShellWindowView::setRole(const Role &role)
     Q_EMIT roleChanged();
 }
 
+ShellWindowView::Flags ShellWindowView::flags() const
+{
+    return m_flags;
+}
+
+void ShellWindowView::setFlags(const Flags &flags)
+{
+    if (m_flags == flags)
+        return;
+
+    m_flags = flags;
+    Q_EMIT flagsChanged();
+}
+
 Output *ShellWindowView::output() const
 {
     return m_output;

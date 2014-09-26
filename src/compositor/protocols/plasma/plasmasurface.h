@@ -65,6 +65,8 @@ private:
     ShellWindowView::Role wl2Role(uint32_t role);
     QString role2String(const ShellWindowView::Role &role);
 
+    ShellWindowView::Flags wl2Flags(uint32_t wlFlags);
+
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void surface_destroy(Resource *resource) Q_DECL_OVERRIDE;
@@ -74,6 +76,10 @@ private:
                               int32_t x, int32_t y) Q_DECL_OVERRIDE;
     void surface_set_role(Resource *resource,
                           uint32_t wlRole) Q_DECL_OVERRIDE;
+    void surface_set_flags(Resource *resource,
+                           uint32_t wlFlags) Q_DECL_OVERRIDE;
+    void surface_set_screen_edge(Resource *resource,
+                                 uint32_t screen_edge) Q_DECL_OVERRIDE;
 };
 
 }

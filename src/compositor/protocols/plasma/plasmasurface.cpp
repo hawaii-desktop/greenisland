@@ -100,8 +100,8 @@ ShellWindowView::Role PlasmaSurface::wl2Role(uint32_t role)
         return ShellWindowView::DesktopRole;
     case role_dashboard:
         return ShellWindowView::DashboardRole;
-    case role_config:
-        return ShellWindowView::PanelConfigRole;
+    case role_panel:
+        return ShellWindowView::PanelRole;
     case role_overlay:
         return ShellWindowView::OverlayRole;
     case role_notification:
@@ -115,6 +115,22 @@ ShellWindowView::Role PlasmaSurface::wl2Role(uint32_t role)
     return ShellWindowView::NoneRole;
 }
 
+ShellWindowView::Flags PlasmaSurface::wl2Flags(uint32_t wlFlags)
+{
+    ShellWindowView::Flags flags = 0;
+
+    if (wlFlags & flag_panel_always_visible)
+        flags |= ShellWindowView::PanelAlwaysVisible;
+    if (wlFlags & flag_panel_auto_hide)
+        flags |= ShellWindowView::PanelAutoHide;
+    if (wlFlags & flag_panel_windows_can_cover)
+        flags |= ShellWindowView::PanelWindowsCanCover;
+    if (wlFlags & flag_panel_windows_go_below)
+        flags |= ShellWindowView::PanelWindowsGoBelow;
+
+    return flags;
+}
+
 QString PlasmaSurface::role2String(const ShellWindowView::Role &role)
 {
     switch (role) {
@@ -124,8 +140,8 @@ QString PlasmaSurface::role2String(const ShellWindowView::Role &role)
         return QStringLiteral("Desktop");
     case ShellWindowView::DashboardRole:
         return QStringLiteral("Dashboard");
-    case ShellWindowView::PanelConfigRole:
-        return QStringLiteral("PanelConfig");
+    case ShellWindowView::PanelRole:
+        return QStringLiteral("Panel");
     case ShellWindowView::OverlayRole:
         return QStringLiteral("Overlay");
     case ShellWindowView::NotificationRole:
@@ -174,7 +190,7 @@ void PlasmaSurface::surface_set_position(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    m_view->setPosition(QPointF(x, y));
+    m_surface->setGlobalPosition(QPointF(x, y));
 }
 
 void PlasmaSurface::surface_set_role(Resource *resource,
@@ -213,26 +229,32 @@ void PlasmaSurface::surface_set_role(Resource *resource,
     if (m_role == ShellWindowView::SplashRole)
         Q_EMIT m_compositor->fadeOut();
 
-    // Set position according to the role
+    // Set position to 0,0 for some roles
     switch (m_role) {
     case ShellWindowView::DesktopRole:
-        m_surface->setGlobalPosition(QPointF(0, 0));
-        break;
     case ShellWindowView::DashboardRole:
-        m_surface->setGlobalPosition(QPointF(0, 0));
-        break;
     case ShellWindowView::LockRole:
-        m_surface->setGlobalPosition(QPointF(0, 0));
-        break;
-    case ShellWindowView::NotificationRole:
-        m_surface->setGlobalPosition(QPointF(0, 0));
-        break;
-    case ShellWindowView::OverlayRole:
-        m_surface->setGlobalPosition(QPointF(0, 0));
+        m_surface->setGlobalPosition(m_view->output()->mapToGlobal(QPointF(0, 0)));
         break;
     default:
         break;
     }
+}
+
+void PlasmaSurface::surface_set_flags(Resource *resource,
+                                      uint32_t wlFlags)
+{
+    Q_UNUSED(resource);
+
+    ShellWindowView::Flags flags = wl2Flags(wlFlags);
+    m_view->setFlags(flags);
+}
+
+void PlasmaSurface::surface_set_screen_edge(Resource *resource,
+                                            uint32_t screen_edge)
+{
+    Q_UNUSED(resource);
+    Q_UNUSED(screen_edge);
 }
 
 }

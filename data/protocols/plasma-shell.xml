@@ -36,81 +36,9 @@
       <arg name="surface" type="object" interface="wl_surface"/>
     </request>
 
-    <!-- General purpose requests -->
-
-    <request name="set_global_position">
-      <description summary="change surface position">
-        Move the surface to new coordinates.
-
-        Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output
-        is 1970,50 in global coordinates space.
-      </description>
-      <arg name="surface" type="object" interface="wl_surface"/>
-      <arg name="x" type="int" summary="x coordinate in output-relative coordinates"/>
-      <arg name="y" type="int" summary="y coordinate in output-relative coordinates"/>
-    </request>
-
-    <!-- Screen edge -->
-    <!-- Will replace https://community.kde.org/KWin/Screen_Edges -->
-
-    <enum name="screen_edge">
-      <entry name="none" value="0"/>
-      <entry name="left" value="1"/>
-      <entry name="top" value="2"/>
-      <entry name="right" value="3"/>
-      <entry name="bottom" value="4"/>
-    </enum>
-
-    <request name="set_screen_edge">
-      <description summary="set screen edge activation">
-      </description>
-      <arg name="surface" type="object" interface="wl_surface"/>
-      <arg name="screen_edge" type="uint"/>
-    </request>
-
-    <!-- Grab surface and cursor -->
-
-    <enum name="cursor">
-      <entry name="none" value="0"/>
-
-      <entry name="resize_top" value="1"/>
-      <entry name="resize_bottom" value="2"/>
-
-      <entry name="arrow" value="3"/>
-
-      <entry name="resize_left" value="4"/>
-      <entry name="resize_top_left" value="5"/>
-      <entry name="resize_bottom_left" value="6"/>
-
-      <entry name="move" value="7"/>
-
-      <entry name="resize_right" value="8"/>
-      <entry name="resize_top_right" value="9"/>
-      <entry name="resize_bottom_right" value="10"/>
-
-      <entry name="busy" value="11"/>
-    </enum>
-
-    <event name="grab_cursor">
-      <description summary="tell client what cursor to show during a grab">
-	This event will be sent immediately before a fake enter event on the
-	grab surface.
-      </description>
-      <arg name="cursor" type="uint"/>
-    </event>
-
-    <request name="set_grab_surface">
-      <description summary="set grab surface">
-	The surface set by this request will receive a fake
-	pointer.enter event during grabs at position 0,0 and is
-	expected to set an appropriate cursor image as described by
-	the grab_cursor event sent just before the enter event.
-      </description>
-      <arg name="surface" type="object" interface="wl_surface"/>
-    </request>
-
     <!-- Lock and unlock -->
 
+    <!--
     <request name="lock">
       <description summary="lock the session">
         Tell the compositor to initiate the lock sequence.
@@ -148,6 +76,7 @@
         org_kde_plasma_shell.unlock request to let the normal desktop resume.
       </description>
     </event>
+    -->
 
     <!-- Desktop loading -->
 
@@ -238,14 +167,14 @@
       <description summary="change the shell surface position">
         Move the surface to new coordinates.
 
-        Coordinates are relative to the output, for example 50,50 for
-        a 1920,0+1920x1080 output is 1970,50 in global coordinates space.
+        Coordinates are global, for example 50,50 for a 1920,0+1920x1080 output
+        is 1970,50 in global coordinates space.
 
         Use org_kde_plasma_surface.set_output to assign an output
         to this surface.
       </description>
-      <arg name="x" type="int" summary="x coordinate in output-relative coordinates"/>
-      <arg name="y" type="int" summary="y coordinate in output-relative coordinates"/>
+      <arg name="x" type="int" summary="x coordinate in global space"/>
+      <arg name="y" type="int" summary="y coordinate in global space"/>
     </request>
 
     <!-- Role -->
@@ -255,7 +184,7 @@
       <entry name="splash" value="1"/>
       <entry name="desktop" value="2"/>
       <entry name="dashboard" value="3"/>
-      <entry name="config" value="4"/>
+      <entry name="panel" value="4"/>
       <entry name="overlay" value="5"/>
       <entry name="notification" value="6"/>
       <entry name="lock" value="7"/>
@@ -358,6 +287,59 @@
         Only one surface per output can have the lock role.
       </description>
       <arg name="role" type="uint"/>
+    </request>
+
+    <!-- Flags -->
+
+    <enum name="flag">
+      <description summary="flags on the surface">
+        Various flags that modify the behavior of the surface.
+        Flags may depend on the surface role.
+
+        Ranges are:
+
+        0x0000 - 0x007F: panel visibility
+      </description>
+      <entry name="panel_always_visible" value="1" summary="normal panel visibility">
+        The panel is on top of other surfaces, windows cannot cover (full screen
+        windows excluded).
+      </entry>
+      <entry name="panel_auto_hide" value="2" summary="hide automatically">
+        The panel is hidden automatically and restored when the mouse is over.
+      </entry>
+      <entry name="panel_windows_can_cover" value="3" summary="windows can cover">
+        Windows can cover the panel.
+      </entry>
+      <entry name="panel_windows_go_below" value="4" summary="windows go below">
+        Maximized windows take the whole screen space but the panel is above
+        the windows.
+      </entry>
+    </enum>
+
+    <request name="set_flags">
+      <description summary="set or unset flags specific to the role">
+        Set flags bitmask as described by the flag enum.
+        Pass 0 to unset any flag, the surface will adjust its behavior to
+        the default.
+      </description>
+      <arg name="flags" type="uint" summary="bitmask of flag values"/>
+    </request>
+
+    <!-- Screen edge -->
+    <!-- Will replace https://community.kde.org/KWin/Screen_Edges -->
+
+    <enum name="screen_edge">
+      <entry name="none" value="0"/>
+      <entry name="left" value="1"/>
+      <entry name="top" value="2"/>
+      <entry name="right" value="3"/>
+      <entry name="bottom" value="4"/>
+    </enum>
+
+    <request name="set_screen_edge">
+      <description summary="set screen edge activation">
+      </description>
+      <arg name="screen_edge" type="uint"/>
     </request>
   </interface>
 </protocol>

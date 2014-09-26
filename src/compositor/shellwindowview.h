@@ -37,8 +37,9 @@ class ShellWindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
+    Q_PROPERTY(Flags flags READ flags WRITE setFlags NOTIFY flagsChanged)
     Q_PROPERTY(Output *output READ output WRITE setOutput NOTIFY outputChanged)
-    Q_ENUMS(Role)
+    Q_ENUMS(Role Flag)
 public:
     enum Role {
         NoneRole = 0,
@@ -46,11 +47,18 @@ public:
         DesktopRole,
         DashboardRole,
         PanelRole,
-        PanelConfigRole,
         OverlayRole,
         NotificationRole,
         LockRole
     };
+
+    enum Flag {
+        PanelAlwaysVisible = 1,
+        PanelAutoHide,
+        PanelWindowsCanCover,
+        PanelWindowsGoBelow
+    };
+    Q_DECLARE_FLAGS(Flags, Flag)
 
     explicit ShellWindowView(QWaylandQuickSurface *surface, Output *output,
                              QQuickItem *parent = 0);
@@ -58,17 +66,24 @@ public:
     Role role() const;
     void setRole(const Role &role);
 
+    Flags flags() const;
+    void setFlags(const Flags &flags);
+
     Output *output() const;
     void setOutput(Output *output);
 
 Q_SIGNALS:
     void roleChanged();
+    void flagsChanged();
     void outputChanged();
 
 private:
     Role m_role;
+    Flags m_flags;
     Output *m_output;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(ShellWindowView::Flags)
 
 }
 
