@@ -46,16 +46,23 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *su
     // Set surface type
     setSurfaceType(QWaylandSurface::Popup);
 
-    // Map popup
-    connect(surface, &QWaylandSurface::mapped, [=]() {
-        if (surface->handle()->mapped() &&
-                m_grabber &&
-                m_grabber->serial() == serial) {
+    // Surface mapping and unmapping
+    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+        // Map or unmap the surface
+        m_surface->setMapped(hasBuffer);
+    });
+    connect(m_surface, &QWaylandSurface::mapped, [=]() {
+        if (m_grabber->serial() == m_serial) {
             m_grabber->addPopup(this);
         } else {
             done();
             m_grabber->m_client = Q_NULLPTR;
         }
+    });
+    connect(m_surface, &QWaylandSurface::unmapped, [=]() {
+        done();
+        m_grabber->removePopup(this);
+        m_grabber->m_client = Q_NULLPTR;
     });
 }
 
@@ -72,9 +79,6 @@ void XdgPopup::done()
 bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
 {
     switch (op->type()) {
-    case QWaylandSurfaceOp::Close:
-        done();
-        return true;
     default:
         break;
     }
