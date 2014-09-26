@@ -25,6 +25,7 @@ set(SOURCES
     shellwindowview.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
+    protocols/plasma/plasmaeffects.cpp
     protocols/plasma/plasmashell.cpp
     protocols/plasma/plasmasurface.cpp
     protocols/wl-shell/wlshell.cpp
@@ -50,6 +51,11 @@ ecm_add_qtwayland_server_protocol(SOURCES
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-shell.xml
     BASENAME plasma-shell
+    PREFIX org_kde_plasma_
+)
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-effects.xml
+    BASENAME plasma-effects
     PREFIX org_kde_plasma_
 )
 

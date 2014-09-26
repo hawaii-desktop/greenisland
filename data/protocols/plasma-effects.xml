@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="plasma_effects">
+  <copyright><![CDATA[
+    Copyright (C) 2014 Pier Luigi Fiorini
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 2.1 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ]]></copyright>
+
+  <interface name="org_kde_plasma_effects" version="1">
+    <enum name="location">
+      <entry name="none" value="0"/>
+      <entry name="left" value="1"/>
+      <entry name="top" value="2"/>
+      <entry name="right" value="3"/>
+      <entry name="bottom" value="4"/>
+    </enum>
+
+    <request name="slide">
+      <description summary="slide a surface from a location to another">
+        Ask the compositor to move the surface from a location to another
+        with a slide animation.
+
+        The from argument provides a clue about where the slide animation
+        begins, destination coordinates are specified with x and y.
+      </description>
+      <arg name="output" type="object" interface="wl_output"/>
+      <arg name="surface" type="object" interface="wl_surface"/>
+      <arg name="from" type="uint"/>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+    </request>
+
+    <request name="set_blur_behind_region">
+      <description summary="set blur behind region">
+        This request sets the region of the surface that will allow to see
+        through with a blur effect.
+
+        Pass a null region to disable blur behind.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface"/>
+      <arg name="region" type="object" interface="wl_region" allow-null="true"/>
+    </request>
+
+    <request name="set_contrast_region">
+      <description summary="set contrast region">
+        This request sets the region of the surface with a different
+        contrast.
+
+        Pass a null region to disable this effect.
+
+        When a null region is passed the contrast, intensity and saturation
+        arguments are not taken into account.
+
+        The contrast, intensity and saturation parameters are in
+        the 0-255 range.
+      </description>
+      <arg name="surface" type="object" interface="wl_surface"/>
+      <arg name="region" type="object" interface="wl_region" allow-null="true"/>
+      <arg name="contrast" type="uint"/>
+      <arg name="intensity" type="uint"/>
+      <arg name="saturation" type="uint"/>
+    </request>
+  </interface>
+</protocol>
