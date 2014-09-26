@@ -37,6 +37,7 @@
 #include "wlshellsurfaceresizegrabber.h"
 #include "wlshellsurfacepopupgrabber.h"
 #include "windowview.h"
+#include <QDebug>
 
 namespace GreenIsland {
 
@@ -58,23 +59,27 @@ WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
     Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
     m_view = new WindowView(m_surface, output);
 
-    // Map surface
+    // Surface mapping and unmapping
     connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
+        // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
-
-        // Grab popup when mapped otherwise break it
+    });
+    connect(m_surface, &QuickSurface::mapped, [=]() {
         if (m_surface->windowType() != QuickSurface::Popup)
             return;
 
-        if (m_popupGrabber) {
-            if (hasBuffer && m_popupGrabber->serial() == m_popupSerial) {
-                m_popupGrabber->addPopup(this);
-            } else {
-                if (m_popupGrabber->m_client)
-                    send_popup_done();
-                m_popupGrabber->removePopup(this);
-                m_popupGrabber->m_client = Q_NULLPTR;
-            }
+        if (m_popupGrabber->serial() == m_popupSerial) {
+            m_popupGrabber->addPopup(this);
+        } else {
+            send_popup_done();
+            m_popupGrabber->m_client = Q_NULLPTR;
+        }
+    });
+    connect(m_surface, &QuickSurface::unmapped, [=]() {
+        if (m_surface->windowType() == QuickSurface::Popup) {
+            send_popup_done();
+            m_popupGrabber->removePopup(this);
+            m_popupGrabber->m_client = Q_NULLPTR;
         }
     });
 }
@@ -169,13 +174,6 @@ void WlShellSurface::restore()
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 {
     switch (op->type()) {
-    case QWaylandSurfaceOp::Close:
-        if (m_surface->windowType() == QWaylandSurface::Popup) {
-            send_popup_done();
-            m_popupGrabber->m_client = Q_NULLPTR;
-            return true;
-        }
-        return false;
     case QWaylandSurfaceOp::Ping:
         ping(static_cast<QWaylandSurfacePingOp *>(op)->serial());
         return true;
