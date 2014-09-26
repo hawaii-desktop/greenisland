@@ -28,6 +28,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/QScreen>
 #include <QtCompositor/private/qwloutput_p.h>
+#include <QtCompositor/QtCompositorVersion>
 
 #include "fullscreenshellclient.h"
 #include "globalregistry.h"
@@ -36,7 +37,7 @@
 namespace GreenIsland {
 
 FullScreenShellClient::FullScreenShellClient(quint32 id)
-#if QT_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id, 1)
 #else
     : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id)
