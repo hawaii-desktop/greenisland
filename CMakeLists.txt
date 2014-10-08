@@ -2,24 +2,9 @@ project(GreenIsland)
 
 cmake_minimum_required(VERSION 2.8.12)
 
-option(USE_OPENGL "Enable OpenGL code" OFF)
-
-# Silence CMake 3.0 warnings
-if(POLICY CMP0043)
-    cmake_policy(SET CMP0043 OLD)
-endif()
-
-# Find includes in corresponding build directories
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-# Instruct CMake to run moc automatically when needed
-set(CMAKE_AUTOMOC ON)
-
 # Set version
-set(GREENISLAND_VERSION_MAJOR 0)
-set(GREENISLAND_VERSION_MINOR 3)
-set(GREENISLAND_VERSION_PATCH 0)
-set(GREENISLAND_VERSION_STRING "${GREENISLAND_VERSION_MAJOR}.${GREENISLAND_VERSION_MINOR}.${GREENISLAND_VERSION_PATCH}")
+set(PROJECT_VERSION "0.3.0")
+set(PROJECT_VERSION_MAJOR 0)
 
 # Add custom uninstall target
 configure_file(
@@ -30,26 +15,13 @@ add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/c
 
 # Set up packaging
 set(CPACK_PACKAGE_NAME "greenisland")
-set(CPACK_PACKAGE_VERSION "${GREENISLAND_VERSION_STRING}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_GENERATOR "TGZ")
 set(CPACK_SET_DESTDIR FALSE)
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
 set(CPACK_SOURCE_IGNORE_FILES "/build/;/.git;/.tx/;~$;${CPACK_SOURCE_IGNORE_FILES}")
 include(CPack)
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
-
-# Build flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fvisibility=hidden -fvisibility-inlines-hidden -Wall -std=c++0x")
-
-# Assume release build by default
-if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "" FORCE)
-endif()
-
-# Disable debug output for release builds
-if(CMAKE_BUILD_TYPE MATCHES "^[Rr]elease$")
-    add_definitions(-DQT_NO_DEBUG_OUTPUT)
-endif()
 
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
@@ -60,13 +32,11 @@ endif()
 find_package(ECM 1.2.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_SOURCE_DIR}/cmake")
 
-# KDE macros
-include(KDEInstallDirs)
-include(KDECMakeSettings)
-include(KDECompilerSettings)
-
-# Macro to print feature summary
+# Macros
 include(FeatureSummary)
+include(KDEInstallDirs)
+include(KDECompilerSettings)
+include(KDECMakeSettings)
 
 # Require at least gcc 4.8
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
@@ -78,15 +48,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu90")
 endif()
 
-# Minimum version requirements
-set(QT_MIN_VERSION "5.3.0")
-set(KF5_MIN_VERSION "5.0.0")
-
 # Find Qt5
-find_package(Qt5 ${QT_MIN_VERSION} REQUIRED COMPONENTS DBus Gui Qml Quick Compositor)
+set(REQUIRED_QT_VERSION 5.3.0)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Compositor)
 
 # Find KF5
-find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS Screen)
+set(REQUIRED_KF5_VERSION 5.0.91)
+find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen)
 
 # GL requirements
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
