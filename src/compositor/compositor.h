@@ -72,7 +72,7 @@ public:
 
     void run();
 
-    QWaylandQuickSurface *createSurface(wl_client *client, quint32 id) Q_DECL_OVERRIDE;
+    QWaylandQuickSurface *createSurface(wl_client *client, quint32 id);
 
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
 

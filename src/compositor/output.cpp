@@ -26,6 +26,8 @@
 
 #include <QtCore/QtMath>
 
+#include <KScreen/EDID>
+
 #include "compositor.h"
 #include "output.h"
 #include "outputwindow.h"
@@ -108,7 +110,8 @@ void OutputPrivate::_q_posChanged()
  */
 
 Output::Output(Compositor *compositor, KScreen::Output *output)
-    : QWaylandOutput(compositor, new OutputWindow(compositor))
+    : QWaylandOutput(compositor, new OutputWindow(compositor),
+                     output->edid()->vendor(), output->edid()->serial())
     , d_ptr(new OutputPrivate(this))
 {
     Q_D(Output);
