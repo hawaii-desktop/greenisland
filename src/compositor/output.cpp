@@ -66,7 +66,7 @@ void OutputPrivate::_q_currentModeIdChanged()
     Q_Q(Output);
 
     // Refresh rate
-    q->setRefreshRate(qFloor(output->currentMode()->refreshRate() * 1000));
+    q->setRefreshRate(output->currentMode()->refreshRate());
 
     // Rotation
     switch (output->rotation()) {
