@@ -26,6 +26,9 @@
 
 #include <QtQml/QQmlContext>
 
+#include <Plasma/Package>
+#include <Plasma/PluginLoader>
+
 #include "compositor.h"
 #include "gldebug.h"
 #include "globalregistry.h"
@@ -115,7 +118,14 @@ void OutputWindow::setOutput(Output *output)
 
     // Load QML and setup window
     setResizeMode(QQuickView::SizeRootObjectToView);
-    setSource(QUrl("qrc:/qml/Compositor.qml"));
+    if (Compositor::s_fixedPlugin.isEmpty()) {
+        setSource(QUrl("qrc:/qml/Compositor.qml"));
+    } else {
+        Plasma::Package package = Plasma::PluginLoader::self()->loadPackage("GreenIsland/Compositor");
+        package.setPath(Compositor::s_fixedPlugin);
+        package.setAllowExternalPaths(true);
+        setSource(package.filePath("main"));
+    }
 }
 
 void OutputWindow::keyPressEvent(QKeyEvent *event)

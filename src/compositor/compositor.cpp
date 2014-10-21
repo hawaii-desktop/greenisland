@@ -54,6 +54,8 @@
 
 namespace GreenIsland {
 
+QString Compositor::s_fixedPlugin;
+
 /*
  * CompositorPrivate
  */

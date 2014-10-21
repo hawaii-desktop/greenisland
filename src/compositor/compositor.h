@@ -83,6 +83,8 @@ public:
 
     Q_INVOKABLE QPointF calculateInitialPosition(QWaylandSurface *surface);
 
+    static QString s_fixedPlugin;
+
 Q_SIGNALS:
     void surfaceMapped(QVariant surface);
     void surfaceUnmapped(QVariant surface);

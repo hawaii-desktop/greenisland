@@ -90,6 +90,12 @@ int main(int argc, char *argv[])
                                         QCoreApplication::translate("Command line parser", "filename"));
     parser.addOption(fakeScreenOption);
 
+    // Compositor package
+    QCommandLineOption pluginOption(QStringList() << QStringLiteral("p") << QStringLiteral("compositor-plugin"),
+                                    QCoreApplication::translate("Command line parser", "Force loading the given compositor plugin"),
+                                    QStringLiteral("plugin"));
+    parser.addOption(pluginOption);
+
     // Parse command line
     parser.process(app);
 
@@ -137,6 +143,9 @@ int main(int argc, char *argv[])
 
     // Create the compositor
     GreenIsland::Compositor *compositor = new GreenIsland::Compositor(socket);
+
+    // Pass a fixed plugin
+    GreenIsland::Compositor::s_fixedPlugin = parser.value(pluginOption);
 
     // Run the compositor QML code
     compositor->run();

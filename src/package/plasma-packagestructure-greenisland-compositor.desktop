@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=GreenIsland Compositor
+Type=Service
+X-KDE-ServiceTypes=Plasma/PackageStructure
+X-KDE-Library=plasma_packagestructure_greenisland_compositor
+
+X-KDE-PluginInfo-Author=Pier Luigi Fiorini
+X-KDE-PluginInfo-Email=pierluigi.fiorini@gmail.com
+X-KDE-PluginInfo-Name=GreenIsland/Compositor
+X-KDE-PluginInfo-Version=1.0
