@@ -141,11 +141,11 @@ int main(int argc, char *argv[])
     if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
         GreenIsland::GlobalRegistry::instance()->start();
 
-    // Create the compositor
-    GreenIsland::Compositor *compositor = new GreenIsland::Compositor(socket);
-
     // Pass a fixed plugin
     GreenIsland::Compositor::s_fixedPlugin = parser.value(pluginOption);
+
+    // Create the compositor
+    GreenIsland::Compositor *compositor = new GreenIsland::Compositor(socket);
 
     // Run the compositor QML code
     compositor->run();
