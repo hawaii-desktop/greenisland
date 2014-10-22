@@ -54,7 +54,7 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Compo
 
 # Find KF5
 set(REQUIRED_KF5_VERSION 5.0.91)
-find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS I18n Screen Service Plasma)
+find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS I18n Screen Service Package)
 
 # GL requirements
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")

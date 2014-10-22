@@ -26,8 +26,8 @@
 
 #include <QtQml/QQmlContext>
 
-#include <Plasma/Package>
-#include <Plasma/PluginLoader>
+#include <KPackage/Package>
+#include <KPackage/PackageTrader>
 
 #include "compositor.h"
 #include "gldebug.h"
@@ -121,7 +121,7 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         setSource(QUrl("qrc:/qml/Compositor.qml"));
     } else {
-        Plasma::Package package = Plasma::PluginLoader::self()->loadPackage("GreenIsland/Compositor");
+        KPackage::Package package = KPackage::PackageTrader::self()->loadPackage("GreenIsland/Compositor");
         package.setPath(Compositor::s_fixedPlugin);
         package.setAllowExternalPaths(true);
         setSource(package.filePath("main"));

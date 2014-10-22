@@ -27,15 +27,15 @@
 #ifndef COMPOSITORPACKAGE_PLUGIN_H
 #define COMPOSITORPACKAGE_PLUGIN_H
 
-#include <Plasma/PackageStructure>
+#include <KPackage/PackageStructure>
 
-class CompositorPackage : public Plasma::PackageStructure
+class CompositorPackage : public KPackage::PackageStructure
 {
 public:
     CompositorPackage(QObject *parent, const QVariantList &list);
 
-    void initPackage(Plasma::Package *package);
-    void pathChanged(Plasma::Package *package);
+    void initPackage(KPackage::Package *package);
+    void pathChanged(KPackage::Package *package);
 };
 
 #endif // COMPOSITORPACKAGE_PLUGIN_H
