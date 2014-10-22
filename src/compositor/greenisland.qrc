@@ -6,7 +6,6 @@
         <file>images/closebutton.png</file>
         <file>qml/WindowManagement.js</file>
         <file>qml/Compositor.qml</file>
-        <file>qml/SurfaceRenderer.qml</file>
         <file>qml/WaylandWindow.qml</file>
         <file>qml/WaylandClientWindow.qml</file>
         <file>qml/WaylandShellWindow.qml</file>
