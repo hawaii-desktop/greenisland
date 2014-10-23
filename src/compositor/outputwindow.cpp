@@ -121,10 +121,17 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         setSource(QUrl("qrc:/qml/Compositor.qml"));
     } else {
+        qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
+
         KPackage::Package package = KPackage::PackageTrader::self()->loadPackage("GreenIsland/Compositor");
         package.setPath(Compositor::s_fixedPlugin);
         package.setAllowExternalPaths(true);
-        setSource(package.filePath("main"));
+
+        // Load main file or fallback to default implementation
+        if (package.isValid())
+            setSource(package.filePath("main"));
+        else
+            setSource(QUrl("qrc:/qml/Compositor.qml"));
     }
 }
 
