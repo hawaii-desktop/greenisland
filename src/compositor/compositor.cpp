@@ -353,6 +353,9 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     connect(surface, &QWaylandSurface::unmapped, [=]() {
         Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
     });
+    connect(surface, &QWaylandSurface::surfaceDestroyed, [=]() {
+        Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
+    });
 
 #if 0
     // Create application window instance

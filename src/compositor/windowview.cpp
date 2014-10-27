@@ -41,13 +41,6 @@ WindowView::WindowView(QuickSurface *surface, Output *output, QQuickItem *parent
     , m_surface(surface)
     , m_output(output)
 {
-    // Inform the compositor QML implementation that the surface was destroyed
-    // because all window representations must be destroyed as well
-    connect(this, &WindowView::surfaceDestroyed, [=]() {
-        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
-        Q_EMIT compositor->surfaceDestroyed(QVariant::fromValue(m_surface));
-    });
-
     // Change window position and send enter/leave events to the output
     connect(m_surface, &QuickSurface::globalGeometryChanged, [=]() {
         // WindowView is a child of the QtQuick window representation that is
