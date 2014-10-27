@@ -72,6 +72,10 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
 
     PlasmaSurface *plasmaSurface = new PlasmaSurface(this, surface, resource->client(), id);
     m_surfaces.append(plasmaSurface);
+    connect(surface, &QuickSurface::surfaceDestroyed, this,
+            [surface, plasmaSurface]() {
+          plasmaSurface->deleteLater();
+    });
     connect(plasmaSurface, &QObject::destroyed, this,
             [this, plasmaSurface](QObject *object = 0) {
         Q_UNUSED(object);
