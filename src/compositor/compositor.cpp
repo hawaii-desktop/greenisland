@@ -69,8 +69,6 @@ public:
 
     void _q_updateCursor(bool hasBuffer);
 
-    void _q_surfaceMapped();
-    void _q_surfaceUnmapped();
     void _q_outputRemoved(QWaylandOutput *_output);
 
     bool running;
