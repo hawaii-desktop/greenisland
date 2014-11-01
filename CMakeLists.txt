@@ -85,6 +85,13 @@ add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
 add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 
+# systemd
+pkg_check_modules(systemd libsystemd-daemon)
+if(systemd_FOUND)
+    set(HAVE_SYSTEMD 1)
+endif()
+add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
+
 # Include Wayland macros
 include(ECMWayland)
 
