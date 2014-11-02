@@ -156,6 +156,7 @@ int main(int argc, char *argv[])
     compositor->run();
 
 #if HAVE_SYSTEMD
+    qDebug() << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
     sd_notifyf(0,
                "READY=1\n"
                "STATUS=Ready\n"
