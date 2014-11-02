@@ -147,13 +147,13 @@ int main(int argc, char *argv[])
     // Create the compositor
     GreenIsland::Compositor *compositor = new GreenIsland::Compositor(socket);
 
-    // Run the compositor QML code
-    compositor->run();
-
     // Compositor options
     int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)
         compositor->setIdleInterval(idleInterval * 1000);
+
+    // Run the compositor QML code
+    compositor->run();
 
 #if HAVE_SYSTEMD
     sd_notifyf(0,
