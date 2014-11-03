@@ -52,6 +52,10 @@
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
+#if HAVE_SYSTEMD
+#  include <systemd/sd-daemon.h>
+#endif
+
 namespace GreenIsland {
 
 QString Compositor::s_fixedPlugin;
@@ -282,6 +286,11 @@ void Compositor::run()
     Q_EMIT workspaceSelected(0);
 
     d->running = true;
+
+#if HAVE_SYSTEMD
+    qDebug() << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+    sd_notify(0, "READY=1");
+#endif
 }
 
 QWaylandQuickSurface *Compositor::createSurface(wl_client *client, quint32 id)

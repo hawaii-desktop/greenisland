@@ -155,14 +155,5 @@ int main(int argc, char *argv[])
     // Run the compositor QML code
     compositor->run();
 
-#if HAVE_SYSTEMD
-    qDebug() << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
-    sd_notifyf(0,
-               "READY=1\n"
-               "STATUS=Ready\n"
-               "MAINPID=%llu",
-               QCoreApplication::applicationPid());
-#endif
-
     return app.exec();
 }
