@@ -127,11 +127,12 @@ void OutputWindow::setOutput(Output *output)
         package.setPath(Compositor::s_fixedPlugin);
         package.setAllowExternalPaths(true);
 
-        // Load main file or fallback to default implementation
-        if (package.isValid())
+        // Load main file or bail out
+        if (package.isValid() && !package.filePath("main").isEmpty())
             setSource(package.filePath("main"));
         else
-            setSource(QUrl("qrc:/qml/Compositor.qml"));
+            qFatal("Package \"%s\" is not valid, cannot continue!",
+                   qPrintable(Compositor::s_fixedPlugin));
     }
 }
 
