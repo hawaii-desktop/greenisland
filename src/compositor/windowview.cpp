@@ -72,6 +72,15 @@ Output *WindowView::output() const
 
 Output *WindowView::mainOutput() const
 {
+    // Here's what may happen with Qt clients using wl_shell such as
+    // qmlscene --maximized: set_maximized is called before the surface
+    // size is set so it's -1x-1 and the code below cannot find an
+    // output that accomodates its size and returns a null pointer
+    // making the compositor crash.
+    // We just return the output for this view.
+    if (!QSizeF(width(), height()).isValid())
+        return m_output;
+
     // Find the output that contains the biggest part of this window,
     // that is the main output and it will be used by effects such as
     // present windows to present only windows for the output it is
