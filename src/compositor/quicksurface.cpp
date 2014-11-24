@@ -32,6 +32,7 @@ namespace GreenIsland {
 QuickSurface::QuickSurface(wl_client *client, quint32 id, Compositor *compositor)
     : QWaylandQuickSurface(client, id, compositor)
     , m_state(Normal)
+    , m_globalPos(-1, -1)
 {
 }
 
