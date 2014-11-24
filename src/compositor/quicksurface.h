@@ -36,10 +36,21 @@ class Compositor;
 class QuickSurface : public QWaylandQuickSurface
 {
     Q_OBJECT
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(QPointF globalPosition READ globalPosition WRITE setGlobalPosition NOTIFY globalPositionChanged)
     Q_PROPERTY(QRectF globalGeometry READ globalGeometry NOTIFY globalGeometryChanged)
+    Q_ENUMS(State)
 public:
+    enum State {
+        Normal = 0,
+        Maximized,
+        FullScreen
+    };
+
     explicit QuickSurface(wl_client *client, quint32 id, Compositor *compositor);
+
+    State state() const;
+    void setState(const State &state);
 
     QPointF globalPosition() const;
     void setGlobalPosition(const QPointF &pos);
@@ -47,10 +58,12 @@ public:
     QRectF globalGeometry() const;
 
 Q_SIGNALS:
+    void stateChanged();
     void globalPositionChanged();
     void globalGeometryChanged();
 
 private:
+    State m_state;
     QPointF m_globalPos;
 };
 

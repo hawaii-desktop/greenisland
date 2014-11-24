@@ -31,7 +31,22 @@ namespace GreenIsland {
 
 QuickSurface::QuickSurface(wl_client *client, quint32 id, Compositor *compositor)
     : QWaylandQuickSurface(client, id, compositor)
+    , m_state(Normal)
 {
+}
+
+QuickSurface::State QuickSurface::state() const
+{
+    return m_state;
+}
+
+void QuickSurface::setState(const QuickSurface::State &state)
+{
+    if (m_state == state)
+        return;
+
+    m_state = state;
+    Q_EMIT stateChanged();
 }
 
 QPointF QuickSurface::globalPosition() const
