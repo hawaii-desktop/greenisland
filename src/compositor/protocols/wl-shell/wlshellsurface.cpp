@@ -166,6 +166,7 @@ void WlShellSurface::restore()
     m_prevState = m_state;
     m_state = Normal;
     m_surface->setGlobalPosition(m_prevGlobalGeometry.topLeft());
+    m_surface->setState(static_cast<QuickSurface::State>(m_state));
 
     // Actually resize it
     requestResize(m_prevGlobalGeometry.size().toSize());
@@ -301,6 +302,7 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
         m_state = Normal;
         m_surface->setGlobalPosition(m_prevGlobalGeometry.topLeft());
         requestResize(m_prevGlobalGeometry.size().toSize());
+        m_surface->setState(static_cast<QuickSurface::State>(m_state));
     }
 }
 
@@ -347,6 +349,7 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     // Set state
     m_prevState = m_state;
     m_state = FullScreen;
+    m_surface->setState(static_cast<QuickSurface::State>(m_state));
 }
 
 void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *seat,
@@ -371,18 +374,17 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 {
     Q_UNUSED(resource);
 
-    // Save global geometry before resizing, it will be restored
-    // with the next set_toplevel() call
-    m_prevGlobalGeometry = m_surface->globalGeometry();
-
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
             : m_view->mainOutput();
 
-    // Resize
-    send_configure(resize_bottom_right,
-                   output->availableGeometry().size().width(),
-                   output->availableGeometry().size().height());
+    // Save global geometry before resizing, it will be restored with the next
+    // set_toplevel() call but if the window starts maximized we don't have
+    // a valid previous geometry so we set it to output available geometry
+    if (m_surface->globalGeometry().isValid())
+        m_prevGlobalGeometry = m_surface->globalGeometry();
+    else
+        m_prevGlobalGeometry = output->availableGeometry();
 
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
@@ -392,6 +394,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     // Set state
     m_prevState = m_state;
     m_state = Maximized;
+    m_surface->setState(static_cast<QuickSurface::State>(m_state));
 }
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)
