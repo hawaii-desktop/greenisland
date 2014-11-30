@@ -31,11 +31,11 @@
 
 class CompositorPackage : public KPackage::PackageStructure
 {
+    Q_OBJECT
 public:
     CompositorPackage(QObject *parent, const QVariantList &list);
 
     void initPackage(KPackage::Package *package);
-    void pathChanged(KPackage::Package *package);
 };
 
 #endif // COMPOSITORPACKAGE_PLUGIN_H

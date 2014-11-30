@@ -28,11 +28,9 @@
 #include <QtCore/QStandardPaths>
 
 #include <KLocalizedString>
-#include <KPackage/PackageTrader>
+#include <KPackage/PackageLoader>
 
 #include "compositorpackage.h"
-
-#define DEFAULT_COMPOSITOR "org.hawaii.desktop"
 
 CompositorPackage::CompositorPackage(QObject *, const QVariantList &)
 {
@@ -40,29 +38,13 @@ CompositorPackage::CompositorPackage(QObject *, const QVariantList &)
 
 void CompositorPackage::initPackage(KPackage::Package *package)
 {
-    package->setDefaultPackageRoot("kpackage/greenisland/compositors/");
+    package->setDefaultPackageRoot("kpackage/greenisland");
 
     // Main file
     package->addFileDefinition("main", "Compositor.qml",
                                i18n("Main compositor file"));
 }
 
-void CompositorPackage::pathChanged(KPackage::Package *package)
-{
-    if (!package->metadata().isValid())
-        return;
-
-    const QString pluginName = package->metadata().pluginName();
-
-    if (!pluginName.isEmpty() && pluginName != DEFAULT_COMPOSITOR) {
-        KPackage::Package pkg = KPackage::PackageTrader::self()->loadPackage("GreenIsland/Compositor");
-        pkg.setPath(DEFAULT_COMPOSITOR);
-        package->setFallbackPackage(pkg);
-    } else if (package->fallbackPackage().isValid() && pluginName == DEFAULT_COMPOSITOR) {
-        package->setFallbackPackage(KPackage::Package());
-    }
-}
-
-K_EXPORT_PACKAGE_PACKAGE_WITH_JSON(CompositorPackage, "plasma-packagestructure-greenisland-compositor.json")
+K_EXPORT_KPACKAGE_PACKAGE_WITH_JSON(CompositorPackage, "kpackage-packagestructure-greenisland.json")
 
 #include "compositorpackage.moc"

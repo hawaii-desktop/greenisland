@@ -27,7 +27,7 @@
 #include <QtQml/QQmlContext>
 
 #include <KPackage/Package>
-#include <KPackage/PackageTrader>
+#include <KPackage/PackageLoader>
 
 #include "compositor.h"
 #include "gldebug.h"
@@ -123,7 +123,7 @@ void OutputWindow::setOutput(Output *output)
     } else {
         qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
 
-        KPackage::Package package = KPackage::PackageTrader::self()->loadPackage("GreenIsland/Compositor");
+        KPackage::Package package = KPackage::PackageLoader::self()->loadPackage("GreenIsland/UI");
         package.setPath(Compositor::s_fixedPlugin);
         package.setAllowExternalPaths(true);
 

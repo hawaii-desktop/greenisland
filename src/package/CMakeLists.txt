@@ -1,16 +1,16 @@
-add_definitions(-DTRANSLATION_DOMAIN=\"plasma_package_greenisland_compositor\")
+add_definitions(-DTRANSLATION_DOMAIN=\"kpackage_package_greenisland\")
 
 set(SOURCES
     compositorpackage.cpp
 )
 
-add_library(plasma_packagestructure_greenisland_compositor MODULE ${SOURCES})
-target_link_libraries(plasma_packagestructure_greenisland_compositor
+add_library(kpackage_packagestructure_greenisland MODULE ${SOURCES})
+target_link_libraries(kpackage_packagestructure_greenisland
     KF5::I18n
     KF5::Package
 )
 
-kservice_desktop_to_json(plasma_packagestructure_greenisland_compositor plasma-packagestructure-greenisland-compositor.desktop)
+kcoreaddons_desktop_to_json(kpackage_packagestructure_greenisland kpackage-packagestructure-greenisland.desktop)
 
-install(TARGETS plasma_packagestructure_greenisland_compositor
-        DESTINATION ${PLUGIN_INSTALL_DIR}/plasma/packagestructure)
+install(TARGETS kpackage_packagestructure_greenisland
+        DESTINATION ${PLUGIN_INSTALL_DIR}/kpackage/packagestructure)
