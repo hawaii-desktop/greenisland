@@ -40,7 +40,7 @@ CompositorPackage::CompositorPackage(QObject *, const QVariantList &)
 
 void CompositorPackage::initPackage(KPackage::Package *package)
 {
-    package->setDefaultPackageRoot("plasma/greenisland/compositors/");
+    package->setDefaultPackageRoot("kpackage/greenisland/compositors/");
 
     // Main file
     package->addFileDefinition("main", "Compositor.qml",
