@@ -32,7 +32,7 @@
 
 #include "compositorpackage.h"
 
-#define DEFAULT_COMPOSITOR "org.hawaii.compositor.desktop"
+#define DEFAULT_COMPOSITOR "org.hawaii.desktop"
 
 CompositorPackage::CompositorPackage(QObject *, const QVariantList &)
 {
