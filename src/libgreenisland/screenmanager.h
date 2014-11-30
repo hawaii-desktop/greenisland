@@ -50,9 +50,8 @@ private:
     ScreenManagerPrivate *const d_ptr;
 
     Q_PRIVATE_SLOT(d_func(), void _q_configurationChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(KScreen::Output *output))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(const KScreen::OutputPtr &output))
     Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
-    Q_PRIVATE_SLOT(d_func(), void _q_outputEnabledChanged())
 };
 
 }

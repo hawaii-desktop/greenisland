@@ -30,7 +30,7 @@
 
 #include <KScreen/Config>
 #include <KScreen/ConfigMonitor>
-#include <KScreen/EDID>
+#include <KScreen/GetConfigOperation>
 #include <KScreen/Screen>
 
 #include "compositor.h"
@@ -40,12 +40,19 @@
 #include "screenmanager.h"
 #include "windowview.h"
 
-static bool outputLess(KScreen::Output *a, KScreen::Output *b)
+static bool outputLess(KScreen::OutputPtr &a, KScreen::OutputPtr &b)
 {
     return ((a->isEnabled() && !b->isEnabled())
             || (a->isEnabled() == b->isEnabled() && (a->isPrimary() && !b->isPrimary()))
             || (a->isPrimary() == b->isPrimary() && (a->pos().x() < b->pos().x()
                                                      || (a->pos().x() == b->pos().x() && a->pos().y() < b->pos().y()))));
+}
+
+static QList<KScreen::OutputPtr> sortOutputs(const KScreen::OutputList &outputs)
+{
+    QList<KScreen::OutputPtr> ret = outputs.values();
+    std::sort(ret.begin(), ret.end(), outputLess);
+    return ret;
 }
 
 namespace GreenIsland {
@@ -61,17 +68,14 @@ public:
 
     Compositor *compositor;
 
-    KScreen::Config *config;
+    KScreen::ConfigPtr config;
 
-    QList<KScreen::Output *> sortOutputs(const QHash<int, KScreen::Output *> &outputs) const;
-
-    void addOutput(KScreen::Output *output);
-    void removeOutput(KScreen::Output *output);
+    void addOutput(const KScreen::OutputPtr &output);
+    void removeOutput(const KScreen::OutputPtr &output);
 
     void _q_configurationChanged();
-    void _q_outputAdded(KScreen::Output *output);
+    void _q_outputAdded(const KScreen::OutputPtr &output);
     void _q_outputRemoved(int id);
-    void _q_outputEnabledChanged();
 
 private:
     Q_DECLARE_PUBLIC(ScreenManager)
@@ -83,23 +87,15 @@ ScreenManagerPrivate::ScreenManagerPrivate(ScreenManager *self)
 {
 }
 
-QList<KScreen::Output *> ScreenManagerPrivate::sortOutputs(const QHash<int, KScreen::Output *> &outputs) const
-{
-    QList<KScreen::Output *> ret = outputs.values();
-    std::sort(ret.begin(), ret.end(), outputLess);
-    return ret;
-}
-
-void ScreenManagerPrivate::addOutput(KScreen::Output *output)
+void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
 {
     Q_Q(ScreenManager);
 
     // Create a new window for this output
-    Output *customOutput = new Output(compositor, output);
-    //compositor->handle()->addOutput(customOutput);
+    (void)new Output(compositor, output);
 }
 
-void ScreenManagerPrivate::removeOutput(KScreen::Output *output)
+void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
 {
     Q_Q(ScreenManager);
 
@@ -153,7 +149,7 @@ void ScreenManagerPrivate::_q_configurationChanged()
     qWarning() << "TODO: Screen configuration changed";
 }
 
-void ScreenManagerPrivate::_q_outputAdded(KScreen::Output *output)
+void ScreenManagerPrivate::_q_outputAdded(const KScreen::OutputPtr &output)
 {
     addOutput(output);
 }
@@ -161,18 +157,6 @@ void ScreenManagerPrivate::_q_outputAdded(KScreen::Output *output)
 void ScreenManagerPrivate::_q_outputRemoved(int id)
 {
     removeOutput(config->outputs().value(id));
-}
-
-void ScreenManagerPrivate::_q_outputEnabledChanged()
-{
-    Q_Q(ScreenManager);
-
-    KScreen::Output *output = qobject_cast<KScreen::Output *>(q->sender());
-
-    if (output->isEnabled())
-        addOutput(output);
-    else
-        removeOutput(output);
 }
 
 /*
@@ -189,27 +173,29 @@ ScreenManager::ScreenManager(Compositor *compositor)
     d->compositor = compositor;
 
     // Load current configuration
-    d->config = KScreen::Config::current();
-    Q_ASSERT(d->config);
+    connect(new KScreen::GetConfigOperation(), &KScreen::GetConfigOperation::finished,
+            this, [=](KScreen::ConfigOperation *op) {
+        d->config = qobject_cast<KScreen::GetConfigOperation *>(op)->config();
+        Q_ASSERT(!d->config.isNull());
+        qDebug() << "Screen configuration acquired";
 
-    // Check whether the backend was loaded
-    if (!d->config->loadBackend())
-        qFatal("No KScreen backend found, aborting...");
+        // Monitor configuration
+        KScreen::ConfigMonitor::instance()->addConfig(d->config);
 
-    // Add configuration to the monitor
-    KScreen::ConfigMonitor::instance()->addConfig(d->config);
+        // Create outputs for the first time
+        for (const KScreen::OutputPtr &output: sortOutputs(d->config->outputs()))
+            d->addOutput(output);
+
+        // Connect configuration signals
+        connect(d->config.data(), SIGNAL(outputAdded(KScreen::OutputPtr)),
+                this, SLOT(_q_outputAdded(KScreen::OutputPtr)));
+        connect(d->config.data(), SIGNAL(outputRemoved(int)),
+                this, SLOT(_q_outputRemoved(int)));
+    });
 
     // Connect signals
     connect(KScreen::ConfigMonitor::instance(), SIGNAL(configurationChanged()),
             this, SLOT(_q_configurationChanged()));
-    connect(d->config, SIGNAL(outputAdded(KScreen::Output*)),
-            this, SLOT(_q_outputAdded(KScreen::Output*)));
-    connect(d->config, SIGNAL(outputRemoved(int)),
-            this, SLOT(_q_outputRemoved(int)));
-
-    // Create outputs for the first time
-    for (KScreen::Output *output: d->sortOutputs(d->config->outputs()))
-        d->addOutput(output);
 }
 
 ScreenManager::~ScreenManager()

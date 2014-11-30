@@ -43,7 +43,7 @@ and build it yourself.
 
 You also need the following modules from KDE Frameworks 5:
 
-* libkscreen
+* libkscreen (from master)
 
 ## Build
 

@@ -48,7 +48,7 @@ public:
     void _q_posChanged();
 
     Compositor *compositor;
-    KScreen::Output *output;
+    KScreen::OutputPtr output;
 
 private:
     Q_DECLARE_PUBLIC(Output)
@@ -117,7 +117,7 @@ void OutputPrivate::_q_posChanged()
  * Output
  */
 
-Output::Output(Compositor *compositor, KScreen::Output *output)
+Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
     : QWaylandQuickOutput(compositor, new OutputWindow(compositor),
                           output->edid()->vendor(), output->edid()->serial())
     , d_ptr(new OutputPrivate(this))
@@ -133,13 +133,13 @@ Output::Output(Compositor *compositor, KScreen::Output *output)
     d->_q_posChanged();
 
     // React to output changes
-    connect(output, SIGNAL(isPrimaryChanged()),
-            this, SLOT(_q_primaryChanged()),
+    connect(output.data(), &KScreen::Output::isPrimaryChanged,
+            this, &Output::primaryChanged,
             Qt::UniqueConnection);
-    connect(output, SIGNAL(currentModeIdChanged()),
+    connect(output.data(), SIGNAL(currentModeIdChanged()),
             this, SLOT(_q_currentModeIdChanged()),
             Qt::UniqueConnection);
-    connect(output, SIGNAL(posChanged()),
+    connect(output.data(), SIGNAL(posChanged()),
             this, SLOT(_q_posChanged()),
             Qt::UniqueConnection);
 
@@ -155,7 +155,7 @@ Compositor *Output::compositor() const
     return d->compositor;
 }
 
-KScreen::Output *Output::output() const
+KScreen::OutputPtr Output::output() const
 {
     Q_D(const Output);
     return d->output;
