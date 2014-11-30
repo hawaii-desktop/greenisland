@@ -42,6 +42,7 @@
 #include "bufferattacher.h"
 #include "cmakedirs.h"
 #include "compositor.h"
+#include "config.h"
 #include "quicksurface.h"
 #include "windowview.h"
 #include "screenmanager.h"
