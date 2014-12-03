@@ -41,6 +41,9 @@ public:
     bool isFullScreenShellEnabled() const;
     void setFullScreenShellEnabled(bool value);
 
+    QString plugin() const;
+    void setPlugin(const QString &plugin);
+
     void start();
 
 private:
@@ -52,6 +55,8 @@ private:
     QStringList m_fullScreenShellArgs;
     QString m_fullScreenShellSocket;
     QFileSystemWatcher *m_fullScreenShellWatcher;
+
+    QString m_plugin;
 
     QString randomString() const;
 

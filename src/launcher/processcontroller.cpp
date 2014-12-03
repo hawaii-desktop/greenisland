@@ -80,6 +80,16 @@ void ProcessController::setFullScreenShellEnabled(bool value)
     }
 }
 
+QString ProcessController::plugin() const
+{
+    return m_plugin;
+}
+
+void ProcessController::setPlugin(const QString &plugin)
+{
+    m_plugin = plugin;
+}
+
 void ProcessController::start()
 {
     // Run the full screen shell compositor if enabled
@@ -124,9 +134,7 @@ void ProcessController::detect()
     if (qEnvironmentVariableIsSet("DISPLAY")) {
         m_compositor->setArguments(QStringList()
                                    << QStringLiteral("-platform")
-                                   << QStringLiteral("xcb")
-                                   << QStringLiteral("--fake-screen")
-                                   << QStringLiteral("../data/kscreen/one-1024x768.json"));
+                                   << QStringLiteral("xcb"));
         return;
     }
 
@@ -145,6 +153,9 @@ void ProcessController::startCompositor()
                                    << QStringLiteral("-platform")
                                    << QStringLiteral("wayland")
                                    << QStringLiteral("--socket=") + m_compositorSocket);
+        if (!m_plugin.isEmpty())
+            m_compositor->setArguments(m_compositor->arguments()
+                                       << QStringLiteral("-p") << m_plugin);
 
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert(QStringLiteral("WAYLAND_DISPLAY"), m_fullScreenShellSocket);

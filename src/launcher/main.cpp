@@ -53,6 +53,12 @@ int main(int argc, char *argv[])
                                              TR("Nest Green Island into a full screen shell compositor"));
     parser.addOption(fullScreenShellOption);
 
+    // Compositor package
+    QCommandLineOption pluginOption(QStringList() << QStringLiteral("p") << QStringLiteral("compositor-plugin"),
+                                    TR("Force loading the given compositor plugin"),
+                                    QStringLiteral("plugin"));
+    parser.addOption(pluginOption);
+
     // Parse command line
     parser.process(app);
 
@@ -61,6 +67,9 @@ int main(int argc, char *argv[])
 
     // Force full screen shell if requested
     processController.setFullScreenShellEnabled(parser.isSet(fullScreenShellOption));
+
+    // Pass additional arguments
+    processController.setPlugin(parser.value(pluginOption));
 
     // Start the compositor
     processController.start();
