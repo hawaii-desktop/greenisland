@@ -29,7 +29,7 @@ if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
 endif()
 
 # ECM setup
-find_package(ECM 1.2.0 REQUIRED NO_MODULE)
+find_package(ECM 1.4.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_SOURCE_DIR}/cmake")
 
 # Macros
@@ -85,15 +85,15 @@ add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
 add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 
+# Wayland and QtWayland scanner
+find_package(QtWaylandScanner REQUIRED)
+
 # systemd
 pkg_check_modules(systemd libsystemd-daemon)
 if(systemd_FOUND)
     set(HAVE_SYSTEMD 1)
 endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
-
-# Include Wayland macros
-include(ECMWayland)
 
 # Subdirectories
 add_subdirectory(headers)
