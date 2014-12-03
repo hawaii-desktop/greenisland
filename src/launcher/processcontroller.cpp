@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 #include <QtCore/QCoreApplication>
-#include <QDebug>
+#include <QtCore/QDebug>
 #include <QtCore/QFile>
 #include <QtCore/QFileSystemWatcher>
 
@@ -44,6 +44,12 @@ ProcessController::ProcessController(QObject *parent)
     m_compositor->setProgram(QStringLiteral(INSTALL_BINDIR "/greenisland"));
     connect(m_compositor, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(compositorFinished(int,QProcess::ExitStatus)));
+    connect(m_compositor, &QProcess::readyReadStandardError, [=]() {
+        qWarning() << qPrintable(m_compositor->readAllStandardError());
+    });
+    connect(m_compositor, &QProcess::readyReadStandardOutput, [=]() {
+        qDebug() << qPrintable(m_compositor->readAllStandardOutput());
+    });
 
     // Wayland sockets
     QString random = randomString();
