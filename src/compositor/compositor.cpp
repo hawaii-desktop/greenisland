@@ -39,7 +39,9 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
-#include "bufferattacher.h"
+#ifdef QT_COMPOSITOR_WAYLAND_GL
+#  include "bufferattacher.h"
+#endif
 #include "cmakedirs.h"
 #include "compositor.h"
 #include "config.h"
@@ -117,6 +119,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
     if (!hasBuffer || !cursorSurface || !cursorSurface->bufferAttacher())
         return;
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
     QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
 
@@ -127,6 +130,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
         QGuiApplication::setOverrideCursor(cursor);
         cursorIsSet = true;
     }
+#endif
 }
 
 void CompositorPrivate::_q_outputRemoved(QWaylandOutput *_output)
@@ -444,6 +448,7 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 {
     Q_D(Compositor);
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     // Setup cursor
     d->cursorHotspotX = hotspotX;
     d->cursorHotspotY = hotspotY;
@@ -456,6 +461,11 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
         // Update cursor when mapped
         connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
     }
+#else
+    Q_UNUSED(surface);
+    Q_UNUSED(hotspotX);
+    Q_UNUSED(hotspotY);
+#endif
 }
 
 }

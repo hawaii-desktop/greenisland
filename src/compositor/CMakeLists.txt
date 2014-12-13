@@ -8,10 +8,7 @@ if(systemd_FOUND)
     include_directories(${systemd_INCLUDE_DIRS})
 endif()
 
-add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
-
 set(SOURCES
-    bufferattacher.cpp
     compositor.cpp
     globalregistry.cpp
     gldebug.cpp
@@ -42,6 +39,11 @@ set(SOURCES
     protocols/xdg-shell/xdgpopup.cpp
     protocols/xdg-shell/xdgpopupgrabber.cpp
 )
+
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
+    set(SOURCES ${SOURCES} bufferattacher.cpp)
+endif()
 
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
