@@ -83,6 +83,8 @@ public:
 
     Q_INVOKABLE QPointF calculateInitialPosition(QWaylandSurface *surface);
 
+    Q_INVOKABLE void abortSession();
+
     static QString s_fixedPlugin;
 
 Q_SIGNALS:

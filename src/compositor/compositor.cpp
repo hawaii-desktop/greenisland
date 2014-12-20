@@ -436,6 +436,11 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
     return pos;
 }
 
+void Compositor::abortSession()
+{
+    QGuiApplication::quit();
+}
+
 void Compositor::lockSession()
 {
 }
