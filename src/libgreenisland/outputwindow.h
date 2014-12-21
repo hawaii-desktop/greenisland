@@ -24,49 +24,49 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef QUICKSURFACE_H
-#define QUICKSURFACE_H
+#ifndef GREENISLAND_OUTPUTWINDOW_H
+#define GREENISLAND_OUTPUTWINDOW_H
 
-#include <QtCompositor/QWaylandQuickSurface>
+#include <QtQuick/QQuickView>
+
+#include <greenisland/greenisland_export.h>
 
 namespace GreenIsland {
 
 class Compositor;
+class Output;
 
-class QuickSurface : public QWaylandQuickSurface
+class GREENISLAND_EXPORT OutputWindow : public QQuickView
 {
     Q_OBJECT
-    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
-    Q_PROPERTY(QPointF globalPosition READ globalPosition WRITE setGlobalPosition NOTIFY globalPositionChanged)
-    Q_PROPERTY(QRectF globalGeometry READ globalGeometry NOTIFY globalGeometryChanged)
-    Q_ENUMS(State)
 public:
-    enum State {
-        Normal = 0,
-        Maximized,
-        FullScreen
-    };
+    explicit OutputWindow(Compositor *compositor);
 
-    explicit QuickSurface(wl_client *client, quint32 id, Compositor *compositor);
+    Compositor *compositor() const;
 
-    State state() const;
-    void setState(const State &state);
+    Output *output() const;
+    void setOutput(Output *output);
 
-    QPointF globalPosition() const;
-    void setGlobalPosition(const QPointF &pos);
+protected:
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
-    QRectF globalGeometry() const;
+    void mousePressEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
 
-Q_SIGNALS:
-    void stateChanged();
-    void globalPositionChanged();
-    void globalGeometryChanged();
+    void wheelEvent(QWheelEvent *event);
 
 private:
-    State m_state;
-    QPointF m_globalPos;
+    Compositor *m_compositor;
+    Output *m_output;
+
+private Q_SLOTS:
+    void printInfo();
+    void sendCallbacks();
+    void componentStatusChanged(const QQuickView::Status &status);
 };
 
 }
 
-#endif // QUICKSURFACE_H
+#endif // GREENISLAND_OUTPUTWINDOW_H

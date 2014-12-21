@@ -30,6 +30,8 @@
 #include <QtCompositor/QWaylandQuickCompositor>
 #include <QtCompositor/QWaylandSurfaceItem>
 
+#include <greenisland/greenisland_export.h>
+
 namespace GreenIsland {
 
 class CompositorPrivate;
@@ -37,7 +39,7 @@ class Output;
 class QuickSurface;
 class ScreenManager;
 
-class Compositor : public QWaylandQuickCompositor
+class GREENISLAND_EXPORT Compositor : public QWaylandQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)

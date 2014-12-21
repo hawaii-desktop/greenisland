@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 2.8.12)
 # Set version
 set(PROJECT_VERSION "0.5.90")
 set(PROJECT_VERSION_MAJOR 0)
+set(PROJECT_SOVERSION 0)
 
 # Add custom uninstall target
 configure_file(

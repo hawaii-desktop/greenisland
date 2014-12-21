@@ -24,54 +24,51 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_OUTPUT_H
-#define GREENISLAND_OUTPUT_H
+#ifndef QUICKSURFACE_H
+#define QUICKSURFACE_H
 
-#include <QtCompositor/QWaylandOutput>
+#include <QtCompositor/QWaylandQuickSurface>
 
-#include <KScreen/Output>
+#include <greenisland/greenisland_export.h>
 
 namespace GreenIsland {
 
 class Compositor;
-class OutputPrivate;
 
-class Output : public QWaylandOutput
+class GREENISLAND_EXPORT QuickSurface : public QWaylandQuickSurface
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int number READ number CONSTANT)
-    Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
+    Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
+    Q_PROPERTY(QPointF globalPosition READ globalPosition WRITE setGlobalPosition NOTIFY globalPositionChanged)
+    Q_PROPERTY(QRectF globalGeometry READ globalGeometry NOTIFY globalGeometryChanged)
+    Q_ENUMS(State)
 public:
-    explicit Output(Compositor *compositor, KScreen::Output *output);
+    enum State {
+        Normal = 0,
+        Maximized,
+        FullScreen
+    };
 
-    Compositor *compositor() const;
+    explicit QuickSurface(wl_client *client, quint32 id, Compositor *compositor);
 
-    KScreen::Output *output() const;
+    State state() const;
+    void setState(const State &state);
 
-    QString name() const;
+    QPointF globalPosition() const;
+    void setGlobalPosition(const QPointF &pos);
 
-    int number() const;
-
-    bool isPrimary() const;
-
-    // Maps global coordinates to local space
-    Q_INVOKABLE QPointF mapToOutput(const QPointF &pt);
-
-    // Map output local coordinates to global space
-    Q_INVOKABLE QPointF mapToGlobal(const QPointF &pt);
+    QRectF globalGeometry() const;
 
 Q_SIGNALS:
-    void primaryChanged();
+    void stateChanged();
+    void globalPositionChanged();
+    void globalGeometryChanged();
 
 private:
-    Q_DECLARE_PRIVATE(Output)
-    OutputPrivate *const d_ptr;
-
-    Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_posChanged())
+    State m_state;
+    QPointF m_globalPos;
 };
 
 }
 
-#endif // GREENISLAND_OUTPUT_H
+#endif // QUICKSURFACE_H

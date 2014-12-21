@@ -24,47 +24,43 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_OUTPUTWINDOW_H
-#define GREENISLAND_OUTPUTWINDOW_H
+#ifndef GREENISLAND_WINDOWVIEW_H
+#define GREENISLAND_WINDOWVIEW_H
 
-#include <QtQuick/QQuickView>
+#include <QtCompositor/QWaylandSurfaceItem>
+
+#include <greenisland/greenisland_export.h>
+#include <greenisland/output.h>
 
 namespace GreenIsland {
 
-class Compositor;
-class Output;
+class QuickSurface;
 
-class OutputWindow : public QQuickView
+class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
+    Q_PROPERTY(Output *output READ output CONSTANT)
+    Q_PROPERTY(Output *mainOutput READ mainOutput CONSTANT)
 public:
-    explicit OutputWindow(Compositor *compositor);
+    explicit WindowView(QuickSurface *surface, Output *output, QQuickItem *parent = 0);
 
-    Compositor *compositor() const;
+    QuickSurface *surface() const;
 
     Output *output() const;
-    void setOutput(Output *output);
+
+    Output *mainOutput() const;
 
 protected:
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
-
-    void mousePressEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
-
-    void wheelEvent(QWheelEvent *event);
 
 private:
-    Compositor *m_compositor;
+    QuickSurface *m_surface;
     Output *m_output;
 
-private Q_SLOTS:
-    void printInfo();
-    void sendCallbacks();
-    void componentStatusChanged(const QQuickView::Status &status);
+    void sendEnter(Output *output);
+    void sendLeave(Output *output);
 };
 
 }
 
-#endif // GREENISLAND_OUTPUTWINDOW_H
+#endif // GREENISLAND_WINDOWVIEW_H

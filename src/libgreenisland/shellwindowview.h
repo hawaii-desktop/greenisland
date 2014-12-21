@@ -29,11 +29,13 @@
 
 #include <QtCompositor/QWaylandSurfaceItem>
 
+#include <greenisland/greenisland_export.h>
+
 namespace GreenIsland {
 
 class Output;
 
-class ShellWindowView : public QWaylandSurfaceItem
+class GREENISLAND_EXPORT ShellWindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
