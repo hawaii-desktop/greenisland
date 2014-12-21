@@ -9,11 +9,8 @@ The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Isla
 The API is based on QtCompositor which is shipped by the
 qtwayland module.
 
-Green Island is used by the Hawaii desktop environment to make its own
-Wayland compositor.
-
-You can find a compositor with the Hawaii [shell](https://github.com/mauios/hawaii-shell).
-More compositors will be available here.
+Green Island can be used by any desktop environment that wish to implement its compositor
+by using QML.
 
 ## Dependencies
 
@@ -38,11 +35,18 @@ More information about building Qt from git can be found here:
 
 Qt 5 binaries can be downloaded from http://qt-project.org/downloads
 
-The qtwayland module has not been released yet, please clone the `stable` branch from:
+A development version of qtwayland is required.
+Clone the upstream branch for Qt 5.3 or the upstream54 branch for Qt 5.4 from the
+following repository:
 
-  http://qt.gitorious.org/qt/qtwayland
+  https://github.com/maui-packages/qtwayland
 
 and build it yourself.
+
+You also need the following modules from KDE Frameworks 5:
+
+* libkscreen
+* KPackage (this dependency might be removed in the future)
 
 ## Build
 
