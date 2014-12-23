@@ -100,6 +100,8 @@ void ProcessController::start()
 {
     // Run the full screen shell compositor if enabled
     if (m_fullScreenShell) {
+        qDebug() << "Running:" << qPrintable(m_fullScreenShell->program())
+                 << qPrintable(m_fullScreenShell->arguments().join(" "));
         m_fullScreenShell->start();
 
         if (!m_fullScreenShell->waitForStarted())
@@ -174,6 +176,8 @@ void ProcessController::startCompositor()
     }
 
     // Start the process
+    qDebug() << "Running:" << qPrintable(m_compositor->program())
+             << qPrintable(m_compositor->arguments().join(" "));
     m_compositor->start();
     if (!m_compositor->waitForStarted()) {
         // Compositor failed to start, kill full screen shell and terminate
