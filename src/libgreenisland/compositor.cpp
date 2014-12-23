@@ -43,6 +43,7 @@
 #  include "bufferattacher.h"
 #endif
 #include "cmakedirs.h"
+#include "clientwindow.h"
 #include "compositor.h"
 #include "config.h"
 #include "quicksurface.h"
@@ -173,8 +174,8 @@ Compositor::Compositor(const QString &socket)
 
 Compositor::~Compositor()
 {
-#if 0
     qDeleteAll(m_clientWindows);
+#if 0
     qDeleteAll(m_workspaces);
 #endif
     delete d_ptr;
@@ -361,6 +362,12 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     if (!surface)
         return;
 
+    // Create application window instance
+    ClientWindow *appWindow = new ClientWindow(this);
+    appWindow->setSurface(qobject_cast<QuickSurface *>(surface));
+    m_clientWindows.append(appWindow);
+
+    // Connect surface signals
     connect(surface, &QWaylandSurface::mapped, [=]() {
         Q_EMIT surfaceMapped(QVariant::fromValue(surface));
     });
@@ -369,25 +376,16 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     });
     connect(surface, &QWaylandSurface::surfaceDestroyed, [=]() {
         Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
-    });
 
-#if 0
-    // Create application window instance
-    ClientWindow *appWindow = new ClientWindow(waylandDisplay());
-    appWindow->setSurface(surface);
-    m_clientWindows.append(appWindow);
-
-    // Delete application window on surface destruction
-    connect(surface, &QWaylandSurface::destroyed, [=](QObject *object = 0) {
+        // Delete application window on surface destruction
         for (ClientWindow *appWindow: m_clientWindows) {
             if (appWindow->surface() == surface) {
                 if (m_clientWindows.removeOne(appWindow))
-                    delete appWindow;
+                    appWindow->deleteLater();
                 break;
             }
         }
     });
-#endif
 }
 
 QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
@@ -439,6 +437,21 @@ QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
 void Compositor::abortSession()
 {
     QGuiApplication::quit();
+}
+
+QQmlListProperty<ClientWindow> Compositor::windows()
+{
+    return QQmlListProperty<ClientWindow>(this, m_clientWindows);
+}
+
+int Compositor::windowCount() const
+{
+    return m_clientWindows.count();
+}
+
+ClientWindow *Compositor::window(int index) const
+{
+    return m_clientWindows.at(index);
 }
 
 void Compositor::lockSession()

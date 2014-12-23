@@ -19,6 +19,7 @@ if(systemd_FOUND)
 endif()
 
 set(SOURCES
+    clientwindow.cpp
     compositor.cpp
     globalregistry.cpp
     gldebug.cpp
@@ -115,6 +116,7 @@ set_target_properties(GreenIsland PROPERTIES VERSION   ${PROJECT_VERSION}
 ecm_generate_headers(GreenIsland_CamelCase_HEADERS
   HEADER_NAMES
     Compositor
+    ClientWindow
     HomeApplication
     Output
     OutputWindow
@@ -136,6 +138,7 @@ install(
       ${CMAKE_CURRENT_BINARY_DIR}/greenisland/greenisland_export.h
       ${GreenIsland_HEADERS}
       compositor.h
+      clientwindow.h
       homeapplication.h
       output.h
       outputwindow.h

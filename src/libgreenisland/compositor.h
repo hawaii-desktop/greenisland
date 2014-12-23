@@ -34,6 +34,7 @@
 
 namespace GreenIsland {
 
+class ClientWindow;
 class CompositorPrivate;
 class Output;
 class QuickSurface;
@@ -45,6 +46,7 @@ class GREENISLAND_EXPORT Compositor : public QWaylandQuickCompositor
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
+    Q_PROPERTY(QQmlListProperty<ClientWindow> windows READ windows)
     Q_ENUMS(State)
 public:
     enum State {
@@ -86,6 +88,12 @@ public:
     Q_INVOKABLE QPointF calculateInitialPosition(QWaylandSurface *surface);
 
     Q_INVOKABLE void abortSession();
+
+    QQmlListProperty<ClientWindow> windows();
+    int windowCount() const;
+    ClientWindow *window(int) const;
+
+    QList<ClientWindow *> windowsList() const;
 
     static QString s_fixedPlugin;
 
@@ -129,8 +137,8 @@ private:
     CompositorPrivate *const d_ptr;
 
 private:
-#if 0
     QList<ClientWindow *> m_clientWindows;
+#if 0
     QList<Workspace *> m_workspaces;
 #endif
 

@@ -27,20 +27,29 @@
 #ifndef CLIENTWINDOW_H
 #define CLIENTWINDOW_H
 
-#include <QtCompositor/QWaylandSurface>
+#include <greenisland/quicksurface.h>
 
-#include "qwayland-server-hawaii.h"
+namespace GreenIsland {
 
-class ClientWindow : public QtWaylandServer::hawaii_window
+class QuickSurface;
+
+class GREENISLAND_EXPORT ClientWindow : public QObject
 {
+    Q_OBJECT
+    Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
+    Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
+    Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
+    Q_PROPERTY(bool minimized READ isMinimized NOTIFY minimizedChanged)
+    Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
 public:
-    ClientWindow(struct ::wl_display *display);
+    ClientWindow(QObject *parent = 0);
 
-    QWaylandSurface *surface() const;
-    void setSurface(QWaylandSurface *surface);
+    QuickSurface *surface() const;
+    void setSurface(QuickSurface *surface);
 
-    int32_t state() const;
-    void setState(int32_t newState);
+    QString title() const;
+    QString appId() const;
 
     bool isMapped() const;
 
@@ -48,17 +57,35 @@ public:
     void activate();
     void deactivate();
 
+    bool isMinimized() const;
     void minimize();
     void unminimize();
 
-protected:
-    void window_set_state(Resource *resource,
-                          int32_t newState) Q_DECL_OVERRIDE;
+    bool isMaximized() const;
+    void maximize();
+    void unmaximize();
+
+    bool isFullScreen() const;
+    void setFullScreen(bool fs);
+
+Q_SIGNALS:
+    void surfaceChanged();
+    void titleChanged();
+    void appIdChanged();
+    void activeChanged();
+    void minimizedChanged();
+    void maximizedChanged();
+    void fullScreenChanged();
 
 private:
     bool m_mapped;
-    QWaylandSurface *m_surface;
-    int32_t m_state;
+    bool m_active;
+    bool m_minimized;
+    bool m_maximized;
+    bool m_fullScreen;
+    QuickSurface *m_surface;
 };
+
+} // namespace GreenIsland
 
 #endif // CLIENTWINDOW_H

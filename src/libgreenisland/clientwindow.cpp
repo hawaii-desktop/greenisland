@@ -29,109 +29,83 @@
 
 #include "clientwindow.h"
 #include "compositor.h"
-#include "shell.h"
 
-ClientWindow::ClientWindow(struct ::wl_display *display)
-    : QtWaylandServer::hawaii_window(display)
+namespace GreenIsland {
+
+ClientWindow::ClientWindow(QObject *parent)
+    : QObject(parent)
     , m_mapped(false)
+    , m_active(false)
+    , m_minimized(false)
+    , m_maximized(false)
+    , m_fullScreen(false)
     , m_surface(nullptr)
-    , m_state(HAWAII_SHELL_WINDOW_STATE_INACTIVE)
 {
 }
 
-QWaylandSurface *ClientWindow::surface() const
+QuickSurface *ClientWindow::surface() const
 {
     return m_surface;
 }
 
-void ClientWindow::setSurface(QWaylandSurface *surface)
+void ClientWindow::setSurface(QuickSurface *surface)
 {
     if (m_surface == surface)
         return;
 
     m_surface = surface;
+    Q_EMIT surfaceChanged();
     if (!m_surface)
         return;
 
-    QObject::connect(m_surface, &QWaylandSurface::titleChanged, [=]() {
-        if (m_mapped) {
-            for (Resource *resource: resourceMap().values())
-                send_title_changed(resource->handle, m_surface->title());
-        }
-    });
-    QObject::connect(m_surface, &QWaylandSurface::classNameChanged, [=]() {
-        if (m_mapped) {
-            for (Resource *resource: resourceMap().values())
-                send_identifier_changed(resource->handle, m_surface->className());
-        }
-    });
-    QObject::connect(m_surface, &QWaylandSurface::visibilityChanged, [=]() {
+    connect(m_surface, SIGNAL(titleChanged()), this, SIGNAL(titleChanged()));
+    connect(m_surface, SIGNAL(classNameChanged()), this, SIGNAL(appIdChanged()));
+    connect(m_surface, &QWaylandSurface::visibilityChanged, [=]() {
         if (!m_mapped)
             return;
 
         switch (m_surface->visibility()) {
         case QWindow::Minimized:
-            m_state = HAWAII_SHELL_WINDOW_STATE_MINIMIZED;
+            m_minimized = true;
             break;
         case QWindow::Maximized:
-            m_state = HAWAII_SHELL_WINDOW_STATE_MAXIMIZED;
+            m_maximized = true;
             break;
         case QWindow::FullScreen:
-            m_state = HAWAII_SHELL_WINDOW_STATE_FULLSCREEN;
+            m_fullScreen = true;
             break;
         default:
             break;
         }
-
-        for (Resource *resource: resourceMap().values())
-            send_state_changed(resource->handle, m_state);
     });
     QObject::connect(m_surface, &QWaylandSurface::mapped, [=]() {
         if (m_mapped)
             return;
 
-        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
-        for (Resource *resource: resourceMap().values())\
-            compositor->shell()->send_window_mapped(
-                        resource->handle,
-                        m_surface->title(),
-                        m_surface->className(),
-                        m_state);
         m_mapped = true;
 
-        if (m_surface->surfaceItem()) {
-            QObject::connect(m_surface->surfaceItem(), &QWaylandSurfaceItem::focusChanged, [=](bool focus) {
-                if (focus)
-                    m_state |= HAWAII_SHELL_WINDOW_STATE_ACTIVE;
-                else
-                    m_state &= ~HAWAII_SHELL_WINDOW_STATE_ACTIVE;
-            });
+        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
+        QWaylandSurfaceItem *view = compositor->firstViewOf(m_surface);
 
-            for (Resource *resource: resourceMap().values())
-                send_state_changed(resource->handle, m_state);
+        if (view) {
+            QObject::connect(view, &QWaylandSurfaceItem::focusChanged, [=](bool focus) {
+                m_active = focus;
+            });
         }
     });
     QObject::connect(m_surface, &QWaylandSurface::unmapped, [=]() {
-        if (m_mapped) {
-            for (Resource *resource: resourceMap().values())
-                send_unmapped(resource->handle);
-            m_mapped = false;
-        }
+        m_mapped = false;
     });
 }
 
-int32_t ClientWindow::state() const
+QString ClientWindow::title() const
 {
-    return m_state;
+    return m_surface->title();
 }
 
-void ClientWindow::setState(int32_t newState)
+QString ClientWindow::appId() const
 {
-    if (m_state != newState) {
-        m_state = newState;
-        for (Resource *resource: resourceMap().values())
-            send_state_changed(resource->handle, m_state);
-    }
+    return m_surface->className();
 }
 
 bool ClientWindow::isMapped() const
@@ -141,59 +115,93 @@ bool ClientWindow::isMapped() const
 
 bool ClientWindow::isActive() const
 {
-    return m_state & HAWAII_SHELL_WINDOW_STATE_ACTIVE;
+    return m_active;
 }
 
 void ClientWindow::activate()
 {
     if (m_surface) {
-        if (m_surface->surfaceItem())
-            m_surface->surfaceItem()->takeFocus();
-        setState(m_state | HAWAII_SHELL_WINDOW_STATE_ACTIVE);
+        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
+        QWaylandSurfaceItem *view = compositor->firstViewOf(m_surface);
+        if (view)
+            view->takeFocus();
+        m_active = true;
+        Q_EMIT activeChanged();
     }
 }
 
 void ClientWindow::deactivate()
 {
     if (m_surface) {
-        if (m_surface->surfaceItem()) {
-            m_surface->surfaceItem()->setFocus(false);
+        Compositor *compositor = static_cast<Compositor *>(m_surface->compositor());
+        QWaylandSurfaceItem *view = compositor->firstViewOf(m_surface);
+        if (view) {
+            view->setFocus(false);
             m_surface->compositor()->defaultInputDevice()->setKeyboardFocus(0);
         }
-        setState(m_state & ~HAWAII_SHELL_WINDOW_STATE_ACTIVE);
+        m_active = true;
+        Q_EMIT activeChanged();
     }
+}
+
+bool ClientWindow::isMinimized() const
+{
+    return m_minimized;
 }
 
 void ClientWindow::minimize()
 {
-    if (m_surface) {
-        m_surface->setVisibility(QWindow::Hidden);
-        setState(m_state & HAWAII_SHELL_WINDOW_STATE_MINIMIZED);
+    if (m_surface && !m_minimized) {
+        m_surface->setVisibility(QWindow::Minimized);
+        m_minimized = true;
+        Q_EMIT minimizedChanged();
     }
 }
 
 void ClientWindow::unminimize()
 {
-    if (m_surface) {
+    if (m_surface && m_minimized) {
         m_surface->setVisibility(QWindow::AutomaticVisibility);
-        setState(m_state & ~HAWAII_SHELL_WINDOW_STATE_MINIMIZED);
+        m_minimized = false;
+        Q_EMIT minimizedChanged();
     }
 }
 
-void ClientWindow::window_set_state(Resource *resource, int32_t newState)
+bool ClientWindow::isMaximized() const
 {
-    ClientWindow *window = static_cast<ClientWindow *>(resource->window);
-    int32_t state = window->state();
-
-    if (state & HAWAII_SHELL_WINDOW_STATE_MINIMIZED && !(newState & HAWAII_SHELL_WINDOW_STATE_MINIMIZED)) {
-        window->unminimize();
-    } else if (newState & HAWAII_SHELL_WINDOW_STATE_MINIMIZED && !(state & HAWAII_SHELL_WINDOW_STATE_MINIMIZED)) {
-        window->minimize();
-
-        if (window->isActive())
-            window->deactivate();
-    }
-
-    if (newState & HAWAII_SHELL_WINDOW_STATE_ACTIVE && !(newState & HAWAII_SHELL_WINDOW_STATE_MINIMIZED))
-        window->activate();
+    return m_maximized;
 }
+
+void ClientWindow::maximize()
+{
+    if (m_surface && !m_maximized) {
+        m_surface->setVisibility(QWindow::Maximized);
+        m_maximized = true;
+        Q_EMIT maximizedChanged();
+    }
+}
+
+void ClientWindow::unmaximize()
+{
+    if (m_surface && m_maximized) {
+        m_surface->setVisibility(QWindow::Windowed);
+        m_maximized = false;
+        Q_EMIT maximizedChanged();
+    }
+}
+
+bool ClientWindow::isFullScreen() const
+{
+    return m_fullScreen;
+}
+
+void ClientWindow::setFullScreen(bool fs)
+{
+    if (m_surface && m_fullScreen != fs) {
+        m_surface->setVisibility(fs ? QWindow::FullScreen : QWindow::AutomaticVisibility);
+        m_fullScreen = fs;
+        Q_EMIT fullScreenChanged();
+    }
+}
+
+} // namespace GreenIsland
