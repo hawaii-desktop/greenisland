@@ -137,38 +137,6 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
 {
     m_compositor->setIdleInhibit(m_compositor->idleInhibit() + 1);
 
-#if 0
-    // Decode key event
-    uint32_t modifiers = 0;
-    uint32_t key = 0;
-
-    if (event->modifiers() & Qt::ControlModifier)
-        modifiers |= MODIFIER_CTRL;
-    if (event->modifiers() & Qt::AltModifier)
-        modifiers |= MODIFIER_ALT;
-    if (event->modifiers() & Qt::MetaModifier)
-        modifiers |= MODIFIER_SUPER;
-    if (event->modifiers() & Qt::ShiftModifier)
-        modifiers |= MODIFIER_SHIFT;
-
-    int k = 0;
-    while (keyTable[k]) {
-        if (event->key() == (int)keyTable[k]) {
-            key = keyTable[k + 1];
-            break;
-        }
-        k += 2;
-    }
-
-    // Look for a matching key binding
-    for (KeyBinding *keyBinding: m_shell->keyBindings()) {
-        if (keyBinding->modifiers() == modifiers && keyBinding->key() == key) {
-            keyBinding->send_triggered();
-            break;
-        }
-    }
-#endif
-
     QQuickView::keyPressEvent(event);
 }
 
