@@ -58,6 +58,8 @@ WindowView::WindowView(QuickSurface *surface, Output *output, QQuickItem *parent
         else
             sendLeave(m_output);
     });
+
+    connect(m_surface, SIGNAL(raiseRequested()), this, SIGNAL(raiseRequested()));
 }
 
 QuickSurface *WindowView::surface() const
@@ -104,15 +106,13 @@ Output *WindowView::mainOutput() const
     return qobject_cast<Output *>(main);
 }
 
-void WindowView::mouseReleaseEvent(QMouseEvent *event)
+void WindowView::mousePressEvent(QMouseEvent *event)
 {
-    QWaylandSurfaceItem::mouseReleaseEvent(event);
+    // Raise window when clicked, whether to assign focus
+    // is decided from QML
+    Q_EMIT raiseRequested();
 
-    if (surface()) {
-        // Raise window when clicked, whether to assign focus
-        // is decided from QML
-        Q_EMIT surface()->raiseRequested();
-    }
+    QWaylandSurfaceItem::mousePressEvent(event);
 }
 
 void WindowView::sendEnter(Output *output)

@@ -50,8 +50,11 @@ public:
 
     Output *mainOutput() const;
 
+Q_SIGNALS:
+    void raiseRequested();
+
 protected:
-    void mouseReleaseEvent(QMouseEvent *event);
+    void mousePressEvent(QMouseEvent *event);
 
 private:
     QuickSurface *m_surface;
