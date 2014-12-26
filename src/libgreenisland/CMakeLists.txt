@@ -169,4 +169,4 @@ install(EXPORT GreenIslandTargets
         FILE GreenIslandTargets.cmake NAMESPACE GreenIsland::)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/greenisland_version.h
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} COMPONENT Devel)
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/greenisland COMPONENT Devel)
