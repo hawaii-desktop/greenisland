@@ -78,7 +78,8 @@ set_package_properties(EGL PROPERTIES
     PURPOSE "Required to build Green Island with EGL support")
 
 # Wayland
-find_package(Wayland 1.5 COMPONENTS Client Server Egl)
+set(REQUIRED_WAYLAND_VERSION 1.5)
+find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Egl)
 set_package_properties(Wayland PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required to build Green Island")
