@@ -24,10 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QStandardPaths>
 #include <QtQml/QQmlContext>
-
-#include <KPackage/Package>
-#include <KPackage/PackageLoader>
 
 #include "compositor.h"
 #include "gldebug.h"
@@ -123,15 +121,14 @@ void OutputWindow::setOutput(Output *output)
     } else {
         qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
 
-        KPackage::Package package = KPackage::PackageLoader::self()->loadPackage("GreenIsland/UI");
-        package.setPath(Compositor::s_fixedPlugin);
-        package.setAllowExternalPaths(true);
+        QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                              QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
 
         // Load main file or bail out
-        if (package.isValid() && !package.filePath("main").isEmpty())
-            setSource(package.filePath("main"));
+        if (QFile(path).exists(path))
+            setSource(path);
         else
-            qFatal("Package \"%s\" is not valid, cannot continue!",
+            qFatal("Plugin \"%s\" is not valid, cannot continue!",
                    qPrintable(Compositor::s_fixedPlugin));
     }
 }

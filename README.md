@@ -46,7 +46,6 @@ and build it yourself.
 You also need the following modules from KDE Frameworks 5:
 
 * libkscreen
-* KPackage (this dependency might be removed in the future)
 
 ## Build
 

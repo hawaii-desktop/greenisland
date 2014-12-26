@@ -86,7 +86,6 @@ target_link_libraries(GreenIsland
     Qt5::Quick
     Qt5::Compositor
     KF5::Screen
-    KF5::Package
     Wayland::Client
     Wayland::Server
     Wayland::Egl
