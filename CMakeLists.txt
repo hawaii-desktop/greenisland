@@ -33,6 +33,9 @@ endif()
 find_package(ECM 1.4.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_SOURCE_DIR}/cmake")
 
+# Options
+option(ENABLE_OPENGL "Enable OpenGL support" OFF)
+
 # Macros
 include(FeatureSummary)
 include(KDEInstallDirs)

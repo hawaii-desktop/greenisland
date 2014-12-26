@@ -90,6 +90,7 @@ void printGraphicsInformation(QWindow *window)
         }
     }
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     str = (char *)glGetString(GL_VERSION);
     qCDebug(GREENISLAND_COMPOSITOR) << "GL version:" << str;
 
@@ -106,6 +107,7 @@ void printGraphicsInformation(QWindow *window)
     QStringList extensions = QString(str).split(QLatin1Char(' '));
     qCDebug(GREENISLAND_COMPOSITOR) << "GL extensions:"
                                     << qPrintable(wordWrap(extensions.join(" ")));
+#endif
 }
 
 }
