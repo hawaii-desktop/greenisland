@@ -58,8 +58,6 @@ WindowView::WindowView(QuickSurface *surface, Output *output, QQuickItem *parent
         else
             sendLeave(m_output);
     });
-
-    connect(m_surface, SIGNAL(raiseRequested()), this, SIGNAL(raiseRequested()));
 }
 
 QuickSurface *WindowView::surface() const
