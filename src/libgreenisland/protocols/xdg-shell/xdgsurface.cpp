@@ -323,11 +323,13 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
     Q_UNUSED(resource);
 
     // Surface was configured, now we can set the new state
+    if (m_pendingChanges.find(serial) == m_pendingChanges.end())
+        return;
     Changes changes = m_pendingChanges.take(serial);
 
     // Set state
     if (changes.active)
-        m_view->takeFocus();
+        Q_EMIT m_view->raiseRequested();
     if (changes.newState) {
         m_savedState = m_state;
         m_state = changes.state;
@@ -336,7 +338,7 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
     // Set global space geometry
     bool changed = false;
     QRectF geometry = m_surface->globalGeometry();
-    if (changes.moving && !changes.position.isNull()) {
+    if (changes.moving) {
         geometry.setTopLeft(changes.position);
         changed = true;
     }
