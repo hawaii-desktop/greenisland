@@ -168,21 +168,30 @@ void XdgSurface::resetResizeGrab()
 
 void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 {
-    QByteArray states;
-    QDataStream ds(&states, QIODevice::WriteOnly);
+    struct wl_array states;
+    uint32_t *s;
+
+    wl_array_init(&states);
 
     if (changes.newState) {
-        if (changes.state == FullScreen)
-            ds << QtWaylandServer::xdg_surface::state_fullscreen;
-        else if (changes.state == Maximized)
-            ds << QtWaylandServer::xdg_surface::state_maximized;
+        if (changes.state == FullScreen) {
+            s = (uint32_t*)wl_array_add(&states, sizeof *s);
+            *s = QtWaylandServer::xdg_surface::state_fullscreen;
+        } else if (changes.state == Maximized) {
+            s = (uint32_t*)wl_array_add(&states, sizeof *s);
+            *s = QtWaylandServer::xdg_surface::state_maximized;
+        }
     }
 
-    if (changes.resizing)
-        ds << QtWaylandServer::xdg_surface::state_resizing;
+    if (changes.resizing) {
+        s = (uint32_t*)wl_array_add(&states, sizeof *s);
+        *s = QtWaylandServer::xdg_surface::state_resizing;
+    }
 
-    if (changes.active)
-        ds << QtWaylandServer::xdg_surface::state_activated;
+    if (changes.active) {
+        s = (uint32_t*)wl_array_add(&states, sizeof *s);
+        *s = QtWaylandServer::xdg_surface::state_activated;
+    }
 
     uint32_t serial = nextSerial();
     m_pendingChanges[serial] = changes;
@@ -191,7 +200,8 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
             ? changes.size
             : QSizeF(0 ,0);
 
-    send_configure(size.width(), size.height(), states, serial);
+    QByteArray statesArray((const char *)states.data, states.size);
+    send_configure(size.width(), size.height(), statesArray, serial);
 }
 
 bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
@@ -328,8 +338,6 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
     Changes changes = m_pendingChanges.take(serial);
 
     // Set state
-    if (changes.active)
-        Q_EMIT m_view->raiseRequested();
     if (changes.newState) {
         m_savedState = m_state;
         m_state = changes.state;
