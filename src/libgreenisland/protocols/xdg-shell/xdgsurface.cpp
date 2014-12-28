@@ -65,6 +65,16 @@ XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
     connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
         m_surface->setMapped(hasBuffer);
     });
+
+    // Tell the client when this window is active
+    connect(m_view, &WindowView::focusChanged, [=](bool focus) {
+        Changes changes;
+        changes.newState = false;
+        changes.active = focus;
+        changes.moving = false;
+        changes.resizing = false;
+        requestConfigure(changes);
+    });
 }
 
 uint32_t XdgSurface::nextSerial() const
