@@ -44,6 +44,7 @@ HomeApplication::HomeApplication(int &argc, char **argv)
     // Application
     setApplicationName("Green Island");
     setApplicationVersion(GREENISLAND_VERSION_STRING);
+    setQuitOnLastWindowClosed(false);
 }
 
 QString HomeApplication::plugin() const
