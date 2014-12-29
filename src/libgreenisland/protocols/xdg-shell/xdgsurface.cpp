@@ -52,6 +52,12 @@ XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
     , m_minimized(false)
     , m_state(Normal)
 {
+    // Destroy this when the surface is destroyed
+    connect(surface, &QuickSurface::surfaceDestroyed, [=]() {
+        m_surface = Q_NULLPTR;
+        this->deleteLater();
+    });
+
     // Create a view for the first output
     Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
     m_view = new WindowView(surface, output);
@@ -68,6 +74,9 @@ XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
 
     // Tell the client when this window is active
     connect(m_view, &WindowView::focusChanged, [=](bool focus) {
+        if (!m_surface)
+            return;
+
         Changes changes;
         changes.newState = false;
         changes.active = focus;
