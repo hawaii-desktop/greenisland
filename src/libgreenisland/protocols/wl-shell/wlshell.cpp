@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QtCompositorVersion>
+
 #include "quicksurface.h"
 #include "wlshell.h"
 #include "wlshellsurface.h"
@@ -42,9 +44,11 @@ const wl_interface *WlShell::interface() const
 
 void WlShell::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-    Q_UNUSED(version);
-
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    add(client, id, version);
+#else
     add(client, id);
+#endif
 }
 
 WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)

@@ -26,6 +26,7 @@
 
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandSurfaceItem>
+#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwloutput_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -50,9 +51,11 @@ const wl_interface *PlasmaShell::interface() const
 
 void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-    Q_UNUSED(version);
-
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    add(client, id, version);
+#else
     add(client, id);
+#endif
 }
 
 QList<PlasmaSurface *> PlasmaShell::surfaces() const
