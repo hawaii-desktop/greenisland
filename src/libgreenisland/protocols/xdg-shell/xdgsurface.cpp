@@ -27,6 +27,7 @@
 #include <QtQuick/QQuickItem>
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
+#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
@@ -44,7 +45,11 @@ namespace GreenIsland {
 XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
                        wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    , QtWaylandServer::xdg_surface(client, id, 1)
+#else
     , QtWaylandServer::xdg_surface(client, id)
+#endif
     , m_shell(shell)
     , m_surface(surface)
     , m_moveGrabber(Q_NULLPTR)

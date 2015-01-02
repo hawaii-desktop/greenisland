@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 #include <QtCore/QDebug>
+#include <QtCompositor/QtCompositorVersion>
 
 #include "compositor.h"
 #include "output.h"
@@ -37,8 +38,12 @@ namespace GreenIsland {
 PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
                              wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    , QtWaylandServer::org_kde_plasma_surface(client, id, 1)
+#else
     , QtWaylandServer::org_kde_plasma_surface(client, id)
-    , m_compositor(qobject_cast<Compositor *>(surface->compositor()))
+#endif
+    , m_compositor(static_cast<Compositor *>(surface->compositor()))
     , m_shell(shell)
     , m_surface(surface)
     , m_role(ShellWindowView::NoneRole)

@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -36,7 +37,11 @@ namespace GreenIsland {
 XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *surface,
                    wl_client *client, uint32_t id, uint32_t serial)
     : QWaylandSurfaceInterface(surface)
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    , QtWaylandServer::xdg_popup(client, id, 1)
+#else
     , QtWaylandServer::xdg_popup(client, id)
+#endif
     , m_shell(shell)
     , m_parentSurface(parent)
     , m_surface(surface)
