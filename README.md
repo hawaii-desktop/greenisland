@@ -14,7 +14,7 @@ by using QML.
 
 ## Dependencies
 
-In order to build and install Green Island you need Wayland 1.2 and Qt 5.2 or better with
+In order to build and install Green Island you need Wayland 1.6 and Qt 5.4 with
 at least the following modules:
 
 * qtbase
@@ -35,11 +35,11 @@ More information about building Qt from git can be found here:
 
 Qt 5 binaries can be downloaded from http://qt-project.org/downloads
 
-A development version of qtwayland is required.
-Clone the upstream branch for Qt 5.3 or the upstream54 branch for Qt 5.4 from the
-following repository:
+A development version of qtwayland is required:
 
-  https://github.com/maui-packages/qtwayland
+```sh
+git clone -b output54 https://github.com/maui-packages/qtwayland
+```
 
 and build it yourself.
 

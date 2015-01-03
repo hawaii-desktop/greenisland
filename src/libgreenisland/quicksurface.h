@@ -31,6 +31,8 @@
 
 #include <greenisland/greenisland_export.h>
 
+class QWaylandClient;
+
 namespace GreenIsland {
 
 class Compositor;
@@ -49,7 +51,7 @@ public:
         FullScreen
     };
 
-    explicit QuickSurface(wl_client *client, quint32 id, Compositor *compositor);
+    QuickSurface(QWaylandClient *client, quint32 id, int version, Compositor *compositor);
 
     State state() const;
     void setState(const State &state);

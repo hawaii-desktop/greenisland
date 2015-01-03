@@ -77,8 +77,6 @@ public:
 
     void _q_updateCursor(bool hasBuffer);
 
-    void _q_outputRemoved(QWaylandOutput *_output);
-
     bool running;
 
     Compositor::State state;
@@ -134,27 +132,6 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 #endif
 }
 
-void CompositorPrivate::_q_outputRemoved(QWaylandOutput *_output)
-{
-    Q_Q(Compositor);
-
-    Output *output = qobject_cast<Output *>(_output);
-    if (!output)
-        return;
-
-    // Remove all views created for this output
-    for (QWaylandSurface *surface: q->surfaces()) {
-        for (QWaylandSurfaceView *surfaceView: surface->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view)
-                continue;
-
-            if (view->output() == output)
-                view->deleteLater();
-        }
-    }
-}
-
 /*
  * Compositor
  */
@@ -167,9 +144,6 @@ Compositor::Compositor(const QString &socket)
     qRegisterMetaType<Output *>("Output*");
     qRegisterMetaType<WindowView *>("WindowView*");
     qRegisterMetaType<ShellWindowView *>("ShellWindowView*");
-
-    connect(this, SIGNAL(outputRemoved(QWaylandOutput*)),
-            this, SLOT(_q_outputRemoved(QWaylandOutput*)));
 }
 
 Compositor::~Compositor()
@@ -299,9 +273,9 @@ void Compositor::run()
 #endif
 }
 
-QWaylandQuickSurface *Compositor::createSurface(wl_client *client, quint32 id)
+QWaylandSurface *Compositor::createSurface(QWaylandClient *client, quint32 id, int version)
 {
-    return new QuickSurface(client, id, this);
+    return new QuickSurface(client, id, version, this);
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
@@ -309,13 +283,17 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     // TODO: Views should probably ordered by z-index in order to really
     // pick the first view with that global coordinates
 
-    for (QtWayland::Surface *curSurface: m_compositor->surfaces()) {
-        QuickSurface *surface = qobject_cast<QuickSurface *>(curSurface->waylandSurface());
-        if (!surface)
-            continue;
+    for (QWaylandOutput *output: m_compositor->outputs()) {
+        if (output->geometry().contains(globalPosition.toPoint())) {
+            for (QWaylandSurface *surface: output->surfaces()) {
+                QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
+                if (!quickSurface)
+                    continue;
 
-        if (surface->globalGeometry().contains(globalPosition))
-            return surface->views().at(0);
+                if (quickSurface->globalGeometry().contains(globalPosition))
+                    return quickSurface->views().at(0);
+            }
+        }
     }
 
     return Q_NULLPTR;

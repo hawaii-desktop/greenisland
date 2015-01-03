@@ -43,6 +43,7 @@ class OutputPrivate
 public:
     OutputPrivate(Output *parent);
 
+    void _q_primaryChanged();
     void _q_currentModeIdChanged();
     void _q_posChanged();
 
@@ -61,12 +62,23 @@ OutputPrivate::OutputPrivate(Output *parent)
 {
 }
 
+void OutputPrivate::_q_primaryChanged()
+{
+    Q_Q(Output);
+
+    if (output->isPrimary())
+        compositor->setPrimaryOutput(q);
+}
+
 void OutputPrivate::_q_currentModeIdChanged()
 {
     Q_Q(Output);
 
-    // Refresh rate
-    q->setRefreshRate(output->currentMode()->refreshRate());
+    // Mode
+    QWaylandOutput::Mode mode;
+    mode.size = output->currentMode()->size();
+    mode.refreshRate = output->currentMode()->refreshRate();
+    q->setMode(mode);
 
     // Rotation
     switch (output->rotation()) {
@@ -85,13 +97,9 @@ void OutputPrivate::_q_currentModeIdChanged()
     }
 
     // Resize window
-    q->window()->resize(output->currentMode()->size());
-    q->window()->setMinimumSize(output->currentMode()->size());
-    q->window()->setMaximumSize(output->currentMode()->size());
-
-    // Set geometry
-    q->setGeometry(QRect(q->geometry().topLeft(),
-                         output->currentMode()->size()));
+    q->window()->resize(mode.size);
+    q->window()->setMinimumSize(mode.size);
+    q->window()->setMaximumSize(mode.size);
 }
 
 void OutputPrivate::_q_posChanged()
@@ -101,8 +109,8 @@ void OutputPrivate::_q_posChanged()
     // Move window
     q->window()->setPosition(output->pos());
 
-    // Set geometry
-    q->setGeometry(QRect(output->pos(), q->geometry().size()));
+    // Set position
+    q->setPosition(output->pos());
 }
 
 /*
@@ -110,24 +118,23 @@ void OutputPrivate::_q_posChanged()
  */
 
 Output::Output(Compositor *compositor, KScreen::Output *output)
-    : QWaylandOutput(compositor, new OutputWindow(compositor),
-                     output->edid()->vendor(), output->edid()->serial())
+    : QWaylandQuickOutput(compositor, new OutputWindow(compositor),
+                          output->edid()->vendor(), output->edid()->serial())
     , d_ptr(new OutputPrivate(this))
 {
     Q_D(Output);
-
-    // Save compositor and output instances
     d->compositor = compositor;
     d->output = output;
 
     // Set output properties
     setPhysicalSize(d->output->sizeMm());
+    d->_q_primaryChanged();
     d->_q_currentModeIdChanged();
     d->_q_posChanged();
 
     // React to output changes
-    connect(output, &KScreen::Output::isPrimaryChanged,
-            this, &Output::primaryChanged,
+    connect(output, SIGNAL(isPrimaryChanged()),
+            this, SLOT(_q_primaryChanged()),
             Qt::UniqueConnection);
     connect(output, SIGNAL(currentModeIdChanged()),
             this, SLOT(_q_currentModeIdChanged()),
@@ -137,7 +144,7 @@ Output::Output(Compositor *compositor, KScreen::Output *output)
             Qt::UniqueConnection);
 
     // Show window
-    OutputWindow *outputWindow = qobject_cast<OutputWindow *>(window());
+    OutputWindow *outputWindow = qobject_cast<OutputWindow *>(quickWindow());
     if (outputWindow)
         outputWindow->setOutput(this);
 }

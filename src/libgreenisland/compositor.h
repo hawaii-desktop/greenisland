@@ -40,7 +40,7 @@ class Output;
 class QuickSurface;
 class ScreenManager;
 
-class GREENISLAND_EXPORT Compositor : public QWaylandQuickCompositor
+class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
@@ -76,7 +76,7 @@ public:
 
     void run();
 
-    QWaylandQuickSurface *createSurface(wl_client *client, quint32 id);
+    QWaylandSurface *createSurface(QWaylandClient *client, quint32 id, int version);
 
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
 
@@ -143,7 +143,6 @@ private:
 #endif
 
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
-    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *_output))
 };
 
 }

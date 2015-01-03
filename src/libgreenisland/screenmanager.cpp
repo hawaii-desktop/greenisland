@@ -26,13 +26,16 @@
 
 #include <QtCore/QRect>
 #include <QtCore/QTimer>
+#include <QtCompositor/private/qwlcompositor_p.h>
 
 #include <KScreen/Config>
 #include <KScreen/ConfigMonitor>
+#include <KScreen/EDID>
 #include <KScreen/Screen>
 
 #include "compositor.h"
 #include "output.h"
+#include "outputwindow.h"
 #include "quicksurface.h"
 #include "screenmanager.h"
 #include "windowview.h"
@@ -59,15 +62,11 @@ public:
     Compositor *compositor;
 
     KScreen::Config *config;
-    QList<Output *> outputs;
 
     QList<KScreen::Output *> sortOutputs(const QHash<int, KScreen::Output *> &outputs) const;
 
     void addOutput(KScreen::Output *output);
     void removeOutput(KScreen::Output *output);
-
-    QList<QQuickItem *> findWindowsToMove(Output *removedOutput);
-    void moveWindows(const QList<QQuickItem *> &items, const QRectF &removedGeometry);
 
     void _q_configurationChanged();
     void _q_outputAdded(KScreen::Output *output);
@@ -97,7 +96,7 @@ void ScreenManagerPrivate::addOutput(KScreen::Output *output)
 
     // Create a new window for this output
     Output *customOutput = new Output(compositor, output);
-    outputs.append(customOutput);
+    //compositor->handle()->addOutput(customOutput);
 }
 
 void ScreenManagerPrivate::removeOutput(KScreen::Output *output)
@@ -106,98 +105,47 @@ void ScreenManagerPrivate::removeOutput(KScreen::Output *output)
 
     Output *outputFound = Q_NULLPTR;
 
-    for (int i = 0; i < outputs.size(); i++) {
-        if (outputs.at(i)->output() == output) {
-            outputFound = outputs.at(i);
-            break;
-        }
-    }
-
-    // Remove output from the list and destroy it
-    if (outputFound) {
-        outputs.removeOne(outputFound);
-
-        QList<QQuickItem *> items = findWindowsToMove(outputFound);
-        QRectF geometry(outputFound->geometry());
-
-        outputFound->deleteLater();
-
-        moveWindows(items, geometry);
-    }
-}
-
-QList<QQuickItem *> ScreenManagerPrivate::findWindowsToMove(Output *removedOutput)
-{
-    // The output is going to be removed this means that its
-    // window and all its surface views will be gone, including
-    // the window representations.
-    // Since we create a view for each output we still have
-    // a window representation for the remaining outputs,
-    // all we have to do is to move the window representations
-    // to the new primary output. However we won't be able to
-    // access the removed output when it'll be delete so we do it
-    // in two steps: this is step #1 where we determine which
-    // window representations need to be moved
-
-    QList<QQuickItem*> windowItems;
-
-    // Return a list of window representations that need to be moved
-    for (QWaylandSurface *surface: compositor->surfaces()) {
-        for (QWaylandSurfaceView *surfaceView: surface->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view || !view->output())
-                continue;
-
-            // This is a view for the removed output; its parent is the
-            // window representation, add it to the list
-            if (view->output() == removedOutput && view->parentItem())
-                windowItems.append(view->parentItem());
-        }
-    }
-
-    return windowItems;
-}
-
-void ScreenManagerPrivate::moveWindows(const QList<QQuickItem *> &items, const QRectF &removedGeometry)
-{
-    // First let's find the new primary output (the removed output
-    // could have been the former primary output)
-    Output *primaryOutput = Q_NULLPTR;
-
-    for (QWaylandOutput *tmpOutput: compositor->outputs()) {
-        Output *current = qobject_cast<Output *>(tmpOutput);
-        if (!current)
+    // Find the output that matches KScreen's
+    for (QWaylandOutput *curOutput: compositor->outputs()) {
+        Output *customOutput = qobject_cast<Output *>(curOutput);
+        if (!customOutput)
             continue;
-
-        if (current->isPrimary()) {
-            primaryOutput = current;
+        if (customOutput->output() == output) {
+            outputFound = customOutput;
             break;
         }
     }
+    if (!outputFound)
+        return;
 
-    // Try with the first output in the list
-    if (!primaryOutput)
-        primaryOutput = qobject_cast<Output *>(compositor->outputs().at(0));
+    // Find new primary output
+    Output *primaryOutput = qobject_cast<Output *>(compositor->primaryOutput());
     if (!primaryOutput)
         return;
 
-    // Move all window representation to the primary output
-    for (QQuickItem *item: items) {
-        // Get the surface view
-        WindowView *view = item->property("child").value<WindowView *>();
-        if (!view) {
-            qWarning() << "Cannot cast child property of" << item;
-            continue;
+    // Remove surface views and window representations of this output
+    for (QWaylandSurface *surface: outputFound->surfaces()) {
+        for (QWaylandSurfaceView *surfaceView: surface->views()) {
+            WindowView *view = static_cast<WindowView *>(surfaceView);
+            if (!view || view->output() != outputFound || !view->parentItem())
+                continue;
+
+            QQuickItem *item = view->parentItem();
+            QRectF removedGeometry(outputFound->geometry());
+
+            // Recalculate local coordinates
+            qreal x = (item->x() * primaryOutput->geometry().width()) / removedGeometry.width();
+            qreal y = (item->y() * primaryOutput->geometry().height()) / removedGeometry.height();
+            item->setPosition(QPointF(x, y));
+
+            // Set new global position
+            view->surface()->setGlobalPosition(primaryOutput->mapToGlobal(QPointF(x, y)));
         }
-
-        // Recalculate local coordinates
-        qreal x = (item->x() * primaryOutput->geometry().width()) / removedGeometry.width();
-        qreal y = (item->y() * primaryOutput->geometry().height()) / removedGeometry.height();
-        item->setPosition(QPointF(x, y));
-
-        // Set new global position
-        view->surface()->setGlobalPosition(primaryOutput->mapToGlobal(QPointF(x, y)));
     }
+
+    // Delete window and output
+    outputFound->window()->deleteLater();
+    outputFound->deleteLater();
 }
 
 void ScreenManagerPrivate::_q_configurationChanged()

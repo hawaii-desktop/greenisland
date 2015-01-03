@@ -27,7 +27,7 @@
 #ifndef GREENISLAND_OUTPUT_H
 #define GREENISLAND_OUTPUT_H
 
-#include <QtCompositor/QWaylandOutput>
+#include <QtCompositor/QWaylandQuickOutput>
 
 #include <KScreen/Output>
 
@@ -38,14 +38,14 @@ namespace GreenIsland {
 class Compositor;
 class OutputPrivate;
 
-class GREENISLAND_EXPORT Output : public QWaylandOutput
+class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int number READ number CONSTANT)
     Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
 public:
-    explicit Output(Compositor *compositor, KScreen::Output *output);
+    Output(Compositor *compositor, KScreen::Output *output);
 
     Compositor *compositor() const;
 
@@ -70,6 +70,7 @@ private:
     Q_DECLARE_PRIVATE(Output)
     OutputPrivate *const d_ptr;
 
+    Q_PRIVATE_SLOT(d_func(), void _q_primaryChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_posChanged())
 };

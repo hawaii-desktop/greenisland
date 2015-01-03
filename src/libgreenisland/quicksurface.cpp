@@ -24,13 +24,15 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QWaylandClient>
+
 #include "compositor.h"
 #include "quicksurface.h"
 
 namespace GreenIsland {
 
-QuickSurface::QuickSurface(wl_client *client, quint32 id, Compositor *compositor)
-    : QWaylandQuickSurface(client, id, compositor)
+QuickSurface::QuickSurface(QWaylandClient *client, quint32 id, int version, Compositor *compositor)
+    : QWaylandQuickSurface(client->client(), id, version, compositor)
     , m_state(Normal)
     , m_globalPos(0, 0)
 {
