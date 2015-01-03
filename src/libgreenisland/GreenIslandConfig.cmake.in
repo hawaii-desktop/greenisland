@@ -3,6 +3,7 @@
 find_dependency(EGL)
 find_dependency(Wayland @REQUIRED_WAYLAND_VERSION@)
 find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
+find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Qml @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Quick @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Compositor @REQUIRED_QT_VERSION@)

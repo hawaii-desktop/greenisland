@@ -37,7 +37,7 @@
 namespace GreenIsland {
 
 HomeApplication::HomeApplication(int &argc, char **argv)
-    : QGuiApplication(argc, argv)
+    : QApplication(argc, argv)
     , m_idleTime(5000)
     , m_compositor(Q_NULLPTR)
 {
@@ -106,7 +106,7 @@ bool HomeApplication::run(const QString &plugin)
     // another compositor, let's do some checks
     if (!m_socket.isEmpty()) {
         // We need wayland QPA plugin
-        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        if (!QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qWarning() << "By passing the \"--socket\" argument you are requesting to nest"
                        << "this compositor into another, but you forgot to pass "
                        << "also \"-platform wayland\"!";
@@ -120,7 +120,7 @@ bool HomeApplication::run(const QString &plugin)
     // Fake screen configuration
     if (!m_fakeScreenFileName.isEmpty()) {
         // Need a real backend, possibly QScreen or native Wayland when nested
-        if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        if (QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qWarning() << "Fake screen configuration is not allowed when Green Island"
                        << "is nested into another compositor, please use the QScreen"
                        << "or Wayland backend for KScreen!";
@@ -136,7 +136,7 @@ bool HomeApplication::run(const QString &plugin)
     }
 
     // Bind to globals such as full screen shell if we are a Wayland client
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
+    if (QApplication::platformName().startsWith(QStringLiteral("wayland")))
         GreenIsland::GlobalRegistry::instance()->start();
 
     // Create the compositor

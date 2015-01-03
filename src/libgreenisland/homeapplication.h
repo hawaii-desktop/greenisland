@@ -27,7 +27,7 @@
 #ifndef HOMEAPPLICATION_H
 #define HOMEAPPLICATION_H
 
-#include <QtGui/QGuiApplication>
+#include <QtWidgets/QApplication>
 
 #include <greenisland/greenisland_export.h>
 
@@ -35,7 +35,7 @@ namespace GreenIsland {
 
 class Compositor;
 
-class GREENISLAND_EXPORT HomeApplication : public QGuiApplication
+class GREENISLAND_EXPORT HomeApplication : public QApplication
 {
     Q_OBJECT
     Q_PROPERTY(QString plugin READ plugin CONSTANT)
