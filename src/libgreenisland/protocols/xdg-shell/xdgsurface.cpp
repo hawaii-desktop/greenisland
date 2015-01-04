@@ -371,6 +371,20 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
     if (changes.newState) {
         m_savedState = m_state;
         m_state = changes.state;
+
+        switch (m_state) {
+        case Normal:
+            m_surface->setState(QuickSurface::Normal);
+            break;
+        case Maximized:
+            m_surface->setState(QuickSurface::Maximized);
+            break;
+        case FullScreen:
+            m_surface->setState(QuickSurface::FullScreen);
+            break;
+        default:
+            break;
+        }
     }
 
     // Set global space geometry
