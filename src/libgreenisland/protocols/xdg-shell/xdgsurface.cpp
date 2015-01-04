@@ -284,12 +284,18 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
 {
     Q_UNUSED(resource);
 
-    // Set surface type
-    setSurfaceType(QWaylandSurface::Transient);
-
     // Assign transient parent
-    QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
-    m_surface->handle()->setTransientParent(parent->handle());
+    if (parentResource) {
+        // Set surface type
+        setSurfaceType(QWaylandSurface::Transient);
+
+        QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
+        m_surface->handle()->setTransientParent(parent->handle());
+    } else {
+        // Some applications such as gnome-cloks send a set_parent(nil), in
+        // this case we assume it's a toplevel window
+        setSurfaceType(QWaylandSurface::Toplevel);
+    }
 }
 
 void XdgSurface::surface_set_title(Resource *resource, const QString &title)
