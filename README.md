@@ -10,7 +10,7 @@ The API is based on QtCompositor which is shipped by the
 qtwayland module.
 
 Green Island can be used by any desktop environment that wish to implement its compositor
-by using QML.
+by using QML or for shells deeply integrated with the compositor in the same process.
 
 ## Dependencies
 
