@@ -21,8 +21,6 @@ at least the following modules:
 * qtdeclarative
 * qtwayland
 
-At the time of this writing, the qtwayland module doesn't support Wayland 1.3.
-
 The Wayland site has some information on how to build it:
 
   http://wayland.freedesktop.org/building.html
