@@ -45,17 +45,6 @@ OutputWindow::OutputWindow(Compositor *compositor)
     , m_compositor(compositor)
     , m_output(Q_NULLPTR)
 {
-    // Register QML types
-    qmlRegisterType<Compositor>("GreenIsland.Core", 1, 0, "Compositor");
-    qmlRegisterUncreatableType<Output>("GreenIsland.Core", 1, 0, "Output",
-                                       QStringLiteral("You can't create Output objects"));
-    qmlRegisterUncreatableType<QuickSurface>("GreenIsland.Core", 1, 0, "QuickSurface",
-                                             QStringLiteral("You can't create QuickSurface objects"));
-    qmlRegisterUncreatableType<WindowView>("GreenIsland.Core", 1, 0, "WindowView",
-                                           QStringLiteral("You can't create WindowView objects"));
-    qmlRegisterUncreatableType<ShellWindowView>("GreenIsland.Core", 1, 0, "ShellWindowView",
-                                                QStringLiteral("You can't create ShellWindowView objects"));
-
     // Setup window
     setColor(Qt::black);
     winId();

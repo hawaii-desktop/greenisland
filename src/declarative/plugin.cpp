@@ -27,7 +27,16 @@
 #include <QtQml/QQmlExtensionPlugin>
 #include <QtQml/QQmlComponent>
 
+#include <GreenIsland/ClientWindow>
+#include <GreenIsland/Compositor>
+#include <GreenIsland/Output>
+#include <GreenIsland/QuickSurface>
+#include <GreenIsland/WindowView>
+#include <GreenIsland/ShellWindowView>
+
 #include "fpscounter.h"
+
+using namespace GreenIsland;
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -40,6 +49,15 @@ public:
 void GreenIslandPlugin::registerTypes(const char *uri)
 {
     // @uri GreenIsland
+    qmlRegisterType<Compositor>(uri, 1, 0, "Compositor");
+    qmlRegisterUncreatableType<Output>(uri, 1, 0, "Output",
+                                       QStringLiteral("You can't create Output objects"));
+    qmlRegisterUncreatableType<QuickSurface>(uri, 1, 0, "QuickSurface",
+                                             QStringLiteral("You can't create QuickSurface objects"));
+    qmlRegisterUncreatableType<WindowView>(uri, 1, 0, "WindowView",
+                                           QStringLiteral("You can't create WindowView objects"));
+    qmlRegisterUncreatableType<ShellWindowView>(uri, 1, 0, "ShellWindowView",
+                                                QStringLiteral("You can't create ShellWindowView objects"));
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
 }
 
