@@ -158,24 +158,27 @@ void ScreenManagerPrivate::_q_outputRemoved(int id)
 
 void ScreenManagerPrivate::_q_primaryOutputChanged(const KScreen::OutputPtr &output)
 {
-    Output *outputFound = Q_NULLPTR;
+    Output *newPrimary = Q_NULLPTR;
 
     // Find the output that matches KScreen's
     for (QWaylandOutput *curOutput: compositor->outputs()) {
         Output *customOutput = qobject_cast<Output *>(curOutput);
         if (!customOutput)
             continue;
-        if (customOutput->output() == output) {
-            outputFound = customOutput;
-            break;
-        }
-    }
-    if (!outputFound)
-        return;
 
-    // Set primary output
-    compositor->setPrimaryOutput(outputFound);
-    Q_EMIT outputFound->primaryChanged();
+        // Set primary later because doing so will change the outputs list
+        // but always unset the former primary
+        if (customOutput->output() == output)
+            newPrimary = customOutput;
+        else
+            customOutput->setPrimary(false);
+    }
+
+    // Actually set primary output
+    if (newPrimary) {
+        compositor->setPrimaryOutput(newPrimary);
+        newPrimary->setPrimary(true);
+    }
 }
 
 /*

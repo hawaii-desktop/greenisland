@@ -37,6 +37,7 @@ namespace GreenIsland {
 
 class Compositor;
 class OutputPrivate;
+class ScreenManagerPrivate;
 
 class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
 {
@@ -70,6 +71,10 @@ Q_SIGNALS:
 private:
     Q_DECLARE_PRIVATE(Output)
     OutputPrivate *const d_ptr;
+
+    friend class ScreenManagerPrivate;
+
+    void setPrimary(bool value);
 
     Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_posChanged())

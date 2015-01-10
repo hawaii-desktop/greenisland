@@ -48,6 +48,7 @@ public:
 
     Compositor *compositor;
     KScreen::OutputPtr output;
+    bool primary;
 
 private:
     Q_DECLARE_PUBLIC(Output)
@@ -57,6 +58,7 @@ private:
 OutputPrivate::OutputPrivate(Output *parent)
     : compositor(Q_NULLPTR)
     , output(Q_NULLPTR)
+    , primary(false)
     , q_ptr(parent)
 {
 }
@@ -163,7 +165,18 @@ int Output::number() const
 bool Output::isPrimary() const
 {
     Q_D(const Output);
-    return d->compositor->primaryOutput() == this;
+    return d->primary;
+}
+
+void Output::setPrimary(bool value)
+{
+    Q_D(Output);
+
+    if (d->primary == value)
+        return;
+
+    d->primary = value;
+    Q_EMIT primaryChanged();
 }
 
 QPointF Output::mapToOutput(const QPointF &pt)
