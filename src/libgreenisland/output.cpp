@@ -43,7 +43,6 @@ class OutputPrivate
 public:
     OutputPrivate(Output *parent);
 
-    void _q_primaryChanged();
     void _q_currentModeIdChanged();
     void _q_posChanged();
 
@@ -60,14 +59,6 @@ OutputPrivate::OutputPrivate(Output *parent)
     , output(Q_NULLPTR)
     , q_ptr(parent)
 {
-}
-
-void OutputPrivate::_q_primaryChanged()
-{
-    Q_Q(Output);
-
-    if (output->isPrimary())
-        compositor->setPrimaryOutput(q);
 }
 
 void OutputPrivate::_q_currentModeIdChanged()
@@ -128,14 +119,10 @@ Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
 
     // Set output properties
     setPhysicalSize(d->output->sizeMm());
-    d->_q_primaryChanged();
     d->_q_currentModeIdChanged();
     d->_q_posChanged();
 
     // React to output changes
-    connect(output.data(), &KScreen::Output::isPrimaryChanged,
-            this, &Output::primaryChanged,
-            Qt::UniqueConnection);
     connect(output.data(), SIGNAL(currentModeIdChanged()),
             this, SLOT(_q_currentModeIdChanged()),
             Qt::UniqueConnection);
@@ -176,7 +163,7 @@ int Output::number() const
 bool Output::isPrimary() const
 {
     Q_D(const Output);
-    return d->output->isPrimary();
+    return d->compositor->primaryOutput() == this;
 }
 
 QPointF Output::mapToOutput(const QPointF &pt)

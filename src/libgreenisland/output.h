@@ -71,7 +71,6 @@ private:
     Q_DECLARE_PRIVATE(Output)
     OutputPrivate *const d_ptr;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_primaryChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_posChanged())
 };
