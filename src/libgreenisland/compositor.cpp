@@ -149,9 +149,6 @@ Compositor::Compositor(const QString &socket)
 Compositor::~Compositor()
 {
     qDeleteAll(m_clientWindows);
-#if 0
-    qDeleteAll(m_workspaces);
-#endif
     delete d_ptr;
 }
 
@@ -257,13 +254,6 @@ void Compositor::run()
     addGlobalInterface(new PlasmaShell(this));
     addGlobalInterface(new WlShell());
     addGlobalInterface(new XdgShell());
-
-    // TODO: Load workspaces number from config
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceAdded();
-    Q_EMIT workspaceSelected(0);
 
     d->running = true;
 

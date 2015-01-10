@@ -121,10 +121,6 @@ Q_SIGNALS:
     void locked();
     void unlocked();
 
-    void workspaceAdded();
-    void workspaceRemoved(int index);
-    void workspaceSelected(int index);
-
 public Q_SLOTS:
     void lockSession();
     void unlockSession();
