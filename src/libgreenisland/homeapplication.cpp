@@ -117,8 +117,13 @@ bool HomeApplication::run(const QString &plugin)
         }
     }
 
-    // Fake screen configuration
-    if (!m_fakeScreenFileName.isEmpty()) {
+    // Screen configuration
+    if (m_fakeScreenFileName.isEmpty()) {
+        // Always use QScreen backend when no fake data is provided
+        // TODO: Use "Wayland" when running inside another Wayland compositor
+        //       (postponed until an actual Wayland backend is implemented)
+        qputenv("KSCREEN_BACKEND", QByteArray("QScreen"));
+    } else {
         // Need a real backend, possibly QScreen or native Wayland when nested
         if (QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qWarning() << "Fake screen configuration is not allowed when Green Island"
