@@ -142,9 +142,7 @@ void ProcessController::detect()
     if (qEnvironmentVariableIsSet("DISPLAY")) {
         m_compositor->setArguments(QStringList()
                                    << QStringLiteral("-platform")
-                                   << QStringLiteral("xcb")
-                                   << QStringLiteral("-platformtheme")
-                                   << QStringLiteral("hawaii"));
+                                   << QStringLiteral("xcb"));
         return;
     }
 
@@ -162,8 +160,6 @@ void ProcessController::startCompositor()
         m_compositor->setArguments(QStringList()
                                    << QStringLiteral("-platform")
                                    << QStringLiteral("wayland")
-                                   << QStringLiteral("-platformtheme")
-                                   << QStringLiteral("hawaii")
                                    << QStringLiteral("--socket=") + m_compositorSocket);
         if (!m_plugin.isEmpty())
             m_compositor->setArguments(m_compositor->arguments()
