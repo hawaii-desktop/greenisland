@@ -106,7 +106,7 @@ void OutputWindow::setOutput(Output *output)
     // Load QML and setup window
     setResizeMode(QQuickView::SizeRootObjectToView);
     if (Compositor::s_fixedPlugin.isEmpty()) {
-        setSource(QUrl("qrc:/qml/Compositor.qml"));
+        qFatal("No plugin specified, cannot continue!");
     } else {
         qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
 
