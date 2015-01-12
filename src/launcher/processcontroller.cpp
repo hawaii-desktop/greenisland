@@ -167,6 +167,8 @@ void ProcessController::startCompositor()
 
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert(QStringLiteral("WAYLAND_DISPLAY"), m_fullScreenShellSocket);
+        if (qEnvironmentVariableIsSet("DISPLAY") && !isFullScreenShellEnabled())
+            env.insert(QStringLiteral("QT_XCB_GL_INTEGRATION"), QStringLiteral("xcb_egl"));
         m_compositor->setProcessEnvironment(env);
     }
 
