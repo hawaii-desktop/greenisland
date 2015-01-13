@@ -90,10 +90,29 @@ ScreenManagerPrivate::ScreenManagerPrivate(ScreenManager *self)
 
 void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
 {
+    Q_Q(ScreenManager);
+
+    // Don't add disabled or unconnected outputs
+    if (!output->isEnabled() || !output->isConnected())
+        return;
+
     // Create a new window for this output
     Output *customOutput = new Output(compositor, output);
     if (output->isPrimary())
         compositor->setPrimaryOutput(customOutput);
+
+    // Debug
+    qDebug() << "Added output" << output->name() << output->geometry();
+
+    // Remove disabled or disconnected outputs
+    q->connect(output.data(), &KScreen::Output::isEnabledChanged, [=]() {
+        if (!output->isEnabled())
+            removeOutput(output);
+    });
+    q->connect(output.data(), &KScreen::Output::isConnectedChanged, [=]() {
+        if (!output->isConnected())
+            removeOutput(output);
+    });
 }
 
 void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
@@ -143,6 +162,9 @@ void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
     // Delete window and output
     outputFound->window()->deleteLater();
     outputFound->deleteLater();
+
+    // Debug
+    qDebug() << "Removed output" << output->name() << output->geometry();
 }
 
 void ScreenManagerPrivate::_q_outputAdded(const KScreen::OutputPtr &output)
@@ -211,7 +233,7 @@ ScreenManager::ScreenManager(Compositor *compositor)
         KScreen::ConfigMonitor::instance()->addConfig(d->config);
 
         // Create outputs for the first time
-        for (const KScreen::OutputPtr &output: sortOutputs(d->config->outputs()))
+        for (const KScreen::OutputPtr &output: sortOutputs(d->config->connectedOutputs()))
             d->addOutput(output);
 
         // Connect configuration signals
