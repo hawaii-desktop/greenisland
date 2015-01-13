@@ -6,32 +6,21 @@ compositors development easier.
 
 The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
 
-The API is based on QtCompositor which is shipped by the
-qtwayland module.
+The API is based on QtCompositor which is shipped by the qtwayland module.
 
 Green Island can be used by any desktop environment that wish to implement its compositor
 by using QML or for shells deeply integrated with the compositor in the same process.
 
 ## Dependencies
 
-In order to build and install Green Island you need Wayland 1.6 and Qt 5.4 with
-at least the following modules:
+* Wayland >= 1.6
+* Qt >= 5.4 with at least the follow modules:
+  * qtbase
+  * qtdeclarative
+  * qtwayland
+* ECM >= 1.4.0
+* libkscreen (from master, will be released with Plasma on Jan 22nd)
 
-* qtbase
-* qtdeclarative
-* qtwayland
-
-The Wayland site has some information on how to build it:
-
-  http://wayland.freedesktop.org/building.html
-
-You can either build Qt from git yourself or download binaries.
-
-More information about building Qt from git can be found here:
-
-  http://qt-project.org/wiki/Building-Qt-5-from-Git
-
-Qt 5 binaries can be downloaded from http://qt-project.org/downloads
 
 A development version of qtwayland is required:
 
@@ -41,9 +30,14 @@ git clone -b output54 https://github.com/maui-packages/qtwayland
 
 and build it yourself.
 
-You also need the following modules from KDE Frameworks 5:
+## Optional dependencies
 
-* libkscreen (from master)
+* Weston >= 1.5 to nest the compositor into fullscreen shell
+
+## Additional information on dependencies
+
+Read Wayland and Weston build instructions from [here](http://wayland.freedesktop.org/building.html).
+More information about building Qt from git can be found [here](http://qt-project.org/wiki/Building-Qt-5-from-Git).
 
 ## Build
 
