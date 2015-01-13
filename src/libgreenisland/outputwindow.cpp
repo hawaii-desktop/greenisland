@@ -111,7 +111,7 @@ void OutputWindow::setOutput(Output *output)
         qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
+                                              QString("plasma/greenisland/compositors/%1/contents/Compositor.qml").arg(Compositor::s_fixedPlugin));
 
         // Load main file or bail out
         if (QFile(path).exists(path))
