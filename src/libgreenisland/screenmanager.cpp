@@ -51,7 +51,7 @@ static bool outputLess(const KScreen::OutputPtr &a, const KScreen::OutputPtr &b)
 static QList<KScreen::OutputPtr> sortOutputs(const KScreen::OutputList &outputs)
 {
     QList<KScreen::OutputPtr> ret = outputs.values();
-    std::sort(ret.begin(), ret.end(), outputLess);
+    qSort(ret.begin(), ret.end(), outputLess);
     return ret;
 }
 
