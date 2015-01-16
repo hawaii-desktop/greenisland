@@ -134,9 +134,6 @@ private:
 
 private:
     QList<ClientWindow *> m_clientWindows;
-#if 0
-    QList<Workspace *> m_workspaces;
-#endif
 
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
 };
