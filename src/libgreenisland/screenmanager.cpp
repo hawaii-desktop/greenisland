@@ -102,7 +102,8 @@ void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
         compositor->setPrimaryOutput(customOutput);
 
     // Debug
-    qDebug() << "Added output" << output->name() << output->geometry();
+    qDebug() << "Added" << (output->isPrimary() ? "primary" : "") << "output"
+             << output->name() << "with geometry" << output->geometry();
 
     // Remove disabled or disconnected outputs
     q->connect(output.data(), &KScreen::Output::isEnabledChanged, [=]() {
@@ -231,8 +232,10 @@ ScreenManager::ScreenManager(Compositor *compositor)
         KScreen::ConfigMonitor::instance()->addConfig(d->config);
 
         // Create outputs for the first time
-        for (const KScreen::OutputPtr &output: sortOutputs(d->config->connectedOutputs()))
+        for (const KScreen::OutputPtr &output: sortOutputs(d->config->connectedOutputs())) {
+            qDebug() << "Output" << output->name() << "with geometry" << output->geometry() << "found!";
             d->addOutput(output);
+        }
 
         // Connect configuration signals
         connect(d->config.data(), SIGNAL(outputAdded(KScreen::OutputPtr)),
