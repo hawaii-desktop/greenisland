@@ -136,6 +136,9 @@ void PlasmaEffects::effects_set_contrast_region(Resource *resource,
     r->region();
 
     // TODO: Set contrast on views
+    Q_UNUSED(contrast);
+    Q_UNUSED(intensity);
+    Q_UNUSED(saturation);
 }
 
 }

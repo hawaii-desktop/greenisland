@@ -117,8 +117,6 @@ void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
 
 void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
 {
-    Q_Q(ScreenManager);
-
     Output *outputFound = Q_NULLPTR;
 
     // Find the output that matches KScreen's

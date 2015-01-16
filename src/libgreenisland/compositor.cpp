@@ -111,6 +111,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 void CompositorPrivate::dpms(bool on)
 {
     // TODO
+    Q_UNUSED(on);
 }
 
 void CompositorPrivate::_q_updateCursor(bool hasBuffer)
@@ -358,8 +359,6 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 
 QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
 {
-    Q_D(Compositor);
-
     // As a heuristic place the new window on the same output as the
     // pointer. Falling back to the output containing 0,0.
     // TODO: Do something clever for touch too
@@ -432,8 +431,6 @@ void Compositor::unlockSession()
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
-    Q_D(Compositor);
-
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     // Setup cursor
     d->cursorHotspotX = hotspotX;
