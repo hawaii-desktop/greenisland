@@ -98,8 +98,10 @@ void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
 
     // Create a new window for this output
     Output *customOutput = new Output(compositor, output);
-    if (output->isPrimary())
+    if (output->isPrimary()) {
         compositor->setPrimaryOutput(customOutput);
+        customOutput->setPrimary(true);
+    }
 
     // Debug
     qDebug() << "Added" << (output->isPrimary() ? "primary" : "") << "output"
