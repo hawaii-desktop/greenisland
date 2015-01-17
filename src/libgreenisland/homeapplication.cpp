@@ -47,6 +47,11 @@ HomeApplication::HomeApplication(int &argc, char **argv)
     setQuitOnLastWindowClosed(false);
 }
 
+Compositor *HomeApplication::compositor() const
+{
+    return m_compositor;
+}
+
 QString HomeApplication::plugin() const
 {
     return GreenIsland::Compositor::s_fixedPlugin;

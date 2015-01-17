@@ -43,6 +43,8 @@ class GREENISLAND_EXPORT HomeApplication : public QApplication
 public:
     HomeApplication(int &argc, char **argv);
 
+    Compositor *compositor() const;
+
     QString plugin() const;
 
     QString socket() const;
