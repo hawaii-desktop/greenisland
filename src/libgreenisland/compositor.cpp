@@ -149,8 +149,18 @@ Compositor::Compositor(const QString &socket)
 
 Compositor::~Compositor()
 {
+    // Cleanup
     qDeleteAll(m_clientWindows);
+    delete d_ptr->screenManager;
     delete d_ptr;
+
+    // Delete windows and outputs
+    qDebug() << "Closing all remaining windows...";
+    for (QWaylandOutput *output: outputs()) {
+        if (output->window())
+            output->window()->deleteLater();
+        output->deleteLater();
+    }
 }
 
 Compositor::State Compositor::state() const

@@ -246,6 +246,18 @@ ScreenManager::ScreenManager(Compositor *compositor)
 
 ScreenManager::~ScreenManager()
 {
+    // Remove all outputs
+    qDebug() << "Removing all outputs...";
+    disconnect(d_ptr->config.data());
+    const KScreen::OutputList outputs = d_ptr->config->outputs();
+    for (const KScreen::OutputPtr &output: outputs)
+        d_ptr->removeOutput(output);
+
+    // Remove configuration
+    qDebug() << "Removing screen configuration...";
+    KScreen::ConfigMonitor::instance()->removeConfig(d_ptr->config);
+
+    // Delete d pointer
     delete d_ptr;
 }
 

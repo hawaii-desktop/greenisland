@@ -42,6 +42,7 @@ class GREENISLAND_EXPORT HomeApplication : public QApplication
     Q_PROPERTY(QString socket READ socket CONSTANT)
 public:
     HomeApplication(int &argc, char **argv);
+    ~HomeApplication();
 
     Compositor *compositor() const;
 

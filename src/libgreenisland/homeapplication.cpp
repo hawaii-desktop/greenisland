@@ -47,6 +47,11 @@ HomeApplication::HomeApplication(int &argc, char **argv)
     setQuitOnLastWindowClosed(false);
 }
 
+HomeApplication::~HomeApplication()
+{
+    delete m_compositor;
+}
+
 Compositor *HomeApplication::compositor() const
 {
     return m_compositor;
