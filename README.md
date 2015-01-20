@@ -45,6 +45,7 @@ and build it yourself.
 ## Additional information on dependencies
 
 Read Wayland and Weston build instructions from [here](http://wayland.freedesktop.org/building.html).
+
 More information about building Qt from git can be found [here](http://qt-project.org/wiki/Building-Qt-5-from-Git).
 
 ## Build
