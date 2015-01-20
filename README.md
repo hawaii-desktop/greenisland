@@ -8,6 +8,9 @@ The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Isla
 
 The API is based on QtCompositor which is shipped by the qtwayland module.
 
+Green Island offers multiple screen support and it also implements specific protocols
+such as those for Plasma 5 that do not make much sense to be sent upstream.
+
 Green Island can be used by any desktop environment that wish to implement its compositor
 by using QML or for shells deeply integrated with the compositor in the same process.
 
