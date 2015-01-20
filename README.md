@@ -22,10 +22,18 @@ by using QML or for shells deeply integrated with the compositor in the same pro
 * libkscreen (from master, will be released with Plasma on Jan 22nd)
 
 
-A development version of qtwayland is required:
+A development version of qtwayland is required.
+
+Please clone the output54 branch if you are using Qt 5.4.x:
 
 ```sh
 git clone -b output54 https://github.com/maui-packages/qtwayland
+```
+
+or output55 if you are using Qt 5.5.x:
+
+```sh
+git clone -b output55 https://github.com/maui-packages/qtwayland
 ```
 
 and build it yourself.
