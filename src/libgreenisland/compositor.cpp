@@ -431,14 +431,6 @@ ClientWindow *Compositor::window(int index) const
     return m_clientWindows.at(index);
 }
 
-void Compositor::lockSession()
-{
-}
-
-void Compositor::unlockSession()
-{
-}
-
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL

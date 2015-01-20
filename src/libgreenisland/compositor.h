@@ -118,13 +118,6 @@ Q_SIGNALS:
     void fadeIn();
     void fadeOut();
 
-    void locked();
-    void unlocked();
-
-public Q_SLOTS:
-    void lockSession();
-    void unlockSession();
-
 protected:
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
 
