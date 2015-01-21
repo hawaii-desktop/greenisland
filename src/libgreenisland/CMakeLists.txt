@@ -19,6 +19,7 @@ if(systemd_FOUND)
 endif()
 
 set(SOURCES
+    applicationmanager.cpp
     clientwindow.cpp
     compositor.cpp
     globalregistry.cpp
@@ -83,6 +84,7 @@ generate_export_header(GreenIsland EXPORT_FILE_NAME greenisland/greenisland_expo
 add_library(GreenIsland::GreenIsland ALIAS GreenIsland)
 
 target_link_libraries(GreenIsland
+    Qt5::Core
     Qt5::Gui
     Qt5::Widgets
     Qt5::Quick
@@ -116,6 +118,7 @@ set_target_properties(GreenIsland PROPERTIES VERSION   ${PROJECT_VERSION}
 
 ecm_generate_headers(GreenIsland_CamelCase_HEADERS
   HEADER_NAMES
+    ApplicationManager
     Compositor
     ClientWindow
     HomeApplication
@@ -138,6 +141,7 @@ install(
     FILES
       ${CMAKE_CURRENT_BINARY_DIR}/greenisland/greenisland_export.h
       ${GreenIsland_HEADERS}
+      applicationmanager.h
       compositor.h
       clientwindow.h
       homeapplication.h

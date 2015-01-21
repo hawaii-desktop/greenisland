@@ -34,6 +34,7 @@
 
 namespace GreenIsland {
 
+class ApplicationManager;
 class ClientWindow;
 class CompositorPrivate;
 class Output;
@@ -43,6 +44,7 @@ class ScreenManager;
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
     Q_OBJECT
+    Q_PROPERTY(ApplicationManager *applicationManager READ applicationManager CONSTANT)
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
@@ -73,6 +75,7 @@ public:
     void setIdleInhibit(int value);
 
     ScreenManager *screenManager() const;
+    ApplicationManager *applicationManager() const;
 
     void run();
 
@@ -124,9 +127,6 @@ protected:
 private:
     Q_DECLARE_PRIVATE(Compositor)
     CompositorPrivate *const d_ptr;
-
-private:
-    QList<ClientWindow *> m_clientWindows;
 
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
 };

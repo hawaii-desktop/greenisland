@@ -27,26 +27,26 @@
 #ifndef CLIENTWINDOW_H
 #define CLIENTWINDOW_H
 
-#include <greenisland/quicksurface.h>
+#include <QtCompositor/QWaylandSurface>
+
+#include <greenisland/greenisland_export.h>
 
 namespace GreenIsland {
-
-class QuickSurface;
 
 class GREENISLAND_EXPORT ClientWindow : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
+    Q_PROPERTY(bool mapped READ isMapped NOTIFY mappedChanged)
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
     Q_PROPERTY(bool minimized READ isMinimized NOTIFY minimizedChanged)
     Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
 public:
-    ClientWindow(QObject *parent = 0);
+    ClientWindow(QWaylandSurface *surface, QObject *parent = 0);
 
-    QuickSurface *surface() const;
-    void setSurface(QuickSurface *surface);
+    QWaylandSurface *surface() const;
 
     QString title() const;
     QString appId() const;
@@ -69,9 +69,9 @@ public:
     void setFullScreen(bool fs);
 
 Q_SIGNALS:
-    void surfaceChanged();
     void titleChanged();
     void appIdChanged();
+    void mappedChanged();
     void activeChanged();
     void minimizedChanged();
     void maximizedChanged();
@@ -83,7 +83,7 @@ private:
     bool m_minimized;
     bool m_maximized;
     bool m_fullScreen;
-    QuickSurface *m_surface;
+    QWaylandSurface *m_surface;
 };
 
 } // namespace GreenIsland

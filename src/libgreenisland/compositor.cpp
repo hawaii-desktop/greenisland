@@ -39,6 +39,8 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "applicationmanager.h"
+#include "applicationmanager_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
 #  include "bufferattacher.h"
 #endif
@@ -59,6 +61,8 @@
 #if HAVE_SYSTEMD
 #  include <systemd/sd-daemon.h>
 #endif
+
+typedef QList<QWaylandSurface *> QWaylandSurfaceList;
 
 namespace GreenIsland {
 
@@ -90,6 +94,11 @@ public:
 
     ScreenManager *screenManager;
 
+    // Application management
+    ApplicationManager *appManager;
+    QHash<QString, QWaylandSurfaceList> appSurfaces;
+    QList<ClientWindow *> clientWindows;
+
 protected:
     Q_DECLARE_PUBLIC(Compositor)
     Compositor *const q_ptr;
@@ -106,6 +115,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , q_ptr(self)
 {
     screenManager = new ScreenManager(self);
+    appManager = new ApplicationManager(self);
 }
 
 void CompositorPrivate::dpms(bool on)
@@ -150,8 +160,10 @@ Compositor::Compositor(const QString &socket)
 Compositor::~Compositor()
 {
     // Cleanup
-    qDeleteAll(m_clientWindows);
+    delete d_ptr->appManager;
     delete d_ptr->screenManager;
+    while (!d_ptr->clientWindows.isEmpty())
+        d_ptr->clientWindows.takeFirst()->deleteLater();
     delete d_ptr;
 
     // Delete windows and outputs
@@ -253,6 +265,12 @@ ScreenManager *Compositor::screenManager() const
     return d->screenManager;
 }
 
+ApplicationManager *Compositor::applicationManager() const
+{
+    Q_D(const Compositor);
+    return d->appManager;
+}
+
 void Compositor::run()
 {
     Q_D(Compositor);
@@ -341,29 +359,54 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     if (!surface)
         return;
 
-    // Create application window instance
-    ClientWindow *appWindow = new ClientWindow(this);
-    appWindow->setSurface(qobject_cast<QuickSurface *>(surface));
-    m_clientWindows.append(appWindow);
+    Q_D(Compositor);
 
     // Connect surface signals
     connect(surface, &QWaylandSurface::mapped, [=]() {
+        // Let the QML compositor handle mapped surfaces
         Q_EMIT surfaceMapped(QVariant::fromValue(surface));
+
+        // Only toplevel windows qualify as important
+        if (surface->windowType() != QWaylandSurface::Toplevel)
+            return;
+
+        // Create application window instance
+        ClientWindow *appWindow = new ClientWindow(surface);
+        d->clientWindows.append(appWindow);
+
+        // Register application only if it's the first time this surface is mapped
+        const QString appId = surface->className();
+        if (!d->appSurfaces[appId].contains(surface)) {
+            d->appManager->d_func()->registerApplication(appId);
+            d->appSurfaces[appId].append(surface);
+        }
     });
     connect(surface, &QWaylandSurface::unmapped, [=]() {
+        // Let the QML compositor handle unmapped surfaces
         Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
-    });
-    connect(surface, &QWaylandSurface::surfaceDestroyed, [=]() {
-        Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
 
-        // Delete application window on surface destruction
-        for (ClientWindow *appWindow: m_clientWindows) {
+        // Unregister application if the last surface is gone
+        const QString appId = surface->className();
+        d->appSurfaces[appId].removeOne(surface);
+        if (d->appSurfaces[appId].isEmpty())
+            d->appManager->d_func()->unregisterApplication(appId);
+
+        // Delete application window
+        QList<ClientWindow *>::iterator i = d->clientWindows.begin();
+        while (i != d->clientWindows.end()) {
+            ClientWindow *appWindow = (*i);
             if (appWindow->surface() == surface) {
-                if (m_clientWindows.removeOne(appWindow))
-                    appWindow->deleteLater();
+                i = d->clientWindows.erase(i);
+                appWindow->deleteLater();
                 break;
+            } else {
+                ++i;
             }
         }
+    });
+    connect(surface, &QWaylandSurface::surfaceDestroyed, [=]() {
+        // Let the QML compositor handle surface destruction
+        Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
     });
 }
 
@@ -418,17 +461,20 @@ void Compositor::abortSession()
 
 QQmlListProperty<ClientWindow> Compositor::windows()
 {
-    return QQmlListProperty<ClientWindow>(this, m_clientWindows);
+    Q_D(Compositor);
+    return QQmlListProperty<ClientWindow>(this, d->clientWindows);
 }
 
 int Compositor::windowCount() const
 {
-    return m_clientWindows.count();
+    Q_D(const Compositor);
+    return d->clientWindows.count();
 }
 
 ClientWindow *Compositor::window(int index) const
 {
-    return m_clientWindows.at(index);
+    Q_D(const Compositor);
+    return d->clientWindows.at(index);
 }
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)

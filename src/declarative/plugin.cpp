@@ -27,6 +27,7 @@
 #include <QtQml/QQmlExtensionPlugin>
 #include <QtQml/QQmlComponent>
 
+#include <GreenIsland/ApplicationManager>
 #include <GreenIsland/ClientWindow>
 #include <GreenIsland/Compositor>
 #include <GreenIsland/Output>
@@ -50,6 +51,10 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 {
     // @uri GreenIsland
     qmlRegisterType<Compositor>(uri, 1, 0, "Compositor");
+    qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManager",
+                                                   QStringLiteral("You can't create ApplicationManager objects"));
+    qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
+                                             QStringLiteral("You can't create ClientWindow objects"));
     qmlRegisterUncreatableType<Output>(uri, 1, 0, "Output",
                                        QStringLiteral("You can't create Output objects"));
     qmlRegisterUncreatableType<QuickSurface>(uri, 1, 0, "QuickSurface",
