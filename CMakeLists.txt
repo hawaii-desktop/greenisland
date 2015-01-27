@@ -94,7 +94,7 @@ add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 find_package(QtWaylandScanner REQUIRED)
 
 # systemd
-pkg_check_modules(systemd libsystemd-daemon)
+pkg_check_modules(systemd libsystemd)
 if(systemd_FOUND)
     set(HAVE_SYSTEMD 1)
 endif()
