@@ -103,7 +103,6 @@ else()
 endif()
 
 if(systemd_FOUND)
-    set_target_properties(GreenIsland PROPERTIES LINK_FLAGS -L${systemd_LIBDIR})
     target_link_libraries(GreenIsland ${systemd_LIBRARIES})
 endif()
 
