@@ -1,8 +1,7 @@
 Green Island
 ============
 
-This is Green Island, a support library to make Qt-based Wayland
-compositors development easier.
+This is Green Island, a Qt-based Wayland compositor in library form.
 
 The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
 
@@ -16,13 +15,13 @@ by using QML or for shells deeply integrated with the compositor in the same pro
 
 ## Dependencies
 
-* Wayland >= 1.6
-* Qt >= 5.4 with at least the follow modules:
+* Wayland >= 1.6.0
+* Qt >= 5.4.0 with at least the follow modules:
   * qtbase
   * qtdeclarative
   * qtwayland
 * ECM >= 1.4.0
-* libkscreen (from master, will be released with Plasma on Jan 22nd)
+* libkscreen >= 5.2.0
 
 
 A development version of qtwayland is required.
@@ -43,7 +42,7 @@ and build it yourself.
 
 ## Optional dependencies
 
-* Weston >= 1.5 to nest the compositor into fullscreen shell
+* Weston >= 1.5.0 to nest the compositor into fullscreen shell
 
 ## Additional information on dependencies
 
