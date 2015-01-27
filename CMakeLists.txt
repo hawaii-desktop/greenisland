@@ -57,7 +57,7 @@ set(REQUIRED_QT_VERSION 5.3.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Widgets Compositor)
 
 # Find KF5
-set(REQUIRED_KF5_VERSION 5.0.91)
+set(REQUIRED_KF5_VERSION 5.2.0)
 find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen)
 
 # GL requirements
