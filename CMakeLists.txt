@@ -97,6 +97,12 @@ find_package(QtWaylandScanner REQUIRED)
 pkg_check_modules(systemd libsystemd-daemon)
 if(systemd_FOUND)
     set(HAVE_SYSTEMD 1)
+else()
+    # libsystem-daemon was merged to libsystem on systemd 208->209
+    pkg_check_modules(systemd libsystemd)
+    if(systemd_FOUND)
+        set(HAVE_SYSTEMD 1)
+    endif()
 endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
 
