@@ -148,7 +148,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
  */
 
 Compositor::Compositor(const QString &socket)
-    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | OutputExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
+    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     qRegisterMetaType<QuickSurface *>("QuickSurface*");
