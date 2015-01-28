@@ -34,6 +34,7 @@
 
 namespace GreenIsland {
 
+class WindowView;
 class XdgPopupGrabber;
 
 class XdgPopup : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::xdg_popup
@@ -54,6 +55,7 @@ private:
     XdgShell *m_shell;
     QWaylandSurface *m_parentSurface;
     QWaylandSurface *m_surface;
+    WindowView *m_view;
     uint32_t m_serial;
     XdgPopupGrabber *m_grabber;
 

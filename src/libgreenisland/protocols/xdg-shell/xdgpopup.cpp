@@ -25,10 +25,14 @@
  ***************************************************************************/
 
 #include <QtCompositor/QtCompositorVersion>
+#include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "output.h"
+#include "quicksurface.h"
+#include "windowview.h"
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
 
@@ -48,6 +52,10 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *su
     , m_serial(serial)
     , m_grabber(Q_NULLPTR)
 {
+    // Create a view for the first output
+    Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
+    m_view = new WindowView(qobject_cast<QuickSurface *>(surface), output);
+
     // Set surface type
     setSurfaceType(QWaylandSurface::Popup);
 
