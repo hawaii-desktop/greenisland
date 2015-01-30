@@ -24,10 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtQuick/QQuickItem>
-
+#include "clientwindow.h"
 #include "xdgsurfaceresizegrabber.h"
-#include "windowview.h"
 
 namespace GreenIsland {
 
@@ -60,7 +58,7 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
         newWidth = qMax(newWidth - delta.width(), 1);
 
     XdgSurface::Changes changes;
-    changes.active = m_shellSurface->view()->hasFocus();
+    changes.active = m_shellSurface->window() && m_shellSurface->window()->isActive();
     changes.resizing = true;
     changes.size = QSizeF(newWidth, newHeight);
     m_shellSurface->requestConfigure(changes);

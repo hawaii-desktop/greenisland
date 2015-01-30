@@ -30,9 +30,8 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "clientwindow.h"
 #include "output.h"
-#include "quicksurface.h"
-#include "windowview.h"
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
 
@@ -51,20 +50,17 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *su
     , m_surface(surface)
     , m_serial(serial)
     , m_grabber(Q_NULLPTR)
+    , m_deleting(false)
 {
-    // Create a view for the first output
-    Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new WindowView(qobject_cast<QuickSurface *>(surface), output);
-
     // Set surface type
     setSurfaceType(QWaylandSurface::Popup);
 
+    // Create the window
+    m_window = new ClientWindow(m_surface, this);
+
     // Surface mapping and unmapping
-    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
-        // Map or unmap the surface
-        m_surface->setMapped(hasBuffer);
-    });
     connect(m_surface, &QWaylandSurface::mapped, [=]() {
+        // Handle popup behavior
         if (m_grabber->serial() == m_serial) {
             m_grabber->addPopup(this);
         } else {
@@ -73,10 +69,26 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *su
         }
     });
     connect(m_surface, &QWaylandSurface::unmapped, [=]() {
+        // Handle popup behavior
         done();
         m_grabber->removePopup(this);
         m_grabber->m_client = Q_NULLPTR;
     });
+    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+        // Map or unmap the surface
+        m_surface->setMapped(hasBuffer);
+    });
+}
+
+XdgPopup::~XdgPopup()
+{
+    // Destroy the resource here but don't do it if the destructor is
+    // called by shell_surface_destroy_resource() which happens when
+    // the resource is destroyed
+    if (!m_deleting) {
+        m_deleting = true;
+        wl_resource_destroy(resource()->handle);
+    }
 }
 
 XdgPopupGrabber *XdgPopup::grabber() const
@@ -91,12 +103,23 @@ void XdgPopup::done()
 
 bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
 {
-    switch (op->type()) {
-    default:
-        break;
-    }
-
     return false;
+}
+
+void XdgPopup::popup_destroy_resource(Resource *resource)
+{
+    Q_UNUSED(resource);
+
+    // Don't delete twice if we are here from the destructor
+    if (!m_deleting) {
+        m_deleting = true;
+        delete this;
+    }
+}
+
+void XdgPopup::popup_destroy(Resource *resource)
+{
+    wl_resource_destroy(resource->handle);
 }
 
 }

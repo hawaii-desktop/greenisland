@@ -33,12 +33,12 @@
 #include <KScreen/GetConfigOperation>
 #include <KScreen/Screen>
 
+#include "clientwindow.h"
 #include "compositor.h"
+#include "compositor_p.h"
 #include "output.h"
 #include "outputwindow.h"
-#include "quicksurface.h"
 #include "screenmanager.h"
-#include "windowview.h"
 
 static bool outputLess(const KScreen::OutputPtr &a, const KScreen::OutputPtr &b)
 {
@@ -140,24 +140,24 @@ void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
     if (!primaryOutput)
         return;
 
+    // Geometry of the removed output
+    QRectF removedGeometry(outputFound->geometry());
+
     // Remove surface views and window representations of this output
-    for (QWaylandSurface *surface: outputFound->surfaces()) {
-        for (QWaylandSurfaceView *surfaceView: surface->views()) {
-            WindowView *view = static_cast<WindowView *>(surfaceView);
-            if (!view || view->output() != outputFound || !view->parentItem())
-                continue;
+    for (ClientWindow *window: compositor->d_func()->clientWindowsList) {
+        if (window->output() != outputFound)
+            continue;
 
-            QQuickItem *item = view->parentItem();
-            QRectF removedGeometry(outputFound->geometry());
+        // Recalculate local coordinates
+        qreal x = (window->x() * primaryOutput->geometry().width()) / removedGeometry.width();
+        qreal y = (window->y() * primaryOutput->geometry().height()) / removedGeometry.height();
+        window->setPosition(QPointF(x, y));
 
-            // Recalculate local coordinates
-            qreal x = (item->x() * primaryOutput->geometry().width()) / removedGeometry.width();
-            qreal y = (item->y() * primaryOutput->geometry().height()) / removedGeometry.height();
-            item->setPosition(QPointF(x, y));
+        // Set new global position
+        window->setPosition(primaryOutput->mapToGlobal(QPointF(x, y)));
 
-            // Set new global position
-            view->surface()->setGlobalPosition(primaryOutput->mapToGlobal(QPointF(x, y)));
-        }
+        // Ask the window to remove all views for the removed output
+        window->removeOutput(outputFound);
     }
 
     // Delete window and output

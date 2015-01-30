@@ -24,25 +24,52 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "output.h"
-#include "shellwindowview.h"
+#include <QtCompositor/QWaylandOutput>
+#include <QtCompositor/QWaylandSurface>
+#include <QtCompositor/QWaylandSurfaceItem>
+
+#include "shellwindow.h"
 
 namespace GreenIsland {
 
-ShellWindowView::ShellWindowView(QWaylandQuickSurface *surface, Output *output,
-                                 QQuickItem *parent)
-    : QWaylandSurfaceItem(surface, parent)
-    , m_role(NoneRole)
-    , m_output(output)
+ShellWindow::ShellWindow(QWaylandSurface *surface, QObject *parent)
+    : QObject(parent)
+    , m_role(UnknownRole)
+    , m_flags(0)
+    , m_surface(surface)
 {
+    qRegisterMetaType<ShellWindow *>("ShellWindow*");
+
+    // Create view
+    m_view = new QWaylandSurfaceItem(static_cast<QWaylandQuickSurface *>(surface));
 }
 
-ShellWindowView::Role ShellWindowView::role() const
+ShellWindow::~ShellWindow()
+{
+    m_view->deleteLater();
+}
+
+QWaylandSurface *ShellWindow::surface() const
+{
+    return m_surface;
+}
+
+QWaylandSurfaceItem *ShellWindow::view() const
+{
+    return m_view;
+}
+
+QWaylandOutput *ShellWindow::output() const
+{
+    return m_surface->output();
+}
+
+ShellWindow::Role ShellWindow::role() const
 {
     return m_role;
 }
 
-void ShellWindowView::setRole(const Role &role)
+void ShellWindow::setRole(const Role &role)
 {
     if (m_role == role)
         return;
@@ -51,12 +78,12 @@ void ShellWindowView::setRole(const Role &role)
     Q_EMIT roleChanged();
 }
 
-ShellWindowView::Flags ShellWindowView::flags() const
+ShellWindow::Flags ShellWindow::flags() const
 {
     return m_flags;
 }
 
-void ShellWindowView::setFlags(const Flags &flags)
+void ShellWindow::setFlags(const Flags &flags)
 {
     if (m_flags == flags)
         return;
@@ -65,20 +92,6 @@ void ShellWindowView::setFlags(const Flags &flags)
     Q_EMIT flagsChanged();
 }
 
-Output *ShellWindowView::output() const
-{
-    return m_output;
 }
 
-void ShellWindowView::setOutput(Output *output)
-{
-    if (m_output == output)
-        return;
-
-    m_output = output;
-    Q_EMIT outputChanged();
-}
-
-}
-
-#include "moc_shellwindowview.cpp"
+#include "moc_shellwindow.cpp"

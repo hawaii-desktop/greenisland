@@ -24,109 +24,23 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
-
-#include "compositor.h"
-#include "quicksurface.h"
 #include "windowview.h"
 
 namespace GreenIsland {
 
-WindowView::WindowView(QuickSurface *surface, Output *output, QQuickItem *parent)
+WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
-    , m_surface(surface)
-    , m_output(output)
 {
-    // Change window position and send enter/leave events to the output
-    connect(m_surface, &QuickSurface::globalGeometryChanged, [=]() {
-        // WindowView is a child of the QtQuick window representation that is
-        // the one who holds the position on screen
-        if (parentItem())
-            parentItem()->setPosition(m_output->mapToOutput(m_surface->globalPosition()));
-        else
-            qWarning("Unable to move this view because it has no window representation");
-
-        // Global position is changed every time the window is moved,
-        // check against output geometry to see if it enters or leave
-        // the output
-        if (QRectF(m_output->geometry()).intersects(m_surface->globalGeometry()))
-            sendEnter(m_output);
-        else
-            sendLeave(m_output);
-    });
-}
-
-QuickSurface *WindowView::surface() const
-{
-    return m_surface;
-}
-
-Output *WindowView::output() const
-{
-    return m_output;
-}
-
-Output *WindowView::mainOutput() const
-{
-    // Here's what may happen with Qt clients using wl_shell such as
-    // qmlscene --maximized: set_maximized is called before the surface
-    // size is set so it's -1x-1 and the code below cannot find an
-    // output that accomodates its size and returns a null pointer
-    // making the compositor crash.
-    // We just return the output for this view.
-    if (!QSizeF(width(), height()).isValid())
-        return m_output;
-
-    // Find the output that contains the biggest part of this window,
-    // that is the main output and it will be used by effects such as
-    // present windows to present only windows for the output it is
-    // running on (effects run once for each output)
-    QRectF geometry(m_surface->globalPosition(), QSizeF(width(), height()));
-    int maxArea = 0, area = 0;
-    QWaylandOutput *main = Q_NULLPTR;
-
-    for (QWaylandOutput *output: compositor()->outputs()) {
-        QRectF intersection = QRectF(output->geometry()).intersected(geometry);
-
-        if (intersection.isValid()) {
-            area = intersection.width() * intersection.height();
-            if (area >= maxArea) {
-                main = output;
-                maxArea = area;
-            }
-        }
-    }
-
-    return qobject_cast<Output *>(main);
 }
 
 void WindowView::mousePressEvent(QMouseEvent *event)
 {
-    // Raise window when clicked, whether to assign focus
-    // is decided from QML
-    Q_EMIT raiseRequested();
+    // Give focus on click, except for popups which are already
+    // given focus with the popup behavior
+    if (surface() && surface()->windowType() != QWaylandSurface::Popup)
+        takeFocus();
 
     QWaylandSurfaceItem::mousePressEvent(event);
-}
-
-void WindowView::sendEnter(Output *output)
-{
-    //qDebug() << "Enter" << output;
-
-    for (QtWayland::Output::Resource *resource: output->handle()->resourceMap().values())
-        surface()->handle()->send_enter(resource->handle);
-}
-
-void WindowView::sendLeave(Output *output)
-{
-    //qDebug() << "Leave" << output;
-
-    for (QtWayland::Output::Resource *resource: output->handle()->resourceMap().values())
-        surface()->handle()->send_leave(resource->handle);
 }
 
 }

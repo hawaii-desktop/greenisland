@@ -27,63 +27,155 @@
 #ifndef CLIENTWINDOW_H
 #define CLIENTWINDOW_H
 
-#include <QtCompositor/QWaylandSurface>
+#include <QtCore/QObject>
+#include <QtCore/QHash>
+#include <QtCore/QPointF>
+#include <QtCore/QRectF>
+#include <QtCore/QSizeF>
+
+#include <QtCompositor/QWaylandSurfaceOp>
 
 #include <greenisland/greenisland_export.h>
 
+class QWaylandOutput;
+class QWaylandSurface;
+class QWaylandSurfaceItem;
+
 namespace GreenIsland {
+
+class Compositor;
+class WlShellSurface;
+class XdgPopup;
+class XdgSurface;
+class ScreenManagerPrivate;
 
 class GREENISLAND_EXPORT ClientWindow : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
+    Q_PROPERTY(Type type READ type NOTIFY typeChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
-    Q_PROPERTY(bool mapped READ isMapped NOTIFY mappedChanged)
+    Q_PROPERTY(ClientWindow *parentWindow READ parentWindow CONSTANT)
+    Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(qreal x READ x WRITE setX NOTIFY positionChanged)
+    Q_PROPERTY(qreal y READ y WRITE setY NOTIFY positionChanged)
+    Q_PROPERTY(QPointF position READ position WRITE setPosition NOTIFY positionChanged)
+    Q_PROPERTY(QSizeF size READ size NOTIFY sizeChanged)
+    Q_PROPERTY(QRectF geometry READ geometry NOTIFY geometryChanged)
+    Q_PROPERTY(QRectF internalGeometry READ internalGeometry NOTIFY internalGeometryChanged)
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
     Q_PROPERTY(bool minimized READ isMinimized NOTIFY minimizedChanged)
     Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
+    Q_ENUMS(Type)
 public:
+    enum Type {
+        TopLevel = 0,
+        Popup,
+        Transient
+    };
+
+    enum CustomSurfaceOperation {
+        Move = QWaylandSurfaceOp::UserType + 1
+    };
+
     ClientWindow(QWaylandSurface *surface, QObject *parent = 0);
+    ~ClientWindow();
 
     QWaylandSurface *surface() const;
 
+    Type type() const;
     QString title() const;
     QString appId() const;
 
-    bool isMapped() const;
+    ClientWindow *parentWindow() const;
+
+    QWaylandOutput *output() const;
+
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandOutput *output);
+
+    qreal x() const;
+    void setX(qreal value);
+
+    qreal y() const;
+    void setY(qreal value);
+
+    QPointF position() const;
+    void setPosition(const QPointF &pos);
+
+    QSizeF size() const;
+    QRectF geometry() const;
+    QRectF internalGeometry() const;
 
     bool isActive() const;
-    void activate();
-    void deactivate();
+    Q_INVOKABLE void activate();
+    Q_INVOKABLE void deactivate();
 
     bool isMinimized() const;
-    void minimize();
-    void unminimize();
+    Q_INVOKABLE void minimize();
+    Q_INVOKABLE void unminimize();
 
     bool isMaximized() const;
-    void maximize();
-    void unmaximize();
+    Q_INVOKABLE void maximize();
+    Q_INVOKABLE void unmaximize();
 
     bool isFullScreen() const;
     void setFullScreen(bool fs);
 
+    Q_INVOKABLE void move();
+
 Q_SIGNALS:
+    void typeChanged();
     void titleChanged();
     void appIdChanged();
-    void mappedChanged();
+    void outputChanged();
+    void positionChanged();
+    void sizeChanged();
+    void geometryChanged();
+    void internalGeometryChanged();
     void activeChanged();
     void minimizedChanged();
     void maximizedChanged();
     void fullScreenChanged();
+    void windowMenuRequested(const QPoint &pt);
+    void motionStarted();
+    void motionFinished();
 
 private:
-    bool m_mapped;
+    Type m_type;
+    QString m_appId;
+    QPointF m_pos;
+    QSizeF m_size;
+    QRectF m_internalGeometry;
+    bool m_internalGeometryChanged;
     bool m_active;
     bool m_minimized;
     bool m_maximized;
     bool m_fullScreen;
+    bool m_initialSetup;
+    Compositor *m_compositor;
     QWaylandSurface *m_surface;
+    ClientWindow *m_parentWindow;
+    QHash<QWaylandOutput *, QWaylandSurfaceItem *> m_views;
+
+    void setSize(const QSizeF &size);
+    void setInternalGeometry(const QRectF &geometry);
+
+    void registerWindow();
+    void unregisterWindow(bool destruction);
+
+    QPointF calculateInitialPosition() const;
+
+    void initialSetup();
+    void removeOutput(QWaylandOutput *output);
+
+    friend class WlShellSurface;
+    friend class XdgPopup;
+    friend class XdgSurface;
+    friend class ScreenManagerPrivate;
+
+private Q_SLOTS:
+    void setType(QWaylandSurface::WindowType windowType);
 };
 
 } // namespace GreenIsland

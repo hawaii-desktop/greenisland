@@ -35,7 +35,7 @@ namespace GreenIsland {
 
 class ApplicationInfo;
 class ApplicationManagerPrivate;
-class Compositor;
+class ClientWindow;
 
 class GREENISLAND_EXPORT ApplicationManager : public QObject
 {
@@ -67,7 +67,7 @@ Q_SIGNALS:
 private:
     ApplicationManagerPrivate *const d_ptr;
 
-    friend class Compositor;
+    friend class ClientWindow;
 };
 
 }

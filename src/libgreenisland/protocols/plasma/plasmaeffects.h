@@ -33,15 +33,19 @@
 
 namespace GreenIsland {
 
+class PlasmaShell;
+
 class PlasmaEffects : public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_effects
 {
 public:
-    PlasmaEffects();
+    PlasmaEffects(PlasmaShell *shell);
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
 
 private:
+    PlasmaShell *m_shell;
+
     void effects_slide(Resource *resource,
                        wl_resource *outputResource,
                        wl_resource *surfaceResource,

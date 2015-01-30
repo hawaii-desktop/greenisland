@@ -24,15 +24,19 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QtCompositorVersion>
+#include <QtCompositor/QWaylandOutput>
+#include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/private/qwlregion_p.h>
 
-#include "output.h"
 #include "plasmaeffects.h"
-#include "quicksurface.h"
+#include "plasmashell.h"
+#include "plasmasurface.h"
 
 namespace GreenIsland {
 
-PlasmaEffects::PlasmaEffects()
+PlasmaEffects::PlasmaEffects(PlasmaShell *shell)
+    : m_shell(shell)
 {
 }
 
@@ -43,9 +47,11 @@ const wl_interface *PlasmaEffects::interface() const
 
 void PlasmaEffects::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-    Q_UNUSED(version);
-
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    add(client, id, version);
+#else
     add(client, id);
+#endif
 }
 
 void PlasmaEffects::effects_slide(Resource *resource,
@@ -56,15 +62,13 @@ void PlasmaEffects::effects_slide(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    Output *output = qobject_cast<Output *>(
-                Output::fromResource(outputResource));
+    QWaylandOutput *output = QWaylandOutput::fromResource(outputResource);
     if (!output) {
         qWarning("Couldn't get output from resource");
         return;
     }
 
-    QuickSurface *surface = qobject_cast<QuickSurface *>(
-                QuickSurface::fromResource(surfaceResource));
+    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
         qWarning("Couldn't get surface from resource");
         return;
@@ -94,7 +98,10 @@ void PlasmaEffects::effects_slide(Resource *resource,
         break;
     }
 
-    // TODO: Move window from ptFrom to ptTo
+    for (const PlasmaSurface *plasmaSurface: m_shell->surfaces()) {
+        if (plasmaSurface->surface() == surface)
+            Q_EMIT plasmaSurface->window()->moveRequested(ptFrom, ptTo);
+    }
 }
 
 void PlasmaEffects::effects_set_blur_behind_region(Resource *resource,
@@ -103,8 +110,7 @@ void PlasmaEffects::effects_set_blur_behind_region(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QuickSurface *surface = qobject_cast<QuickSurface *>(
-                QuickSurface::fromResource(surfaceResource));
+    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
         qWarning("Couldn't get surface from resource");
         return;
@@ -114,6 +120,11 @@ void PlasmaEffects::effects_set_blur_behind_region(Resource *resource,
     r->region();
 
     // TODO: Set blur behind region on views
+
+    /*
+     * TODO: Maybe add a property map to ShellWindow called "effects"
+     * with the "blur_behind" entry that contains the "region" property.
+     */
 }
 
 void PlasmaEffects::effects_set_contrast_region(Resource *resource,
@@ -125,8 +136,7 @@ void PlasmaEffects::effects_set_contrast_region(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QuickSurface *surface = qobject_cast<QuickSurface *>(
-                QuickSurface::fromResource(surfaceResource));
+    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
         qWarning("Couldn't get surface from resource");
         return;
@@ -139,6 +149,12 @@ void PlasmaEffects::effects_set_contrast_region(Resource *resource,
     Q_UNUSED(contrast);
     Q_UNUSED(intensity);
     Q_UNUSED(saturation);
+
+    /*
+     * TODO: Maybe add a property map to ShellWindow called "effects"
+     * with the "contrast" entry that contains the "region" property
+     * and "contrast", "intensity", "saturation" properties.
+     */
 }
 
 }

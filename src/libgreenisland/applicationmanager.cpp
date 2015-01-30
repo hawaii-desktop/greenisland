@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QWaylandSurface>
+
 #include "applicationmanager.h"
 #include "applicationmanager_p.h"
 
@@ -38,22 +40,36 @@ ApplicationManagerPrivate::ApplicationManagerPrivate(ApplicationManager *parent)
 {
 }
 
-void ApplicationManagerPrivate::registerApplication(const QString &appId)
+void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface)
 {
     Q_Q(ApplicationManager);
+
+    const QString appId = surface->className();
 
     if (apps.contains(appId))
         return;
+    if (appSurfaces.contains(surface))
+        return;
 
-    Q_EMIT q->applicationAdded(appId);
+    apps.insert(appId);
+    appSurfaces[surface] = appId;
+
+    if (surface->windowType() == QWaylandSurface::Toplevel)
+        Q_EMIT q->applicationAdded(appId);
 }
 
-void ApplicationManagerPrivate::unregisterApplication(const QString &appId)
+void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface)
 {
     Q_Q(ApplicationManager);
 
-    if (apps.remove(appId))
-        Q_EMIT q->applicationRemoved(appId);
+    const QString appId = surface->className();
+
+    if (appSurfaces.remove(surface) > 0) {
+        if (appSurfaces.count(surface) == 0) {
+            apps.remove(appId);
+            Q_EMIT q->applicationRemoved(appId);
+        }
+    }
 }
 
 /*

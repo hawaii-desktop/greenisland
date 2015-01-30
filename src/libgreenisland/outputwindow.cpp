@@ -32,9 +32,7 @@
 #include "globalregistry.h"
 #include "output.h"
 #include "outputwindow.h"
-#include "quicksurface.h"
 #include "windowview.h"
-#include "shellwindowview.h"
 
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
 

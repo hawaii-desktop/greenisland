@@ -37,8 +37,7 @@ class QWaylandInputDevice;
 
 namespace GreenIsland {
 
-class QuickSurface;
-class WindowView;
+class ClientWindow;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
 
@@ -51,10 +50,6 @@ public:
         Normal = 0,
         Maximized,
         FullScreen
-    };
-
-    enum Operation {
-        Move = QWaylandSurfaceOp::UserType
     };
 
     struct Changes {
@@ -80,8 +75,9 @@ public:
         QSizeF size;
     };
 
-    explicit XdgSurface(XdgShell *shell, QuickSurface *surface,
-                        wl_client *client, uint32_t id);
+    XdgSurface(XdgShell *shell, QWaylandSurface *surface,
+               wl_client *client, uint32_t id);
+    ~XdgSurface();
 
     uint32_t nextSerial() const;
 
@@ -89,18 +85,9 @@ public:
 
     State state() const;
 
-    GreenIsland::QuickSurface *surface() const;
+    QWaylandSurface *surface() const;
 
-    WindowView *view() const;
-    QQuickItem *window() const;
-
-    WindowView *parentView() const;
-    QQuickItem *parentWindow() const;
-
-    void setPosition(const QPointF &pt);
-
-    QPointF transientOffset() const;
-    void setTransientOffset(const QPointF &pt);
+    ClientWindow *window() const;
 
     void restore();
     void restoreAt(const QPointF &pos);
@@ -115,8 +102,8 @@ protected:
 
 private:
     XdgShell *m_shell;
-    QuickSurface *m_surface;
-    WindowView *m_view;
+    QWaylandSurface *m_surface;
+    ClientWindow *m_window;
 
     XdgSurfaceMoveGrabber *m_moveGrabber;
     XdgSurfaceResizeGrabber *m_resizeGrabber;
@@ -129,9 +116,13 @@ private:
 
     QMap<uint32_t, Changes> m_pendingChanges;
 
+    bool m_deleting;
+
 
     void moveWindow(QWaylandInputDevice *device);
 
+
+    void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void surface_destroy(Resource *resource) Q_DECL_OVERRIDE;
 

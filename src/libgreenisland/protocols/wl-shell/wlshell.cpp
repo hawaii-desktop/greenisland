@@ -26,7 +26,6 @@
 
 #include <QtCompositor/QtCompositorVersion>
 
-#include "quicksurface.h"
 #include "wlshell.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"
@@ -63,10 +62,12 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
-    if (!quickSurface)
-        return;
-    new WlShellSurface(this, quickSurface, resource->client(), id);
+    Q_ASSERT(surface);
+
+    WlShellSurface *shellSurface = new WlShellSurface(this, surface, resource->client(), id);
+    QObject::connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
+        shellSurface->deleteLater();
+    });
 }
 
 }

@@ -30,42 +30,34 @@
 #include <QtCompositor/QWaylandSurfaceInterface>
 
 #include "plasmashell.h"
-#include "shellwindowview.h"
+#include "shellwindow.h"
 
 namespace GreenIsland {
 
-class QuickSurface;
-
 class PlasmaSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::org_kde_plasma_surface
 {
-    Q_PROPERTY(ShellWindowView::Role role READ role NOTIFY roleChanged)
+    Q_OBJECT
 public:
-    explicit PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
-                           wl_client *client, uint32_t id);
+    PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
+                  wl_client *client, uint32_t id);
     ~PlasmaSurface();
 
-    ShellWindowView::Role role() const;
-
-    ShellWindowView *view() const;
+    ShellWindow *window() const;
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
 
-Q_SIGNALS:
-    void roleChanged();
-
 private:
     Compositor *m_compositor;
     PlasmaShell *m_shell;
-    QuickSurface *m_surface;
-    ShellWindowView *m_view;
-    ShellWindowView::Role m_role;
+    QWaylandSurface *m_surface;
+    ShellWindow *m_window;
     bool m_deleting;
 
-    ShellWindowView::Role wl2Role(uint32_t role);
-    QString role2String(const ShellWindowView::Role &role);
+    ShellWindow::Role wl2Role(uint32_t role);
+    QString role2String(const ShellWindow::Role &role);
 
-    ShellWindowView::Flags wl2Flags(uint32_t wlFlags);
+    ShellWindow::Flags wl2Flags(uint32_t wlFlags);
 
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 

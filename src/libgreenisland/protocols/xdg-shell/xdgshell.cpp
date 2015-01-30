@@ -29,7 +29,6 @@
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
-#include "quicksurface.h"
 #include "xdgshell.h"
 #include "xdgsurface.h"
 #include "xdgpopup.h"
@@ -82,10 +81,9 @@ void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
 void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
-    if (!quickSurface)
-        return;
-    new XdgSurface(this, quickSurface, resource->client(), id);
+    Q_ASSERT(surface);
+
+    new XdgSurface(this, surface, resource->client(), id);
 }
 
 void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource *surfaceResource,
@@ -95,7 +93,9 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
     Q_UNUSED(flags);
 
     QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
+    Q_ASSERT(parent);
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Q_ASSERT(surface);
 
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);

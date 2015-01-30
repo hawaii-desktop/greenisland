@@ -31,15 +31,9 @@
 #include <QtCore/QVariantMap>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QWaylandOutput>
 #include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
-#include "applicationmanager.h"
 #include "applicationmanager_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
 #  include "bufferattacher.h"
@@ -47,11 +41,10 @@
 #include "cmakedirs.h"
 #include "clientwindow.h"
 #include "compositor.h"
+#include "compositor_p.h"
 #include "config.h"
-#include "quicksurface.h"
 #include "windowview.h"
-#include "screenmanager.h"
-#include "shellwindowview.h"
+#include "shellwindow.h"
 
 #include "protocols/plasma/plasmaeffects.h"
 #include "protocols/plasma/plasmashell.h"
@@ -62,8 +55,6 @@
 #  include <systemd/sd-daemon.h>
 #endif
 
-typedef QList<QWaylandSurface *> QWaylandSurfaceList;
-
 namespace GreenIsland {
 
 QString Compositor::s_fixedPlugin;
@@ -71,38 +62,6 @@ QString Compositor::s_fixedPlugin;
 /*
  * CompositorPrivate
  */
-
-class CompositorPrivate
-{
-public:
-    CompositorPrivate(Compositor *self);
-
-    void dpms(bool on);
-
-    void _q_updateCursor(bool hasBuffer);
-
-    bool running;
-
-    Compositor::State state;
-    int idleInterval;
-    int idleInhibit;
-
-    // Cursor
-    QWaylandSurface *cursorSurface;
-    int cursorHotspotX;
-    int cursorHotspotY;
-
-    ScreenManager *screenManager;
-
-    // Application management
-    ApplicationManager *appManager;
-    QHash<QString, QWaylandSurfaceList> appSurfaces;
-    QList<ClientWindow *> clientWindows;
-
-protected:
-    Q_DECLARE_PUBLIC(Compositor)
-    Compositor *const q_ptr;
-};
 
 CompositorPrivate::CompositorPrivate(Compositor *self)
     : running(false)
@@ -116,6 +75,32 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 {
     screenManager = new ScreenManager(self);
     appManager = new ApplicationManager(self);
+}
+
+QQmlListProperty<ClientWindow> CompositorPrivate::windows()
+{
+    Q_Q(Compositor);
+
+    auto countFunc = [](QQmlListProperty<ClientWindow> *prop) {
+        return static_cast<Compositor *>(prop->object)->d_func()->clientWindowsList.count();
+    };
+    auto atFunc = [](QQmlListProperty<ClientWindow> *prop, int index) {
+        return static_cast<Compositor *>(prop->object)->d_func()->clientWindowsList.at(index);
+    };
+    return QQmlListProperty<ClientWindow>(q, 0, countFunc, atFunc);
+}
+
+QQmlListProperty<ShellWindow> CompositorPrivate::shellWindows()
+{
+    Q_Q(Compositor);
+
+    auto countFunc = [](QQmlListProperty<ShellWindow> *prop) {
+        return static_cast<Compositor *>(prop->object)->d_func()->shellWindowsList.count();
+    };
+    auto atFunc = [](QQmlListProperty<ShellWindow> *prop, int index) {
+        return static_cast<Compositor *>(prop->object)->d_func()->shellWindowsList.at(index);
+    };
+    return QQmlListProperty<ShellWindow>(q, 0, countFunc, atFunc);
 }
 
 void CompositorPrivate::dpms(bool on)
@@ -143,6 +128,37 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 #endif
 }
 
+void CompositorPrivate::mapWindow(ClientWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (!clientWindowsList.contains(window)) {
+        clientWindowsList.append(window);
+        Q_EMIT q->windowMapped(QVariant::fromValue(window));
+        Q_EMIT q->windowsChanged();
+    }
+}
+
+void CompositorPrivate::unmapWindow(ClientWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (clientWindowsList.removeOne(window)) {
+        Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
+        Q_EMIT q->windowsChanged();
+    }
+}
+
+void CompositorPrivate::destroyWindow(ClientWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (clientWindowsList.removeOne(window)) {
+        Q_EMIT q->windowDestroyed(QVariant::fromValue(window));
+        Q_EMIT q->windowsChanged();
+    }
+}
+
 /*
  * Compositor
  */
@@ -151,10 +167,6 @@ Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
-    qRegisterMetaType<QuickSurface *>("QuickSurface*");
-    qRegisterMetaType<Output *>("Output*");
-    qRegisterMetaType<WindowView *>("WindowView*");
-    qRegisterMetaType<ShellWindowView *>("ShellWindowView*");
 }
 
 Compositor::~Compositor()
@@ -162,8 +174,10 @@ Compositor::~Compositor()
     // Cleanup
     delete d_ptr->appManager;
     delete d_ptr->screenManager;
-    while (!d_ptr->clientWindows.isEmpty())
-        d_ptr->clientWindows.takeFirst()->deleteLater();
+    while (!d_ptr->clientWindowsList.isEmpty())
+        d_ptr->clientWindowsList.takeFirst()->deleteLater();
+    while (!d_ptr->shellWindowsList.isEmpty())
+        d_ptr->shellWindowsList.takeFirst()->deleteLater();
     delete d_ptr;
 
     // Delete windows and outputs
@@ -279,8 +293,9 @@ void Compositor::run()
         return;
 
     // Add global interfaces
-    addGlobalInterface(new PlasmaEffects());
-    addGlobalInterface(new PlasmaShell(this));
+    PlasmaShell *plasmaShell = new PlasmaShell(this);
+    addGlobalInterface(plasmaShell);
+    addGlobalInterface(new PlasmaEffects(plasmaShell));
     addGlobalInterface(new WlShell());
     addGlobalInterface(new XdgShell());
 
@@ -292,25 +307,22 @@ void Compositor::run()
 #endif
 }
 
-QWaylandSurface *Compositor::createSurface(QWaylandClient *client, quint32 id, int version)
-{
-    return new QuickSurface(client, id, version, this);
-}
-
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
 {
+    Q_D(const Compositor);
+
     // TODO: Views should probably ordered by z-index in order to really
     // pick the first view with that global coordinates
 
     for (QWaylandOutput *output: m_compositor->outputs()) {
         if (output->geometry().contains(globalPosition.toPoint())) {
             for (QWaylandSurface *surface: output->surfaces()) {
-                QuickSurface *quickSurface = qobject_cast<QuickSurface *>(surface);
-                if (!quickSurface)
-                    continue;
-
-                if (quickSurface->globalGeometry().contains(globalPosition))
-                    return quickSurface->views().at(0);
+                for (ClientWindow *window: d->clientWindowsList) {
+                    if (window->surface() != surface)
+                        continue;
+                    if (window->geometry().contains(globalPosition))
+                        return surface->views().at(0);
+                }
             }
         }
     }
@@ -318,163 +330,40 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     return Q_NULLPTR;
 }
 
-QWaylandSurfaceItem *Compositor::firstViewOf(QuickSurface *surface)
+QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 {
     if (!surface) {
         qWarning() << "First view of null surface requested!";
-        return nullptr;
-    }
-
-    return static_cast<WindowView *>(surface->views().first());
-}
-
-QWaylandSurfaceItem *Compositor::viewForOutput(QuickSurface *surface, Output *output)
-{
-    if (!surface) {
-        qWarning() << "View for a null surface requested!";
         return Q_NULLPTR;
     }
 
-    if (!output) {
-        qWarning() << "View for a null output requested!";
-        return Q_NULLPTR;
-    }
-
-    // Search a view for this output
-    for (QWaylandSurfaceView *surfaceView: surface->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-
-        if (view->output() == output)
-            return view;
-    }
-
-    // None was found: create one
-    return new WindowView(surface, output);
+    return static_cast<QWaylandSurfaceItem *>(surface->views().first());
 }
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
-    if (!surface)
-        return;
-
     Q_D(Compositor);
 
     // Connect surface signals
-    connect(surface, &QWaylandSurface::mapped, [=]() {
-        // Let the QML compositor handle mapped surfaces
+    connect(surface, &QWaylandSurface::mapped, [=] {
         Q_EMIT surfaceMapped(QVariant::fromValue(surface));
-
-        // Only toplevel windows qualify as important
-        if (surface->windowType() != QWaylandSurface::Toplevel)
-            return;
-
-        // Create application window instance
-        ClientWindow *appWindow = new ClientWindow(surface);
-        d->clientWindows.append(appWindow);
-
-        // Register application only if it's the first time this surface is mapped
-        const QString appId = surface->className();
-        if (!d->appSurfaces[appId].contains(surface)) {
-            d->appManager->d_func()->registerApplication(appId);
-            d->appSurfaces[appId].append(surface);
-        }
     });
-    connect(surface, &QWaylandSurface::unmapped, [=]() {
-        // Let the QML compositor handle unmapped surfaces
+    connect(surface, &QWaylandSurface::unmapped, [=] {
         Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
-
-        // Unregister application if the last surface is gone
-        const QString appId = surface->className();
-        d->appSurfaces[appId].removeOne(surface);
-        if (d->appSurfaces[appId].isEmpty())
-            d->appManager->d_func()->unregisterApplication(appId);
-
-        // Delete application window
-        QList<ClientWindow *>::iterator i = d->clientWindows.begin();
-        while (i != d->clientWindows.end()) {
-            ClientWindow *appWindow = (*i);
-            if (appWindow->surface() == surface) {
-                i = d->clientWindows.erase(i);
-                appWindow->deleteLater();
-                break;
-            } else {
-                ++i;
-            }
-        }
     });
-    connect(surface, &QWaylandSurface::surfaceDestroyed, [=]() {
-        // Let the QML compositor handle surface destruction
+    connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
         Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
     });
 }
 
-QPointF Compositor::calculateInitialPosition(QWaylandSurface *surface)
+QWaylandSurfaceView *Compositor::createView(QWaylandSurface *surf)
 {
-    // As a heuristic place the new window on the same output as the
-    // pointer. Falling back to the output containing 0,0.
-    // TODO: Do something clever for touch too
-    QPointF pos = defaultInputDevice()->handle()->pointerDevice()->currentPosition();
-
-    // Find the target screen (the one where the coordinates are in)
-    QRect geometry;
-    bool targetScreenFound = false;
-    for (int i = 0; i < outputs().size(); i++) {
-        geometry = outputs().at(i)->availableGeometry();
-        if (geometry.contains(pos.toPoint())) {
-            targetScreenFound = true;
-            break;
-        }
-    }
-
-    // Just move the surface to a random position if we can't find a target output
-    if (!targetScreenFound) {
-        pos.setX(10 + qrand() % 400);
-        pos.setY(10 + qrand() % 400);
-        return pos;
-    }
-
-    // Valid range within output where the surface will still be onscreen.
-    // If this is negative it means that the surface is bigger than
-    // output in this case we fallback to 0,0 in available geometry space.
-    int rangeX = geometry.size().width() - surface->size().width();
-    int rangeY = geometry.size().height() - surface->size().height();
-
-    int dx = 0, dy = 0;
-    if (rangeX > 0)
-        dx = qrand() % rangeX;
-    if (rangeY > 0)
-        dy = qrand() % rangeY;
-
-    // Set surface position
-    pos.setX(geometry.x() + dx);
-    pos.setY(geometry.y() + dy);
-
-    return pos;
+    return new WindowView(qobject_cast<QWaylandQuickSurface *>(surf));
 }
 
 void Compositor::abortSession()
 {
     QGuiApplication::quit();
-}
-
-QQmlListProperty<ClientWindow> Compositor::windows()
-{
-    Q_D(Compositor);
-    return QQmlListProperty<ClientWindow>(this, d->clientWindows);
-}
-
-int Compositor::windowCount() const
-{
-    Q_D(const Compositor);
-    return d->clientWindows.count();
-}
-
-ClientWindow *Compositor::window(int index) const
-{
-    Q_D(const Compositor);
-    return d->clientWindows.at(index);
 }
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)

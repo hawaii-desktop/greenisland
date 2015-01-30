@@ -31,9 +31,7 @@
 #include <GreenIsland/ClientWindow>
 #include <GreenIsland/Compositor>
 #include <GreenIsland/Output>
-#include <GreenIsland/QuickSurface>
-#include <GreenIsland/WindowView>
-#include <GreenIsland/ShellWindowView>
+#include <GreenIsland/ShellWindow>
 
 #include "fpscounter.h"
 
@@ -57,12 +55,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                              QStringLiteral("You can't create ClientWindow objects"));
     qmlRegisterUncreatableType<Output>(uri, 1, 0, "Output",
                                        QStringLiteral("You can't create Output objects"));
-    qmlRegisterUncreatableType<QuickSurface>(uri, 1, 0, "QuickSurface",
-                                             QStringLiteral("You can't create QuickSurface objects"));
-    qmlRegisterUncreatableType<WindowView>(uri, 1, 0, "WindowView",
-                                           QStringLiteral("You can't create WindowView objects"));
-    qmlRegisterUncreatableType<ShellWindowView>(uri, 1, 0, "ShellWindowView",
-                                                QStringLiteral("You can't create ShellWindowView objects"));
+    qmlRegisterUncreatableType<ShellWindow>(uri, 1, 0, "ShellWindow",
+                                            QStringLiteral("You can't create ShellWindow objects"));
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
 }
 

@@ -38,7 +38,7 @@ class QWaylandInputDevice;
 
 namespace GreenIsland {
 
-class QuickSurface;
+class ClientWindow;
 class WindowView;
 class WlShellSurfaceMoveGrabber;
 class WlShellSurfaceResizeGrabber;
@@ -55,38 +55,26 @@ public:
         FullScreen
     };
 
-    enum Operation {
-        Move = QWaylandSurfaceOp::UserType
-    };
-
-    explicit WlShellSurface(WlShell *shell, QuickSurface *surface,
-                            wl_client *client, uint32_t id);
+    WlShellSurface(WlShell *shell, QWaylandSurface *surface,
+                   wl_client *client, uint32_t id);
     ~WlShellSurface();
-
-    QWaylandSurface::WindowType type() const;
 
     State state() const;
 
-    QuickSurface *surface() const;
-
-    WindowView *view() const;
-    QQuickItem *window() const;
-
-    WindowView *parentView() const;
-    QQuickItem *parentWindow() const;
-
-    QPointF transientOffset() const;
-    void setTransientOffset(const QPointF &pt);
+    QWaylandSurface *surface() const;
+    ClientWindow *window() const;
 
     void restore();
+
+    void resetMoveGrab();
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
 
 private:
     WlShell *m_shell;
-    QuickSurface *m_surface;
-    WindowView *m_view;
+    QWaylandSurface *m_surface;
+    ClientWindow *m_window;
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;
     WlShellSurfaceResizeGrabber *m_resizeGrabber;

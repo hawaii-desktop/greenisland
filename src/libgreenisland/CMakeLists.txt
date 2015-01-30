@@ -28,10 +28,9 @@ set(SOURCES
     logging.cpp
     output.cpp
     outputwindow.cpp
-    quicksurface.cpp
     windowview.cpp
     screenmanager.cpp
-    shellwindowview.cpp
+    shellwindow.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/plasma/plasmaeffects.cpp
@@ -123,9 +122,8 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
     HomeApplication
     Output
     OutputWindow
-    QuickSurface
     WindowView
-    ShellWindowView
+    ShellWindow
   PREFIX
     GreenIsland
   REQUIRED_HEADERS GreenIsland_HEADERS
@@ -146,9 +144,8 @@ install(
       homeapplication.h
       output.h
       outputwindow.h
-      quicksurface.h
       windowview.h
-      shellwindowview.h
+      shellwindow.h
     DESTINATION
       ${GREENISLAND_INCLUDEDIR}/greenisland
     COMPONENT

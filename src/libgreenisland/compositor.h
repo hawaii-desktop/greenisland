@@ -38,8 +38,9 @@ class ApplicationManager;
 class ClientWindow;
 class CompositorPrivate;
 class Output;
-class QuickSurface;
 class ScreenManager;
+class ScreenManagerPrivate;
+class ShellWindow;
 
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
@@ -48,7 +49,8 @@ class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompos
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
-    Q_PROPERTY(QQmlListProperty<ClientWindow> windows READ windows)
+    Q_PRIVATE_PROPERTY(Compositor::d_func(), QQmlListProperty<ClientWindow> windows READ windows NOTIFY windowsChanged)
+    Q_PRIVATE_PROPERTY(Compositor::d_func(), QQmlListProperty<ShellWindow> shellWindows READ shellWindows NOTIFY shellWindowsChanged)
     Q_ENUMS(State)
 public:
     enum State {
@@ -62,7 +64,7 @@ public:
         Sleeping
     };
 
-    explicit Compositor(const QString &socket = QString());
+    Compositor(const QString &socket = QString());
     ~Compositor();
 
     State state() const;
@@ -79,24 +81,13 @@ public:
 
     void run();
 
-    QWaylandSurface *createSurface(QWaylandClient *client, quint32 id, int version);
-
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
+    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
 
-    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QuickSurface *surface);
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QuickSurface *surface, Output *output);
-
-    virtual void surfaceCreated(QWaylandSurface *surface);
-
-    Q_INVOKABLE QPointF calculateInitialPosition(QWaylandSurface *surface);
+    void surfaceCreated(QWaylandSurface *surface) Q_DECL_OVERRIDE;
+    QWaylandSurfaceView *createView(QWaylandSurface *surf) Q_DECL_OVERRIDE;
 
     Q_INVOKABLE void abortSession();
-
-    QQmlListProperty<ClientWindow> windows();
-    int windowCount() const;
-    ClientWindow *window(int) const;
-
-    QList<ClientWindow *> windowsList() const;
 
     static QString s_fixedPlugin;
 
@@ -105,9 +96,18 @@ Q_SIGNALS:
     void surfaceUnmapped(QVariant surface);
     void surfaceDestroyed(QVariant surface);
 
+    void windowMapped(QVariant window);
+    void windowUnmapped(QVariant window);
+    void windowDestroyed(QVariant window);
+
+    void shellWindowMapped(QVariant window);
+    void shellWindowUnmapped(QVariant window);
+
     void stateChanged();
     void idleIntervalChanged();
     void idleInhibitChanged();
+    void windowsChanged();
+    void shellWindowsChanged();
 
     void idleInhibitResetRequested();
     void idleTimerStartRequested();
@@ -129,6 +129,9 @@ private:
     CompositorPrivate *const d_ptr;
 
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
+
+    friend class ClientWindow;
+    friend class ScreenManagerPrivate;
 };
 
 }

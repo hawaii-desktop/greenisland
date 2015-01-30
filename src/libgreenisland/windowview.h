@@ -30,38 +30,17 @@
 #include <QtCompositor/QWaylandSurfaceItem>
 
 #include <greenisland/greenisland_export.h>
-#include <greenisland/output.h>
 
 namespace GreenIsland {
-
-class QuickSurface;
 
 class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
-    Q_PROPERTY(Output *output READ output CONSTANT)
-    Q_PROPERTY(Output *mainOutput READ mainOutput CONSTANT)
 public:
-    explicit WindowView(QuickSurface *surface, Output *output, QQuickItem *parent = 0);
-
-    QuickSurface *surface() const;
-
-    Output *output() const;
-
-    Output *mainOutput() const;
-
-Q_SIGNALS:
-    void raiseRequested();
+    WindowView(QWaylandQuickSurface *surface, QQuickItem *parent = 0);
 
 protected:
     void mousePressEvent(QMouseEvent *event);
-
-private:
-    QuickSurface *m_surface;
-    Output *m_output;
-
-    void sendEnter(Output *output);
-    void sendLeave(Output *output);
 };
 
 }

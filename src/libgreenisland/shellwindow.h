@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,27 +24,31 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SHELLWINDOWVIEW_H
-#define SHELLWINDOWVIEW_H
+#ifndef SHELLWINDOW_H
+#define SHELLWINDOW_H
 
-#include <QtCompositor/QWaylandSurfaceItem>
+#include <QtCore/QObject>
 
 #include <greenisland/greenisland_export.h>
 
+class QWaylandOutput;
+class QWaylandSurface;
+class QWaylandSurfaceItem;
+
 namespace GreenIsland {
 
-class Output;
-
-class GREENISLAND_EXPORT ShellWindowView : public QWaylandSurfaceItem
+class GREENISLAND_EXPORT ShellWindow : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
+    Q_PROPERTY(QWaylandSurfaceItem *view READ view CONSTANT)
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(Flags flags READ flags WRITE setFlags NOTIFY flagsChanged)
-    Q_PROPERTY(Output *output READ output WRITE setOutput NOTIFY outputChanged)
+    Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
     Q_ENUMS(Role Flag)
 public:
     enum Role {
-        NoneRole = 0,
+        UnknownRole = 0,
         SplashRole,
         DesktopRole,
         DashboardRole,
@@ -62,8 +66,13 @@ public:
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
-    explicit ShellWindowView(QWaylandQuickSurface *surface, Output *output,
-                             QQuickItem *parent = 0);
+    ShellWindow(QWaylandSurface *surface, QObject *parent = 0);
+    ~ShellWindow();
+
+    QWaylandSurface *surface() const;
+    QWaylandSurfaceItem *view() const;
+
+    QWaylandOutput *output() const;
 
     Role role() const;
     void setRole(const Role &role);
@@ -71,22 +80,22 @@ public:
     Flags flags() const;
     void setFlags(const Flags &flags);
 
-    Output *output() const;
-    void setOutput(Output *output);
-
 Q_SIGNALS:
     void roleChanged();
     void flagsChanged();
     void outputChanged();
+    void moveRequested(const QPointF &from, const QPointF &to);
+    void moveRequested(const QPointF &to);
 
 private:
     Role m_role;
     Flags m_flags;
-    Output *m_output;
+    QWaylandSurface *m_surface;
+    QWaylandSurfaceItem *m_view;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(ShellWindowView::Flags)
+Q_DECLARE_OPERATORS_FOR_FLAGS(ShellWindow::Flags)
 
 }
 
-#endif // SHELLWINDOWVIEW_H
+#endif // SHELLWINDOW_H

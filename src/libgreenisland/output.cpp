@@ -115,6 +115,8 @@ Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
                           output->edid()->vendor(), output->edid()->serial())
     , d_ptr(new OutputPrivate(this))
 {
+    qRegisterMetaType<Output *>("Output*");
+
     Q_D(Output);
     d->compositor = compositor;
     d->output = output;

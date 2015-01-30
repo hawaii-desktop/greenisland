@@ -27,6 +27,7 @@
 #ifndef APPLICATIONMANAGER_P_H
 #define APPLICATIONMANAGER_P_H
 
+#include <QtCore/QHash>
 #include <QtCore/QSet>
 
 //  W A R N I N G
@@ -38,6 +39,8 @@
 //
 // We mean it.
 
+class QWaylandSurface;
+
 namespace GreenIsland {
 
 class ApplicationManager;
@@ -48,10 +51,11 @@ class ApplicationManagerPrivate
 public:
     ApplicationManagerPrivate(ApplicationManager *parent);
 
-    void registerApplication(const QString &appId);
-    void unregisterApplication(const QString &appId);
+    void registerSurface(QWaylandSurface *surface);
+    void unregisterSurface(QWaylandSurface *surface);
 
     QSet<QString> apps;
+    QHash<QWaylandSurface *, QString> appSurfaces;
 
 protected:
     ApplicationManager *q_ptr;

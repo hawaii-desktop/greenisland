@@ -27,6 +27,7 @@
 #ifndef PLASMASHELL_H
 #define PLASMASHELL_H
 
+#include <QtCore/QObject>
 #include <QtCore/QHash>
 #include <QtCompositor/QWaylandGlobalInterface>
 
@@ -41,7 +42,8 @@ class PlasmaShell : public QObject, public QWaylandGlobalInterface, public QtWay
 {
     Q_OBJECT
 public:
-    explicit PlasmaShell(Compositor *compositor);
+    PlasmaShell(Compositor *compositor);
+    ~PlasmaShell();
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;

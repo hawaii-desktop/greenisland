@@ -31,18 +31,17 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "clientwindow.h"
 #include "output.h"
-#include "quicksurface.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacemovegrabber.h"
 #include "wlshellsurfaceresizegrabber.h"
 #include "wlshellsurfacepopupgrabber.h"
 #include "windowview.h"
-#include <QDebug>
 
 namespace GreenIsland {
 
-WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
+WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
                                wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
 #if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -60,28 +59,28 @@ WlShellSurface::WlShellSurface(WlShell *shell, QuickSurface *surface,
     , m_prevState(Normal)
     , m_deleting(false)
 {
-    // Create a view for the first output
-    Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new WindowView(m_surface, output);
+    // Create client window
+    m_window = new ClientWindow(surface, this);
 
-    // Surface mapping and unmapping
-    connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
+    // Surface events
+    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     });
-    connect(m_surface, &QuickSurface::mapped, [=]() {
-        if (m_surface->windowType() != QuickSurface::Popup)
-            return;
-
-        if (m_popupGrabber->serial() == m_popupSerial) {
-            m_popupGrabber->addPopup(this);
-        } else {
-            send_popup_done();
-            m_popupGrabber->m_client = Q_NULLPTR;
+    connect(m_surface, &QWaylandSurface::mapped, [=]() {
+        // Popup behavior
+        if (m_surface->windowType() == QWaylandSurface::Popup) {
+            if (m_popupGrabber->serial() == m_popupSerial) {
+                m_popupGrabber->addPopup(this);
+            } else {
+                send_popup_done();
+                m_popupGrabber->m_client = Q_NULLPTR;
+            }
         }
     });
-    connect(m_surface, &QuickSurface::unmapped, [=]() {
-        if (m_surface->windowType() == QuickSurface::Popup) {
+    connect(m_surface, &QWaylandSurface::unmapped, [=]() {
+        // Popup behavior
+        if (m_surface->windowType() == QWaylandSurface::Popup) {
             send_popup_done();
             m_popupGrabber->removePopup(this);
             m_popupGrabber->m_client = Q_NULLPTR;
@@ -100,65 +99,19 @@ WlShellSurface::~WlShellSurface()
     }
 }
 
-QWaylandSurface::WindowType WlShellSurface::type() const
-{
-    return m_surface->windowType();
-}
-
 WlShellSurface::State WlShellSurface::state() const
 {
     return m_state;
 }
 
-QuickSurface *WlShellSurface::surface() const
+QWaylandSurface *WlShellSurface::surface() const
 {
     return m_surface;
 }
 
-WindowView *WlShellSurface::view() const
+ClientWindow *WlShellSurface::window() const
 {
-    return m_view;
-}
-
-QQuickItem *WlShellSurface::window() const
-{
-    return m_view->parentItem();
-}
-
-WindowView *WlShellSurface::parentView() const
-{
-    QWaylandSurface *transientParent = m_surface->transientParent();
-    if (!transientParent)
-        return Q_NULLPTR;
-
-    for (QWaylandSurfaceView *surfaceView: transientParent->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-
-        if (view->output() == m_view->output())
-            return view;
-    }
-
-    return Q_NULLPTR;
-}
-
-QQuickItem *WlShellSurface::parentWindow() const
-{
-    if (parentView() && parentView()->parentItem())
-        return parentView()->parentItem();
-
-    return Q_NULLPTR;
-}
-
-QPointF WlShellSurface::transientOffset() const
-{
-    return m_surface->transientOffset();
-}
-
-void WlShellSurface::setTransientOffset(const QPointF &pt)
-{
-    m_surface->handle()->setTransientOffset(pt.x(), pt.y());
+    return m_window;
 }
 
 void WlShellSurface::restore()
@@ -170,11 +123,21 @@ void WlShellSurface::restore()
     // Restore previous state and position
     m_prevState = m_state;
     m_state = Normal;
-    m_surface->setGlobalPosition(m_prevGlobalGeometry.topLeft());
-    m_surface->setState(static_cast<QuickSurface::State>(m_state));
+    m_window->setPosition(m_prevGlobalGeometry.topLeft());
+    m_window->unmaximize();
+    m_window->setFullScreen(false);
 
     // Actually resize it
     requestResize(m_prevGlobalGeometry.size().toSize());
+}
+
+void WlShellSurface::resetMoveGrab()
+{
+    m_moveGrabber = Q_NULLPTR;
+
+    // Notify that motion has finished (a QML shell might want to enable
+    // x,y animations again)
+    Q_EMIT m_window->motionFinished();
 }
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
@@ -186,7 +149,7 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Resize:
         requestResize(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
         return true;
-    case Move:
+    case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
         return true;
     default:
@@ -218,8 +181,12 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
-    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_surface->globalPosition());
+    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_window->position());
     pointer->startGrab(m_moveGrabber);
+
+    // Notify that motion is starting (a QML shell might want to disable x,y animations
+    // to make the movement smoother)
+    Q_EMIT m_window->motionStarted();
 }
 
 void WlShellSurface::requestResize(const QSize &size)
@@ -305,9 +272,10 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
     if (m_state == Maximized || m_state == FullScreen) {
         m_prevState = m_state;
         m_state = Normal;
-        m_surface->setGlobalPosition(m_prevGlobalGeometry.topLeft());
+        m_window->setPosition(m_prevGlobalGeometry.topLeft());
         requestResize(m_prevGlobalGeometry.size().toSize());
-        m_surface->setState(static_cast<QuickSurface::State>(m_state));
+        m_window->unmaximize();
+        m_window->setFullScreen(false);
     }
 }
 
@@ -335,11 +303,11 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
 
     // Save global geometry before resizing, it will be restored
     // with the next set_toplevel() call
-    m_prevGlobalGeometry = m_surface->globalGeometry();
+    m_prevGlobalGeometry = m_window->geometry();
 
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
-            : m_view->mainOutput();
+            : m_window->output();
 
     // Resize
     send_configure(resize_bottom_right,
@@ -348,13 +316,13 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
 
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
-    m_surface->setGlobalPosition(QPointF(output->geometry().topLeft()));
+    m_window->setPosition(QPointF(output->geometry().topLeft()));
     requestResize(output->geometry().size());
 
     // Set state
     m_prevState = m_state;
     m_state = FullScreen;
-    m_surface->setState(static_cast<QuickSurface::State>(m_state));
+    m_window->setFullScreen(true);
 }
 
 void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *seat,
@@ -381,25 +349,25 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
-            : m_view->mainOutput();
+            : m_window->output();
 
     // Save global geometry before resizing, it will be restored with the next
     // set_toplevel() call but if the window starts maximized we don't have
     // a valid previous geometry so we set it to output available geometry
-    if (m_surface->globalGeometry().isValid())
-        m_prevGlobalGeometry = m_surface->globalGeometry();
+    if (m_window->geometry().isValid())
+        m_prevGlobalGeometry = m_window->geometry();
     else
         m_prevGlobalGeometry = output->availableGeometry();
 
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
-    m_surface->setGlobalPosition(QPointF(output->availableGeometry().topLeft()));
+    m_window->setPosition(QPointF(output->availableGeometry().topLeft()));
     requestResize(output->availableGeometry().size());
 
     // Set state
     m_prevState = m_state;
     m_state = Maximized;
-    m_surface->setState(static_cast<QuickSurface::State>(m_state));
+    m_window->maximize();
 }
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)

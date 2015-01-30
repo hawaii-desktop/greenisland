@@ -27,9 +27,8 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
-#include "quicksurface.h"
+#include "clientwindow.h"
 #include "xdgsurfacemovegrabber.h"
-#include "windowview.h"
 
 namespace GreenIsland {
 
@@ -53,26 +52,30 @@ void XdgSurfaceMoveGrabber::motion(uint32_t time)
     // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
 
+    // Window
+    ClientWindow *window = m_shellSurface->window();
+    if (!window)
+        return;
+
     // Top level windows
-    if (m_shellSurface->type() == QWaylandSurface::Toplevel) {
+    if (window->type() == ClientWindow::TopLevel) {
         // Move the window representation
-        if (m_shellSurface->state() == XdgSurface::Maximized) {
+        if (window->isMaximized()) {
             // Maximized windows if dragged are restored to the original position,
             // but we want to do that with a threshold to avoid unintended grabs
             QPointF threshold(m_offset + QPointF(20, 20));
-            if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
+            if (pt.x() >= threshold.x() || pt.y() >= threshold.y())
                 m_shellSurface->restoreAt(pt);
-            }
         } else {
-            m_shellSurface->surface()->setGlobalPosition(pt);
+            window->setPosition(pt);
         }
     }
 
     // Move parent, transient will be moved automatically preserving its offset
     // because it's a child QML item
-    WindowView *parentView = m_shellSurface->parentView();
-    if (parentView && parentView->surface())
-        parentView->surface()->setGlobalPosition(pt - m_shellSurface->transientOffset());
+    ClientWindow *parentWindow = window->parentWindow();
+    if (parentWindow)
+        parentWindow->setPosition(pt - m_shellSurface->surface()->transientOffset());
 }
 
 void XdgSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)

@@ -28,14 +28,13 @@
 #include <QtCompositor/QtCompositorVersion>
 
 #include "compositor.h"
-#include "output.h"
+#include "compositor_p.h"
 #include "plasmasurface.h"
-#include "quicksurface.h"
-#include "shellwindowview.h"
+#include "output.h"
 
 namespace GreenIsland {
 
-PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
+PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
                              wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
 #if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -46,19 +45,14 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QuickSurface *surface,
     , m_compositor(static_cast<Compositor *>(surface->compositor()))
     , m_shell(shell)
     , m_surface(surface)
-    , m_role(ShellWindowView::NoneRole)
-    , m_deleting(true)
+    , m_window(new ShellWindow(surface, this))
+    , m_deleting(false)
 {
-    // Create a view for the first output
-    Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new ShellWindowView(m_surface, output);
     qDebug() << "New Plasma surface" << m_surface;
 
-    // Map surface
-    connect(m_surface, &QuickSurface::configure, [&](bool hasBuffer) {
-        // Not until it has a role (unless it's an unmap)
-        if (m_role == ShellWindowView::NoneRole && hasBuffer)
-            return;
+    // Surface events
+    connect(m_surface, &QWaylandSurface::configure, [&](bool hasBuffer) {
+        // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     });
 }
@@ -73,14 +67,9 @@ PlasmaSurface::~PlasmaSurface()
     }
 }
 
-ShellWindowView::Role PlasmaSurface::role() const
+ShellWindow *PlasmaSurface::window() const
 {
-    return m_role;
-}
-
-ShellWindowView *PlasmaSurface::view() const
-{
-    return m_view;
+    return m_window;
 }
 
 bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
@@ -96,68 +85,68 @@ bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
     return false;
 }
 
-ShellWindowView::Role PlasmaSurface::wl2Role(uint32_t role)
+ShellWindow::Role PlasmaSurface::wl2Role(uint32_t role)
 {
     switch (role) {
     case role_splash:
-        return ShellWindowView::SplashRole;
+        return ShellWindow::SplashRole;
     case role_desktop:
-        return ShellWindowView::DesktopRole;
+        return ShellWindow::DesktopRole;
     case role_dashboard:
-        return ShellWindowView::DashboardRole;
+        return ShellWindow::DashboardRole;
     case role_panel:
-        return ShellWindowView::PanelRole;
+        return ShellWindow::PanelRole;
     case role_overlay:
-        return ShellWindowView::OverlayRole;
+        return ShellWindow::OverlayRole;
     case role_notification:
-        return ShellWindowView::NotificationRole;
+        return ShellWindow::NotificationRole;
     case role_lock:
-        return ShellWindowView::LockRole;
+        return ShellWindow::LockRole;
     default:
         break;
     }
 
-    return ShellWindowView::NoneRole;
+    return ShellWindow::UnknownRole;
 }
 
-ShellWindowView::Flags PlasmaSurface::wl2Flags(uint32_t wlFlags)
+ShellWindow::Flags PlasmaSurface::wl2Flags(uint32_t wlFlags)
 {
-    ShellWindowView::Flags flags = 0;
+    ShellWindow::Flags flags = 0;
 
     if (wlFlags & flag_panel_always_visible)
-        flags |= ShellWindowView::PanelAlwaysVisible;
+        flags |= ShellWindow::PanelAlwaysVisible;
     if (wlFlags & flag_panel_auto_hide)
-        flags |= ShellWindowView::PanelAutoHide;
+        flags |= ShellWindow::PanelAutoHide;
     if (wlFlags & flag_panel_windows_can_cover)
-        flags |= ShellWindowView::PanelWindowsCanCover;
+        flags |= ShellWindow::PanelWindowsCanCover;
     if (wlFlags & flag_panel_windows_go_below)
-        flags |= ShellWindowView::PanelWindowsGoBelow;
+        flags |= ShellWindow::PanelWindowsGoBelow;
 
     return flags;
 }
 
-QString PlasmaSurface::role2String(const ShellWindowView::Role &role)
+QString PlasmaSurface::role2String(const ShellWindow::Role &role)
 {
     switch (role) {
-    case ShellWindowView::SplashRole:
+    case ShellWindow::SplashRole:
         return QStringLiteral("Splash");
-    case ShellWindowView::DesktopRole:
+    case ShellWindow::DesktopRole:
         return QStringLiteral("Desktop");
-    case ShellWindowView::DashboardRole:
+    case ShellWindow::DashboardRole:
         return QStringLiteral("Dashboard");
-    case ShellWindowView::PanelRole:
+    case ShellWindow::PanelRole:
         return QStringLiteral("Panel");
-    case ShellWindowView::OverlayRole:
+    case ShellWindow::OverlayRole:
         return QStringLiteral("Overlay");
-    case ShellWindowView::NotificationRole:
+    case ShellWindow::NotificationRole:
         return QStringLiteral("Notification");
-    case ShellWindowView::LockRole:
+    case ShellWindow::LockRole:
         return QStringLiteral("Lock");
     default:
         break;
     }
 
-    return QStringLiteral("None");
+    return QStringLiteral("Unknown");
 }
 
 void PlasmaSurface::surface_destroy_resource(Resource *resource)
@@ -186,8 +175,16 @@ void PlasmaSurface::surface_set_output(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    Output *output = qobject_cast<Output *>(Output::fromResource(outputResource));
-    m_view->setOutput(output);
+    // Move the surface to another output
+    // TODO: Maybe check whether a surface with the same role already exist
+    // on the new output
+    QWaylandOutput *oldOutput = m_surface->output();
+    QWaylandOutput *newOutput = QWaylandOutput::fromResource(outputResource);
+    oldOutput->removeSurface(m_surface);
+    m_surface->setMapped(false);
+    newOutput->addSurface(m_surface);
+    m_surface->setMapped(true);
+    Q_EMIT m_window->outputChanged();
 }
 
 void PlasmaSurface::surface_set_position(Resource *resource,
@@ -195,7 +192,7 @@ void PlasmaSurface::surface_set_position(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    m_surface->setGlobalPosition(QPointF(x, y));
+    Q_EMIT m_window->moveRequested(QPointF(x, y));
 }
 
 void PlasmaSurface::surface_set_role(Resource *resource,
@@ -203,16 +200,18 @@ void PlasmaSurface::surface_set_role(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    ShellWindowView::Role role = wl2Role(wlRole);
+    ShellWindow::Role role = wl2Role(wlRole);
 
     // Some roles are exclusive
     switch (role) {
-    case ShellWindowView::SplashRole:
-    case ShellWindowView::DesktopRole:
-    case ShellWindowView::DashboardRole:
-    case ShellWindowView::LockRole:
-        for (PlasmaSurface *s: m_shell->surfaces()) {
-            if (s->role() == role && s->view()->output() == m_view->output()) {
+    case ShellWindow::SplashRole:
+    case ShellWindow::DesktopRole:
+    case ShellWindow::DashboardRole:
+    case ShellWindow::LockRole:
+        Q_FOREACH (const PlasmaSurface *plasmaSurface, m_shell->surfaces()) {
+            if (plasmaSurface->window() == m_window)
+                continue;
+            if (plasmaSurface->window()->role() == role) {
                 const QString msg = QStringLiteral("Surface already has role \"%1\"");
                 const QString errMsg = msg.arg(role2String(role));
                 qWarning("%s", qPrintable(errMsg));
@@ -227,23 +226,11 @@ void PlasmaSurface::surface_set_role(Resource *resource,
     }
 
     // Set role
-    m_role = role;
-    m_view->setRole(m_role);
+    m_window->setRole(role);
 
     // Show splash layer when a splash role is set
-    if (m_role == ShellWindowView::SplashRole)
+    if (role == ShellWindow::SplashRole)
         Q_EMIT m_compositor->fadeOut();
-
-    // Set position to 0,0 for some roles
-    switch (m_role) {
-    case ShellWindowView::DesktopRole:
-    case ShellWindowView::DashboardRole:
-    case ShellWindowView::LockRole:
-        m_surface->setGlobalPosition(m_view->output()->mapToGlobal(QPointF(0, 0)));
-        break;
-    default:
-        break;
-    }
 }
 
 void PlasmaSurface::surface_set_flags(Resource *resource,
@@ -251,8 +238,8 @@ void PlasmaSurface::surface_set_flags(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    ShellWindowView::Flags flags = wl2Flags(wlFlags);
-    m_view->setFlags(flags);
+    ShellWindow::Flags flags = wl2Flags(wlFlags);
+    m_window->setFlags(flags);
 }
 
 void PlasmaSurface::surface_set_screen_edge(Resource *resource,

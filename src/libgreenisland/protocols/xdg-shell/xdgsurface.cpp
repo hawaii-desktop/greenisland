@@ -33,8 +33,8 @@
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
+#include "clientwindow.h"
 #include "output.h"
-#include "quicksurface.h"
 #include "windowview.h"
 #include "xdgsurface.h"
 #include "xdgsurfacemovegrabber.h"
@@ -42,7 +42,7 @@
 
 namespace GreenIsland {
 
-XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
+XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
                        wl_client *client, uint32_t id)
     : QWaylandSurfaceInterface(surface)
 #if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
@@ -56,39 +56,42 @@ XdgSurface::XdgSurface(XdgShell *shell, QuickSurface *surface,
     , m_resizeGrabber(Q_NULLPTR)
     , m_minimized(false)
     , m_state(Normal)
+    , m_deleting(false)
 {
-    // Destroy this when the surface is destroyed
-    connect(surface, &QuickSurface::surfaceDestroyed, [=]() {
-        m_surface = Q_NULLPTR;
-        this->deleteLater();
-    });
-
-    // Create a view for the first output
-    Output *output = qobject_cast<Output *>(m_surface->compositor()->outputs().at(0));
-    m_view = new WindowView(surface, output);
-
     // This is a toplevel window by default
     m_surface->handle()->setTransientParent(Q_NULLPTR);
     m_surface->handle()->setTransientOffset(0, 0);
     setSurfaceType(QWaylandSurface::Toplevel);
 
-    // Map surface
-    connect(m_surface, &QuickSurface::configure, [=](bool hasBuffer) {
-        m_surface->setMapped(hasBuffer);
-    });
+    // Create client window
+    m_window = new ClientWindow(surface, this);
 
     // Tell the client when this window is active
-    connect(m_view, &WindowView::focusChanged, [=](bool focus) {
-        if (!m_surface)
-            return;
-
+    connect(m_window, &ClientWindow::activeChanged, [=] {
         Changes changes;
         changes.newState = false;
-        changes.active = focus;
+        changes.active = m_window->isActive();
         changes.moving = false;
         changes.resizing = false;
         requestConfigure(changes);
     });
+
+    // Surface events
+    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+        // Map or unmap the surface
+        m_surface->setMapped(hasBuffer);
+    });
+}
+
+XdgSurface::~XdgSurface()
+{
+    // Destroy the resource here but don't do it if the destructor is
+    // called by shell_surface_destroy_resource() which happens when
+    // the resource is destroyed
+    if (!m_deleting) {
+        m_deleting = true;
+        wl_resource_destroy(resource()->handle);
+    }
 }
 
 uint32_t XdgSurface::nextSerial() const
@@ -106,55 +109,14 @@ XdgSurface::State XdgSurface::state() const
     return m_state;
 }
 
-QuickSurface *XdgSurface::surface() const
+QWaylandSurface *XdgSurface::surface() const
 {
     return m_surface;
 }
 
-WindowView *XdgSurface::view() const
+ClientWindow *XdgSurface::window() const
 {
-    return m_view;
-}
-
-QQuickItem *XdgSurface::window() const
-{
-    return m_view->parentItem();
-}
-
-WindowView *XdgSurface::parentView() const
-{
-    QWaylandSurface *transientParent = m_surface->transientParent();
-    if (!transientParent)
-        return Q_NULLPTR;
-
-    for (QWaylandSurfaceView *surfaceView: transientParent->views()) {
-        WindowView *view = static_cast<WindowView *>(surfaceView);
-        if (!view)
-            continue;
-
-        if (view->output() == m_view->output())
-            return view;
-    }
-
-    return Q_NULLPTR;
-}
-
-QQuickItem *XdgSurface::parentWindow() const
-{
-    if (parentView() && parentView()->parentItem())
-        return parentView()->parentItem();
-
-    return Q_NULLPTR;
-}
-
-QPointF XdgSurface::transientOffset() const
-{
-    return m_surface->transientOffset();
-}
-
-void XdgSurface::setTransientOffset(const QPointF &pt)
-{
-    m_surface->handle()->setTransientOffset(pt.x(), pt.y());
+    return m_window;
 }
 
 void XdgSurface::restore()
@@ -171,7 +133,7 @@ void XdgSurface::restoreAt(const QPointF &pos)
     // Restore previous geometry
     Changes changes;
     changes.newState = true;
-    changes.active = m_view->hasFocus();
+    changes.active = m_window->isActive();
     changes.state = Normal;
     changes.moving = true;
     changes.resizing = true;
@@ -183,6 +145,10 @@ void XdgSurface::restoreAt(const QPointF &pos)
 void XdgSurface::resetMoveGrab()
 {
     m_moveGrabber = Q_NULLPTR;
+
+    // Notify that motion has finished (a QML shell might want to enable
+    // x,y animations again)
+    Q_EMIT m_window->motionFinished();
 }
 
 void XdgSurface::resetResizeGrab()
@@ -236,7 +202,7 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
         return true;
     case QWaylandSurfaceOp::Resize: {
         Changes changes;
-        changes.active = m_view->hasFocus();
+        changes.active = m_window->isActive();
         changes.resizing = true;
         changes.size = QSizeF(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
         requestConfigure(changes);
@@ -245,7 +211,7 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Ping:
         m_shell->pingSurface(this);
         return true;
-    case Move:
+    case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
         return true;
     default:
@@ -271,13 +237,28 @@ void XdgSurface::moveWindow(QWaylandInputDevice *device)
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
-    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_surface->globalPosition());
+    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_window->position());
     pointer->startGrab(m_moveGrabber);
+
+    // Notify that motion is starting (a QML shell might want to disable x,y animations
+    // to make the movement smoother)
+    Q_EMIT m_window->motionStarted();
+}
+
+void XdgSurface::surface_destroy_resource(Resource *resource)
+{
+    Q_UNUSED(resource);
+
+    // Don't delete twice if we are here from the destructor
+    if (!m_deleting) {
+        m_deleting = true;
+        delete this;
+    }
 }
 
 void XdgSurface::surface_destroy(Resource *resource)
 {
-    Q_UNUSED(resource);
+    wl_resource_destroy(resource->handle);
 }
 
 void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResource)
@@ -312,15 +293,14 @@ void XdgSurface::surface_set_app_id(Resource *resource, const QString &app_id)
     setSurfaceClassName(app_id);
 }
 
-void XdgSurface::surface_show_window_menu(Resource *resource, wl_resource *seat, uint32_t serial, int32_t x, int32_t y)
+void XdgSurface::surface_show_window_menu(Resource *resource, wl_resource *seat,
+                                          uint32_t serial, int32_t x, int32_t y)
 {
     Q_UNUSED(resource);
     Q_UNUSED(seat);
     Q_UNUSED(serial);
-    Q_UNUSED(x);
-    Q_UNUSED(y);
 
-    // TODO:
+    Q_EMIT m_window->windowMenuRequested(QPoint(x, y));
 }
 
 void XdgSurface::surface_move(Resource *resource, wl_resource *seat, uint32_t serial)
@@ -374,46 +354,34 @@ void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
 
         switch (m_state) {
         case Normal:
-            m_surface->setState(QuickSurface::Normal);
+            m_window->unmaximize();
+            m_window->setFullScreen(false);
             break;
         case Maximized:
-            m_surface->setState(QuickSurface::Maximized);
+            m_window->maximize();
             break;
         case FullScreen:
-            m_surface->setState(QuickSurface::FullScreen);
+            m_window->setFullScreen(true);
             break;
         default:
             break;
         }
     }
 
-    // Set global space geometry
-    bool changed = false;
-    QRectF geometry = m_surface->globalGeometry();
+    // Save previous geometry and move window
     if (changes.moving) {
-        geometry.setTopLeft(changes.position);
-        changed = true;
-    }
-    if (changes.resizing && changes.size.isValid()) {
-        geometry.setSize(changes.size);
-        changed = true;
-    }
-    if (changed) {
-        // Save global space geometry and set position
-        m_savedGeometry = m_surface->globalGeometry();
-        m_surface->setGlobalPosition(geometry.topLeft());
+        m_savedGeometry = m_window->geometry();
+        m_window->setPosition(changes.position);
     }
 }
 
-void XdgSurface::surface_set_window_geometry(Resource *resource, int32_t x, int32_t y, int32_t width, int32_t height)
+void XdgSurface::surface_set_window_geometry(Resource *resource,
+                                             int32_t x, int32_t y,
+                                             int32_t width, int32_t height)
 {
     Q_UNUSED(resource);
-    Q_UNUSED(x);
-    Q_UNUSED(y);
-    Q_UNUSED(width);
-    Q_UNUSED(height);
 
-    // TODO:
+    m_window->setInternalGeometry(QRectF(QPointF(x, y), QSizeF(width, height)));
 }
 
 void XdgSurface::surface_set_maximized(Resource *resource)
@@ -429,14 +397,14 @@ void XdgSurface::surface_set_maximized(Resource *resource)
         return;
 
     // New global space geometry
-    QRectF geometry = m_view->mainOutput()->availableGeometry();
+    QRectF geometry = m_window->output()->availableGeometry();
 
     // Ask for a resize on the output where the biggest part of the window
     // is mapped and set pending state, we'll complete the operation as
     // soon as we receive the ACK
     Changes changes;
     changes.newState = true;
-    changes.active = m_view->hasFocus();
+    changes.active = m_window->isActive();
     changes.state = Maximized;
     changes.moving = true;
     changes.resizing = true;
@@ -453,7 +421,7 @@ void XdgSurface::surface_unset_maximized(Resource *resource)
     // ACK is received
     Changes changes;
     changes.newState = true;
-    changes.active = m_view->hasFocus();
+    changes.active = m_window->isActive();
     changes.state = m_savedState;
     changes.moving = true;
     changes.resizing = true;
@@ -475,15 +443,15 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
         return;
 
     // Determine output (either specified output or main output)
-    Output *output = m_view->mainOutput();
+    QWaylandOutput *output = m_window->output();
     if (outputResource)
-        output = qobject_cast<Output *>(Output::fromResource(outputResource));
+        output = QWaylandOutput::fromResource(outputResource);
 
     // Ask for a resize on the output and set pending state,
     // we'll complete the operation as soon as we receive the ACK
     Changes changes;
     changes.newState = true;
-    changes.active = m_view->hasFocus();
+    changes.active = m_window->isActive();
     changes.state = FullScreen;
     changes.moving = true;
     changes.resizing = true;
@@ -500,7 +468,7 @@ void XdgSurface::surface_unset_fullscreen(Resource *resource)
     // ACK is received
     Changes changes;
     changes.newState = true;
-    changes.active = m_view->hasFocus();
+    changes.active = m_window->isActive();
     changes.state = m_savedState;
     changes.moving = true;
     changes.resizing = true;
@@ -513,10 +481,8 @@ void XdgSurface::surface_set_minimized(Resource *resource)
 {
     Q_UNUSED(resource);
 
-    // Set flag and hide the window representation
     m_minimized = true;
-    if (window())
-        window()->setVisible(false);
+    m_window->minimize();
 }
 
 }

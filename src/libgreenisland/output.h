@@ -46,7 +46,6 @@ class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
     Q_PROPERTY(int number READ number CONSTANT)
     Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
 public:
-    Output(Compositor *compositor, KScreen::Output *output);
     Output(Compositor *compositor, const KScreen::OutputPtr &output);
 
     Compositor *compositor() const;

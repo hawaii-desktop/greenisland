@@ -32,16 +32,19 @@
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "compositor.h"
-#include "output.h"
 #include "plasmashell.h"
 #include "plasmasurface.h"
-#include "quicksurface.h"
 
 namespace GreenIsland {
 
 PlasmaShell::PlasmaShell(Compositor *compositor)
     : m_compositor(compositor)
 {
+}
+
+PlasmaShell::~PlasmaShell()
+{
+    qDeleteAll(m_surfaces);
 }
 
 const wl_interface *PlasmaShell::interface() const
@@ -66,8 +69,7 @@ QList<PlasmaSurface *> PlasmaShell::surfaces() const
 void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
                        wl_resource *surfaceResource)
 {
-    QuickSurface *surface = qobject_cast<QuickSurface *>(
-                QuickSurface::fromResource(surfaceResource));
+    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
         qWarning() << "Unable to retrieve surface from resource!";
         return;
@@ -75,14 +77,9 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
 
     PlasmaSurface *plasmaSurface = new PlasmaSurface(this, surface, resource->client(), id);
     m_surfaces.append(plasmaSurface);
-    connect(surface, &QuickSurface::surfaceDestroyed, this,
-            [surface, plasmaSurface]() {
-          plasmaSurface->deleteLater();
-    });
-    connect(plasmaSurface, &QObject::destroyed, this,
-            [this, plasmaSurface](QObject *object = 0) {
-        Q_UNUSED(object);
-        m_surfaces.removeOne(plasmaSurface);
+    connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
+      m_surfaces.removeOne(plasmaSurface);
+      plasmaSurface->deleteLater();
     });
 }
 
