@@ -53,6 +53,7 @@ class WindowView;
 class GREENISLAND_EXPORT ClientWindow : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(uint id READ id CONSTANT)
     Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
     Q_PROPERTY(Type type READ type NOTIFY typeChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
@@ -82,6 +83,8 @@ public:
 
     ClientWindow(QWaylandSurface *surface, QObject *parent = 0);
     ~ClientWindow();
+
+    uint id() const;
 
     QWaylandSurface *surface() const;
 
@@ -174,6 +177,8 @@ private:
     friend class XdgPopup;
     friend class XdgSurface;
     friend class ScreenManagerPrivate;
+
+    static uint m_id;
 
 private Q_SLOTS:
     void setType(QWaylandSurface::WindowType windowType);

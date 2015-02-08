@@ -98,7 +98,7 @@ Q_SIGNALS:
 
     void windowMapped(QVariant window);
     void windowUnmapped(QVariant window);
-    void windowDestroyed(QVariant window);
+    void windowDestroyed(uint id);
 
     void shellWindowMapped(QVariant window);
     void shellWindowUnmapped(QVariant window);

@@ -154,7 +154,7 @@ void CompositorPrivate::destroyWindow(ClientWindow *window)
     Q_Q(Compositor);
 
     if (clientWindowsList.removeOne(window)) {
-        Q_EMIT q->windowDestroyed(QVariant::fromValue(window));
+        Q_EMIT q->windowDestroyed(window->id());
         Q_EMIT q->windowsChanged();
     }
 }

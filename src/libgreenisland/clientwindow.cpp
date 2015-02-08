@@ -41,6 +41,8 @@
 
 namespace GreenIsland {
 
+uint ClientWindow::m_id = 0;
+
 ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     : QObject(parent)
     , m_appId(surface->className())
@@ -56,6 +58,9 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     , m_parentWindow(Q_NULLPTR)
 {
     qRegisterMetaType<ClientWindow *>("ClientWindow*");
+
+    // Identifier
+    m_id++;
 
     // Set window type
     setType(m_surface->windowType());
@@ -103,6 +108,11 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
 ClientWindow::~ClientWindow()
 {
     unregisterWindow(true);
+}
+
+uint ClientWindow::id() const
+{
+    return m_id;
 }
 
 QWaylandSurface *ClientWindow::surface() const
