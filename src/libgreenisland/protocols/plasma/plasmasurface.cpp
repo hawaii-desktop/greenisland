@@ -180,10 +180,8 @@ void PlasmaSurface::surface_set_output(Resource *resource,
     // on the new output
     QWaylandOutput *oldOutput = m_surface->output();
     QWaylandOutput *newOutput = QWaylandOutput::fromResource(outputResource);
-    oldOutput->removeSurface(m_surface);
-    m_surface->setMapped(false);
-    newOutput->addSurface(m_surface);
-    m_surface->setMapped(true);
+    QWaylandOutputChangedEvent e(oldOutput, newOutput);
+    QCoreApplication::sendEvent(m_surface, &e);
     Q_EMIT m_window->outputChanged();
 }
 
