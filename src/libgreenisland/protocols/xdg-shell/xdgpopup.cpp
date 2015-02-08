@@ -113,7 +113,7 @@ void XdgPopup::popup_destroy_resource(Resource *resource)
     // Don't delete twice if we are here from the destructor
     if (!m_deleting) {
         m_deleting = true;
-        delete this;
+        deleteLater();
     }
 }
 
