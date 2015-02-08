@@ -28,7 +28,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
 #include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/QWaylandOutput>
 #include <QtCompositor/private/qwlinputdevice_p.h>
@@ -38,6 +37,7 @@
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
+#include "windowview.h"
 
 namespace GreenIsland {
 
@@ -156,20 +156,18 @@ QWaylandOutput *ClientWindow::output() const
 
 QWaylandSurfaceItem *ClientWindow::viewForOutput(QWaylandOutput *output)
 {
-    QWaylandSurfaceItem *view = m_views.value(output, Q_NULLPTR);
+    WindowView *view = m_views.value(output, Q_NULLPTR);
     if (!view) {
-        view = static_cast<QWaylandSurfaceItem *>(m_surface->compositor()->createView(m_surface));
+        view = static_cast<WindowView *>(m_surface->compositor()->createView(m_surface));
         m_views[output] = view;
 
-        connect(view, &QWaylandSurfaceItem::focusChanged, [=](bool focus) {
-            if (focus)
-                activate();
-            else
-                deactivate();
+        // Activate this window when the mouse is pressed
+        connect(view, &WindowView::mousePressed, [=] {
+            activate();
         });
     }
 
-    return view;
+    return static_cast<QWaylandSurfaceItem *>(view);
 }
 
 qreal ClientWindow::x() const

@@ -48,6 +48,7 @@ class WlShellSurface;
 class XdgPopup;
 class XdgSurface;
 class ScreenManagerPrivate;
+class WindowView;
 
 class GREENISLAND_EXPORT ClientWindow : public QObject
 {
@@ -156,7 +157,7 @@ private:
     Compositor *m_compositor;
     QWaylandSurface *m_surface;
     ClientWindow *m_parentWindow;
-    QHash<QWaylandOutput *, QWaylandSurfaceItem *> m_views;
+    QHash<QWaylandOutput *, WindowView *> m_views;
 
     void setSize(const QSizeF &size);
     void setInternalGeometry(const QRectF &geometry);

@@ -31,14 +31,14 @@ namespace GreenIsland {
 WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
 {
+    qRegisterMetaType<WindowView *>("WindowView*");
 }
 
 void WindowView::mousePressEvent(QMouseEvent *event)
 {
-    // Give focus on click, except for popups which are already
-    // given focus with the popup behavior
-    if (surface() && surface()->windowType() != QWaylandSurface::Popup)
-        takeFocus();
+    // Emit a mouse pressed signal, ClientWindow will connect
+    // and activate the window
+    Q_EMIT mousePressed();
 
     QWaylandSurfaceItem::mousePressEvent(event);
 }

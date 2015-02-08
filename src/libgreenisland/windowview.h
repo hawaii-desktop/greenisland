@@ -39,6 +39,9 @@ class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
 public:
     WindowView(QWaylandQuickSurface *surface, QQuickItem *parent = 0);
 
+Q_SIGNALS:
+    void mousePressed();
+
 protected:
     void mousePressEvent(QMouseEvent *event);
 };
