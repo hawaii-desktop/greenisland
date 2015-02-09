@@ -267,6 +267,13 @@ void ClientWindow::activate()
 
     m_active = true;
     Q_EMIT activeChanged();
+
+    // Deactivate other windows
+    Q_FOREACH (ClientWindow *w, m_compositor->d_func()->clientWindowsList) {
+        if (w == this)
+            continue;
+        w->deactivate();
+    }
 }
 
 void ClientWindow::deactivate()
