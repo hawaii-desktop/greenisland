@@ -42,8 +42,8 @@ public:
 Q_SIGNALS:
     void mousePressed();
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
+private:
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 };
 
 }
