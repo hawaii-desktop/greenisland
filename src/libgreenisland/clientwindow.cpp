@@ -274,6 +274,14 @@ void ClientWindow::activate()
             continue;
         w->deactivate();
     }
+
+    // Application has focus
+    Q_EMIT m_compositor->applicationManager()->applicationFocused(m_appId);
+    Q_FOREACH (const QString &appId, m_compositor->applicationManager()->d_func()->apps) {
+        if (appId == m_appId)
+            continue;
+        Q_EMIT m_compositor->applicationManager()->applicationUnfocused(appId);
+    }
 }
 
 void ClientWindow::deactivate()

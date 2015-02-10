@@ -64,6 +64,18 @@ Q_SIGNALS:
      */
     void applicationRemoved(const QString &appId);
 
+    /*!
+     * \brief An application got focused.
+     * \param appId Application identifier.
+     */
+    void applicationFocused(const QString &appId);
+
+    /*!
+     * \brief An application got unfocused.
+     * \param appId Application identifier.
+     */
+    void applicationUnfocused(const QString &appId);
+
 private:
     ApplicationManagerPrivate *const d_ptr;
 
