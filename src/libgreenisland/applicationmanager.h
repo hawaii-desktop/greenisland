@@ -76,6 +76,18 @@ Q_SIGNALS:
      */
     void applicationUnfocused(const QString &appId);
 
+    /*!
+     * \brief An application window was mapped.
+     * \param window Application window.
+     */
+    void windowMapped(ClientWindow *window);
+
+    /*!
+     * \brief An application window was unmapped.
+     * \param window Application window.
+     */
+    void windowUnmapped(ClientWindow *window);
+
 private:
     ApplicationManagerPrivate *const d_ptr;
 

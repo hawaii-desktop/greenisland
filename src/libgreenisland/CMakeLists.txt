@@ -34,6 +34,8 @@ set(SOURCES
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/greenisland/greenislandapps.cpp
+    protocols/greenisland/greenislandwindow.cpp
+    protocols/greenisland/greenislandwindows.cpp
     protocols/plasma/plasmaeffects.cpp
     protocols/plasma/plasmashell.cpp
     protocols/plasma/plasmasurface.cpp

@@ -48,6 +48,7 @@
 #include "shellwindow.h"
 
 #include "protocols/greenisland/greenislandapps.h"
+#include "protocols/greenisland/greenislandwindows.h"
 #include "protocols/plasma/plasmaeffects.h"
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -136,6 +137,7 @@ void CompositorPrivate::mapWindow(ClientWindow *window)
 
     if (!clientWindowsList.contains(window)) {
         clientWindowsList.append(window);
+        Q_EMIT appManager->windowMapped(window);
         Q_EMIT q->windowMapped(QVariant::fromValue(window));
         Q_EMIT q->windowsChanged();
     }
@@ -146,6 +148,7 @@ void CompositorPrivate::unmapWindow(ClientWindow *window)
     Q_Q(Compositor);
 
     if (clientWindowsList.removeOne(window)) {
+        Q_EMIT appManager->windowUnmapped(window);
         Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
         Q_EMIT q->windowsChanged();
     }
@@ -156,6 +159,7 @@ void CompositorPrivate::destroyWindow(ClientWindow *window)
     Q_Q(Compositor);
 
     if (clientWindowsList.removeOne(window)) {
+        Q_EMIT appManager->windowUnmapped(window);
         Q_EMIT q->windowDestroyed(window->id());
         Q_EMIT q->windowsChanged();
     }
@@ -327,6 +331,7 @@ void Compositor::run()
 
     // Add global interfaces
     addGlobalInterface(new GreenIslandApps(d->appManager));
+    addGlobalInterface(new GreenIslandWindows(d->appManager));
     PlasmaShell *plasmaShell = new PlasmaShell(this);
     addGlobalInterface(plasmaShell);
     addGlobalInterface(new PlasmaEffects(plasmaShell));
