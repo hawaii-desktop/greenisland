@@ -44,6 +44,7 @@ Q_SIGNALS:
 
 private:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;
 };
 
 }

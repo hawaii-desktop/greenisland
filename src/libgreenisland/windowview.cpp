@@ -24,6 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QWaylandCompositor>
+#include <QtCompositor/QWaylandInputDevice>
+
 #include "windowview.h"
 
 namespace GreenIsland {
@@ -41,6 +44,14 @@ void WindowView::mousePressEvent(QMouseEvent *event)
     Q_EMIT mousePressed();
 
     QWaylandSurfaceItem::mousePressEvent(event);
+}
+
+void WindowView::takeFocus(QWaylandInputDevice *device)
+{
+    QWaylandSurfaceItem::takeFocus(device);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
+    forceActiveFocus();
+#endif
 }
 
 }
