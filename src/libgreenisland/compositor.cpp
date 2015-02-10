@@ -47,6 +47,7 @@
 #include "windowview.h"
 #include "shellwindow.h"
 
+#include "protocols/greenisland/greenislandapps.h"
 #include "protocols/plasma/plasmaeffects.h"
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -325,6 +326,7 @@ void Compositor::run()
         return;
 
     // Add global interfaces
+    addGlobalInterface(new GreenIslandApps(d->appManager));
     PlasmaShell *plasmaShell = new PlasmaShell(this);
     addGlobalInterface(plasmaShell);
     addGlobalInterface(new PlasmaEffects(plasmaShell));

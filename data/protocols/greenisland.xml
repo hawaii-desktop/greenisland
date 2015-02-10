@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="greenisland">
+  <copyright><![CDATA[
+    Copyright (C) 2015 Pier Luigi Fiorini
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 2.1 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ]]></copyright>
+
+  <interface name="greenisland_applications" version="1">
+    <description summary="track running applications">
+      This interface is used by UI modules interested in tracking running applications,
+      for example a library that expose the list of running applications to a launcher.
+      Only one client can bind this interface at a time.
+    </description>
+
+    <event name="registered">
+      <description summary="emitted when an application is registered">
+        This event is sent when the first window of an application have been created.
+      </description>
+      <arg name="app_id" type="string" summary="application identifier"/>
+    </event>
+
+    <event name="unregistered">
+      <description summary="emitted when an application is unregistered">
+        This event is sent when the last window of an application have been closed.
+      </description>
+      <arg name="app_id" type="string" summary="application identifier"/>
+    </event>
+
+    <event name="focused">
+      <description summary="emitted when a window that belongs to an application has focused">
+        This event is sent when a window that belongs to an application has focus.
+      </description>
+      <arg name="app_id" type="string" summary="application identifier"/>
+    </event>
+
+    <event name="unfocused">
+      <description summary="emitted when a window that belongs to an application has lost its focus">
+        This event is sent when a window that belongs to an application has lost its focus.
+      </description>
+      <arg name="app_id" type="string" summary="application identifier"/>
+    </event>
+  </interface>
+</protocol>

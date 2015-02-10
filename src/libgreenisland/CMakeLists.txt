@@ -33,6 +33,7 @@ set(SOURCES
     shellwindow.cpp
     utilities.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
+    protocols/greenisland/greenislandapps.cpp
     protocols/plasma/plasmaeffects.cpp
     protocols/plasma/plasmashell.cpp
     protocols/plasma/plasmasurface.cpp
@@ -56,6 +57,11 @@ if(ENABLE_OPENGL AND ${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     set(SOURCES ${SOURCES} bufferattacher.cpp)
 endif()
 
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland.xml
+    BASENAME greenisland
+    PREFIX greenisland_
+)
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
     BASENAME xdg-shell
