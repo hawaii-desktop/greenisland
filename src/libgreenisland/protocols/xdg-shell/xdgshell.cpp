@@ -83,6 +83,16 @@ void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resourc
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
+    // Fail if get_xdg_surface is called on a xdg_surface
+    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+        XdgSurface *surfaceInterface = static_cast<XdgSurface *>(interface);
+        if (surfaceInterface) {
+            wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
+                                   "This wl_surface is already a xdg_surface");
+            return;
+        }
+    }
+
     new XdgSurface(this, surface, resource->client(), id);
 }
 
