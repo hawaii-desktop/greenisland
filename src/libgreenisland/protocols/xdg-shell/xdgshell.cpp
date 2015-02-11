@@ -107,6 +107,15 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
+    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+        XdgPopup *popupInterface = static_cast<XdgPopup *>(interface);
+        if (popupInterface) {
+            wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
+                                   "This wl_surface is already a xdg_popup");
+            return;
+        }
+    }
+
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);
 
