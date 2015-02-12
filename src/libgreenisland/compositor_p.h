@@ -64,6 +64,10 @@ public:
     void unmapWindow(ClientWindow *window);
     void destroyWindow(ClientWindow *window);
 
+    void mapShellWindow(ShellWindow *window);
+    void unmapShellWindow(ShellWindow *window);
+    void destroyShellWindow(ShellWindow *window);
+
     void _q_updateCursor(bool hasBuffer);
 
     bool running;

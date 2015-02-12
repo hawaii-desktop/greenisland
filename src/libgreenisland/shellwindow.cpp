@@ -24,29 +24,47 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
-
+#include "compositor.h"
+#include "compositor_p.h"
 #include "shellwindow.h"
 
 namespace GreenIsland {
+
+uint ShellWindow::m_id = 0;
 
 ShellWindow::ShellWindow(QWaylandSurface *surface, QObject *parent)
     : QObject(parent)
     , m_role(UnknownRole)
     , m_flags(0)
+    , m_compositor(static_cast<Compositor *>(surface->compositor()))
     , m_surface(surface)
 {
     qRegisterMetaType<ShellWindow *>("ShellWindow*");
 
+    // Identifier
+    m_id++;
+
     // Create view
     m_view = new QWaylandSurfaceItem(static_cast<QWaylandQuickSurface *>(surface));
+
+    // Connect to surface signals
+    connect(surface, &QWaylandSurface::mapped, [=] {
+        registerWindow();
+    });
+    connect(surface, &QWaylandSurface::unmapped, [=] {
+        unregisterWindow(false);
+    });
 }
 
 ShellWindow::~ShellWindow()
 {
+    unregisterWindow(true);
     m_view->deleteLater();
+}
+
+uint ShellWindow::id() const
+{
+    return m_id;
 }
 
 QWaylandSurface *ShellWindow::surface() const
@@ -90,6 +108,21 @@ void ShellWindow::setFlags(const Flags &flags)
 
     m_flags = flags;
     Q_EMIT flagsChanged();
+}
+
+void ShellWindow::registerWindow()
+{
+    // Register this window
+    m_compositor->d_func()->mapShellWindow(this);
+}
+
+void ShellWindow::unregisterWindow(bool destruction)
+{
+    // Unregister this window
+    if (destruction)
+        m_compositor->d_func()->destroyShellWindow(this);
+    else
+        m_compositor->d_func()->unmapShellWindow(this);
 }
 
 }

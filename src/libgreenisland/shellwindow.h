@@ -37,9 +37,12 @@ class QWaylandSurfaceItem;
 
 namespace GreenIsland {
 
+class Compositor;
+
 class GREENISLAND_EXPORT ShellWindow : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(uint id READ id CONSTANT)
     Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
     Q_PROPERTY(QWaylandSurfaceItem *view READ view CONSTANT)
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
@@ -69,6 +72,8 @@ public:
     ShellWindow(QWaylandSurface *surface, QObject *parent = 0);
     ~ShellWindow();
 
+    uint id() const;
+
     QWaylandSurface *surface() const;
     QWaylandSurfaceItem *view() const;
 
@@ -90,8 +95,14 @@ Q_SIGNALS:
 private:
     Role m_role;
     Flags m_flags;
+    Compositor *m_compositor;
     QWaylandSurface *m_surface;
     QWaylandSurfaceItem *m_view;
+
+    void registerWindow();
+    void unregisterWindow(bool destruction);
+
+    static uint m_id;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(ShellWindow::Flags)

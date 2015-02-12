@@ -102,6 +102,7 @@ Q_SIGNALS:
 
     void shellWindowMapped(QVariant window);
     void shellWindowUnmapped(QVariant window);
+    void shellWindowDestroyed(uint id);
 
     void stateChanged();
     void idleIntervalChanged();
@@ -132,6 +133,7 @@ private:
 
     friend class ClientWindow;
     friend class ScreenManagerPrivate;
+    friend class ShellWindow;
 };
 
 }

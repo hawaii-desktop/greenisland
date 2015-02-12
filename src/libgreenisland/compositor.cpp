@@ -31,6 +31,7 @@
 #include <QtCore/QVariantMap>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
+#include <QtCompositor/QWaylandClient>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
@@ -159,6 +160,37 @@ void CompositorPrivate::destroyWindow(ClientWindow *window)
     }
 }
 
+void CompositorPrivate::mapShellWindow(ShellWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (!shellWindowsList.contains(window)) {
+        shellWindowsList.append(window);
+        Q_EMIT q->shellWindowMapped(QVariant::fromValue(window));
+        Q_EMIT q->shellWindowsChanged();
+    }
+}
+
+void CompositorPrivate::unmapShellWindow(ShellWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (shellWindowsList.removeOne(window)) {
+        Q_EMIT q->shellWindowUnmapped(QVariant::fromValue(window));
+        Q_EMIT q->shellWindowsChanged();
+    }
+}
+
+void CompositorPrivate::destroyShellWindow(ShellWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (shellWindowsList.removeOne(window)) {
+        Q_EMIT q->shellWindowDestroyed(window->id());
+        Q_EMIT q->shellWindowsChanged();
+    }
+}
+
 /*
  * Compositor
  */
@@ -172,12 +204,12 @@ Compositor::Compositor(const QString &socket)
 Compositor::~Compositor()
 {
     // Cleanup
-    delete d_ptr->appManager;
-    delete d_ptr->screenManager;
-    while (!d_ptr->clientWindowsList.isEmpty())
-        d_ptr->clientWindowsList.takeFirst()->deleteLater();
     while (!d_ptr->shellWindowsList.isEmpty())
         d_ptr->shellWindowsList.takeFirst()->deleteLater();
+    //while (!d_ptr->clientWindowsList.isEmpty())
+        //d_ptr->clientWindowsList.takeFirst()->deleteLater();
+    delete d_ptr->appManager;
+    delete d_ptr->screenManager;
     delete d_ptr;
 
     // Delete windows and outputs
