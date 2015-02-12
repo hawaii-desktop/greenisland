@@ -192,6 +192,8 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 
     QByteArray statesArray((const char *)states.data, states.size);
     send_configure(size.width(), size.height(), statesArray, serial);
+
+    wl_array_release(&states);
 }
 
 bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
