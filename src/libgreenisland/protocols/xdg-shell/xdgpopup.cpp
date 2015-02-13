@@ -78,6 +78,7 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *su
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     });
+    connect(parent, SIGNAL(unmapped()), m_surface, SIGNAL(unmapped()));
 }
 
 XdgPopup::~XdgPopup()
