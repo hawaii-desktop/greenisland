@@ -75,7 +75,7 @@ ShaderEffect {
         }
     "
     onSourceChanged: {
-        if (source != null)
-            source.setPaintEnabled(false);
+        if (source && source.paintEnabled !== undefined)
+            source.paintEnabled = false;
     }
 }
