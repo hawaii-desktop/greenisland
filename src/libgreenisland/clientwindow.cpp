@@ -26,6 +26,8 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QStandardPaths>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandInputDevice>
@@ -71,6 +73,7 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
         if (file.open(QIODevice::ReadOnly)) {
             QFileInfo fi(QString::fromUtf8(file.readAll().split(' ').at(0)));
             m_appId = fi.baseName();
+            m_iconName = QStringLiteral("application-octet-stream");
             file.close();
         }
     }
@@ -95,7 +98,10 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     connect(surface, &QWaylandSurface::classNameChanged, [=] {
         if (!m_surface->className().isEmpty()) {
             m_appId = m_surface->className();
+            m_iconName = readFromDesktopFile(m_appId, QStringLiteral("Icon"),
+                                             QStringLiteral("application-octet-stream")).toString();
             Q_EMIT appIdChanged();
+            Q_EMIT iconNameChanged();
         }
     });
     connect(surface, &QWaylandSurface::windowTypeChanged,
@@ -133,6 +139,11 @@ QString ClientWindow::title() const
 QString ClientWindow::appId() const
 {
     return m_appId;
+}
+
+QString ClientWindow::iconName() const
+{
+    return m_iconName;
 }
 
 ClientWindow *ClientWindow::parentWindow() const
@@ -481,6 +492,16 @@ void ClientWindow::initialSetup()
 void ClientWindow::removeOutput(QWaylandOutput *output)
 {
     m_views.take(output)->deleteLater();
+}
+
+QVariant ClientWindow::readFromDesktopFile(const QString &baseName, const QString &key, const QVariant &defaultValue) const
+{
+    QString fileName = QStandardPaths::locate(QStandardPaths::ApplicationsLocation,
+                                              baseName);
+    QSettings entry(fileName, QSettings::IniFormat);
+    entry.setIniCodec("UTF-8");
+    entry.beginGroup(QStringLiteral("Desktop Entry"));
+    return entry.value(key, defaultValue);
 }
 
 void ClientWindow::setType(QWaylandSurface::WindowType windowType)

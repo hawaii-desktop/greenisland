@@ -58,6 +58,7 @@ class GREENISLAND_EXPORT ClientWindow : public QObject
     Q_PROPERTY(Type type READ type NOTIFY typeChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
+    Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
     Q_PROPERTY(ClientWindow *parentWindow READ parentWindow CONSTANT)
     Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
     Q_PROPERTY(qreal x READ x WRITE setX NOTIFY positionChanged)
@@ -91,6 +92,7 @@ public:
     Type type() const;
     QString title() const;
     QString appId() const;
+    QString iconName() const;
 
     ClientWindow *parentWindow() const;
 
@@ -132,6 +134,7 @@ Q_SIGNALS:
     void typeChanged();
     void titleChanged();
     void appIdChanged();
+    void iconNameChanged();
     void outputChanged();
     void positionChanged();
     void sizeChanged();
@@ -148,6 +151,7 @@ Q_SIGNALS:
 private:
     Type m_type;
     QString m_appId;
+    QString m_iconName;
     QPointF m_pos;
     QSizeF m_size;
     QRectF m_internalGeometry;
@@ -172,6 +176,9 @@ private:
 
     void initialSetup();
     void removeOutput(QWaylandOutput *output);
+
+    QVariant readFromDesktopFile(const QString &baseName, const QString &key,
+                                 const QVariant &defaultValue = QVariant()) const;
 
     friend class WlShellSurface;
     friend class XdgPopup;
