@@ -76,7 +76,8 @@ void FullScreenShellClient::showOutput(Output *output)
 
     QScreen *found = Q_NULLPTR;
     for (QScreen *screen: QGuiApplication::screens()) {
-        if (screen->name() == output->name()) {
+        if (screen->name() == output->name() &&
+                screen->geometry() == output->geometry()) {
             found = screen;
             break;
         }
@@ -107,7 +108,8 @@ void FullScreenShellClient::hideOutput(Output *output)
 
     QScreen *found = Q_NULLPTR;
     for (QScreen *screen: QGuiApplication::screens()) {
-        if (screen->name() == output->name()) {
+        if (screen->name() == output->name() &&
+                screen->geometry() == output->geometry()) {
             found = screen;
             break;
         }
