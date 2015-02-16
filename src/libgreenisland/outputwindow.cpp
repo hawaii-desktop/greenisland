@@ -106,7 +106,7 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         qFatal("No plugin specified, cannot continue!");
     } else {
-        qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin";
+        qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin for output" << output->name() << output->geometry();
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
@@ -174,8 +174,13 @@ void OutputWindow::sendCallbacks()
 
 void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
 {
-    if (status == QQuickView::Ready)
+    if (status == QQuickView::Ready) {
         show();
+    } else if (status == QQuickView::Error) {
+        qWarning() << "One or more errors have occurred loading the plugin:";
+        Q_FOREACH (const QQmlError &error, errors())
+            qWarning() << "*" << error.toString();
+    }
 }
 
 }
