@@ -26,12 +26,14 @@
 
 #include <QtCore/QRect>
 #include <QtCore/QTimer>
+#include <QtDBus/QDBusServiceWatcher>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
 #include <KScreen/Config>
 #include <KScreen/ConfigMonitor>
 #include <KScreen/GetConfigOperation>
 #include <KScreen/Screen>
+#include <kscreen/backendmanager_p.h>
 
 #include "clientwindow.h"
 #include "compositor.h"
@@ -261,6 +263,10 @@ ScreenManager::~ScreenManager()
     // Remove configuration
     qDebug() << "Removing screen configuration...";
     KScreen::ConfigMonitor::instance()->removeConfig(d_ptr->config);
+
+    // Shutdown backend
+    qDebug() << "Shutdown screen configuration backend...";
+    KScreen::BackendManager::instance()->shutdownBackend();
 
     // Delete d pointer
     delete d_ptr;
