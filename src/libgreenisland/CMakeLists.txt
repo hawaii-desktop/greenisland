@@ -92,7 +92,6 @@ target_link_libraries(GreenIsland
     KF5::Screen
     Wayland::Client
     Wayland::Server
-    Wayland::Egl
     EGL::EGL
 )
 

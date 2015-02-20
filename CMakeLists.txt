@@ -82,13 +82,12 @@ set_package_properties(EGL PROPERTIES
 
 # Wayland
 set(REQUIRED_WAYLAND_VERSION 1.2.0)
-find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Egl)
+find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server)
 set_package_properties(Wayland PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required to build Green Island")
 add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
-add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for the compositor")
 
 # Wayland and QtWayland scanner
 find_package(QtWaylandScanner REQUIRED)
