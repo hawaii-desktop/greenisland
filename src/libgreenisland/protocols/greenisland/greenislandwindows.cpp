@@ -37,6 +37,9 @@ GreenIslandWindows::GreenIslandWindows(ApplicationManager *appMan)
     : m_boundResource(Q_NULLPTR)
 {
     QObject::connect(appMan, &ApplicationManager::windowMapped, [this](ClientWindow *window) {
+        if (!m_boundResource)
+            return;
+
         GreenIslandWindow *w = new GreenIslandWindow(m_boundResource->client(), window);
         m_windows.append(w);
         send_window_mapped(m_boundResource->handle, w->resource()->handle,
@@ -44,6 +47,9 @@ GreenIslandWindows::GreenIslandWindows(ApplicationManager *appMan)
                            w->state(), window->title(), window->appId());
     });
     QObject::connect(appMan, &ApplicationManager::windowUnmapped, [this](ClientWindow *window) {
+        if (!m_boundResource)
+            return;
+
         Q_FOREACH (GreenIslandWindow *w, m_windows) {
             if (w->window() == window) {
                 m_windows.removeOne(w);

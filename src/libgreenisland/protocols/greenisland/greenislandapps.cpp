@@ -35,16 +35,20 @@ GreenIslandApps::GreenIslandApps(ApplicationManager *appMan)
     : m_boundResource(Q_NULLPTR)
 {
     QObject::connect(appMan, &ApplicationManager::applicationAdded, [this](const QString &appId) {
-        send_registered(m_boundResource->handle, appId);
+        if (m_boundResource)
+            send_registered(m_boundResource->handle, appId);
     });
     QObject::connect(appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId) {
-        send_unregistered(m_boundResource->handle, appId);
+        if (m_boundResource)
+            send_unregistered(m_boundResource->handle, appId);
     });
     QObject::connect(appMan, &ApplicationManager::applicationFocused, [this](const QString &appId) {
-        send_focused(m_boundResource->handle, appId);
+        if (m_boundResource)
+            send_focused(m_boundResource->handle, appId);
     });
     QObject::connect(appMan, &ApplicationManager::applicationUnfocused, [this](const QString &appId) {
-        send_unfocused(m_boundResource->handle, appId);
+        if (m_boundResource)
+            send_unfocused(m_boundResource->handle, appId);
     });
 }
 
