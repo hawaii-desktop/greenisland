@@ -6,9 +6,7 @@ set(SOURCES
     main.cpp
 )
 
-#qt5_add_resources(RESOURCES greenisland.qrc)
-
-add_executable(greenisland ${SOURCES} ${RESOURCES})
+add_executable(greenisland ${SOURCES})
 target_link_libraries(greenisland
     GreenIsland::GreenIsland
 )
