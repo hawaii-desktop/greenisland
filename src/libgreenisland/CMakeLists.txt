@@ -170,6 +170,7 @@ ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandConfig
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandConfigVersion.cmake"
+              "${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 
