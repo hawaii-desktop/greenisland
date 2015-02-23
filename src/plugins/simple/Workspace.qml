@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -27,14 +27,5 @@
 import QtQuick 2.0
 
 Item {
-    property alias effects: effects
-
-    id: root
-
-    Effects {
-        id: effects
-        workspace: root
-    }
-
-    //Component.onDestruction: console.debug("Workspace destruction")
+    property int workspaceIndex
 }

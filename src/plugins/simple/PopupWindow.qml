@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -25,8 +25,14 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtCompositor 1.0
+import GreenIsland 1.0
 
-WaylandWindow {
-    id: shellWindow
-    objectName: "shellWindow"
+WindowWrapper {
+    id: window
+    objectName: "clientWindow"
+    animation: PopupWindowAnimation {
+        windowItem: window
+    }
+    z: 3
 }

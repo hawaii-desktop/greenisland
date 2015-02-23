@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Green Island.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -29,9 +29,9 @@ import QtQuick 2.0
 Item {
     property Item windowItem
 
-    property var map: null
-    property var unmap: null
-    property var destroy: null
+    property var mapAnimation: null
+    property var unmapAnimation: null
+    property var destroyAnimation: null
 
     signal mapAnimationStarted()
     signal mapAnimationStopped()
@@ -43,33 +43,22 @@ Item {
     signal destroyAnimationStopped()
 
     id: root
-
-    Component.onCompleted: {
-        if (map) {
-            map.onRunningChanged.connect(function() {
-                if (map.running)
-                    root.mapAnimationStarted();
-                else
-                    root.mapAnimationStopped();
-            });
+    onMapAnimationChanged: {
+        if (mapAnimation) {
+            mapAnimation.started.connect(root.mapAnimationStarted);
+            mapAnimation.stopped.connect(root.mapAnimationStopped);
         }
-
-        if (unmap) {
-            unmap.onRunningChanged.connect(function() {
-                if (unmap.running)
-                    root.unmapAnimationStarted();
-                else
-                    root.unmapAnimationStopped();
-            });
+    }
+    onUnmapAnimationChanged: {
+        if (unmapAnimation) {
+            unmapAnimation.started.connect(root.unmapAnimationStarted);
+            unmapAnimation.stopped.connect(root.unmapAnimationStopped);
         }
-
-        if (destroy) {
-            destroy.onRunningChanged.connect(function() {
-                if (destroy.running)
-                    root.destroyAnimationStarted()
-                else
-                    root.destroyAnimationStopped();
-            });
+    }
+    onDestroyAnimationChanged: {
+        if (destroyAnimation) {
+            destroyAnimation.started.connect(root.destroyAnimationStarted);
+            destroyAnimation.stopped.connect(root.destroyAnimationStopped);
         }
     }
 }

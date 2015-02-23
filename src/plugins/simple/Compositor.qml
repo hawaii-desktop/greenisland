@@ -27,13 +27,14 @@
 import QtQuick 2.0
 import QtCompositor 1.0
 import GreenIsland 1.0
-import GreenIsland.Core 1.0
 import "WindowManagement.js" as WindowManagement
-import "screen"
 
 Item {
     readonly property alias screenView: screenView
     readonly property alias surfaceModel: surfaceModel
+    property var activeWindow: null
+    readonly property int activeWindowIndex: WindowManagement.getActiveWindowIndex()
+    readonly property var windowList: WindowManagement.windowList
 
     id: compositorRoot
 
@@ -55,75 +56,21 @@ Item {
         onIdleInhibitResetRequested: compositor.idleInhibit = 0
         onIdleTimerStartRequested: idleTimer.running = true
         onIdleTimerStopRequested: idleTimer.running = false
-        onIdle: {
-            // Fade the desktop out
-            screenView.layers.splash.opacity = 1.0;
-
-            // Lock the session
-            compositor.lockSession();
-        }
-        onWake: {
-            // Unlock the session
-            compositor.unlockSession();
-        }
-        onFadeIn: {
-            // Fade the desktop in
-            screenView.layers.splash.opacity = 0.0;
-
-            // Bring user layer up
-            screenView.setCurrentLayer("user");
-        }
-        onFadeOut: {
-            // Bring splash layer up
-            screenView.setCurrentLayer("splash");
-
-            // Fade the desktop out
-            screenView.layers.splash.opacity = 1.0;
-        }
-        onLocked: {
-            // Bring lock layer up
-            screenView.setCurrentLayer("lock");
-        }
-        onUnlocked: {
-            // Fade the desktop in
-            screenView.layers.splash.opacity = 0.0;
-
-            // Bring user layer up
-            screenView.setCurrentLayer("user");
-        }
         onReady: {
-            // Fade the desktop in
-            screenView.layers.splash.opacity = 0.0;
-
-            // Bring user layer up
-            screenView.setCurrentLayer("user");
-
             // Start idle timer
             idleTimer.running = true
         }
-        onWorkspaceAdded: {
-            // Add a new workspace
-            screenView.workspacesView.add();
+        onWindowMapped: {
+            // A window was mapped
+            WindowManagement.windowMapped(window);
         }
-        onWorkspaceRemoved: {
-            // Remove workspace
-            screenView.workspacesView.remove(index);
+        onWindowUnmapped: {
+            // A window was unmapped
+            WindowManagement.windowUnmapped(window);
         }
-        onWorkspaceSelected: {
-            // Select workspace
-            screenView.workspacesView.select(index);
-        }
-        onSurfaceMapped: {
-            // A surface was mapped
-            WindowManagement.surfaceMapped(surface);
-        }
-        onSurfaceUnmapped: {
-            // A surface was unmapped
-            WindowManagement.surfaceUnmapped(surface);
-        }
-        onSurfaceDestroyed: {
-            // A surface was destroyed
-            WindowManagement.surfaceDestroyed(surface);
+        onWindowDestroyed: {
+            // A window was unmapped
+            WindowManagement.windowDestroyed(id);
         }
     }
 
@@ -161,7 +108,23 @@ Item {
      * Methods
      */
 
-    function toggleEffect(name) {
-        screenView.workspacesView.currentWorkspace.effects.toggle(name);
+    function moveFront(window) {
+        return WindowManagement.moveFront(window);
+    }
+
+    function enableInput() {
+        var i;
+        for (i = 0; i < compositorRoot.surfaceModel.count; i++) {
+            var window = compositorRoot.surfaceModel.get(i).item;
+            window.child.focus = true;
+        }
+    }
+
+    function disableInput() {
+        var i;
+        for (i = 0; i < compositorRoot.surfaceModel.count; i++) {
+            var window = compositorRoot.surfaceModel.get(i).item;
+            window.child.focus = false;
+        }
     }
 }

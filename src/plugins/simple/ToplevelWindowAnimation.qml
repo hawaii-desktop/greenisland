@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Green Island.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -37,49 +37,41 @@ WindowAnimation {
         yScale: 0.1
     }
 
-    Scale {
-        id: destroyTransform
-        origin.x: animation.windowItem.width / 2
-        origin.y: animation.windowItem.height / 2
-        xScale: 1.0
-        yScale: 1.0
-    }
 
-    map: ParallelAnimation {
-        NumberAnimation {
-            target: animation.windowItem
-            property: "opacity"
-            easing.type: Easing.Linear
-            to: 1.0
-            duration: 250
-        }
+    mapAnimation: SequentialAnimation {
+        ScriptAction { script: animation.windowItem.transform = transform }
 
-        SequentialAnimation {
-            ScriptAction {
-                script: animation.windowItem.transform = transform
+        ParallelAnimation {
+            NumberAnimation {
+                target: animation.windowItem
+                property: "opacity"
+                easing.type: Easing.OutExpo
+                from: 0.0
+                to: 1.0
+                duration: 350
             }
-
-            ParallelAnimation {
-                NumberAnimation {
-                    target: transform
-                    property: "xScale"
-                    easing.type: Easing.OutExpo
-                    to: 1.0
-                    duration: 350
-                }
-
-                NumberAnimation {
-                    target: transform
-                    property: "yScale"
-                    easing.type: Easing.OutExpo
-                    to: 1.0
-                    duration: 350
-                }
+            NumberAnimation {
+                target: transform
+                property: "xScale"
+                easing.type: Easing.OutExpo
+                from: 0.01
+                to: 1.0
+                duration: 350
+            }
+            NumberAnimation {
+                target: transform
+                property: "yScale"
+                easing.type: Easing.OutExpo
+                from: 0.1
+                to: 1.0
+                duration: 350
             }
         }
+
+        ScriptAction { script: animation.windowItem.transform = null }
     }
 
-    unmap: NumberAnimation {
+    unmapAnimation: NumberAnimation {
         target: animation.windowItem
         property: "opacity"
         easing.type: Easing.Linear
@@ -87,31 +79,14 @@ WindowAnimation {
         duration: 250
     }
 
-    destroy: ParallelAnimation {
-        SequentialAnimation {
-            ScriptAction {
-                script: animation.windowItem.transform = destroyTransform
-            }
-
-            ParallelAnimation {
-                NumberAnimation {
-                    target: destroyTransform
-                    property: "xScale"
-                    easing.type: Easing.Linear
-                    to: 0.0
-                    duration: 250
-                }
-
-                NumberAnimation {
-                    target: destroyTransform
-                    property: "yScale"
-                    easing.type: Easing.Linear
-                    to: 0.0
-                    duration: 250
-                }
-            }
+    destroyAnimation: ParallelAnimation {
+        NumberAnimation {
+            target: animation.windowItem
+            property: "scale"
+            easing.type: Easing.Linear
+            to: 0.8
+            duration: 300
         }
-
         NumberAnimation {
             target: animation.windowItem
             property: "opacity"

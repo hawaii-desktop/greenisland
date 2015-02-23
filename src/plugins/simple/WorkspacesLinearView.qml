@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Hawaii Shell.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -76,6 +76,11 @@ WorkspacesView {
             width: root.width * workspaces.model
             height: root.height
 
+            function selectWorkspace(item) {
+                if (currentIndex !== item.workspaceIndex)
+                    root.workspaceSelected(item.workspaceIndex);
+            }
+
             Repeater {
                 id: workspaces
                 model: 0
@@ -85,6 +90,7 @@ WorkspacesView {
                     y: 0
                     width: listView.width
                     height: listView.height
+                    workspaceIndex: index
                 }
             }
         }

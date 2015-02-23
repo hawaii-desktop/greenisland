@@ -1,7 +1,7 @@
 /****************************************************************************
- * This file is part of Green Island.
+ * This file is part of Hawaii.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -30,52 +30,75 @@ WindowAnimation {
     id: animation
 
     Scale {
-        id: transform
+        id: scaleTransform
         origin.x: animation.windowItem.width / 2
         origin.y: animation.windowItem.height / 2
         xScale: 0.9
         yScale: 0.9
     }
 
-    map: ParallelAnimation {
-        NumberAnimation {
-            target: animation.windowItem
-            property: "opacity"
-            easing.type: Easing.Linear
-            to: 1.0
-            duration: 150
-        }
-
-        SequentialAnimation {
-            ScriptAction {
-                script: animation.windowItem.transform = transform
-            }
-
-            ParallelAnimation {
-                NumberAnimation {
-                    target: transform
-                    property: "xScale"
-                    easing.type: Easing.OutQuad
-                    to: 1.0
-                    duration: 150
-                }
-
-                NumberAnimation {
-                    target: transform
-                    property: "yScale"
-                    easing.type: Easing.OutQuad
-                    to: 1.0
-                    duration: 150
-                }
-            }
-        }
+    Rotation {
+        id: rotationTransform
+        origin.x: animation.windowItem.width / 2
+        origin.y: animation.windowItem.height / 2
+        axis.x: 0
+        axis.y: 0
+        axis.z: 10
     }
 
-    unmap: NumberAnimation {
+    mapAnimation: SequentialAnimation {
+        ScriptAction { script: animation.windowItem.transform = [scaleTransform, rotationTransform] }
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: animation.windowItem
+                property: "opacity"
+                easing.type: Easing.OutQuad
+                from: 0.0
+                to: 1.0
+                duration: 150
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "xScale"
+                easing.type: Easing.OutQuad
+                to: 1.0
+                duration: 150
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "yScale"
+                easing.type: Easing.OutQuad
+                to: 1.0
+                duration: 150
+            }
+        }
+
+        ScriptAction { script: animation.windowItem.transform = null }
+    }
+
+    unmapAnimation: NumberAnimation {
         target: animation.windowItem
         property: "opacity"
         easing.type: Easing.Linear
         to: 0.0
-        duration: 250
+        duration: 150
+    }
+
+    destroyAnimation: ParallelAnimation {
+        NumberAnimation {
+            target: animation.windowItem
+            property: "scale"
+            easing.type: Easing.OutQuad
+            to: 0.8
+            duration: 150
+        }
+        NumberAnimation {
+            target: animation.windowItem
+            property: "opacity"
+            easing.type: Easing.OutQuad
+            to: 0.0
+            duration: 150
+        }
     }
 }
