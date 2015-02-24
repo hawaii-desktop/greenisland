@@ -31,8 +31,7 @@ Item {
     readonly property int number: _greenisland_output.number
     readonly property bool primary: _greenisland_output.primary
 
-    readonly property alias workspacesView: workspacesLayer
-    readonly property alias currentWorkspace: workspacesLayer.currentWorkspace
+    readonly property alias currentWorkspace: backgroundLayer
     property alias zoomEnabled: zoomArea.enabled
 
     id: root
@@ -68,13 +67,5 @@ Item {
         sourceSize.width: width
         sourceSize.height: height
         fillMode: Image.Tile
-        z: 0
-    }
-
-    // Workspaces
-    WorkspacesLinearView {
-        id: workspacesLayer
-        anchors.fill: parent
-        z: 1
     }
 }
