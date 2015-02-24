@@ -44,6 +44,7 @@ class QWaylandSurfaceItem;
 namespace GreenIsland {
 
 class Compositor;
+class Output;
 class WlShellSurface;
 class XdgPopup;
 class XdgSurface;
@@ -98,7 +99,7 @@ public:
 
     QWaylandOutput *output() const;
 
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(QWaylandOutput *output);
+    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(Output *output);
 
     qreal x() const;
     void setX(qreal value);
@@ -164,7 +165,7 @@ private:
     Compositor *m_compositor;
     QWaylandSurface *m_surface;
     ClientWindow *m_parentWindow;
-    QHash<QWaylandOutput *, WindowView *> m_views;
+    QHash<Output *, WindowView *> m_views;
 
     void setSize(const QSizeF &size);
     void setInternalGeometry(const QRectF &geometry);
@@ -175,7 +176,7 @@ private:
     QPointF calculateInitialPosition() const;
 
     void initialSetup();
-    void removeOutput(QWaylandOutput *output);
+    void removeOutput(Output *output);
 
     QVariant readFromDesktopFile(const QString &baseName, const QString &key,
                                  const QVariant &defaultValue = QVariant()) const;

@@ -36,13 +36,25 @@ namespace GreenIsland {
 class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
+    Q_PROPERTY(QPointF localPosition READ localPosition NOTIFY localPositionChanged)
+    Q_PROPERTY(qreal localX READ localX NOTIFY localPositionChanged)
+    Q_PROPERTY(qreal localY READ localY NOTIFY localPositionChanged)
 public:
     WindowView(QWaylandQuickSurface *surface, QQuickItem *parent = 0);
 
+    QPointF localPosition() const;
+    void setLocalPosition(const QPointF &pt);
+
+    qreal localX() const;
+    qreal localY() const;
+
 Q_SIGNALS:
+    void localPositionChanged();
     void mousePressed();
 
 private:
+    QPointF m_pos;
+
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;
 };

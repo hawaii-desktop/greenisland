@@ -39,6 +39,7 @@
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
+#include "output.h"
 #include "windowview.h"
 
 namespace GreenIsland {
@@ -84,7 +85,7 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
 
     // Create a view for the surface output, views for other outputs
     // will be created on demand
-    viewForOutput(surface->output());
+    viewForOutput(static_cast<Output *>(surface->output()));
 
     // Connect to surface signals
     connect(surface, &QWaylandSurface::mapped, [=] {
@@ -175,11 +176,12 @@ QWaylandOutput *ClientWindow::output() const
     return main;
 }
 
-QWaylandSurfaceItem *ClientWindow::viewForOutput(QWaylandOutput *output)
+QWaylandSurfaceItem *ClientWindow::viewForOutput(Output *output)
 {
     WindowView *view = m_views.value(output, Q_NULLPTR);
     if (!view) {
         view = static_cast<WindowView *>(m_surface->compositor()->createView(m_surface));
+        view->setLocalPosition(output->mapToOutput(m_pos));
         m_views[output] = view;
 
         // Activate this window when the mouse is pressed
@@ -224,6 +226,14 @@ void ClientWindow::setPosition(const QPointF &pos)
     m_pos = pos;
     Q_EMIT positionChanged();
     Q_EMIT geometryChanged();
+
+    // ClientWindow position is in compositor space, but the view
+    // position is expressed in output space; QML window representation
+    // will be moved according to view coordinates using
+    // property binding
+    Q_FOREACH (Output *o, m_views.keys()) {
+        m_views[o]->setLocalPosition(o->mapToOutput(m_pos));
+    }
 }
 
 QSizeF ClientWindow::size() const
@@ -486,10 +496,14 @@ void ClientWindow::initialSetup()
         break;
     }
 
+    Q_FOREACH (Output *o, m_views.keys()) {
+        m_views[o]->setLocalPosition(o->mapToOutput(m_pos));
+    }
+
     //m_initialSetup = true;
 }
 
-void ClientWindow::removeOutput(QWaylandOutput *output)
+void ClientWindow::removeOutput(Output *output)
 {
     m_views.take(output)->deleteLater();
 }

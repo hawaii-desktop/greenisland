@@ -33,8 +33,33 @@ namespace GreenIsland {
 
 WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
+    , m_pos(0, 0)
 {
     qRegisterMetaType<WindowView *>("WindowView*");
+}
+
+QPointF WindowView::localPosition() const
+{
+    return m_pos;
+}
+
+void WindowView::setLocalPosition(const QPointF &pt)
+{
+    if (m_pos == pt)
+        return;
+
+    m_pos = pt;
+    Q_EMIT localPositionChanged();
+}
+
+qreal WindowView::localX() const
+{
+    return localPosition().x();
+}
+
+qreal WindowView::localY() const
+{
+    return localPosition().y();
 }
 
 void WindowView::mousePressEvent(QMouseEvent *event)
