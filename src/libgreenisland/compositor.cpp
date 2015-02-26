@@ -211,8 +211,8 @@ Compositor::~Compositor()
     // Cleanup
     while (!d_ptr->shellWindowsList.isEmpty())
         d_ptr->shellWindowsList.takeFirst()->deleteLater();
-    //while (!d_ptr->clientWindowsList.isEmpty())
-        //d_ptr->clientWindowsList.takeFirst()->deleteLater();
+    while (!d_ptr->clientWindowsList.isEmpty())
+        d_ptr->clientWindowsList.takeFirst()->deleteLater();
     delete d_ptr->appManager;
     delete d_ptr->screenManager;
     delete d_ptr;
