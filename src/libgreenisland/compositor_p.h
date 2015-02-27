@@ -81,6 +81,8 @@ public:
     int cursorHotspotX;
     int cursorHotspotY;
 
+    QWaylandSurface *lastKeyboardFocus;
+
     ScreenManager *screenManager;
 
     // Application management

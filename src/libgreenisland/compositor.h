@@ -87,6 +87,9 @@ public:
     void surfaceCreated(QWaylandSurface *surface) Q_DECL_OVERRIDE;
     QWaylandSurfaceView *createView(QWaylandSurface *surf) Q_DECL_OVERRIDE;
 
+    Q_INVOKABLE void clearKeyboardFocus();
+    Q_INVOKABLE void restoreKeyboardFocus();
+
     Q_INVOKABLE void abortSession();
 
     static QString s_fixedPlugin;

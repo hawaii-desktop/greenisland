@@ -32,6 +32,7 @@
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
 #include <QtCompositor/QWaylandClient>
+#include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
@@ -74,6 +75,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
+    , lastKeyboardFocus(Q_NULLPTR)
     , q_ptr(self)
 {
     screenManager = new ScreenManager(self);
@@ -398,6 +400,24 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 QWaylandSurfaceView *Compositor::createView(QWaylandSurface *surf)
 {
     return new WindowView(qobject_cast<QWaylandQuickSurface *>(surf));
+}
+
+void Compositor::clearKeyboardFocus()
+{
+    Q_D(Compositor);
+
+    d->lastKeyboardFocus = defaultInputDevice()->keyboardFocus();
+    defaultInputDevice()->setKeyboardFocus(Q_NULLPTR);
+}
+
+void Compositor::restoreKeyboardFocus()
+{
+    Q_D(Compositor);
+
+    if (d->lastKeyboardFocus) {
+        defaultInputDevice()->setKeyboardFocus(d->lastKeyboardFocus);
+        d->lastKeyboardFocus = Q_NULLPTR;
+    }
 }
 
 void Compositor::abortSession()
