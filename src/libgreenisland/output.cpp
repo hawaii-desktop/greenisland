@@ -50,6 +50,10 @@ public:
     KScreen::OutputPtr output;
     bool primary;
 
+    QSize hotSpotSize;
+    quint64 hotSpotThreshold;
+    quint64 hotSpotPushTime;
+
 private:
     Q_DECLARE_PUBLIC(Output)
     Output *const q_ptr;
@@ -59,6 +63,9 @@ OutputPrivate::OutputPrivate(Output *parent)
     : compositor(Q_NULLPTR)
     , output(Q_NULLPTR)
     , primary(false)
+    , hotSpotSize(QSize(10, 10))
+    , hotSpotThreshold(1000)
+    , hotSpotPushTime(150)
     , q_ptr(parent)
 {
 }
@@ -179,6 +186,57 @@ void Output::setPrimary(bool value)
 
     d->primary = value;
     Q_EMIT primaryChanged();
+}
+
+QSize Output::hotSpotSize() const
+{
+    Q_D(const Output);
+    return d->hotSpotSize;
+}
+
+void Output::setHotSpotSize(const QSize &size)
+{
+    Q_D(Output);
+
+    if (d->hotSpotSize == size)
+        return;
+
+    d->hotSpotSize = size;
+    Q_EMIT hotSpotSizeChanged();
+}
+
+quint64 Output::hotSpotThreshold() const
+{
+    Q_D(const Output);
+    return d->hotSpotThreshold;
+}
+
+void Output::setHotSpotThreshold(quint64 value)
+{
+    Q_D(Output);
+
+    if (d->hotSpotThreshold == value)
+        return;
+
+    d->hotSpotThreshold = value;
+    Q_EMIT hotSpotThresholdChanged();
+}
+
+quint64 Output::hotSpotPushTime() const
+{
+    Q_D(const Output);
+    return d->hotSpotPushTime;
+}
+
+void Output::setHotSpotPushTime(quint64 value)
+{
+    Q_D(Output);
+
+    if (d->hotSpotThreshold == value)
+        return;
+
+    d->hotSpotPushTime = value;
+    Q_EMIT hotSpotPushTimeChanged();
 }
 
 QPointF Output::mapToOutput(const QPointF &pt)

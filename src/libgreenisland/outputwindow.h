@@ -27,6 +27,7 @@
 #ifndef GREENISLAND_OUTPUTWINDOW_H
 #define GREENISLAND_OUTPUTWINDOW_H
 
+#include <QtCore/QElapsedTimer>
 #include <QtQuick/QQuickView>
 
 #include <greenisland/greenisland_export.h>
@@ -60,6 +61,13 @@ protected:
 private:
     Compositor *m_compositor;
     Output *m_output;
+
+    // Hot spots
+    QElapsedTimer m_timer;
+    quint64 m_hotSpotLastTime;
+    quint64 m_hotSpotEntered;
+
+    void handleMotion(quint64 time, const QPoint &pt);
 
 private Q_SLOTS:
     void printInfo();

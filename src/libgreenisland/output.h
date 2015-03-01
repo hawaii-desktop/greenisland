@@ -45,7 +45,18 @@ class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
     Q_PROPERTY(QString name READ name CONSTANT)
     Q_PROPERTY(int number READ number CONSTANT)
     Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
+    Q_PROPERTY(QSize hotSpotSize READ hotSpotSize WRITE setHotSpotSize NOTIFY hotSpotSizeChanged)
+    Q_PROPERTY(quint64 hotSpotThreshold READ hotSpotThreshold WRITE setHotSpotThreshold NOTIFY hotSpotThresholdChanged)
+    Q_PROPERTY(quint64 hotSpotPushTime READ hotSpotPushTime WRITE setHotSpotPushTime NOTIFY hotSpotPushTimeChanged)
+    Q_ENUMS(HotSpot)
 public:
+    enum HotSpot {
+        TopLeftHotSpot = 0,
+        TopRightHotSpot,
+        BottomLeftHotSpot,
+        BottomRightHotSpot
+    };
+
     Output(Compositor *compositor, const KScreen::OutputPtr &output);
 
     Compositor *compositor() const;
@@ -58,6 +69,15 @@ public:
 
     bool isPrimary() const;
 
+    QSize hotSpotSize() const;
+    void setHotSpotSize(const QSize &size);
+
+    quint64 hotSpotThreshold() const;
+    void setHotSpotThreshold(quint64 value);
+
+    quint64 hotSpotPushTime() const;
+    void setHotSpotPushTime(quint64 value);
+
     // Maps global coordinates to local space
     Q_INVOKABLE QPointF mapToOutput(const QPointF &pt);
 
@@ -66,6 +86,10 @@ public:
 
 Q_SIGNALS:
     void primaryChanged();
+    void hotSpotSizeChanged();
+    void hotSpotThresholdChanged();
+    void hotSpotPushTimeChanged();
+    void hotSpotTriggered(HotSpot hotSpot);
 
 private:
     Q_DECLARE_PRIVATE(Output)

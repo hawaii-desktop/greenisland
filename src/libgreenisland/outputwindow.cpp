@@ -42,7 +42,12 @@ OutputWindow::OutputWindow(Compositor *compositor)
     : QQuickView()
     , m_compositor(compositor)
     , m_output(Q_NULLPTR)
+    , m_hotSpotLastTime(0)
+    , m_hotSpotEntered(0)
 {
+    // Initialize timer
+    m_timer.start();
+
     // Setup window
     setColor(Qt::black);
     winId();
@@ -152,6 +157,9 @@ void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 {
     m_compositor->setState(Compositor::Active);
 
+    if (m_output)
+        handleMotion(m_timer.elapsed(), event->localPos().toPoint());
+
     QQuickView::mouseMoveEvent(event);
 }
 
@@ -160,6 +168,45 @@ void OutputWindow::wheelEvent(QWheelEvent *event)
     m_compositor->setState(Compositor::Active);
 
     QQuickView::wheelEvent(event);
+}
+
+void OutputWindow::handleMotion(quint64 time, const QPoint &pt)
+{
+    // Can't continue without an output
+    if (!m_output)
+        return;
+
+    // Hot spots are triggered after the configured threshold
+    if (time - m_hotSpotLastTime < m_output->hotSpotThreshold())
+        return;
+
+    // Determine which hotspot was triggered
+    int width = m_output->hotSpotSize().width();
+    int height = m_output->hotSpotSize().height();
+    Output::HotSpot hotSpot;
+    bool triggered = true;
+    if (pt.x() <= m_output->geometry().x() + width && pt.y() <= m_output->geometry().y() + height)
+        hotSpot = Output::HotSpot::TopLeftHotSpot;
+    else if (pt.x() >= m_output->geometry().right() - width && pt.y() <= m_output->geometry().y() + height)
+        hotSpot = Output::HotSpot::TopRightHotSpot;
+    else if (pt.x() <= m_output->geometry().x() + width && pt.y() >= m_output->geometry().bottom() - height)
+        hotSpot = Output::HotSpot::BottomLeftHotSpot;
+    else if (pt.x() >= m_output->geometry().right() - width && pt.y() >= m_output->geometry().bottom() - height)
+        hotSpot = Output::HotSpot::BottomRightHotSpot;
+    else {
+        triggered = false;
+        m_hotSpotEntered = 0;
+    }
+
+    // Trigger an action
+    if (triggered) {
+        if (m_hotSpotEntered == 0)
+            m_hotSpotEntered = time;
+        else if (time - m_hotSpotEntered > m_output->hotSpotPushTime()) {
+            m_hotSpotLastTime = time;
+            Q_EMIT m_output->hotSpotTriggered(hotSpot);
+        }
+    }
 }
 
 void OutputWindow::printInfo()
