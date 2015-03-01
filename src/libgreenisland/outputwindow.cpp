@@ -157,8 +157,18 @@ void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 {
     m_compositor->setState(Compositor::Active);
 
-    if (m_output)
-        handleMotion(m_timer.elapsed(), event->localPos().toPoint());
+    if (m_output) {
+        const QPoint pt = event->localPos().toPoint();
+
+        // Hot spots
+        handleMotion(m_timer.elapsed(), pt);
+
+        // Pointer barrier
+        if (!m_output->geometry().contains(pt)) {
+            event->ignore();
+            return;
+        }
+    }
 
     QQuickView::mouseMoveEvent(event);
 }
