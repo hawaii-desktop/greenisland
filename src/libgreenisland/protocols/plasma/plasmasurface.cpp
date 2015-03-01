@@ -181,7 +181,7 @@ void PlasmaSurface::surface_set_output(Resource *resource,
     QWaylandOutput *oldOutput = m_surface->output();
     QWaylandOutput *newOutput = QWaylandOutput::fromResource(outputResource);
     QWaylandOutputChangedEvent e(oldOutput, newOutput);
-    QCoreApplication::sendEvent(m_surface, &e);
+    QCoreApplication::sendEvent(m_surface, (QEvent *) &e);
     Q_EMIT m_window->outputChanged();
 }
 
