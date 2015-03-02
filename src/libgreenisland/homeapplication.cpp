@@ -49,7 +49,7 @@ HomeApplication::HomeApplication(int &argc, char **argv)
 
 HomeApplication::~HomeApplication()
 {
-    delete m_compositor;
+    m_compositor->deleteLater();
 }
 
 Compositor *HomeApplication::compositor() const
