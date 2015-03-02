@@ -220,6 +220,10 @@ Compositor::~Compositor()
     delete d_ptr->screenManager;
     delete d_ptr;
 
+    // Cleanup graphics resources
+    qDebug() << "Cleanup graphics resources...";
+    cleanupGraphicsResources();
+
     // Delete windows and outputs
     qDebug() << "Closing all remaining windows...";
     for (QWaylandOutput *output: outputs()) {
