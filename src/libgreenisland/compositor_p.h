@@ -76,6 +76,8 @@ public:
     int idleInterval;
     int idleInhibit;
 
+    bool locked;
+
     // Cursor
     QWaylandSurface *cursorSurface;
     int cursorHotspotX;

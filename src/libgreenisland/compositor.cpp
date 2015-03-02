@@ -72,6 +72,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , state(Compositor::Active)
     , idleInterval(5 * 60000)
     , idleInhibit(0)
+    , locked(false)
     , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
@@ -310,6 +311,24 @@ void Compositor::setIdleInhibit(int value)
         d->idleInhibit = value;
         Q_EMIT idleInhibitChanged();
     }
+}
+
+bool Compositor::isLocked() const
+{
+    Q_D(const Compositor);
+
+    return d->locked;
+}
+
+void Compositor::setLocked(bool value)
+{
+    Q_D(Compositor);
+
+    if (d->locked == value)
+        return;
+
+    d->locked = value;
+    Q_EMIT lockedChanged();
 }
 
 ScreenManager *Compositor::screenManager() const
