@@ -30,10 +30,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
 
 #include "applicationmanager_p.h"
 #include "clientwindow.h"
@@ -402,14 +399,14 @@ QPointF ClientWindow::calculateInitialPosition() const
     // As a heuristic place the new window on the same output as the
     // pointer. Falling back to the output containing 0,0.
     // TODO: Do something clever for touch too
-    QPointF pos = m_compositor->defaultInputDevice()->handle()->pointerDevice()->currentPosition();
+    QPoint pos = QCursor::pos();
 
     // Find the target screen (the one where the coordinates are in)
     QRect geometry;
     bool targetScreenFound = false;
     for (QWaylandOutput *output: m_surface->compositor()->outputs()) {
         geometry = output->availableGeometry();
-        if (geometry.contains(pos.toPoint())) {
+        if (geometry.contains(pos)) {
             targetScreenFound = true;
             break;
         }
