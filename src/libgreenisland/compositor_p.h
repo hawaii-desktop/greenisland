@@ -31,6 +31,7 @@
 #include <QtCompositor/QWaylandSurface>
 
 #include "applicationmanager.h"
+#include "compositorsettings.h"
 #include "screenmanager.h"
 
 //  W A R N I N G
@@ -85,6 +86,7 @@ public:
 
     QWaylandSurface *lastKeyboardFocus;
 
+    CompositorSettings *settings;
     ScreenManager *screenManager;
 
     // Application management

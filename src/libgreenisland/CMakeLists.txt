@@ -22,6 +22,7 @@ set(SOURCES
     applicationmanager.cpp
     clientwindow.cpp
     compositor.cpp
+    compositorsettings.cpp
     globalregistry.cpp
     gldebug.cpp
     homeapplication.cpp
@@ -126,6 +127,7 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
   HEADER_NAMES
     ApplicationManager
     Compositor
+    CompositorSettings
     ClientWindow
     HomeApplication
     Output

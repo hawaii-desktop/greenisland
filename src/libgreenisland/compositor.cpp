@@ -79,6 +79,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , lastKeyboardFocus(Q_NULLPTR)
     , q_ptr(self)
 {
+    settings = new CompositorSettings(self);
     screenManager = new ScreenManager(self);
     appManager = new ApplicationManager(self);
 }
@@ -333,6 +334,12 @@ void Compositor::setLocked(bool value)
 
     d->locked = value;
     Q_EMIT lockedChanged();
+}
+
+CompositorSettings *Compositor::settings() const
+{
+    Q_D(const Compositor);
+    return d->settings;
 }
 
 ScreenManager *Compositor::screenManager() const

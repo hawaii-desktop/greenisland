@@ -30,6 +30,7 @@
 #include <GreenIsland/ApplicationManager>
 #include <GreenIsland/ClientWindow>
 #include <GreenIsland/Compositor>
+#include <GreenIsland/CompositorSettings>
 #include <GreenIsland/Output>
 #include <GreenIsland/ShellWindow>
 
@@ -53,6 +54,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                    QStringLiteral("You can't create ApplicationManager objects"));
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
                                              QStringLiteral("You can't create ClientWindow objects"));
+    qmlRegisterUncreatableType<CompositorSettings>(uri, 1, 0, "CompositorSettings",
+                                                   QStringLiteral("You can't create CompositorSettings objects"));
     qmlRegisterUncreatableType<Output>(uri, 1, 0, "Output",
                                        QStringLiteral("You can't create Output objects"));
     qmlRegisterUncreatableType<ShellWindow>(uri, 1, 0, "ShellWindow",

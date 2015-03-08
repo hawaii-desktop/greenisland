@@ -35,6 +35,7 @@
 namespace GreenIsland {
 
 class ApplicationManager;
+class CompositorSettings;
 class ClientWindow;
 class CompositorPrivate;
 class Output;
@@ -45,6 +46,7 @@ class ShellWindow;
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
     Q_OBJECT
+    Q_PROPERTY(CompositorSettings *settings READ settings CONSTANT)
     Q_PROPERTY(ApplicationManager *applicationManager READ applicationManager CONSTANT)
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
@@ -80,6 +82,7 @@ public:
     bool isLocked() const;
     void setLocked(bool value);
 
+    CompositorSettings *settings() const;
     ScreenManager *screenManager() const;
     ApplicationManager *applicationManager() const;
 
