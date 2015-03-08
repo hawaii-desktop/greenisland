@@ -13,6 +13,8 @@ such as those for Plasma 5 that do not make much sense to be sent upstream.
 Green Island can be used by any desktop environment that wish to implement its compositor
 by using QML or for shells deeply integrated with the compositor in the same process.
 
+It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop).
+
 ## Dependencies
 
 * Wayland >= 1.6.0
