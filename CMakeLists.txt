@@ -78,10 +78,16 @@ else()
         TYPE REQUIRED)
 endif()
 
-find_package(EGL)
-set_package_properties(EGL PROPERTIES
-    TYPE RUNTIME
-    PURPOSE "Required to build Green Island with EGL support")
+# EGL
+find_package(BcmHost)
+if(BCM_HOST_FOUND)
+    set(EGL_IMPLEMENTATION BcmHost)
+    set(EGL_TARGET BcmHost::BcmHost)
+else()
+    find_package(EGL REQUIRED)
+    set(EGL_IMPLEMENTATION EGL)
+    set(EGL_TARGET EGL::EGL)
+endif()
 
 # Wayland
 set(REQUIRED_WAYLAND_VERSION 1.2.0)

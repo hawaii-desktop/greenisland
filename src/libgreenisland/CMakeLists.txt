@@ -101,7 +101,7 @@ target_link_libraries(GreenIsland
     KF5::Screen
     Wayland::Client
     Wayland::Server
-    EGL::EGL
+    ${EGL_TARGET}
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
