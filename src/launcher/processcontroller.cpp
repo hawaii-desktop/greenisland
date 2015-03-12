@@ -132,45 +132,27 @@ QString ProcessController::randomString() const
     return randomString;
 }
 
-void ProcessController::detect()
-{
-    // No need to detect anything if full screen shell is forced
-    if (isFullScreenShellEnabled())
-        return;
-
-    // X11
-    if (qEnvironmentVariableIsSet("DISPLAY")) {
-        m_compositor->setArguments(QStringList()
-                                   << QStringLiteral("-platform")
-                                   << QStringLiteral("xcb"));
-        return;
-    }
-
-    // Assume it is running on KMS, therefore enable full screen shell
-    setFullScreenShellEnabled(true);
-}
-
 void ProcessController::startCompositor()
 {
-    // Detect the environment
-    detect();
+    QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    // Pass arguments for full screen shell
+    // Pass arguments for full screen shell or another mode
     if (isFullScreenShellEnabled()) {
         m_compositor->setArguments(QStringList()
-                                   << QStringLiteral("-platform")
-                                   << QStringLiteral("wayland")
                                    << QStringLiteral("--socket=") + m_compositorSocket);
-        if (!m_plugin.isEmpty())
-            m_compositor->setArguments(m_compositor->arguments()
-                                       << QStringLiteral("-p") << m_plugin);
 
-        QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("wayland"));
         env.insert(QStringLiteral("WAYLAND_DISPLAY"), m_fullScreenShellSocket);
         if (qEnvironmentVariableIsSet("DISPLAY") && !isFullScreenShellEnabled())
             env.insert(QStringLiteral("QT_XCB_GL_INTEGRATION"), QStringLiteral("xcb_egl"));
         m_compositor->setProcessEnvironment(env);
+    } else if (qEnvironmentVariableIsSet("DISPLAY")) {
+        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("xcb"));
     }
+
+    if (!m_plugin.isEmpty())
+        m_compositor->setArguments(m_compositor->arguments()
+                                   << QStringLiteral("-p") << m_plugin);
 
     // Start the process
     qDebug() << "Running:" << qPrintable(m_compositor->program())

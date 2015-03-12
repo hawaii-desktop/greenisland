@@ -61,8 +61,6 @@ private:
     QString randomString() const;
 
 private Q_SLOTS:
-    void detect();
-
     void startCompositor();
 
     void directoryChanged(const QString &path);
