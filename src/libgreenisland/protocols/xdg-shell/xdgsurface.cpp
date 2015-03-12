@@ -56,6 +56,7 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     , m_resizeGrabber(Q_NULLPTR)
     , m_minimized(false)
     , m_state(Normal)
+    , m_savedState(Normal)
     , m_deleting(false)
 {
     // This is a toplevel window by default
