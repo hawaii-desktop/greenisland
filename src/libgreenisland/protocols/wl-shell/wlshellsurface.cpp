@@ -301,13 +301,17 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     Q_UNUSED(method);
     Q_UNUSED(framerate);
 
-    // Save global geometry before resizing, it will be restored
-    // with the next set_toplevel() call
-    m_prevGlobalGeometry = m_window->geometry();
-
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
             : m_window->output();
+
+    // Save global geometry before resizing, it will be restored with the next
+    // set_toplevel() call but if the window starts full screen we don't have
+    // a valid previous geometry so we set it to output geometry
+    if (m_window->geometry().isValid())
+        m_prevGlobalGeometry = m_window->geometry();
+    else
+        m_prevGlobalGeometry = output->geometry();
 
     // Resize
     send_configure(resize_bottom_right,
