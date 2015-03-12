@@ -453,6 +453,11 @@ void ClientWindow::initialSetup()
         }
     }
 
+    // Honor full screen positioning for top level windows that
+    // start that way
+    if (m_surface->windowType() == QWaylandSurface::Toplevel && isFullScreen())
+        return;
+
     // Set initial position
     switch (m_surface->windowType()) {
     case QWaylandSurface::Popup:
@@ -488,7 +493,7 @@ void ClientWindow::initialSetup()
         }
         break;
     default:
-        // Calculate initial position for toplevel windows
+        // Calculate initial position for top level windows
         m_pos = calculateInitialPosition();
         break;
     }
