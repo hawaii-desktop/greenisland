@@ -71,6 +71,7 @@ class GREENISLAND_EXPORT ClientWindow : public QObject
     Q_PROPERTY(bool active READ isActive NOTIFY activeChanged)
     Q_PROPERTY(bool minimized READ isMinimized NOTIFY minimizedChanged)
     Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
+    Q_PROPERTY(bool fullScreen READ isFullScreen NOTIFY fullScreenChanged)
     Q_ENUMS(Type)
 public:
     enum Type {
