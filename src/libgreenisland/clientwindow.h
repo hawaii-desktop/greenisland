@@ -151,6 +151,7 @@ Q_SIGNALS:
     void motionFinished();
 
 private:
+    uint m_id;
     Type m_type;
     QString m_appId;
     QString m_iconName;
@@ -186,8 +187,6 @@ private:
     friend class XdgPopup;
     friend class XdgSurface;
     friend class ScreenManagerPrivate;
-
-    static uint m_id;
 
 private Q_SLOTS:
     void setType(QWaylandSurface::WindowType windowType);
