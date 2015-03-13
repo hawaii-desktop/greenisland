@@ -200,9 +200,6 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
 {
     switch (op->type()) {
-    case QWaylandSurfaceOp::Close:
-        send_close();
-        return true;
     case QWaylandSurfaceOp::Resize: {
         Changes changes;
         changes.active = m_window->isActive();
