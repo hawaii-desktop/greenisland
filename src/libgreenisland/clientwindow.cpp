@@ -95,7 +95,7 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     connect(surface, SIGNAL(titleChanged()), this, SIGNAL(titleChanged()));
     connect(surface, &QWaylandSurface::classNameChanged, [=] {
         if (!m_surface->className().isEmpty()) {
-            m_appId = m_surface->className();
+            m_appId = m_surface->className().replace(QStringLiteral(".desktop"), QString());
             m_iconName = readFromDesktopFile(m_appId, QStringLiteral("Icon"),
                                              QStringLiteral("application-octet-stream")).toString();
             Q_EMIT appIdChanged();
