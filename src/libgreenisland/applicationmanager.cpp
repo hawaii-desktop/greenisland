@@ -40,11 +40,9 @@ ApplicationManagerPrivate::ApplicationManagerPrivate(ApplicationManager *parent)
 {
 }
 
-void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface)
+void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const QString &appId)
 {
     Q_Q(ApplicationManager);
-
-    const QString appId = surface->className();
 
     if (apps.contains(appId))
         return;
@@ -58,11 +56,9 @@ void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface)
         Q_EMIT q->applicationAdded(appId);
 }
 
-void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface)
+void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, const QString &appId)
 {
     Q_Q(ApplicationManager);
-
-    const QString appId = surface->className();
 
     if (appSurfaces.remove(surface) > 0) {
         if (appSurfaces.count(surface) == 0) {

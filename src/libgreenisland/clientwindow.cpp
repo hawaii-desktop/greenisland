@@ -380,7 +380,7 @@ void ClientWindow::move()
 void ClientWindow::registerWindow()
 {
     // Register this window
-    m_compositor->applicationManager()->d_func()->registerSurface(m_surface);
+    m_compositor->applicationManager()->d_func()->registerSurface(m_surface, m_appId);
     m_compositor->d_func()->mapWindow(this);
 }
 
@@ -391,7 +391,7 @@ void ClientWindow::unregisterWindow(bool destruction)
         m_compositor->d_func()->destroyWindow(this);
     else
         m_compositor->d_func()->unmapWindow(this);
-    m_compositor->applicationManager()->d_func()->unregisterSurface(m_surface);
+    m_compositor->applicationManager()->d_func()->unregisterSurface(m_surface, m_appId);
 }
 
 QPointF ClientWindow::calculateInitialPosition() const

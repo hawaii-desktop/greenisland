@@ -51,8 +51,8 @@ class ApplicationManagerPrivate
 public:
     ApplicationManagerPrivate(ApplicationManager *parent);
 
-    void registerSurface(QWaylandSurface *surface);
-    void unregisterSurface(QWaylandSurface *surface);
+    void registerSurface(QWaylandSurface *surface, const QString &appId);
+    void unregisterSurface(QWaylandSurface *surface, const QString &appId);
 
     QSet<QString> apps;
     QHash<QWaylandSurface *, QString> appSurfaces;
