@@ -45,6 +45,8 @@ CompositorSettings::CompositorSettings(Compositor *compositor)
     : QObject(compositor)
     , d_ptr(new CompositorSettingsPrivate())
 {
+    qRegisterMetaType<CompositorSettings *>("CompositorSettings*");
+
     Q_D(CompositorSettings);
     d->compositor = compositor;
 }
