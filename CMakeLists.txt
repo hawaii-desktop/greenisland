@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8.12)
 
 # Options
 option(ENABLE_OPENGL "Enable OpenGL support" OFF)
+option(ENABLE_KDECLARATIVE "Enable KDeclarative support" OFF)
 
 # Set version
 set(PROJECT_VERSION "0.5.90")
@@ -61,7 +62,14 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Widge
 
 # Find KF5
 set(REQUIRED_KF5_VERSION 5.2.0)
-find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen)
+
+# Use KDeclarative if requested
+if(ENABLE_KDECLARATIVE)
+    add_definitions(-DENABLE_KDECLARATIVE)
+    find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen Declarative)
+else()
+    find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen)
+endif()
 
 # GL requirements
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")

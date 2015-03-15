@@ -91,18 +91,34 @@ add_library(GreenIsland SHARED ${SOURCES})
 generate_export_header(GreenIsland EXPORT_FILE_NAME greenisland/greenisland_export.h)
 add_library(GreenIsland::GreenIsland ALIAS GreenIsland)
 
-target_link_libraries(GreenIsland
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Quick
-    Qt5::Compositor
-    KF5::Screen
-    Wayland::Client
-    Wayland::Server
-    EGL::EGL
-)
+if(ENABLE_KDECLARATIVE)
+    target_link_libraries(GreenIsland
+        Qt5::Core
+        Qt5::DBus
+        Qt5::Gui
+        Qt5::Widgets
+        Qt5::Quick
+        Qt5::Compositor
+        KF5::Screen
+        KF5::Declarative
+        Wayland::Client
+        Wayland::Server
+        EGL::EGL
+    )
+else()
+    target_link_libraries(GreenIsland
+        Qt5::Core
+        Qt5::DBus
+        Qt5::Gui
+        Qt5::Widgets
+        Qt5::Quick
+        Qt5::Compositor
+        KF5::Screen
+        Wayland::Client
+        Wayland::Server
+        EGL::EGL
+    )
+endif()
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     target_link_libraries(GreenIsland ${OPENGL_LIBRARIES})
