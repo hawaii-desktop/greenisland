@@ -63,21 +63,6 @@ find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Widge
 set(REQUIRED_KF5_VERSION 5.2.0)
 find_package(KF5 ${REQUIRED_KF5_VERSION} REQUIRED COMPONENTS Screen)
 
-# GL requirements
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    find_package(OpenGL)
-    set_package_properties(OpenGL PROPERTIES
-        DESCRIPTION "The OpenGL libraries"
-        URL "http://www.opengl.org"
-        TYPE REQUIRED)
-else()
-    find_package(OpenGLES)
-    set_package_properties(OpenGLES PROPERTIES
-        DESCRIPTION "The OpenGLES libraries"
-        URL "http://www.khronos.org/opengles"
-        TYPE REQUIRED)
-endif()
-
 # EGL
 find_package(BcmHost)
 if(BCM_HOST_FOUND)
@@ -87,6 +72,21 @@ else()
     find_package(EGL REQUIRED)
     set(EGL_IMPLEMENTATION EGL)
     set(EGL_TARGET EGL::EGL)
+
+    # GL requirements
+    if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+        find_package(OpenGL)
+        set_package_properties(OpenGL PROPERTIES
+            DESCRIPTION "The OpenGL libraries"
+            URL "http://www.opengl.org"
+            TYPE REQUIRED)
+    else()
+        find_package(OpenGLES)
+        set_package_properties(OpenGLES PROPERTIES
+            DESCRIPTION "The OpenGLES libraries"
+            URL "http://www.khronos.org/opengles"
+            TYPE REQUIRED)
+    endif()
 endif()
 
 # Wayland

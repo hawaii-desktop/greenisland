@@ -104,10 +104,12 @@ target_link_libraries(GreenIsland
     ${EGL_TARGET}
 )
 
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    target_link_libraries(GreenIsland ${OPENGL_LIBRARIES})
-else()
-    target_link_libraries(GreenIsland ${OPENGLES_LIBRARIES})
+if(EGL_FOUND)
+    if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+        target_link_libraries(GreenIsland ${OPENGL_LIBRARIES})
+    else()
+        target_link_libraries(GreenIsland ${OPENGLES_LIBRARIES})
+    endif()
 endif()
 
 if(systemd_FOUND)
