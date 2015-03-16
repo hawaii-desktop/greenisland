@@ -22,6 +22,10 @@
 #
 # ``BcmHost::BcmHost``
 #     The BcmHost library
+# ``BcmHost::GLESv2``
+#     The GLESv2 library
+# ``BcmHost::EGL``
+#     The EGL library
 #
 # In general we recommend using the imported target, as it is easier to use.
 # Bear in mind, however, that if the target is in the link interface of an
@@ -85,22 +89,39 @@ find_package_handle_standard_args(BCM_HOST
 
 if(BCM_HOST_FOUND)
     set(BCM_HOST_LIBRARY_DIRS "${BCM_HOST_PREFIX}/lib")
-    set(BCM_HOST_LIBRARY -lGLESv2 -lEGL -lm -lbcm_host)
     set(BCM_HOST_INCLUDE_DIR ${BCM_HOST_INCLUDE_DIR} ${BCM_HOST_INCLUDE_DIR}/interface ${BCM_HOST_INCLUDE_DIR}/interface/vcos/pthreads)
 endif()
 
-if(BCM_HOST_FOUND AND NOT TARGET BcmHost::BcmHost)
-    add_library(BcmHost::BcmHost UNKNOWN IMPORTED)
-    set_target_properties(BcmHost::BcmHost PROPERTIES
-        IMPORTED_LOCATION "-L${BCM_HOST_LIBRARY_DIRS} ${BCM_HOST_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${BCM_HOST_INCLUDE_DIR}"
-    )
+if(BCM_HOST_FOUND)
+    if(NOT TARGET BcmHost::BcmHost)
+        add_library(BcmHost::BcmHost UNKNOWN IMPORTED)
+        set_target_properties(BcmHost::BcmHost PROPERTIES
+            IMPORTED_LOCATION "-L${BCM_HOST_LIBRARY_DIRS} ${BCM_HOST_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${BCM_HOST_INCLUDE_DIR}"
+        )
+    endif()
+
+    if(NOT TARGET BcmHost::GLESv2)
+        add_library(BcmHost::GLESv2 UNKNOWN IMPORTED)
+        set_target_properties(BcmHost::GLESv2 PROPERTIES
+            IMPORTED_LOCATION "-L${BCM_HOST_LIBRARY_DIRS} -lGLESv2"
+            INTERFACE_INCLUDE_DIRECTORIES "${BCM_HOST_INCLUDE_DIR}"
+        )
+    endif()
+
+    if(NOT TARGET BcmHost::EGL)
+        add_library(BcmHost::EGL UNKNOWN IMPORTED)
+        set_target_properties(BcmHost::EGL PROPERTIES
+            IMPORTED_LOCATION "-L${BCM_HOST_LIBRARY_DIRS} -lEGL"
+            INTERFACE_INCLUDE_DIRECTORIES "${BCM_HOST_INCLUDE_DIR}"
+        )
+    endif()
 endif()
 
 mark_as_advanced(BCM_HOST_LIBRARY BCM_HOST_INCLUDE_DIR)
 
 # Compatibility variables
-set(BCM_HOST_LIBRARIES ${BCM_HOST_LIBRARY})
+set(BCM_HOST_LIBRARIES "-L${BCM_HOST_LIBRARY_DIRS} -lGLESv2 -lEGL -lm -lbcm_host")
 set(BCM_HOST_INCLUDE_DIRS ${BCM_HOST_INCLUDE_DIR})
 
 include(FeatureSummary)
