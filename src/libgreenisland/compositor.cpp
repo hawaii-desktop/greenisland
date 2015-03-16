@@ -458,6 +458,8 @@ void Compositor::abortSession()
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
+    Q_D(Compositor);
+
     // Setup cursor
     d->cursorHotspotX = hotspotX;
     d->cursorHotspotY = hotspotY;
