@@ -27,6 +27,10 @@
 #include <QtCore/QStandardPaths>
 #include <QtQml/QQmlContext>
 
+#ifdef ENABLE_KDECLARATIVE
+#include <KDeclarative/KDeclarative>
+#endif
+
 #include "compositor.h"
 #include "gldebug.h"
 #include "globalregistry.h"
@@ -105,6 +109,14 @@ void OutputWindow::setOutput(Output *output)
 
     // Add a context property to reference the output
     rootContext()->setContextProperty("_greenisland_output", m_output);
+
+    #ifdef ENABLE_KDECLARATIVE
+    KDeclarative::KDeclarative kdeclarative;
+
+    kdeclarative.setDeclarativeEngine(engine());
+    kdeclarative.initialize();
+    kdeclarative.setupBindings();
+    #endif
 
     // Load QML and setup window
     setResizeMode(QQuickView::SizeRootObjectToView);
