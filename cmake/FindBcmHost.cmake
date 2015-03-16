@@ -85,7 +85,7 @@ find_package_handle_standard_args(BCM_HOST
 
 if(BCM_HOST_FOUND)
     set(BCM_HOST_LIBRARY_DIRS "${BCM_HOST_PREFIX}/lib")
-    set(BCM_HOST_LIBRARY "-lGLESv2 -lEGL -lm -lbcm_host")
+    set(BCM_HOST_LIBRARY -lGLESv2 -lEGL -lm -lbcm_host)
     set(BCM_HOST_INCLUDE_DIR ${BCM_HOST_INCLUDE_DIR} ${BCM_HOST_INCLUDE_DIR}/interface ${BCM_HOST_INCLUDE_DIR}/interface/vcos/pthreads)
 endif()
 
