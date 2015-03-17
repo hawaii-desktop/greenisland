@@ -52,9 +52,10 @@ OutputWindow::OutputWindow(Compositor *compositor)
     setColor(Qt::black);
     winId();
 
-    // Send frame callbacks after rendering
+    // Read content after rendering
     connect(this, &QQuickView::afterRendering,
-            this, &OutputWindow::sendCallbacks);
+            this, &OutputWindow::readContent,
+            Qt::DirectConnection);
 
     // Show the window as soon as QML is loaded
     connect(this, &QQuickView::statusChanged,
@@ -224,9 +225,10 @@ void OutputWindow::printInfo()
     GreenIsland::printGraphicsInformation(this);
 }
 
-void OutputWindow::sendCallbacks()
+void OutputWindow::readContent()
 {
-    m_compositor->sendFrameCallbacks(m_compositor->surfaces());
+    // Send frame callbacks for windows rendered on this output
+    m_output->sendFrameCallbacks(m_output->surfaces());
 }
 
 void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
