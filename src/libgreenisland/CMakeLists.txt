@@ -37,6 +37,7 @@ set(SOURCES
     protocols/greenisland/greenislandapps.cpp
     protocols/greenisland/greenislandwindow.cpp
     protocols/greenisland/greenislandwindows.cpp
+    protocols/greenisland/greenislandrecorder.cpp
     protocols/plasma/plasmaeffects.cpp
     protocols/plasma/plasmashell.cpp
     protocols/plasma/plasmasurface.cpp
@@ -63,6 +64,11 @@ endif()
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland.xml
     BASENAME greenisland
+    PREFIX greenisland_
+)
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
+    BASENAME greenisland-recorder
     PREFIX greenisland_
 )
 ecm_add_qtwayland_server_protocol(SOURCES

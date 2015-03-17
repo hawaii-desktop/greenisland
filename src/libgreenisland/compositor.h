@@ -146,6 +146,7 @@ private:
     friend class ClientWindow;
     friend class ScreenManagerPrivate;
     friend class ShellWindow;
+    friend class OutputWindow;
 };
 
 }

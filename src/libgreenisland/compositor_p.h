@@ -50,6 +50,7 @@ namespace GreenIsland {
 class Compositor;
 class ClientWindow;
 class ShellWindow;
+class GreenIslandRecorderManager;
 
 class CompositorPrivate
 {
@@ -88,6 +89,7 @@ public:
 
     CompositorSettings *settings;
     ScreenManager *screenManager;
+    GreenIslandRecorderManager *recorderManager;
 
     // Application management
     ApplicationManager *appManager;

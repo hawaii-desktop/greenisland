@@ -50,6 +50,7 @@
 
 #include "protocols/greenisland/greenislandapps.h"
 #include "protocols/greenisland/greenislandwindows.h"
+#include "protocols/greenisland/greenislandrecorder.h"
 #include "protocols/plasma/plasmaeffects.h"
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -77,6 +78,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
     , lastKeyboardFocus(Q_NULLPTR)
+    , recorderManager(Q_NULLPTR)
     , q_ptr(self)
 {
     settings = new CompositorSettings(self);
@@ -362,6 +364,8 @@ void Compositor::run()
         return;
 
     // Add global interfaces
+    d->recorderManager = new GreenIslandRecorderManager();
+    addGlobalInterface(d->recorderManager);
     addGlobalInterface(new GreenIslandApps(d->appManager));
     addGlobalInterface(new GreenIslandWindows(d->appManager));
     PlasmaShell *plasmaShell = new PlasmaShell(this);

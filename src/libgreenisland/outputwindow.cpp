@@ -28,6 +28,7 @@
 #include <QtQml/QQmlContext>
 
 #include "compositor.h"
+#include "compositor_p.h"
 #include "gldebug.h"
 #include "globalregistry.h"
 #include "output.h"
@@ -35,6 +36,7 @@
 #include "windowview.h"
 
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
+#include "protocols/greenisland/greenislandrecorder.h"
 
 namespace GreenIsland {
 
@@ -229,6 +231,9 @@ void OutputWindow::readContent()
 {
     // Send frame callbacks for windows rendered on this output
     m_output->sendFrameCallbacks(m_output->surfaces());
+
+    // Record a frame after rendering
+    m_compositor->d_ptr->recorderManager->recordFrame(this);
 }
 
 void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
