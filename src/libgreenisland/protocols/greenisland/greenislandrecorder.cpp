@@ -38,6 +38,8 @@
 #include <sys/time.h>
 #include <grp.h>
 
+Q_LOGGING_CATEGORY(RECORDER_PROTOCOL, "greenisland.protocols.greenisland.recorder")
+
 namespace GreenIsland {
 
 static uint32_t getTime()
@@ -149,8 +151,10 @@ void GreenIslandRecorderManager::bind(wl_client *client, quint32 version, quint3
 void GreenIslandRecorderManager::recorder_manager_create_recorder(Resource *resource, uint32_t id, ::wl_resource *outputResource)
 {
     QWaylandQuickOutput *output = static_cast<QWaylandQuickOutput *>(QWaylandOutput::fromResource(outputResource));
-    if (!output)
+    if (!output) {
+        qCWarning(RECORDER_PROTOCOL) << "Couldn't find output from resource";
         return;
+    }
     new GreenIslandRecorder(this, resource->client(), id, output->quickWindow());
 }
 

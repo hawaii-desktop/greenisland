@@ -32,6 +32,7 @@
 #define GREENISLANDRECORDER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QMultiHash>
 #include <QtCore/QMutex>
 #include <QtCompositor/QWaylandGlobalInterface>
@@ -44,6 +45,8 @@ struct wl_client;
 class QWindow;
 class QQuickWindow;
 class QEvent;
+
+Q_DECLARE_LOGGING_CATEGORY(RECORDER_PROTOCOL)
 
 namespace GreenIsland {
 
