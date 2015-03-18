@@ -67,6 +67,7 @@ public:
     void restore();
 
     void resetMoveGrab();
+    void resetResizeGrab();
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;

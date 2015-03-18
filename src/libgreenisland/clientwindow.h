@@ -149,6 +149,8 @@ Q_SIGNALS:
     void windowMenuRequested(const QPoint &pt);
     void motionStarted();
     void motionFinished();
+    void resizeStarted();
+    void resizeFinished();
 
 private:
     uint m_id;

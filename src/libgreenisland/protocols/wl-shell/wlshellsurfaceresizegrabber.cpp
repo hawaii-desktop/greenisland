@@ -65,7 +65,7 @@ void WlShellSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, 
 
     if (button == Qt::LeftButton && !state) {
         m_pointer->endGrab();
-        m_shellSurface->m_resizeGrabber = Q_NULLPTR;
+        m_shellSurface->resetResizeGrab();
         delete this;
     }
 }

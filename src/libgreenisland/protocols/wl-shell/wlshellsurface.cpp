@@ -140,6 +140,15 @@ void WlShellSurface::resetMoveGrab()
     Q_EMIT m_window->motionFinished();
 }
 
+void WlShellSurface::resetResizeGrab()
+{
+    m_resizeGrabber = Q_NULLPTR;
+
+    // Notify that resize has finished (a QML shell might want to enable
+    // width and height animations again)
+    Q_EMIT m_window->resizeFinished();
+}
+
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 {
     switch (op->type()) {
@@ -257,6 +266,10 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
     m_resizeGrabber->m_height = m_surface->size().height();
 
     pointer->startGrab(m_resizeGrabber);
+
+    // Notify that resize is starting (a QML shell might want to disable
+    // width and height animations to make the movement smoother)
+    Q_EMIT m_window->resizeStarted();
 }
 
 void WlShellSurface::shell_surface_set_toplevel(Resource *resource)

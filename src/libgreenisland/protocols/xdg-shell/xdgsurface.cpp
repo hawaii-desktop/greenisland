@@ -156,6 +156,10 @@ void XdgSurface::resetMoveGrab()
 void XdgSurface::resetResizeGrab()
 {
     m_resizeGrabber = Q_NULLPTR;
+
+    // Notify that resize has finished (a QML shell might want to enable
+    // width and height animations again)
+    Q_EMIT m_window->resizeFinished();
 }
 
 void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
@@ -207,8 +211,8 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
         changes.resizing = true;
         changes.size = QSizeF(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
         requestConfigure(changes);
-    }
         return true;
+    }
     case QWaylandSurfaceOp::Ping:
         m_shell->pingSurface(this);
         return true;
@@ -337,6 +341,10 @@ void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t 
     m_resizeGrabber->m_height = m_surface->size().height();
 
     pointer->startGrab(m_resizeGrabber);
+
+    // Notify that resize is starting (a QML shell might want to disable
+    // width and height animations to make the movement smoother)
+    Q_EMIT m_window->resizeStarted();
 }
 
 void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
