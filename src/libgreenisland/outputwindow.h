@@ -72,7 +72,6 @@ private:
 private Q_SLOTS:
     void printInfo();
     void readContent();
-    void componentStatusChanged(const QQuickView::Status &status);
 };
 
 }

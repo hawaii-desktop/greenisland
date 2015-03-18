@@ -50,28 +50,37 @@ OutputWindow::OutputWindow(Compositor *compositor)
     // Initialize timer
     m_timer.start();
 
-    // Setup window
-    setColor(Qt::black);
-    winId();
+    // Print GL information
+    connect(this, SIGNAL(sceneGraphInitialized()),
+            this, SLOT(printInfo()),
+            Qt::DirectConnection);
 
     // Read content after rendering
     connect(this, &QQuickView::afterRendering,
             this, &OutputWindow::readContent,
             Qt::DirectConnection);
 
-    // Show the window as soon as QML is loaded
-    connect(this, &QQuickView::statusChanged,
-            this, &OutputWindow::componentStatusChanged);
-
-    connect(this, SIGNAL(sceneGraphInitialized()),
-            this, SLOT(printInfo()),
-            Qt::DirectConnection);
+    // Show loading errors
+    connect(this, &QQuickView::statusChanged, this, [=](const QQuickView::Status &status) {
+        switch (status) {
+        case QQuickView::Loading:
+            qDebug() << "Loading QML scene...";
+            break;
+        case QQuickView::Ready:
+            qDebug() << "QML scene loaded successfully";
+            break;
+        default:
+            qWarning() << "One or more errors have occurred loading the plugin:";
+            Q_FOREACH (const QQmlError &error, errors())
+                qWarning() << "*" << error.toString();
+            break;
+        }
+    });
 
     // Retrieve full screen shell client object, this will be available
     // only when Green Island is nested into another compositor
     // that supports the fullscreen-shell interface
     FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-
     if (fsh) {
         // Disable decorations
         setFlags(flags() | Qt::BypassWindowManagerHint);
@@ -84,6 +93,10 @@ OutputWindow::OutputWindow(Compositor *compositor)
                 fsh->hideOutput(m_output);
         });
     }
+
+    // Setup window
+    setColor(Qt::black);
+    winId();
 }
 
 Output *OutputWindow::output() const
@@ -118,6 +131,9 @@ void OutputWindow::setOutput(Output *output)
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
+
+        // Show window
+        show();
 
         // Load main file or bail out
         if (QFile(path).exists(path))
@@ -234,17 +250,6 @@ void OutputWindow::readContent()
 
     // Record a frame after rendering
     m_compositor->d_ptr->recorderManager->recordFrame(this);
-}
-
-void OutputWindow::componentStatusChanged(const QQuickView::Status &status)
-{
-    if (status == QQuickView::Ready) {
-        show();
-    } else if (status == QQuickView::Error) {
-        qWarning() << "One or more errors have occurred loading the plugin:";
-        Q_FOREACH (const QQmlError &error, errors())
-            qWarning() << "*" << error.toString();
-    }
 }
 
 }
