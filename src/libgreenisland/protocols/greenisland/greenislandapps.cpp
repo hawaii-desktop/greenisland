@@ -34,9 +34,9 @@ namespace GreenIsland {
 GreenIslandApps::GreenIslandApps(ApplicationManager *appMan)
     : m_boundResource(Q_NULLPTR)
 {
-    QObject::connect(appMan, &ApplicationManager::applicationAdded, [this](const QString &appId) {
+    QObject::connect(appMan, &ApplicationManager::applicationAdded, [this](const QString &appId, pid_t pid) {
         if (m_boundResource)
-            send_registered(m_boundResource->handle, appId);
+            send_registered(m_boundResource->handle, appId, pid);
     });
     QObject::connect(appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId) {
         if (m_boundResource)

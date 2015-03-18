@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 
 #include "applicationmanager.h"
@@ -53,7 +54,7 @@ void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const 
     appSurfaces[surface] = appId;
 
     if (surface->windowType() == QWaylandSurface::Toplevel)
-        Q_EMIT q->applicationAdded(appId);
+        Q_EMIT q->applicationAdded(appId, surface->client()->processId());
 }
 
 void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, const QString &appId)

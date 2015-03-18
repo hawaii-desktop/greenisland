@@ -55,8 +55,9 @@ Q_SIGNALS:
     /*!
      * \brief An application has been added.
      * \param appId Application identifier.
+     * \param pid Process identifier.
      */
-    void applicationAdded(const QString &appId);
+    void applicationAdded(const QString &appId, pid_t pid);
 
     /*!
      * \brief An application has been removed.
