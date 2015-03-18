@@ -39,6 +39,8 @@ Q_LOGGING_CATEGORY(XDGSHELL_PROTOCOL, "greenisland.protocols.xdgshell")
 namespace GreenIsland {
 
 XdgShell::XdgShell()
+    : QWaylandGlobalInterface()
+    , QtWaylandServer::xdg_shell()
 {
 }
 
