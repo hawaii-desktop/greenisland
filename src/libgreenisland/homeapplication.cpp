@@ -28,6 +28,7 @@
 #include "config.h"
 #include "globalregistry.h"
 #include "homeapplication.h"
+#include "logging.h"
 #include "utilities.h"
 
 #if HAVE_SYSTEMD
@@ -102,7 +103,7 @@ bool HomeApplication::run(const QString &plugin)
 {
     // If a compositor is already running we cannot continue
     if (m_compositor) {
-        qWarning() << "Compositor already running, don't call run() more than once!";
+        qCWarning(GREENISLAND_COMPOSITOR) << "Compositor already running, don't call run() more than once!";
         return false;
     }
 
@@ -117,9 +118,10 @@ bool HomeApplication::run(const QString &plugin)
     if (!m_socket.isEmpty()) {
         // We need wayland QPA plugin
         if (!QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-            qWarning() << "By passing the \"--socket\" argument you are requesting to nest"
-                       << "this compositor into another, but you forgot to pass "
-                       << "also \"-platform wayland\"!";
+            qCWarning(GREENISLAND_COMPOSITOR)
+                    << "By passing the \"--socket\" argument you are requesting to nest"
+                    << "this compositor into another, but you forgot to pass "
+                    << "also \"-platform wayland\"!";
 #if HAVE_SYSTEMD
             sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
 #endif
@@ -136,9 +138,10 @@ bool HomeApplication::run(const QString &plugin)
     } else {
         // Need a real backend, possibly QScreen or native Wayland when nested
         if (QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-            qWarning() << "Fake screen configuration is not allowed when Green Island"
-                       << "is nested into another compositor, please use the QScreen"
-                       << "or Wayland backend for KScreen!";
+            qCWarning(GREENISLAND_COMPOSITOR)
+                    << "Fake screen configuration is not allowed when Green Island"
+                    << "is nested into another compositor, please use the QScreen"
+                    << "or Wayland backend for KScreen!";
 #if HAVE_SYSTEMD
             sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
 #endif

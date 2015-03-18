@@ -97,3 +97,26 @@ make install
 ```
 
 from the build directory.
+
+# Notes
+
+## Logging categories
+
+Qt 5.2 introduced logging categories and Hawaii takes advantage of
+them to make debugging easier.
+
+Please refer to the [Qt](http://doc.qt.io/qt-5/qloggingcategory.html) documentation
+to learn how to enable them.
+
+### Available categories
+
+* Compositor:
+  * **greenisland.compositor:** Compositor
+
+* Protocols:
+  * **greenisland.protocols.xdgshell:** xdg_shell
+  * **greenisland.protocols.wlshell:** wl_shell
+  * **greenisland.protocols.greenisland.recorder:** greenisland_recorder
+  * **greenisland.protocols.plasma.shell:** org_kde_plasma_shell
+  * **greenisland.protocols.plasma.effects:** org_kde_plasma_effects
+  * **greenisland.protocols.fullscreenshell.client:** wl_fullscreen_shell client side

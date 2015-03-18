@@ -168,7 +168,7 @@ void WlShellSurface::ping(uint32_t serial)
 void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 {
     if (m_moveGrabber || m_resizeGrabber) {
-        qWarning() << "Unable to move surface: a move or resize operation was already requested!";
+        qCWarning(WLSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
         return;
     }
 
@@ -219,7 +219,7 @@ void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)
     if (m_pings.remove(serial))
         Q_EMIT m_surface->pong();
     else
-        qWarning() << "Received unexpected pong with serial" << serial;
+        qCWarning(WLSHELL_PROTOCOL) << "Received unexpected pong with serial" << serial;
 }
 
 void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
@@ -238,7 +238,7 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
     Q_UNUSED(serial);
 
     if (m_moveGrabber || m_resizeGrabber) {
-        qWarning() << "Unable to resize surface: a move or resize operation was already requested!";
+        qCWarning(WLSHELL_PROTOCOL) << "Unable to resize surface: a move or resize operation was already requested!";
         return;
     }
 

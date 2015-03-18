@@ -35,6 +35,8 @@
 #include "plasmashell.h"
 #include "plasmasurface.h"
 
+Q_LOGGING_CATEGORY(PLASMA_SHELL_PROTOCOL, "greenisland.protocols.plasma.shell")
+
 namespace GreenIsland {
 
 PlasmaShell::PlasmaShell(Compositor *compositor)
@@ -71,7 +73,7 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
-        qWarning() << "Unable to retrieve surface from resource!";
+        qCWarning(PLASMA_SHELL_PROTOCOL) << "Unable to retrieve surface from resource!";
         return;
     }
 

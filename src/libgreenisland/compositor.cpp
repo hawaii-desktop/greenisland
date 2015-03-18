@@ -24,7 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCore/QDebug>
 #include <QtCore/QProcess>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
@@ -45,6 +44,7 @@
 #include "compositor.h"
 #include "compositor_p.h"
 #include "config.h"
+#include "logging.h"
 #include "windowview.h"
 #include "shellwindow.h"
 
@@ -224,11 +224,11 @@ Compositor::~Compositor()
     delete d_ptr;
 
     // Cleanup graphics resources
-    qDebug() << "Cleanup graphics resources...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Cleanup graphics resources...";
     cleanupGraphicsResources();
 
     // Delete windows and outputs
-    qDebug() << "Closing all remaining windows...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Closing all remaining windows...";
     for (QWaylandOutput *output: outputs()) {
         if (output->window())
             output->window()->deleteLater();
@@ -377,7 +377,7 @@ void Compositor::run()
     d->running = true;
 
 #if HAVE_SYSTEMD
-    qDebug() << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+    qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
     sd_notify(0, "READY=1");
 #endif
 }
@@ -408,7 +408,7 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
 QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 {
     if (!surface) {
-        qWarning() << "First view of null surface requested!";
+        qCWarning(GREENISLAND_COMPOSITOR) << "First view of null surface requested!";
         return Q_NULLPTR;
     }
 

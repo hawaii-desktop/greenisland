@@ -34,6 +34,8 @@
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
 
+Q_LOGGING_CATEGORY(XDGSHELL_PROTOCOL, "greenisland.protocols.xdgshell")
+
 namespace GreenIsland {
 
 XdgShell::XdgShell()

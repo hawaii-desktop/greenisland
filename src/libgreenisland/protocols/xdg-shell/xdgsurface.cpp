@@ -224,7 +224,7 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
 void XdgSurface::moveWindow(QWaylandInputDevice *device)
 {
     if (m_moveGrabber || m_resizeGrabber) {
-        qWarning() << "Unable to move surface: a move or resize operation was already requested!";
+        qCWarning(XDGSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
         return;
     }
 
@@ -317,7 +317,7 @@ void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t 
     Q_UNUSED(serial);
 
     if (m_moveGrabber || m_resizeGrabber) {
-        qWarning() << "Unable to resize surface: a move or resize operation was already requested!";
+        qCWarning(XDGSHELL_PROTOCOL) << "Unable to resize surface: a move or resize operation was already requested!";
         return;
     }
 

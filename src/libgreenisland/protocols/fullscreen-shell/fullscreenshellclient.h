@@ -27,7 +27,11 @@
 #ifndef FULLSCREENSHELLCLIENT_H
 #define FULLSCREENSHELLCLIENT_H
 
+#include <QtCore/QLoggingCategory>
+
 #include "qwayland-fullscreen-shell.h"
+
+Q_DECLARE_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL)
 
 struct wl_registry;
 

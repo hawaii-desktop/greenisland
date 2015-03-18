@@ -33,6 +33,8 @@
 #include "plasmashell.h"
 #include "plasmasurface.h"
 
+Q_LOGGING_CATEGORY(PLASMA_EFFECTS_PROTOCOL, "greenisland.protocols.plasma.effects")
+
 namespace GreenIsland {
 
 PlasmaEffects::PlasmaEffects(PlasmaShell *shell)
@@ -64,13 +66,13 @@ void PlasmaEffects::effects_slide(Resource *resource,
 
     QWaylandOutput *output = QWaylandOutput::fromResource(outputResource);
     if (!output) {
-        qWarning("Couldn't get output from resource");
+        qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get output from resource";
         return;
     }
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
-        qWarning("Couldn't get surface from resource");
+        qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
     }
 
@@ -112,7 +114,7 @@ void PlasmaEffects::effects_set_blur_behind_region(Resource *resource,
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
-        qWarning("Couldn't get surface from resource");
+        qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
     }
 
@@ -138,7 +140,7 @@ void PlasmaEffects::effects_set_contrast_region(Resource *resource,
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     if (!surface) {
-        qWarning("Couldn't get surface from resource");
+        qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
     }
 

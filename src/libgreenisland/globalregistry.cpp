@@ -29,6 +29,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 
 #include "globalregistry.h"
+#include "logging.h"
 #include "protocols/fullscreen-shell/fullscreenshellclient.h"
 
 #include <wayland-client.h>
@@ -85,7 +86,7 @@ void GlobalRegistry::globalCreate(void *data, wl_registry *registry,
 
     GlobalRegistry *self = static_cast<GlobalRegistry *>(data);
     if (!self) {
-        qWarning() << "Invalid data pointer passed to global interface creation!";
+        qCWarning(GREENISLAND_COMPOSITOR) << "Invalid data pointer passed to global interface creation!";
         return;
     }
 
@@ -100,7 +101,7 @@ void GlobalRegistry::globalRemove(void *data, wl_registry *registry,
 
     GlobalRegistry *self = static_cast<GlobalRegistry *>(data);
     if (!self) {
-        qWarning() << "Invalid data pointer passed to global interface creation!";
+        qCWarning(GREENISLAND_COMPOSITOR) << "Invalid data pointer passed to global interface creation!";
         return;
     }
 

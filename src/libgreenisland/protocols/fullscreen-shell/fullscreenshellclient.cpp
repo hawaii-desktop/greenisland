@@ -34,6 +34,8 @@
 #include "globalregistry.h"
 #include "output.h"
 
+Q_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL, "greenisland.protocols.fullscreenshell.client")
+
 namespace GreenIsland {
 
 FullScreenShellClient::FullScreenShellClient(quint32 id)
@@ -60,7 +62,7 @@ FullScreenShellClient::Capabilities FullScreenShellClient::capabilities() const
 void FullScreenShellClient::showOutput(Output *output)
 {
     if (!output || !output->window()) {
-        qWarning() << "Cannot show a null output window!";
+        qCWarning(FSH_CLIENT_PROTOCOL) << "Cannot show a null output window!";
         return;
     }
 
@@ -97,7 +99,7 @@ void FullScreenShellClient::showOutput(Output *output)
 void FullScreenShellClient::hideOutput(Output *output)
 {
     if (!output || !output->window()) {
-        qWarning() << "Cannot hide a null output window!";
+        qCWarning(FSH_CLIENT_PROTOCOL) << "Cannot hide a null output window!";
         return;
     }
 

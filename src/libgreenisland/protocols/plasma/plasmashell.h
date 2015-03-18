@@ -27,11 +27,14 @@
 #ifndef PLASMASHELL_H
 #define PLASMASHELL_H
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 #include <QtCompositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-plasma-shell.h"
+
+Q_DECLARE_LOGGING_CATEGORY(PLASMA_SHELL_PROTOCOL)
 
 namespace GreenIsland {
 

@@ -48,8 +48,6 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
     , m_window(new ShellWindow(surface, this))
     , m_deleting(false)
 {
-    qDebug() << "New Plasma surface" << m_surface;
-
     // Surface events
     connect(m_surface, &QWaylandSurface::configure, [&](bool hasBuffer) {
         // Map or unmap the surface
@@ -212,7 +210,7 @@ void PlasmaSurface::surface_set_role(Resource *resource,
             if (plasmaSurface->window()->role() == role) {
                 const QString msg = QStringLiteral("Surface already has role \"%1\"");
                 const QString errMsg = msg.arg(role2String(role));
-                qWarning("%s", qPrintable(errMsg));
+                qCWarning(PLASMA_SHELL_PROTOCOL) << qPrintable(errMsg);
                 wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
                                        "%s", qPrintable(errMsg));
                 return;

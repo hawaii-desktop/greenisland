@@ -38,6 +38,7 @@
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
+#include "logging.h"
 #include "output.h"
 #include "outputwindow.h"
 #include "screenmanager.h"
@@ -106,8 +107,9 @@ void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
     }
 
     // Debug
-    qDebug() << "Added" << (output->isPrimary() ? "primary" : "") << "output"
-             << output->name() << "with geometry" << output->geometry();
+    qCDebug(GREENISLAND_COMPOSITOR)
+            << "Added" << (output->isPrimary() ? "primary" : "") << "output"
+            << output->name() << "with geometry" << output->geometry();
 
     // Remove disabled or disconnected outputs
     q->connect(output.data(), &KScreen::Output::isEnabledChanged, [=]() {
@@ -167,7 +169,7 @@ void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)
     outputFound->deleteLater();
 
     // Debug
-    qDebug() << "Removed output" << output->name() << output->geometry();
+    qCDebug(GREENISLAND_COMPOSITOR) << "Removed output" << output->name() << output->geometry();
 }
 
 void ScreenManagerPrivate::_q_outputAdded(const KScreen::OutputPtr &output)
@@ -230,14 +232,14 @@ ScreenManager::ScreenManager(Compositor *compositor)
         d->config = qobject_cast<KScreen::GetConfigOperation *>(op)->config();
         if (d->config.isNull() || !d->config->isValid())
             qFatal("Invalid screen configuration, aborting...");
-        qDebug() << "Screen configuration successfully acquired";
+        qCDebug(GREENISLAND_COMPOSITOR) << "Screen configuration successfully acquired";
 
         // Monitor configuration
         KScreen::ConfigMonitor::instance()->addConfig(d->config);
 
         // Create outputs for the first time
         for (const KScreen::OutputPtr &output: sortOutputs(d->config->connectedOutputs())) {
-            qDebug() << "Output" << output->name() << "with geometry" << output->geometry() << "found!";
+            qCDebug(GREENISLAND_COMPOSITOR) << "Output" << output->name() << "with geometry" << output->geometry() << "found!";
             d->addOutput(output);
         }
 
@@ -254,18 +256,18 @@ ScreenManager::ScreenManager(Compositor *compositor)
 ScreenManager::~ScreenManager()
 {
     // Remove all outputs
-    qDebug() << "Removing all outputs...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Removing all outputs...";
     disconnect(d_ptr->config.data());
     const KScreen::OutputList outputs = d_ptr->config->outputs();
     for (const KScreen::OutputPtr &output: outputs)
         d_ptr->removeOutput(output);
 
     // Remove configuration
-    qDebug() << "Removing screen configuration...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Removing screen configuration...";
     KScreen::ConfigMonitor::instance()->removeConfig(d_ptr->config);
 
     // Shutdown backend
-    qDebug() << "Shutdown screen configuration backend...";
+    qCDebug(GREENISLAND_COMPOSITOR) << "Shutdown screen configuration backend...";
     KScreen::BackendManager::instance()->shutdownBackend();
 
     // Delete d pointer

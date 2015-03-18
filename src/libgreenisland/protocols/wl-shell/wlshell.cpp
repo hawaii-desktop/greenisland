@@ -30,6 +30,8 @@
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"
 
+Q_LOGGING_CATEGORY(WLSHELL_PROTOCOL, "greenisland.protocols.wlshell")
+
 namespace GreenIsland {
 
 WlShell::WlShell()

@@ -28,9 +28,12 @@
 #define XDGSHELL_H
 
 #include <QtCore/QHash>
+#include <QtCore/QLoggingCategory>
 #include <QtCompositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-xdg-shell.h"
+
+Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_PROTOCOL)
 
 namespace QtWayland {
 class InputDevice;

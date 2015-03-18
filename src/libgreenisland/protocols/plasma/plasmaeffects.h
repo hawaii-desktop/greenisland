@@ -27,9 +27,12 @@
 #ifndef PLASMAEFFECTS_H
 #define PLASMAEFFECTS_H
 
+#include <QtCore/QLoggingCategory>
 #include <QtCompositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-plasma-effects.h"
+
+Q_DECLARE_LOGGING_CATEGORY(PLASMA_EFFECTS_PROTOCOL)
 
 namespace GreenIsland {
 

@@ -31,6 +31,7 @@
 #include "compositor_p.h"
 #include "gldebug.h"
 #include "globalregistry.h"
+#include "logging.h"
 #include "output.h"
 #include "outputwindow.h"
 #include "windowview.h"
@@ -64,15 +65,15 @@ OutputWindow::OutputWindow(Compositor *compositor)
     connect(this, &QQuickView::statusChanged, this, [=](const QQuickView::Status &status) {
         switch (status) {
         case QQuickView::Loading:
-            qDebug() << "Loading QML scene...";
+            qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
             break;
         case QQuickView::Ready:
-            qDebug() << "QML scene loaded successfully";
+            qCDebug(GREENISLAND_COMPOSITOR) << "QML scene loaded successfully";
             break;
         default:
-            qWarning() << "One or more errors have occurred loading the plugin:";
+            qCWarning(GREENISLAND_COMPOSITOR) << "One or more errors have occurred loading the plugin:";
             Q_FOREACH (const QQmlError &error, errors())
-                qWarning() << "*" << error.toString();
+                qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
             break;
         }
     });
@@ -127,7 +128,10 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         qFatal("No plugin specified, cannot continue!");
     } else {
-        qDebug() << "Loading" << Compositor::s_fixedPlugin << "plugin for output" << output->name() << output->geometry();
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Loading" << Compositor::s_fixedPlugin
+                << "plugin for output"
+                << output->name() << output->geometry();
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
