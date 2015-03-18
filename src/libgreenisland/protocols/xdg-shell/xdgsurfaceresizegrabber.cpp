@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
+
 #include "clientwindow.h"
 #include "xdgsurfaceresizegrabber.h"
 
@@ -42,6 +44,7 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
 {
     Q_UNUSED(time);
 
+    // Recalculate size
     QSize delta(m_pt.x() - m_pointer->position().x(),
                 m_pt.y() - m_pointer->position().y());
 
@@ -57,11 +60,48 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
     else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_right)
         newWidth = qMax(newWidth - delta.width(), 1);
 
+    // Change cursor
+    if (m_resizeEdges != QtWaylandServer::xdg_surface::resize_edge_none) {
+        Qt::CursorShape shape = Qt::ArrowCursor;
+
+        if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top ||
+                m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom)
+            shape = Qt::SizeVerCursor;
+        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_left ||
+                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_right)
+            shape = Qt::SizeHorCursor;
+        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top_left ||
+                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top_right)
+            shape = Qt::SizeFDiagCursor;
+        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom_left ||
+                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom_right)
+            shape = Qt::SizeBDiagCursor;
+
+        QCursor cursor(shape);
+        QGuiApplication::setOverrideCursor(cursor);
+    }
+
+    // Resize
     XdgSurface::Changes changes;
     changes.active = m_shellSurface->window() && m_shellSurface->window()->isActive();
     changes.resizing = true;
     changes.size = QSizeF(newWidth, newHeight);
     m_shellSurface->requestConfigure(changes);
+
+    // Adjust position according to resize
+    if (m_shellSurface->surface()->transientParent())
+        return;
+    if (!(m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top_left))
+        return;
+    int bottomLeftX = m_pt.x() + m_width;
+    int bottomLeftY = m_pt.y() + m_height;
+    qreal x = m_shellSurface->window()->position().x();
+    qreal y = m_shellSurface->window()->position().y();
+    if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top)
+        y = bottomLeftY - m_shellSurface->surface()->size().height();
+    if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_left)
+        x = bottomLeftX - m_shellSurface->surface()->size().width();
+    m_shellSurface->window()->setPosition(QPointF(x, y));
 }
 
 void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
@@ -69,9 +109,13 @@ void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint
     Q_UNUSED(time);
 
     if (button == Qt::LeftButton && !state) {
+        m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetResizeGrab();
         delete this;
+
+        QCursor cursor(Qt::ArrowCursor);
+        QGuiApplication::setOverrideCursor(cursor);
     }
 }
 
