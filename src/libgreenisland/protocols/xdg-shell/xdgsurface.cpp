@@ -44,7 +44,8 @@ namespace GreenIsland {
 
 XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
                        wl_client *client, uint32_t id)
-    : QWaylandSurfaceInterface(surface)
+    : QObject(surface)
+    , QWaylandSurfaceInterface(surface)
 #if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     , QtWaylandServer::xdg_surface(client, id, 1)
 #else
