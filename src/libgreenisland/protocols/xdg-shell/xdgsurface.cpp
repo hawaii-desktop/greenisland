@@ -330,6 +330,20 @@ void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t 
     if (m_state == Maximized || m_state == FullScreen)
         return;
 
+    // Check for invalid edge combination
+    const unsigned resize_topbottom =
+            QtWaylandServer::xdg_surface::resize_edge_top |
+            QtWaylandServer::xdg_surface::resize_edge_bottom;
+    const unsigned resize_leftright =
+            QtWaylandServer::xdg_surface::resize_edge_left |
+            QtWaylandServer::xdg_surface::resize_edge_right;
+    const unsigned resize_any = resize_topbottom | resize_leftright;
+    if (edges == QtWaylandServer::xdg_surface::resize_edge_none ||
+            edges > resize_any ||
+            (edges & resize_topbottom) == resize_topbottom ||
+            (edges & resize_leftright) == resize_leftright)
+        return;
+
     m_resizeGrabber = new XdgSurfaceResizeGrabber(this);
 
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
