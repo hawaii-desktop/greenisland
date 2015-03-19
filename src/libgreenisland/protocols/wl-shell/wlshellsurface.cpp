@@ -261,7 +261,6 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
     QtWayland::Pointer *pointer = device->pointerDevice();
 
     m_resizeGrabber->m_pt = pointer->position();
-    qCWarning(WLSHELL_PROTOCOL) << edges;
     m_resizeGrabber->m_resizeEdges = static_cast<resize>(edges);
     m_resizeGrabber->m_width = m_surface->size().width();
     m_resizeGrabber->m_height = m_surface->size().height();
