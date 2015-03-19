@@ -2,9 +2,6 @@ project(GreenIsland)
 
 cmake_minimum_required(VERSION 2.8.12)
 
-# Options
-option(ENABLE_OPENGL "Enable OpenGL support" OFF)
-
 # Set version
 set(PROJECT_VERSION "0.5.90")
 set(PROJECT_VERSION_MAJOR 0)

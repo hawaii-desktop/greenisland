@@ -56,7 +56,7 @@ set(SOURCES
     protocols/xdg-shell/xdgpopupgrabber.cpp
 )
 
-if(ENABLE_OPENGL AND ${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
     set(SOURCES ${SOURCES} bufferattacher.cpp)
 endif()
