@@ -255,6 +255,20 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
     if (m_state == Maximized || m_state == FullScreen)
         return;
 
+    // Check for invalid edge combination
+    const unsigned resize_topbottom =
+            QtWaylandServer::wl_shell_surface::resize_top |
+            QtWaylandServer::wl_shell_surface::resize_bottom;
+    const unsigned resize_leftright =
+            QtWaylandServer::wl_shell_surface::resize_left |
+            QtWaylandServer::wl_shell_surface::resize_right;
+    const unsigned resize_any = resize_topbottom | resize_leftright;
+    if (edges == QtWaylandServer::wl_shell_surface::resize_none ||
+            edges > resize_any ||
+            (edges & resize_topbottom) == resize_topbottom ||
+            (edges & resize_leftright) == resize_leftright)
+        return;
+
     m_resizeGrabber = new WlShellSurfaceResizeGrabber(this);
 
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
