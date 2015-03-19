@@ -65,6 +65,7 @@ public:
     ClientWindow *window() const;
 
     void restore();
+    void restoreAt(const QPointF &pos);
 
     void resetMoveGrab();
     void resetResizeGrab();

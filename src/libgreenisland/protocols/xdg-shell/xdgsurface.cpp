@@ -240,12 +240,9 @@ void XdgSurface::moveWindow(QWaylandInputDevice *device)
         return;
     }
 
-    // Can't move if the window is maximized or full screen
-    if (m_state == Maximized || m_state == FullScreen)
+    // Can't move if the window is full screen
+    if (m_state == FullScreen)
         return;
-
-    // TODO: When maximized we should change state back to normal,
-    // restore the size and start the move grab
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 

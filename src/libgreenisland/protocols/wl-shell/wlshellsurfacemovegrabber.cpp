@@ -62,10 +62,8 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
             // Maximized windows if dragged are restored to the original position,
             // but we want to do that with a threshold to avoid unintended grabs
             QPointF threshold(m_offset + QPointF(20, 20));
-            if (pt.x() >= threshold.x() || pt.y() >= threshold.y()) {
-                m_shellSurface->restore();
-                window->setPosition(pt);
-            }
+            if (pt.x() >= threshold.x() || pt.y() >= threshold.y())
+                m_shellSurface->restoreAt(pt);
         } else {
             window->setPosition(pt);
         }

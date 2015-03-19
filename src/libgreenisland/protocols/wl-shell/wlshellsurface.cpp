@@ -116,6 +116,11 @@ ClientWindow *WlShellSurface::window() const
 
 void WlShellSurface::restore()
 {
+    restoreAt(m_prevGlobalGeometry.topLeft());
+}
+
+void WlShellSurface::restoreAt(const QPointF &pos)
+{
     // Makes sense only for maximized windows
     if (m_state == Normal)
         return;
@@ -123,7 +128,7 @@ void WlShellSurface::restore()
     // Restore previous state and position
     m_prevState = m_state;
     m_state = Normal;
-    m_window->setPosition(m_prevGlobalGeometry.topLeft());
+    m_window->setPosition(pos);
     m_window->unmaximize();
     m_window->setFullScreen(false);
 
@@ -191,9 +196,6 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
     // Can't move if the window is full screen
     if (m_state == FullScreen)
         return;
-
-    // TODO: When maximized we should change state back to normal,
-    // restore the size and start the move grab
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
 
