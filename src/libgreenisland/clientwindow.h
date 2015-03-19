@@ -184,6 +184,8 @@ private:
     void initialSetup();
     void removeOutput(Output *output);
 
+    void maximizeForOutput(Output *output);
+
     QVariant readFromDesktopFile(const QString &baseName, const QString &key,
                                  const QVariant &defaultValue = QVariant()) const;
 

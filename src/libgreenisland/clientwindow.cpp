@@ -343,6 +343,8 @@ void ClientWindow::maximize()
     if (m_maximized)
         return;
 
+    maximizeForOutput(static_cast<Output *>(output()));
+
     m_maximized = true;
     Q_EMIT maximizedChanged();
 }
@@ -513,6 +515,14 @@ void ClientWindow::initialSetup()
 void ClientWindow::removeOutput(Output *output)
 {
     m_views.take(output)->deleteLater();
+}
+
+void ClientWindow::maximizeForOutput(Output *output)
+{
+    setPosition(QPointF(output->availableGeometry().topLeft()));
+
+    QWaylandSurfaceResizeOp op(output->availableGeometry().size());
+    m_surface->sendInterfaceOp(op);
 }
 
 QVariant ClientWindow::readFromDesktopFile(const QString &baseName, const QString &key, const QVariant &defaultValue) const
