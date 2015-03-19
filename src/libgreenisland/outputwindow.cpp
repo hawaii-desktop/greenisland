@@ -41,10 +41,9 @@
 
 namespace GreenIsland {
 
-OutputWindow::OutputWindow(Compositor *compositor)
+OutputWindow::OutputWindow(Output *output)
     : QQuickView()
-    , m_compositor(compositor)
-    , m_output(Q_NULLPTR)
+    , m_output(output)
     , m_hotSpotLastTime(0)
     , m_hotSpotEntered(0)
 {
@@ -55,15 +54,6 @@ OutputWindow::OutputWindow(Compositor *compositor)
     setColor(Qt::black);
     winId();
 
-    // Retrieve full screen shell client object, this will be available
-    // only when Green Island is nested into another compositor
-    // that supports the fullscreen-shell interface
-    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-    if (fsh) {
-        // Disable decorations
-        setFlags(flags() | Qt::BypassWindowManagerHint);
-    }
-
     // Print GL information
     connect(this, SIGNAL(sceneGraphInitialized()),
             this, SLOT(printInfo()),
@@ -73,6 +63,30 @@ OutputWindow::OutputWindow(Compositor *compositor)
     connect(this, &QQuickView::afterRendering,
             this, &OutputWindow::readContent,
             Qt::DirectConnection);
+
+    // Retrieve full screen shell client object, this will be available
+    // only when Green Island is nested into another compositor
+    // that supports the fullscreen-shell interface
+    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
+    if (fsh) {
+        // Disable decorations
+        setFlags(flags() | Qt::BypassWindowManagerHint);
+
+        // Present output to full screen shell
+        connect(this, &QQuickView::visibleChanged, this, [this, fsh](bool arg) {
+            if (arg) {
+                qCDebug(GREENISLAND_COMPOSITOR)
+                        << "Showing output on full screen shell for output"
+                        << m_output->name() << m_output->geometry();
+                fsh->showOutput(m_output);
+            } else {
+                qCDebug(GREENISLAND_COMPOSITOR)
+                        << "Hiding output on full screen shell for output"
+                        << m_output->name() << m_output->geometry();
+                fsh->hideOutput(m_output);
+            }
+        });
+    }
 
     // Show loading errors
     connect(this, &QQuickView::statusChanged, this, [this](const QQuickView::Status &status) {
@@ -99,10 +113,7 @@ OutputWindow::OutputWindow(Compositor *compositor)
 
 OutputWindow::~OutputWindow()
 {
-    // Hide output from full screen shell
-    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-    if (fsh)
-        fsh->hideOutput(m_output);
+    unloadScene();
 }
 
 Output *OutputWindow::output() const
@@ -110,21 +121,22 @@ Output *OutputWindow::output() const
     return m_output;
 }
 
-void OutputWindow::setOutput(Output *output)
+void OutputWindow::loadScene()
 {
-    // Prevent assigning another output that doesn't know about this window
-    if (m_output)
-        return;
+    // Show window
+    if (!isVisible()) {
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Showing window for output"
+                << m_output->name() << m_output->geometry();
+        show();
+    }
 
     qCDebug(GREENISLAND_COMPOSITOR)
-            << "Assigning output" << output->name()
-            << output->geometry() << "to window";
-
-    // Save output reference
-    m_output = output;
+            << "Loading scene on output"
+            << m_output->name() << m_output->geometry();
 
     // Make compositor instance available to QML
-    rootContext()->setContextProperty("compositor", m_compositor);
+    rootContext()->setContextProperty("compositor", m_output->compositor());
 
     // Add a context property to reference this window
     rootContext()->setContextProperty("_greenisland_window", this);
@@ -137,26 +149,11 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         qFatal("No plugin specified, cannot continue!");
     } else {
-        // Show window
-        qCDebug(GREENISLAND_COMPOSITOR)
-                << "Showing window for output"
-                << output->name() << output->geometry();
-        show();
-
-        // Present output to full screen shell
-        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-        if (fsh) {
-            qCDebug(GREENISLAND_COMPOSITOR)
-                    << "Showing output on full screen shell for output"
-                    << output->name() << output->geometry();
-            fsh->showOutput(m_output);
-        }
-
         // Load main file or bail out
         qCDebug(GREENISLAND_COMPOSITOR)
                 << "Loading" << Compositor::s_fixedPlugin
                 << "plugin for output"
-                << output->name() << output->geometry();
+                << m_output->name() << m_output->geometry();
 
         m_perfTimer.start();
 
@@ -170,37 +167,54 @@ void OutputWindow::setOutput(Output *output)
     }
 }
 
+void OutputWindow::unloadScene()
+{
+    // Unload the QML scene
+    qCDebug(GREENISLAND_COMPOSITOR)
+            << "Unloading scene from output"
+            << m_output->name() << m_output->geometry();
+    setSource(QUrl());
+
+    // Hide window
+    if (isVisible()) {
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Hiding window for output"
+                << m_output->name() << m_output->geometry();
+        hide();
+    }
+}
+
 void OutputWindow::keyPressEvent(QKeyEvent *event)
 {
-    m_compositor->setIdleInhibit(m_compositor->idleInhibit() + 1);
+    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() + 1);
 
     QQuickView::keyPressEvent(event);
 }
 
 void OutputWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    m_compositor->setIdleInhibit(m_compositor->idleInhibit() - 1);
+    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() - 1);
 
     QQuickView::keyReleaseEvent(event);
 }
 
 void OutputWindow::mousePressEvent(QMouseEvent *event)
 {
-    m_compositor->setIdleInhibit(m_compositor->idleInhibit() + 1);
+    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() + 1);
 
     QQuickView::mousePressEvent(event);
 }
 
 void OutputWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    m_compositor->setIdleInhibit(m_compositor->idleInhibit() - 1);
+    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() - 1);
 
     QQuickView::mouseReleaseEvent(event);
 }
 
 void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    m_compositor->setState(Compositor::Active);
+    m_output->compositor()->setState(Compositor::Active);
 
     if (m_output) {
         const QPoint pt = event->localPos().toPoint();
@@ -220,7 +234,7 @@ void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 
 void OutputWindow::wheelEvent(QWheelEvent *event)
 {
-    m_compositor->setState(Compositor::Active);
+    m_output->compositor()->setState(Compositor::Active);
 
     QQuickView::wheelEvent(event);
 }
@@ -275,7 +289,7 @@ void OutputWindow::readContent()
     m_output->sendFrameCallbacks(m_output->surfaces());
 
     // Record a frame after rendering
-    m_compositor->d_ptr->recorderManager->recordFrame(this);
+    m_output->compositor()->d_ptr->recorderManager->recordFrame(this);
 }
 
 }

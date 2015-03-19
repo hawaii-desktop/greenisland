@@ -34,20 +34,19 @@
 
 namespace GreenIsland {
 
-class Compositor;
 class Output;
 
 class GREENISLAND_EXPORT OutputWindow : public QQuickView
 {
     Q_OBJECT
 public:
-    OutputWindow(Compositor *compositor);
+    OutputWindow(Output *output);
     ~OutputWindow();
 
-    Compositor *compositor() const;
-
     Output *output() const;
-    void setOutput(Output *output);
+
+    void loadScene();
+    void unloadScene();
 
 protected:
     void keyPressEvent(QKeyEvent *event);
@@ -60,7 +59,6 @@ protected:
     void wheelEvent(QWheelEvent *event);
 
 private:
-    Compositor *m_compositor;
     Output *m_output;
     QElapsedTimer m_perfTimer;
 

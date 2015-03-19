@@ -120,6 +120,9 @@ void ScreenManagerPrivate::addOutput(const KScreen::OutputPtr &output)
         if (!output->isConnected())
             removeOutput(output);
     });
+
+    // Load scene
+    customOutput->loadScene();
 }
 
 void ScreenManagerPrivate::removeOutput(const KScreen::OutputPtr &output)

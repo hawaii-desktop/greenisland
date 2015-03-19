@@ -60,7 +60,6 @@ public:
     Output(Compositor *compositor, const KScreen::OutputPtr &output);
 
     Compositor *compositor() const;
-
     KScreen::OutputPtr output() const;
 
     QString name() const;
@@ -77,6 +76,8 @@ public:
 
     quint64 hotSpotPushTime() const;
     void setHotSpotPushTime(quint64 value);
+
+    void loadScene();
 
     // Maps global coordinates to local space
     Q_INVOKABLE QPointF mapToOutput(const QPointF &pt);

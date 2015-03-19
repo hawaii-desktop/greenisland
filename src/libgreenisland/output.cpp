@@ -118,7 +118,7 @@ void OutputPrivate::_q_posChanged()
  */
 
 Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
-    : QWaylandQuickOutput(compositor, new OutputWindow(compositor),
+    : QWaylandQuickOutput(compositor, new OutputWindow(this),
                           output->edid()->vendor(), output->edid()->serial())
     , d_ptr(new OutputPrivate(this))
 {
@@ -140,11 +140,6 @@ Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
     connect(output.data(), SIGNAL(posChanged()),
             this, SLOT(_q_posChanged()),
             Qt::UniqueConnection);
-
-    // Show window
-    OutputWindow *outputWindow = qobject_cast<OutputWindow *>(quickWindow());
-    if (outputWindow)
-        outputWindow->setOutput(this);
 }
 
 Compositor *Output::compositor() const
@@ -237,6 +232,12 @@ void Output::setHotSpotPushTime(quint64 value)
 
     d->hotSpotPushTime = value;
     Q_EMIT hotSpotPushTimeChanged();
+}
+
+void Output::loadScene()
+{
+    // Show output window and load scene
+    static_cast<OutputWindow *>(window())->loadScene();
 }
 
 QPointF Output::mapToOutput(const QPointF &pt)
