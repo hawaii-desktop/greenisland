@@ -431,9 +431,9 @@ QPointF ClientWindow::calculateInitialPosition() const
 
     int dx = 0, dy = 0;
     if (rangeX > 0)
-        dx = qrand() % rangeX;
+        dx = (qrand() % rangeX) - geometry.x();
     if (rangeY > 0)
-        dy = qrand() % rangeY;
+        dy = (qrand() % rangeY) - geometry.y();
 
     // Set surface position
     pos.setX(geometry.x() + dx);
