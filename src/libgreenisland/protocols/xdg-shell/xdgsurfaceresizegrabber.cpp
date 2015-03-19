@@ -64,18 +64,26 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
     if (m_resizeEdges != QtWaylandServer::xdg_surface::resize_edge_none) {
         Qt::CursorShape shape = Qt::ArrowCursor;
 
-        if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top ||
-                m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom)
-            shape = Qt::SizeVerCursor;
-        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_left ||
-                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_right)
-            shape = Qt::SizeHorCursor;
-        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top_left ||
-                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_top_right)
+        switch (m_resizeEdges) {
+        case QtWaylandServer::xdg_surface::resize_edge_top_left:
+        case QtWaylandServer::xdg_surface::resize_edge_bottom_right:
             shape = Qt::SizeFDiagCursor;
-        else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom_left ||
-                 m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_bottom_right)
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_top_right:
+        case QtWaylandServer::xdg_surface::resize_edge_bottom_left:
             shape = Qt::SizeBDiagCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_top:
+        case QtWaylandServer::xdg_surface::resize_edge_bottom:
+            shape = Qt::SizeVerCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_left:
+        case QtWaylandServer::xdg_surface::resize_edge_right:
+            shape = Qt::SizeHorCursor;
+            break;
+        default:
+            break;
+        }
 
         QCursor cursor(shape);
         QGuiApplication::setOverrideCursor(cursor);
