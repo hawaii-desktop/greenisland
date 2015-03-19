@@ -70,12 +70,12 @@ GlobalRegistry *GlobalRegistry::instance()
 
 wl_registry *GlobalRegistry::registry()
 {
-    return s_globalRegistry->m_registry;
+    return s_globalRegistry()->m_registry;
 }
 
 FullScreenShellClient *GlobalRegistry::fullScreenShell()
 {
-    return s_globalRegistry->m_fullScreenShell;
+    return s_globalRegistry()->m_fullScreenShell;
 }
 
 void GlobalRegistry::globalCreate(void *data, wl_registry *registry,
