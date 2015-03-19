@@ -156,7 +156,7 @@ void OutputWindow::setOutput(Output *output)
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
         if (QFile(path).exists(path))
-            setSource(path);
+            setSource(QUrl::fromLocalFile(path));
         else
             qFatal("Plugin \"%s\" is not valid, cannot continue!",
                    qPrintable(Compositor::s_fixedPlugin));
