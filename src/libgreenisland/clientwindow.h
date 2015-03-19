@@ -81,7 +81,8 @@ public:
     };
 
     enum CustomSurfaceOperation {
-        Move = QWaylandSurfaceOp::UserType + 1
+        Move = QWaylandSurfaceOp::UserType + 1,
+        StopMove
     };
 
     ClientWindow(QWaylandSurface *surface, QObject *parent = 0);
@@ -131,6 +132,7 @@ public:
     void setFullScreen(bool fs);
 
     Q_INVOKABLE void move();
+    Q_INVOKABLE void stopMove();
 
 Q_SIGNALS:
     void typeChanged();

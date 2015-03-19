@@ -161,6 +161,13 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
     case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
         return true;
+    case ClientWindow::StopMove:
+        if (m_moveGrabber) {
+            QWaylandInputDevice *device = m_surface->compositor()->defaultInputDevice();
+            QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+            pointer->sendButton(0, Qt::LeftButton, 0);
+        }
+        return true;
     default:
         break;
     }

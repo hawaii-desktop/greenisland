@@ -82,7 +82,7 @@ void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, ui
 {
     Q_UNUSED(time);
 
-    if (button == Qt::LeftButton && !state) {
+    if (button == Qt::LeftButton && state == 0) {
         m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetMoveGrab();

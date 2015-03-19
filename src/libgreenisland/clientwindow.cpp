@@ -376,6 +376,12 @@ void ClientWindow::move()
     m_surface->sendInterfaceOp(op);
 }
 
+void ClientWindow::stopMove()
+{
+    QWaylandSurfaceOp op(StopMove);
+    m_surface->sendInterfaceOp(op);
+}
+
 void ClientWindow::registerWindow()
 {
     // Register this window

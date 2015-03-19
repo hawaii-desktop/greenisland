@@ -52,11 +52,21 @@ Q_SIGNALS:
     void localPositionChanged();
     void mousePressed();
 
+protected:
+    void mouseReleaseEvent(QMouseEvent *event);
+
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
+
 private:
+    bool m_modifierPressed;
     QPointF m_pos;
 
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;
+
+    void startMove();
+    void stopMove();
 };
 
 }

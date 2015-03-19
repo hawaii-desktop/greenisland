@@ -26,13 +26,16 @@
 
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
+#include <QtCompositor/QWaylandQuickSurface>
 
+#include "clientwindow.h"
 #include "windowview.h"
 
 namespace GreenIsland {
 
 WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
+    , m_modifierPressed(false)
     , m_pos(0, 0)
 {
     qRegisterMetaType<WindowView *>("WindowView*");
@@ -64,11 +67,53 @@ qreal WindowView::localY() const
 
 void WindowView::mousePressEvent(QMouseEvent *event)
 {
+    // Must be first to correctly set the pointer focus
+    QWaylandSurfaceItem::mousePressEvent(event);
+
     // Emit a mouse pressed signal, ClientWindow will connect
     // and activate the window
     Q_EMIT mousePressed();
 
-    QWaylandSurfaceItem::mousePressEvent(event);
+    // If the modifier is pressed we initiate a move operation
+    if (m_modifierPressed)
+        startMove();
+}
+
+void WindowView::mouseReleaseEvent(QMouseEvent *event)
+{
+    // If the modifier is pressed we finish the move operation
+    if (m_modifierPressed) {
+        m_modifierPressed = false;
+        stopMove();
+    }
+
+    QWaylandSurfaceItem::mouseReleaseEvent(event);
+}
+
+void WindowView::keyPressEvent(QKeyEvent *event)
+{
+    // Set modifier pressed flag
+    if (event->key() == Qt::Key_Meta ||
+            event->key() == Qt::Key_Super_L ||
+            event->key() == Qt::Key_Super_R)
+        m_modifierPressed = true;
+
+    QWaylandSurfaceItem::keyPressEvent(event);
+}
+
+void WindowView::keyReleaseEvent(QKeyEvent *event)
+{
+    // Set modifier pressed flag
+    if (event->key() == Qt::Key_Meta ||
+            event->key() == Qt::Key_Super_L ||
+            event->key() == Qt::Key_Super_R)
+        m_modifierPressed = false;
+
+    // If the modifier is pressed we stop the move operation
+    if (!m_modifierPressed)
+        stopMove();
+
+    QWaylandSurfaceItem::keyReleaseEvent(event);
 }
 
 void WindowView::takeFocus(QWaylandInputDevice *device)
@@ -77,6 +122,18 @@ void WindowView::takeFocus(QWaylandInputDevice *device)
 #if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
     forceActiveFocus();
 #endif
+}
+
+void WindowView::startMove()
+{
+    QWaylandSurfaceOp op(ClientWindow::Move);
+    surface()->sendInterfaceOp(op);
+}
+
+void WindowView::stopMove()
+{
+    QWaylandSurfaceOp op(ClientWindow::StopMove);
+    surface()->sendInterfaceOp(op);
 }
 
 }
