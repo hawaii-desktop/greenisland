@@ -41,7 +41,8 @@ class GREENISLAND_EXPORT OutputWindow : public QQuickView
 {
     Q_OBJECT
 public:
-    explicit OutputWindow(Compositor *compositor);
+    OutputWindow(Compositor *compositor);
+    ~OutputWindow();
 
     Compositor *compositor() const;
 

@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
  * This file is part of Green Island.
  *
  * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
@@ -51,6 +51,19 @@ OutputWindow::OutputWindow(Compositor *compositor)
     // Initialize timer
     m_timer.start();
 
+    // Setup window
+    setColor(Qt::black);
+    winId();
+
+    // Retrieve full screen shell client object, this will be available
+    // only when Green Island is nested into another compositor
+    // that supports the fullscreen-shell interface
+    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
+    if (fsh) {
+        // Disable decorations
+        setFlags(flags() | Qt::BypassWindowManagerHint);
+    }
+
     // Print GL information
     connect(this, SIGNAL(sceneGraphInitialized()),
             this, SLOT(printInfo()),
@@ -62,7 +75,7 @@ OutputWindow::OutputWindow(Compositor *compositor)
             Qt::DirectConnection);
 
     // Show loading errors
-    connect(this, &QQuickView::statusChanged, this, [=](const QQuickView::Status &status) {
+    connect(this, &QQuickView::statusChanged, this, [this](const QQuickView::Status &status) {
         switch (status) {
         case QQuickView::Loading:
             qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
@@ -77,27 +90,14 @@ OutputWindow::OutputWindow(Compositor *compositor)
             break;
         }
     });
+}
 
-    // Retrieve full screen shell client object, this will be available
-    // only when Green Island is nested into another compositor
-    // that supports the fullscreen-shell interface
+OutputWindow::~OutputWindow()
+{
+    // Hide output from full screen shell
     FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-    if (fsh) {
-        // Disable decorations
-        setFlags(flags() | Qt::BypassWindowManagerHint);
-
-        // Present output window when using full screen shell
-        connect(this, &QQuickView::visibleChanged, [=](bool value) {
-            if (value)
-                fsh->showOutput(m_output);
-            else
-                fsh->hideOutput(m_output);
-        });
-    }
-
-    // Setup window
-    setColor(Qt::black);
-    winId();
+    if (fsh)
+        fsh->hideOutput(m_output);
 }
 
 Output *OutputWindow::output() const
@@ -111,7 +111,9 @@ void OutputWindow::setOutput(Output *output)
     if (m_output)
         return;
 
-    qCDebug(GREENISLAND_COMPOSITOR) << "Assigning output to window for" << output->geometry();
+    qCDebug(GREENISLAND_COMPOSITOR)
+            << "Assigning output" << output->name()
+            << output->geometry() << "to window";
 
     // Save output reference
     m_output = output;
@@ -130,6 +132,22 @@ void OutputWindow::setOutput(Output *output)
     if (Compositor::s_fixedPlugin.isEmpty()) {
         qFatal("No plugin specified, cannot continue!");
     } else {
+        // Show window
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Showing window for output"
+                << output->name() << output->geometry();
+        show();
+
+        // Present output to full screen shell
+        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
+        if (fsh) {
+            qCDebug(GREENISLAND_COMPOSITOR)
+                    << "Showing output on full screen shell for output"
+                    << output->name() << output->geometry();
+            fsh->showOutput(m_output);
+        }
+
+        // Load main file or bail out
         qCDebug(GREENISLAND_COMPOSITOR)
                 << "Loading" << Compositor::s_fixedPlugin
                 << "plugin for output"
@@ -137,11 +155,6 @@ void OutputWindow::setOutput(Output *output)
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
-
-        // Show window
-        show();
-
-        // Load main file or bail out
         if (QFile(path).exists(path))
             setSource(path);
         else
