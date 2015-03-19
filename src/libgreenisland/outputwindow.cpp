@@ -77,6 +77,9 @@ OutputWindow::OutputWindow(Compositor *compositor)
     // Show loading errors
     connect(this, &QQuickView::statusChanged, this, [this](const QQuickView::Status &status) {
         switch (status) {
+        case QQuickView::Null:
+            qCWarning(GREENISLAND_COMPOSITOR) << "No source set yet";
+            break;
         case QQuickView::Loading:
             qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
             break;
