@@ -403,8 +403,8 @@ void ClientWindow::unregisterWindow(bool destruction)
 
 QPointF ClientWindow::calculateInitialPosition() const
 {
-    // As a heuristic place the new window on the same output as the
-    // pointer. Falling back to the output containing 0,0.
+    // As a heuristic place the new window on the same output
+    // as the pointer
     // TODO: Do something clever for touch too
     QPoint pos = QCursor::pos();
 
@@ -419,12 +419,9 @@ QPointF ClientWindow::calculateInitialPosition() const
         }
     }
 
-    // Just move the surface to a random position if we can't find a target output
-    if (!targetScreenFound) {
-        pos.setX(10 + qrand() % 400);
-        pos.setY(10 + qrand() % 400);
-        return pos;
-    }
+    // Fallback to the primary output
+    if (!targetScreenFound)
+        geometry = m_surface->compositor()->primaryOutput()->availableGeometry();
 
     // Valid range within output where the surface will still be onscreen.
     // If this is negative it means that the surface is bigger than
