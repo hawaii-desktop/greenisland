@@ -111,6 +111,8 @@ void OutputWindow::setOutput(Output *output)
     if (m_output)
         return;
 
+    qCDebug(GREENISLAND_COMPOSITOR) << "Assigning output to window for" << output->geometry();
+
     // Save output reference
     m_output = output;
 
