@@ -387,6 +387,14 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 {
     Q_UNUSED(resource);
 
+    // Only top level windows can be maximized
+    if (m_surface->windowType() != QWaylandSurface::Toplevel)
+        return;
+
+    // Ignore if already maximized
+    if (m_state == Maximized)
+        return;
+
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
             : m_window->output();
@@ -399,15 +407,14 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     else
         m_prevGlobalGeometry = output->availableGeometry();
 
-    // Change global geometry for all views, this will result in
-    // moving the window and set a size that accomodate the surface
-    m_window->setPosition(QPointF(output->availableGeometry().topLeft()));
-    requestResize(output->availableGeometry().size());
+    // Maximize for this output
+    m_window->maximizeForOutput(static_cast<Output *>(output));
+    m_window->m_maximized = true;
+    Q_EMIT m_window->maximizedChanged();
 
     // Set state
     m_prevState = m_state;
     m_state = Maximized;
-    m_window->maximize();
 }
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)
