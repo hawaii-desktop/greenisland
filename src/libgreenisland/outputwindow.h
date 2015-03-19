@@ -62,6 +62,7 @@ protected:
 private:
     Compositor *m_compositor;
     Output *m_output;
+    QElapsedTimer m_perfTimer;
 
     // Hot spots
     QElapsedTimer m_timer;

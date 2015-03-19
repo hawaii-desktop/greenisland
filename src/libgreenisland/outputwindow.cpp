@@ -92,6 +92,8 @@ OutputWindow::OutputWindow(Compositor *compositor)
                 qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
             break;
         }
+
+        qCDebug(GREENISLAND_COMPOSITOR) << "Scene load time:" << m_perfTimer.elapsed() << "ms";
     });
 }
 
@@ -155,6 +157,8 @@ void OutputWindow::setOutput(Output *output)
                 << "Loading" << Compositor::s_fixedPlugin
                 << "plugin for output"
                 << output->name() << output->geometry();
+
+        m_perfTimer.start();
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
                                               QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
