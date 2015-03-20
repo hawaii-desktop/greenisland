@@ -172,7 +172,7 @@ QWaylandOutput *ClientWindow::output() const
     return main;
 }
 
-QWaylandSurfaceItem *ClientWindow::viewForOutput(Output *output)
+WindowView *ClientWindow::viewForOutput(Output *output)
 {
     WindowView *view = m_views.value(output, Q_NULLPTR);
     if (!view) {
@@ -186,7 +186,7 @@ QWaylandSurfaceItem *ClientWindow::viewForOutput(Output *output)
         });
     }
 
-    return static_cast<QWaylandSurfaceItem *>(view);
+    return view;
 }
 
 qreal ClientWindow::x() const

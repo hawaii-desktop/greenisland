@@ -101,7 +101,7 @@ public:
 
     QWaylandOutput *output() const;
 
-    Q_INVOKABLE QWaylandSurfaceItem *viewForOutput(Output *output);
+    Q_INVOKABLE WindowView *viewForOutput(Output *output);
 
     qreal x() const;
     void setX(qreal value);
