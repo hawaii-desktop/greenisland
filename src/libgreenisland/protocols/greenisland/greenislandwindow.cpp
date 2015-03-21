@@ -42,26 +42,36 @@ GreenIslandWindow::GreenIslandWindow(wl_client *client, ClientWindow *window)
     determineState();
 
     QObject::connect(window, &ClientWindow::titleChanged, [this]() {
-        send_title_changed(m_window->title());
+        if (m_window)
+            send_title_changed(m_window->title());
     });
     QObject::connect(window, &ClientWindow::appIdChanged, [this]() {
-        send_app_id_changed(m_window->appId());
+        if (m_window)
+            send_app_id_changed(m_window->appId());
     });
     QObject::connect(window, &ClientWindow::activeChanged, [this]() {
-        determineState();
-        send_state_changed(m_state);
+        if (m_window) {
+            determineState();
+            send_state_changed(m_state);
+        }
     });
     QObject::connect(window, &ClientWindow::minimizedChanged, [this]() {
-        determineState();
-        send_state_changed(m_state);
+        if (m_window) {
+            determineState();
+            send_state_changed(m_state);
+        }
     });
     QObject::connect(window, &ClientWindow::maximizedChanged, [this]() {
-        determineState();
-        send_state_changed(m_state);
+        if (m_window) {
+            determineState();
+            send_state_changed(m_state);
+        }
     });
     QObject::connect(window, &ClientWindow::fullScreenChanged, [this]() {
-        determineState();
-        send_state_changed(m_state);
+        if (m_window) {
+            determineState();
+            send_state_changed(m_state);
+        }
     });
 }
 

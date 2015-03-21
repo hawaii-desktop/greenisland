@@ -27,6 +27,7 @@
 #ifndef GREENISLANDWINDOW_H
 #define GREENISLANDWINDOW_H
 
+#include <QtCore/QPointer>
 #include <QtCompositor/QWaylandGlobalInterface>
 
 #include "clientwindow.h"
@@ -47,7 +48,7 @@ public:
     static QtWaylandServer::greenisland_windows::type type2WlType(ClientWindow::Type type);
 
 private:
-    ClientWindow *m_window;
+    QPointer<ClientWindow> m_window;
     uint32_t m_state;
 
     void determineState();
