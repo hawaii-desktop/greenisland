@@ -89,7 +89,10 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
         registerWindow();
     });
     connect(surface, &QWaylandSurface::unmapped, [=] {
-        unregisterWindow(false);
+        // When a Qt client is closed, it will send unmapped() but the
+        // surface size will be invalid: in this case we should emit
+        // a window destruction signal instead of unmapped
+        unregisterWindow(m_surface && m_surface->size().isValid() ? false : true);
     });
     connect(surface, SIGNAL(titleChanged()), this, SIGNAL(titleChanged()));
     connect(surface, &QWaylandSurface::classNameChanged, [=] {
