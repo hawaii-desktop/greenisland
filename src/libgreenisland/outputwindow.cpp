@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 #include <QtCore/QStandardPaths>
+#include <QtGui/QGuiApplication>
 #include <QtQml/QQmlContext>
 
 #include "compositor.h"
@@ -67,25 +68,27 @@ OutputWindow::OutputWindow(Output *output)
     // Retrieve full screen shell client object, this will be available
     // only when Green Island is nested into another compositor
     // that supports the fullscreen-shell interface
-    FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-    if (fsh) {
-        // Disable decorations
-        setFlags(flags() | Qt::BypassWindowManagerHint);
+    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
+        if (fsh) {
+            // Disable decorations
+            setFlags(flags() | Qt::BypassWindowManagerHint);
 
-        // Present output to full screen shell
-        connect(this, &QQuickView::visibleChanged, this, [this, fsh](bool arg) {
-            if (arg) {
-                qCDebug(GREENISLAND_COMPOSITOR)
-                        << "Showing output on full screen shell for output"
-                        << m_output->name() << m_output->geometry();
-                fsh->showOutput(m_output);
-            } else {
-                qCDebug(GREENISLAND_COMPOSITOR)
-                        << "Hiding output on full screen shell for output"
-                        << m_output->name() << m_output->geometry();
-                fsh->hideOutput(m_output);
-            }
-        });
+            // Present output to full screen shell
+            connect(this, &QQuickView::visibleChanged, this, [this, fsh](bool arg) {
+                if (arg) {
+                    qCDebug(GREENISLAND_COMPOSITOR)
+                            << "Showing output on full screen shell for output"
+                            << m_output->name() << m_output->geometry();
+                    fsh->showOutput(m_output);
+                } else {
+                    qCDebug(GREENISLAND_COMPOSITOR)
+                            << "Hiding output on full screen shell for output"
+                            << m_output->name() << m_output->geometry();
+                    fsh->hideOutput(m_output);
+                }
+            });
+        }
     }
 
     // Show loading errors
