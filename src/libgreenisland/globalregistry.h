@@ -38,6 +38,7 @@ class GlobalRegistry
 {
 public:
     GlobalRegistry();
+    ~GlobalRegistry();
 
     void start();
 

@@ -45,6 +45,11 @@ GlobalRegistry::GlobalRegistry()
 {
 }
 
+GlobalRegistry::~GlobalRegistry()
+{
+    delete m_fullScreenShell;
+}
+
 void GlobalRegistry::start()
 {
     QPlatformNativeInterface *native =
