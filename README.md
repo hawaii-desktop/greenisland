@@ -17,6 +17,8 @@ It is primarily developed for the [Hawaii desktop environment](https://github.co
 
 ## Dependencies
 
+gcc >= 4.8 is required to build this software.
+
 * Wayland >= 1.6.0
 * Qt >= 5.4.0 with at least the follow modules:
   * qtbase
