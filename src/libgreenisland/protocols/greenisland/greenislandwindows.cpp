@@ -40,6 +40,10 @@ GreenIslandWindows::GreenIslandWindows(ApplicationManager *appMan)
         if (!m_boundResource)
             return;
 
+        // Only top level windows
+        if (window->type() != ClientWindow::TopLevel)
+            return;
+
         GreenIslandWindow *w = new GreenIslandWindow(m_boundResource->client(), window);
         m_windows.append(w);
         send_window_mapped(m_boundResource->handle, w->resource()->handle,
