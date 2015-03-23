@@ -90,6 +90,9 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
 
 WlShellSurface::~WlShellSurface()
 {
+    delete m_moveGrabber;
+    delete m_resizeGrabber;
+
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
     surface()->setMapped(false);
 }
