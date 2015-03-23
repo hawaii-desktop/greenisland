@@ -70,8 +70,7 @@ ShaderEffect {
         uniform highp float qt_Opacity;
         varying highp vec2 qt_TexCoord0;
         void main() {
-            highp vec4 sourceColor = texture2D(source, qt_TexCoord0.st);
-            gl_FragColor = qt_Opacity * sourceColor;
+            gl_FragColor = texture2D(source, qt_TexCoord0.st) * qt_Opacity;
         }
     "
     onSourceChanged: {
