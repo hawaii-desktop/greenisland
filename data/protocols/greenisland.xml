@@ -53,6 +53,13 @@
       </description>
       <arg name="app_id" type="string" summary="application identifier"/>
     </event>
+
+    <request name="quit">
+      <description summary="quit an application">
+        Ask the compositor to terminate a Wayland client with the specified application identifier.
+      </description>
+      <arg name="app_id" type="string" summary="application identifier"/>
+    </request>
   </interface>
 
   <interface name="greenisland_windows" version="1">

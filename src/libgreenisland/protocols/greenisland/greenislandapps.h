@@ -45,8 +45,11 @@ public:
 
 private:
     Resource *m_boundResource;
+    ApplicationManager *m_appMan;
 
     void applications_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
+
+    void applications_quit(Resource *resource, const QString &app_id) Q_DECL_OVERRIDE;
 };
 
 }

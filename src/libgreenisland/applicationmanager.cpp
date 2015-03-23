@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QCoreApplication>
+#include <QtCore/QTimer>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 
@@ -121,6 +123,21 @@ bool ApplicationManager::isRegistered(const QString &appId) const
 {
     Q_D(const ApplicationManager);
     return d->apps.contains(appId);
+}
+
+void ApplicationManager::quit(const QString &appId)
+{
+    Q_D(ApplicationManager);
+
+    Q_FOREACH (pid_t pid, d->appPids[appId]) {
+        if (pid == QCoreApplication::applicationPid())
+            continue;
+
+        ::kill(pid, SIGTERM);
+        QTimer::singleShot(5000, [pid] {
+            ::kill(pid, SIGTERM);
+        });
+    }
 }
 
 }

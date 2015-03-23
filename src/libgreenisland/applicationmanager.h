@@ -51,6 +51,12 @@ public:
      */
     Q_INVOKABLE bool isRegistered(const QString &appId) const;
 
+    /*!
+     * \brief Quits an application.
+     * \param appId Application identifier.
+     */
+    Q_INVOKABLE void quit(const QString &appId);
+
 Q_SIGNALS:
     /*!
      * \brief An application has been added.
