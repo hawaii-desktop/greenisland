@@ -45,23 +45,55 @@ void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const 
 {
     Q_Q(ApplicationManager);
 
-    if (apps.contains(appId))
+    // Only top level windows qualify as applications
+    if (surface->windowType() != QWaylandSurface::Toplevel)
+        return;
+
+    // In case the client goes away quickly
+    if (!surface->client())
+        return;
+
+    pid_t pid = (pid_t)surface->client()->processId();
+
+    if (appPids.contains(appId) && appPids[appId].contains(pid))
         return;
     if (appSurfaces.contains(surface))
         return;
 
     apps.insert(appId);
     appSurfaces[surface] = appId;
+    appPids[appId].insert(pid);
+    surfacePids[surface] = pid;
 
-    if (surface->windowType() == QWaylandSurface::Toplevel)
-        Q_EMIT q->applicationAdded(appId, surface->client()->processId());
+    Q_EMIT q->applicationAdded(appId, pid);
 }
 
 void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, const QString &appId)
 {
     Q_Q(ApplicationManager);
 
+    // We can't access surface->client() here because it was already
+    // deleted along with the surface
+    pid_t pid = surfacePids[surface];
+
     if (appSurfaces.remove(surface) > 0) {
+        // We might have more surfaces with the same pid
+        bool found = false;
+        Q_FOREACH (QWaylandSurface *s, appSurfaces.keys()) {
+            if (surfacePids[s] == pid) {
+                found = true;
+                break;
+            }
+        }
+
+        // If any of the remaining surfaces have this pid then we can remove
+        if (!found)
+            appPids.remove(appId);
+
+        // Remove surface from surface pids hash
+        surfacePids.remove(surface);
+
+        // Deregister the application when it has no surfaces associated at all
         if (appSurfaces.count(surface) == 0) {
             apps.remove(appId);
             Q_EMIT q->applicationRemoved(appId);

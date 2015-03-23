@@ -56,6 +56,8 @@ public:
 
     QSet<QString> apps;
     QHash<QWaylandSurface *, QString> appSurfaces;
+    QHash<QString, QSet<pid_t> > appPids;
+    QHash<QWaylandSurface *, pid_t> surfacePids;
 
 protected:
     ApplicationManager *q_ptr;
