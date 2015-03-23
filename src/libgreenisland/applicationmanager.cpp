@@ -96,7 +96,7 @@ void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, cons
         // Deregister the application when it has no surfaces associated at all
         if (appSurfaces.count(surface) == 0) {
             apps.remove(appId);
-            Q_EMIT q->applicationRemoved(appId);
+            Q_EMIT q->applicationRemoved(appId, pid);
         }
     }
 }

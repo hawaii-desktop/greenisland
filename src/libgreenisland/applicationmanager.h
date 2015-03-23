@@ -62,8 +62,9 @@ Q_SIGNALS:
     /*!
      * \brief An application has been removed.
      * \param appId Application identifier.
+     * \param pid Process identifier.
      */
-    void applicationRemoved(const QString &appId);
+    void applicationRemoved(const QString &appId, pid_t);
 
     /*!
      * \brief An application got focused.

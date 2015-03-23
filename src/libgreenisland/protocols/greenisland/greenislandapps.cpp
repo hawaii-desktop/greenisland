@@ -38,9 +38,9 @@ GreenIslandApps::GreenIslandApps(ApplicationManager *appMan)
         if (m_boundResource)
             send_registered(m_boundResource->handle, appId, pid);
     });
-    QObject::connect(appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId) {
+    QObject::connect(appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId, pid_t pid) {
         if (m_boundResource)
-            send_unregistered(m_boundResource->handle, appId);
+            send_unregistered(m_boundResource->handle, appId, pid);
     });
     QObject::connect(appMan, &ApplicationManager::applicationFocused, [this](const QString &appId) {
         if (m_boundResource)
