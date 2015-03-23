@@ -80,7 +80,7 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
-    new WlShellSurface(this, surface, resource->client(), id);
+    new WlShellSurface(this, surface, resource->client(), id, resource->version());
 }
 
 }

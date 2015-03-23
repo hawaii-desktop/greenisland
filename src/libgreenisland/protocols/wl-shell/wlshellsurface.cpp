@@ -26,7 +26,6 @@
 
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -42,14 +41,10 @@
 namespace GreenIsland {
 
 WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
-                               wl_client *client, uint32_t id)
+                               wl_client *client, uint32_t id, uint32_t version)
     : QObject(shell)
     , QWaylandSurfaceInterface(surface)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    , QtWaylandServer::wl_shell_surface(client, id, 1)
-#else
-    , QtWaylandServer::wl_shell_surface(client, id)
-#endif
+    , QtWaylandServer::wl_shell_surface(client, id, version)
     , m_shell(shell)
     , m_surface(surface)
     , m_moveGrabber(Q_NULLPTR)

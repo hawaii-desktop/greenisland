@@ -57,7 +57,7 @@ public:
     };
 
     WlShellSurface(WlShell *shell, QWaylandSurface *surface,
-                   wl_client *client, uint32_t id);
+                   wl_client *client, uint32_t id, uint32_t version);
     ~WlShellSurface();
 
     State state() const;
