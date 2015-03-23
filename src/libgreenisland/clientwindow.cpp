@@ -85,31 +85,18 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     viewForOutput(static_cast<Output *>(surface->output()));
 
     // Connect to surface signals
-    connect(surface, &QWaylandSurface::mapped, [=] {
-        initialSetup();
-        registerWindow();
-    });
-    connect(surface, &QWaylandSurface::unmapped, [=] {
-        // When a Qt client is closed, it will send unmapped() but the
-        // surface size will be invalid: in this case we should emit
-        // a window destruction signal instead of unmapped
-        unregisterWindow(m_surface && m_surface->size().isValid() ? false : true);
-    });
-    connect(surface, SIGNAL(titleChanged()), this, SIGNAL(titleChanged()));
-    connect(surface, &QWaylandSurface::classNameChanged, [=] {
-        if (!m_surface->className().isEmpty()) {
-            m_appId = m_surface->className().replace(QStringLiteral(".desktop"), QString());
-            m_iconName = readFromDesktopFile(m_appId, QStringLiteral("Icon"),
-                                             QStringLiteral("application-octet-stream")).toString();
-            Q_EMIT appIdChanged();
-            Q_EMIT iconNameChanged();
-        }
-    });
-    connect(surface, &QWaylandSurface::windowTypeChanged,
+    connect(m_surface, &QWaylandSurface::mapped,
+            this, &ClientWindow::surfaceMapped);
+    connect(m_surface, &QWaylandSurface::unmapped,
+            this, &ClientWindow::surfaceUnmapped);
+    connect(m_surface, &QWaylandSurface::titleChanged,
+            this, &ClientWindow::titleChanged);
+    connect(m_surface, &QWaylandSurface::classNameChanged,
+            this, &ClientWindow::surfaceAppIdChanged);
+    connect(m_surface, &QWaylandSurface::sizeChanged,
+            this, &ClientWindow::surfaceSizeChanged);
+    connect(m_surface, &QWaylandSurface::windowTypeChanged,
             this, &ClientWindow::setType);
-    connect(surface, &QWaylandSurface::sizeChanged, [=] {
-        setSize(QSizeF(m_surface->size()));
-    });
 }
 
 ClientWindow::~ClientWindow()
@@ -185,7 +172,7 @@ WindowView *ClientWindow::viewForOutput(Output *output)
         m_views[output] = view;
 
         // Activate this window when the mouse is pressed
-        connect(view, &WindowView::mousePressed, [=] {
+        connect(view, &WindowView::mousePressed, [this] {
             activate();
         });
     }
@@ -549,6 +536,37 @@ QVariant ClientWindow::readFromDesktopFile(const QString &baseName, const QStrin
     entry.setIniCodec("UTF-8");
     entry.beginGroup(QStringLiteral("Desktop Entry"));
     return entry.value(key, defaultValue);
+}
+
+void ClientWindow::surfaceMapped()
+{
+    initialSetup();
+    registerWindow();
+}
+
+void ClientWindow::surfaceUnmapped()
+{
+    // When a Qt client is closed, it will send unmapped() but the
+    // surface size will be invalid: in this case we should emit
+    // a window destruction signal instead of unmapped
+    unregisterWindow(m_surface && m_surface->size().isValid() ? false : true);
+}
+
+void ClientWindow::surfaceAppIdChanged()
+{
+    if (m_surface->className().isEmpty())
+        return;
+
+    m_appId = m_surface->className().replace(QStringLiteral(".desktop"), QString());
+    m_iconName = readFromDesktopFile(m_appId, QStringLiteral("Icon"),
+                                     QStringLiteral("application-octet-stream")).toString();
+    Q_EMIT appIdChanged();
+    Q_EMIT iconNameChanged();
+}
+
+void ClientWindow::surfaceSizeChanged()
+{
+    setSize(QSizeF(m_surface->size()));
 }
 
 void ClientWindow::setType(QWaylandSurface::WindowType windowType)

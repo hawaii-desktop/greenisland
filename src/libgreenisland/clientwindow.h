@@ -197,6 +197,10 @@ private:
     friend class ScreenManagerPrivate;
 
 private Q_SLOTS:
+    void surfaceMapped();
+    void surfaceUnmapped();
+    void surfaceAppIdChanged();
+    void surfaceSizeChanged();
     void setType(QWaylandSurface::WindowType windowType);
 };
 
