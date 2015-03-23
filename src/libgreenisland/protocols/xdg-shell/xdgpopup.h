@@ -32,6 +32,8 @@
 
 #include "xdgshell.h"
 
+class QWaylandInputDevice;
+
 namespace GreenIsland {
 
 class ClientWindow;
@@ -39,10 +41,11 @@ class XdgPopupGrabber;
 
 class XdgPopup : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::xdg_popup
 {
-    Q_OBJECT
 public:
-    XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *surface,
-             wl_client *client, uint32_t id, uint32_t serial);
+    XdgPopup(XdgShell *shell, QWaylandSurface *parent,
+             QWaylandSurface *surface, QWaylandInputDevice *device,
+             wl_client *client, uint32_t id, uint32_t version, int32_t x, int32_t y,
+             uint32_t serial);
     ~XdgPopup();
 
     XdgPopupGrabber *grabber() const;
@@ -50,7 +53,11 @@ public:
     void done();
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op);
+    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+
+    void popup_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
+
+    void popup_destroy(Resource *resource) Q_DECL_OVERRIDE;
 
 private:
     XdgShell *m_shell;
@@ -59,13 +66,14 @@ private:
     ClientWindow *m_window;
     uint32_t m_serial;
     XdgPopupGrabber *m_grabber;
-    bool m_deleting;
-
-    void popup_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
-
-    void popup_destroy(Resource *resource) Q_DECL_OVERRIDE;
 
     friend class XdgShell;
+
+private Q_SLOTS:
+    void parentSurfaceGone();
+    void surfaceMapped();
+    void surfaceUnmapped();
+    void surfaceConfigured(bool hasBuffer);
 };
 
 }

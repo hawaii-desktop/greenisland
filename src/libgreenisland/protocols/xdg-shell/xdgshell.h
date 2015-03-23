@@ -42,6 +42,7 @@ class InputDevice;
 namespace GreenIsland {
 
 class XdgSurface;
+class XdgPopup;
 class XdgPopupGrabber;
 
 class XdgShellGlobal : public QObject, public QWaylandGlobalInterface
@@ -77,6 +78,8 @@ private:
     QHash<QtWayland::InputDevice *, XdgPopupGrabber *> m_popupGrabbers;
 
     XdgPopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
+
+    friend class XdgPopup;
 };
 
 }

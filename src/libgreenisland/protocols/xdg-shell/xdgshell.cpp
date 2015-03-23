@@ -61,6 +61,8 @@ XdgShell::XdgShell(wl_client *client, uint32_t name, uint32_t version, QObject *
 XdgShell::~XdgShell()
 {
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
+
+    qDeleteAll(m_popupGrabbers);
 }
 
 void XdgShell::pingSurface(XdgSurface *surface)
@@ -131,16 +133,10 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
         }
     }
 
-    surface->handle()->setTransientParent(parent->handle());
-    surface->handle()->setTransientOffset(x, y);
-
-    QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seatResource);
-
-    XdgPopupGrabber *grabber = popupGrabberForDevice(device);
-
-    XdgPopup *popup = new XdgPopup(this, parent, surface,
-                                   resource->client(), id, serial);
-    popup->m_grabber = grabber;
+    new XdgPopup(this, parent, surface,
+                 QtWayland::InputDevice::fromSeatResource(seatResource)->handle(),
+                 resource->client(), id, resource->version(),
+                 x, y, serial);
 }
 
 void XdgShell::shell_pong(Resource *resource, uint32_t serial)

@@ -24,72 +24,58 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
 #include "clientwindow.h"
-#include "output.h"
 #include "xdgpopup.h"
 #include "xdgpopupgrabber.h"
 
 namespace GreenIsland {
 
-XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent, QWaylandSurface *surface,
-                   wl_client *client, uint32_t id, uint32_t serial)
-    : QWaylandSurfaceInterface(surface)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    , QtWaylandServer::xdg_popup(client, id, 1)
-#else
-    , QtWaylandServer::xdg_popup(client, id)
-#endif
+XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
+                   QWaylandSurface *surface, QWaylandInputDevice *device,
+                   wl_client *client, uint32_t id, uint32_t version,
+                   int32_t x, int32_t y, uint32_t serial)
+    : QObject(surface)
+    , QWaylandSurfaceInterface(surface)
+    , QtWaylandServer::xdg_popup(client, id, version)
     , m_shell(shell)
     , m_parentSurface(parent)
     , m_surface(surface)
     , m_serial(serial)
     , m_grabber(Q_NULLPTR)
-    , m_deleting(false)
 {
     // Set surface type
+    surface->handle()->setTransientParent(parent->handle());
+    surface->handle()->setTransientOffset(x, y);
     setSurfaceType(QWaylandSurface::Popup);
+
+    // Create popup grabber
+    m_grabber = shell->popupGrabberForDevice(device->handle());
+
+    // Connect surface signals
+    connect(m_parentSurface, &QWaylandSurface::surfaceDestroyed,
+            this, &XdgPopup::parentSurfaceGone);
+    connect(m_surface, &QWaylandSurface::mapped,
+            this, &XdgPopup::surfaceMapped);
+    connect(m_surface, &QWaylandSurface::unmapped,
+            this, &XdgPopup::surfaceUnmapped);
+    connect(m_surface, &QWaylandSurface::configure,
+            this, &XdgPopup::surfaceConfigured);
 
     // Create the window
     m_window = new ClientWindow(m_surface, this);
-
-    // Surface mapping and unmapping
-    connect(m_surface, &QWaylandSurface::mapped, [=]() {
-        // Handle popup behavior
-        if (m_grabber->serial() == m_serial) {
-            m_grabber->addPopup(this);
-        } else {
-            done();
-            m_grabber->m_client = Q_NULLPTR;
-        }
-    });
-    connect(m_surface, &QWaylandSurface::unmapped, [=]() {
-        // Handle popup behavior
-        done();
-        m_grabber->removePopup(this);
-        m_grabber->m_client = Q_NULLPTR;
-    });
-    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
-        // Map or unmap the surface
-        m_surface->setMapped(hasBuffer);
-    });
-    connect(parent, SIGNAL(unmapped()), m_surface, SIGNAL(unmapped()));
 }
 
 XdgPopup::~XdgPopup()
 {
-    // Destroy the resource here but don't do it if the destructor is
-    // called by shell_surface_destroy_resource() which happens when
-    // the resource is destroyed
-    if (!m_deleting) {
-        m_deleting = true;
-        wl_resource_destroy(resource()->handle);
-    }
+    m_grabber->removePopup(this);
+    m_grabber->m_client = Q_NULLPTR;
+
+    wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 XdgPopupGrabber *XdgPopup::grabber() const
@@ -104,18 +90,14 @@ void XdgPopup::done()
 
 bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
 {
+    Q_UNUSED(op)
     return false;
 }
 
 void XdgPopup::popup_destroy_resource(Resource *resource)
 {
-    Q_UNUSED(resource);
-
-    // Don't delete twice if we are here from the destructor
-    if (!m_deleting) {
-        m_deleting = true;
-        deleteLater();
-    }
+    Q_UNUSED(resource)
+    delete this;
 }
 
 void XdgPopup::popup_destroy(Resource *resource)
@@ -123,6 +105,35 @@ void XdgPopup::popup_destroy(Resource *resource)
     wl_resource_destroy(resource->handle);
 }
 
+void XdgPopup::parentSurfaceGone()
+{
+    done();
+    deleteLater();
 }
 
-#include "moc_xdgpopup.cpp"
+void XdgPopup::surfaceMapped()
+{
+    // Handle popup behavior
+    if (m_grabber->serial() == m_serial) {
+        m_grabber->addPopup(this);
+    } else {
+        done();
+        m_grabber->m_client = Q_NULLPTR;
+    }
+}
+
+void XdgPopup::surfaceUnmapped()
+{
+    // Handle popup behavior
+    done();
+    m_grabber->removePopup(this);
+    m_grabber->m_client = Q_NULLPTR;
+}
+
+void XdgPopup::surfaceConfigured(bool hasBuffer)
+{
+    // Map or unmap the surface
+    m_surface->setMapped(hasBuffer);
+}
+
+}
