@@ -138,6 +138,9 @@ void XdgSurface::restoreAt(const QPointF &pos)
 
 void XdgSurface::resetMoveGrab()
 {
+    if (!m_moveGrabber)
+        return;
+
     m_moveGrabber = Q_NULLPTR;
 
     // Notify that motion has finished (a QML shell might want to enable
@@ -147,6 +150,9 @@ void XdgSurface::resetMoveGrab()
 
 void XdgSurface::resetResizeGrab()
 {
+    if (!m_resizeGrabber)
+        return;
+
     m_resizeGrabber = Q_NULLPTR;
 
     // Notify that resize has finished (a QML shell might want to enable
