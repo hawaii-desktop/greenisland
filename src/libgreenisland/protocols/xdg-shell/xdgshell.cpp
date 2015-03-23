@@ -147,10 +147,8 @@ void XdgShell::shell_pong(Resource *resource, uint32_t serial)
 {
     Q_UNUSED(resource);
 
-    // TODO: finish
-
     XdgSurface *surface = m_pings.take(serial);
-    Q_UNUSED(surface);
+    surface->surface()->pong();
 }
 
 }
