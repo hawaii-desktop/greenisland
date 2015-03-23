@@ -85,7 +85,7 @@ XdgSurface::~XdgSurface()
     delete m_resizeGrabber;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
-    m_surface->setMapped(false);
+    //m_surface->setMapped(false);
 }
 
 uint32_t XdgSurface::nextSerial() const

@@ -89,7 +89,7 @@ WlShellSurface::~WlShellSurface()
     delete m_resizeGrabber;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
-    surface()->setMapped(false);
+    //surface()->setMapped(false);
 }
 
 WlShellSurface::State WlShellSurface::state() const
