@@ -463,9 +463,8 @@ void ClientWindow::initialSetup()
         }
     }
 
-    // Honor full screen positioning for top level windows that
-    // start that way
-    if (m_surface->windowType() == QWaylandSurface::Toplevel && isFullScreen())
+    // Honor position for windows that start maximized or full screen
+    if (isFullScreen() || isMaximized())
         return;
 
     // Set initial position
