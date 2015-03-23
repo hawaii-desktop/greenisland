@@ -54,6 +54,8 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
 
     // Window
     ClientWindow *window = m_shellSurface->window();
+    if (!window)
+        return;
 
     // Top level windows
     if (window->type() == ClientWindow::TopLevel) {
@@ -81,7 +83,7 @@ void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, ui
     Q_UNUSED(time);
 
     if (button == Qt::LeftButton && state == 0) {
-        m_pointer->setFocus(0, QPointF());
+        //m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetMoveGrab();
         delete this;

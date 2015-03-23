@@ -123,9 +123,11 @@ void WlShellSurface::restoreAt(const QPointF &pos)
     // Restore previous state and position
     m_prevState = m_state;
     m_state = Normal;
-    m_window->setPosition(pos);
-    m_window->unmaximize();
-    m_window->setFullScreen(false);
+    if (m_window) {
+        m_window->setPosition(pos);
+        m_window->unmaximize();
+        m_window->setFullScreen(false);
+    }
 
     // Actually resize it
     requestResize(m_prevGlobalGeometry.size().toSize());
@@ -137,7 +139,8 @@ void WlShellSurface::resetMoveGrab()
 
     // Notify that motion has finished (a QML shell might want to enable
     // x,y animations again)
-    Q_EMIT m_window->motionFinished();
+    if (m_window)
+        Q_EMIT m_window->motionFinished();
 }
 
 void WlShellSurface::resetResizeGrab()
@@ -146,7 +149,8 @@ void WlShellSurface::resetResizeGrab()
 
     // Notify that resize has finished (a QML shell might want to enable
     // width and height animations again)
-    Q_EMIT m_window->resizeFinished();
+    if (m_window)
+        Q_EMIT m_window->resizeFinished();
 }
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
@@ -190,6 +194,10 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 
     // Can't move if the window is full screen
     if (m_state == FullScreen)
+        return;
+
+    // Check whether the window has gone away
+    if (!m_window)
         return;
 
     QtWayland::Pointer *pointer = device->handle()->pointerDevice();
@@ -283,7 +291,8 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
 
     // Notify that resize is starting (a QML shell might want to disable
     // width and height animations to make the movement smoother)
-    Q_EMIT m_window->resizeStarted();
+    if (m_window)
+        Q_EMIT m_window->resizeStarted();
 }
 
 void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
@@ -294,6 +303,10 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
     m_surface->handle()->setTransientOffset(0, 0);
 
     setSurfaceType(QWaylandSurface::Toplevel);
+
+    // Check whether the window has gone away
+    if (!m_window)
+        return;
 
     // Restore state and geometry if it was maximized or full screen
     if (m_state == Maximized || m_state == FullScreen) {
@@ -327,6 +340,10 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     Q_UNUSED(resource);
     Q_UNUSED(method);
     Q_UNUSED(framerate);
+
+    // Check whether the window has gone away
+    if (!m_window)
+        return;
 
     QWaylandOutput *output = outputResource
             ? QWaylandOutput::fromResource(outputResource)
@@ -384,6 +401,10 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 
     // Ignore if already maximized
     if (m_state == Maximized)
+        return;
+
+    // Check whether the window has gone away
+    if (!m_window)
         return;
 
     QWaylandOutput *output = outputResource

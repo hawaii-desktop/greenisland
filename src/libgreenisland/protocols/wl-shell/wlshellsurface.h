@@ -28,6 +28,7 @@
 #define WLSHELLSURFACE_H
 
 #include <QtCore/QSet>
+#include <QtCore/QPointer>
 #include <QtQuick/QQuickItem>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandSurfaceInterface>
@@ -76,7 +77,7 @@ protected:
 private:
     WlShell *m_shell;
     QWaylandSurface *m_surface;
-    ClientWindow *m_window;
+    QPointer<ClientWindow> m_window;
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;
     WlShellSurfaceResizeGrabber *m_resizeGrabber;
