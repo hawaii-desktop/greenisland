@@ -134,6 +134,8 @@ public:
     Q_INVOKABLE void move();
     Q_INVOKABLE void stopMove();
 
+    Q_INVOKABLE void terminateProcess(quint32 timeout = 5000);
+
 Q_SIGNALS:
     void typeChanged();
     void titleChanged();

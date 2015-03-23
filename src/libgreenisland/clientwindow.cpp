@@ -28,6 +28,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QTimer>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandOutput>
@@ -385,6 +386,21 @@ void ClientWindow::stopMove()
 {
     QWaylandSurfaceOp op(StopMove);
     m_surface->sendInterfaceOp(op);
+}
+
+void ClientWindow::terminateProcess(quint32 timeout)
+{
+    if (m_surface && m_surface->client()) {
+        pid_t pid = m_surface->client()->processId();
+
+        if (pid == QCoreApplication::applicationPid())
+            return;
+
+        ::kill(pid, SIGTERM);
+        QTimer::singleShot(timeout, [pid] {
+            ::kill(pid, SIGKILL);
+        });
+    }
 }
 
 void ClientWindow::registerWindow()
