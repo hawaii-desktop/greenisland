@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
 
@@ -38,24 +37,30 @@ Q_LOGGING_CATEGORY(XDGSHELL_PROTOCOL, "greenisland.protocols.xdgshell")
 
 namespace GreenIsland {
 
-XdgShell::XdgShell()
-    : QWaylandGlobalInterface()
-    , QtWaylandServer::xdg_shell()
+XdgShellGlobal::XdgShellGlobal(QObject *parent)
+    : QObject(parent)
 {
 }
 
-const wl_interface *XdgShell::interface() const
+const wl_interface *XdgShellGlobal::interface() const
 {
     return &xdg_shell_interface;
 }
 
-void XdgShell::bind(wl_client *client, uint32_t version, uint32_t id)
+void XdgShellGlobal::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    add(client, id, version);
-#else
-    add(client, id);
-#endif
+    new XdgShell(client, id, version, this);
+}
+
+XdgShell::XdgShell(wl_client *client, uint32_t name, uint32_t version, QObject *parent)
+    : QObject(parent)
+    , QtWaylandServer::xdg_shell(client, name, version)
+{
+}
+
+XdgShell::~XdgShell()
+{
+    wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 void XdgShell::pingSurface(XdgSurface *surface)
@@ -72,6 +77,12 @@ XdgPopupGrabber *XdgShell::popupGrabberForDevice(QtWayland::InputDevice *device)
     if (!m_popupGrabbers.contains(device))
         m_popupGrabbers.insert(device, new XdgPopupGrabber(device));
     return m_popupGrabbers.value(device);
+}
+
+void XdgShell::shell_destroy_resource(Resource *resource)
+{
+    Q_UNUSED(resource)
+    delete this;
 }
 
 void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
@@ -97,7 +108,7 @@ void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resourc
         }
     }
 
-    new XdgSurface(this, surface, resource->client(), id);
+    new XdgSurface(this, surface, resource->client(), id, resource->version());
 }
 
 void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource *surfaceResource,

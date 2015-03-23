@@ -27,7 +27,6 @@
 #include <QtQuick/QQuickItem>
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
@@ -43,14 +42,10 @@
 namespace GreenIsland {
 
 XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
-                       wl_client *client, uint32_t id)
+                       wl_client *client, uint32_t id, uint32_t version)
     : QObject(surface)
     , QWaylandSurfaceInterface(surface)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    , QtWaylandServer::xdg_surface(client, id, 1)
-#else
-    , QtWaylandServer::xdg_surface(client, id)
-#endif
+    , QtWaylandServer::xdg_surface(client, id, version)
     , m_shell(shell)
     , m_surface(surface)
     , m_moveGrabber(Q_NULLPTR)
@@ -58,7 +53,6 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     , m_minimized(false)
     , m_state(Normal)
     , m_savedState(Normal)
-    , m_deleting(false)
 {
     // This is a toplevel window by default
     m_surface->handle()->setTransientParent(Q_NULLPTR);
@@ -87,13 +81,8 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
 
 XdgSurface::~XdgSurface()
 {
-    // Destroy the resource here but don't do it if the destructor is
-    // called by shell_surface_destroy_resource() which happens when
-    // the resource is destroyed
-    if (!m_deleting) {
-        m_deleting = true;
-        wl_resource_destroy(resource()->handle);
-    }
+    wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
+    m_surface->setMapped(false);
 }
 
 uint32_t XdgSurface::nextSerial() const
@@ -233,36 +222,10 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     return false;
 }
 
-void XdgSurface::moveWindow(QWaylandInputDevice *device)
-{
-    if (m_moveGrabber || m_resizeGrabber) {
-        qCWarning(XDGSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
-        return;
-    }
-
-    // Can't move if the window is full screen
-    if (m_state == FullScreen)
-        return;
-
-    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
-
-    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_window->position());
-    pointer->startGrab(m_moveGrabber);
-
-    // Notify that motion is starting (a QML shell might want to disable x,y animations
-    // to make the movement smoother)
-    Q_EMIT m_window->motionStarted();
-}
-
 void XdgSurface::surface_destroy_resource(Resource *resource)
 {
-    Q_UNUSED(resource);
-
-    // Don't delete twice if we are here from the destructor
-    if (!m_deleting) {
-        m_deleting = true;
-        deleteLater();
-    }
+    Q_UNUSED(resource)
+    delete this;
 }
 
 void XdgSurface::surface_destroy(Resource *resource)
@@ -510,6 +473,27 @@ void XdgSurface::surface_set_minimized(Resource *resource)
 
     m_minimized = true;
     m_window->minimize();
+}
+
+void XdgSurface::moveWindow(QWaylandInputDevice *device)
+{
+    if (m_moveGrabber || m_resizeGrabber) {
+        qCWarning(XDGSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
+        return;
+    }
+
+    // Can't move if the window is full screen
+    if (m_state == FullScreen)
+        return;
+
+    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+
+    m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_window->position());
+    pointer->startGrab(m_moveGrabber);
+
+    // Notify that motion is starting (a QML shell might want to disable x,y animations
+    // to make the movement smoother)
+    Q_EMIT m_window->motionStarted();
 }
 
 }

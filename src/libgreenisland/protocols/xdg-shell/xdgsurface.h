@@ -76,7 +76,7 @@ public:
     };
 
     XdgSurface(XdgShell *shell, QWaylandSurface *surface,
-               wl_client *client, uint32_t id);
+               wl_client *client, uint32_t id, uint32_t version);
     ~XdgSurface();
 
     uint32_t nextSerial() const;
@@ -99,28 +99,6 @@ public:
 
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
-
-private:
-    XdgShell *m_shell;
-    QWaylandSurface *m_surface;
-    ClientWindow *m_window;
-
-    XdgSurfaceMoveGrabber *m_moveGrabber;
-    XdgSurfaceResizeGrabber *m_resizeGrabber;
-
-    bool m_minimized;
-    State m_state;
-
-    State m_savedState;
-    QRectF m_savedGeometry;
-
-    QMap<uint32_t, Changes> m_pendingChanges;
-
-    bool m_deleting;
-
-
-    void moveWindow(QWaylandInputDevice *device);
-
 
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -155,6 +133,25 @@ private:
     void surface_unset_fullscreen(Resource *resource) Q_DECL_OVERRIDE;
 
     void surface_set_minimized(Resource *resource) Q_DECL_OVERRIDE;
+
+private:
+    XdgShell *m_shell;
+    QWaylandSurface *m_surface;
+    ClientWindow *m_window;
+
+    XdgSurfaceMoveGrabber *m_moveGrabber;
+    XdgSurfaceResizeGrabber *m_resizeGrabber;
+
+    bool m_minimized;
+    State m_state;
+
+    State m_savedState;
+    QRectF m_savedGeometry;
+
+    QMap<uint32_t, Changes> m_pendingChanges;
+
+
+    void moveWindow(QWaylandInputDevice *device);
 };
 
 }

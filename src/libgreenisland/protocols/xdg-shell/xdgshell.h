@@ -44,21 +44,25 @@ namespace GreenIsland {
 class XdgSurface;
 class XdgPopupGrabber;
 
-class XdgShell : public QWaylandGlobalInterface, public QtWaylandServer::xdg_shell
+class XdgShellGlobal : public QObject, public QWaylandGlobalInterface
 {
 public:
-    explicit XdgShell();
+    explicit XdgShellGlobal(QObject *parent = 0);
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
+};
+
+class XdgShell : public QObject, public QtWaylandServer::xdg_shell
+{
+public:
+    XdgShell(wl_client *client, uint32_t name, uint32_t version, QObject *parent);
+    ~XdgShell();
 
     void pingSurface(XdgSurface *surface);
 
-private:
-    QMap<uint32_t, XdgSurface *> m_pings;
-    QHash<QtWayland::InputDevice *, XdgPopupGrabber *> m_popupGrabbers;
-
-    XdgPopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
+protected:
+    void shell_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void shell_use_unstable_version(Resource *resource, int32_t version) Q_DECL_OVERRIDE;
     void shell_get_xdg_surface(Resource *resource, uint32_t id,
@@ -67,6 +71,12 @@ private:
                              wl_resource *parentResource, wl_resource *seatResource,
                              uint32_t serial, int32_t x, int32_t y, uint32_t flags)  Q_DECL_OVERRIDE;
     void shell_pong(Resource *resource, uint32_t serial)  Q_DECL_OVERRIDE;
+
+private:
+    QMap<uint32_t, XdgSurface *> m_pings;
+    QHash<QtWayland::InputDevice *, XdgPopupGrabber *> m_popupGrabbers;
+
+    XdgPopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
 };
 
 }
