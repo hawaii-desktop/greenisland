@@ -117,7 +117,7 @@ void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint
     Q_UNUSED(time);
 
     if (button == Qt::LeftButton && !state) {
-        m_pointer->setFocus(0, QPointF());
+        //m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetResizeGrab();
         delete this;
