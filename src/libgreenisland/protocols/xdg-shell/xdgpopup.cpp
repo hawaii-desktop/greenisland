@@ -39,7 +39,7 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
                    QWaylandSurface *surface, QWaylandInputDevice *device,
                    wl_client *client, uint32_t id, uint32_t version,
                    int32_t x, int32_t y, uint32_t serial)
-    : QObject(surface)
+    : QObject(shell)
     , QWaylandSurfaceInterface(surface)
     , QtWaylandServer::xdg_popup(client, id, version)
     , m_shell(shell)

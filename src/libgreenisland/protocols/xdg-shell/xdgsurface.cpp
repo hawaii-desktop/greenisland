@@ -43,7 +43,7 @@ namespace GreenIsland {
 
 XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
                        wl_client *client, uint32_t id, uint32_t version)
-    : QObject(surface)
+    : QObject(shell)
     , QWaylandSurfaceInterface(surface)
     , QtWaylandServer::xdg_surface(client, id, version)
     , m_shell(shell)
