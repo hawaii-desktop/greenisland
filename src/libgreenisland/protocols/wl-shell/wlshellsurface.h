@@ -90,8 +90,6 @@ private:
     State m_prevState;
     QRectF m_prevGlobalGeometry;
 
-    bool m_deleting;
-
     void ping(uint32_t serial);
     void moveWindow(QWaylandInputDevice *device);
     void requestResize(const QSize &size);

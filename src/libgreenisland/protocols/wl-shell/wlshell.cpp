@@ -34,22 +34,30 @@ Q_LOGGING_CATEGORY(WLSHELL_PROTOCOL, "greenisland.protocols.wlshell")
 
 namespace GreenIsland {
 
-WlShell::WlShell()
+WlShellGlobal::WlShellGlobal(QObject *parent)
+    : QObject(parent)
 {
 }
 
-const wl_interface *WlShell::interface() const
+const wl_interface *WlShellGlobal::interface() const
 {
     return &wl_shell_interface;
 }
 
-void WlShell::bind(wl_client *client, uint32_t version, uint32_t id)
+void WlShellGlobal::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    add(client, id, version);
-#else
-    add(client, id);
-#endif
+    new WlShell(client, id, version, this);
+}
+
+WlShell::WlShell(wl_client *client, uint32_t name, uint32_t version, QObject *parent)
+    : QObject(parent)
+    , QtWaylandServer::wl_shell(client, name, version)
+{
+}
+
+WlShell::~WlShell()
+{
+    wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)
@@ -60,16 +68,19 @@ WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevic
     return m_popupGrabbers.value(device);
 }
 
+void WlShell::shell_destroy_resource(Resource *resource)
+{
+    Q_UNUSED(resource)
+    delete this;
+}
+
 void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource)
 {
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
-    WlShellSurface *shellSurface = new WlShellSurface(this, surface, resource->client(), id);
-    QObject::connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
-        shellSurface->deleteLater();
-    });
+    new WlShellSurface(this, surface, resource->client(), id);
 }
 
 }

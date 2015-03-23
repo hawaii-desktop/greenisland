@@ -43,7 +43,8 @@ namespace GreenIsland {
 
 WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
                                wl_client *client, uint32_t id)
-    : QWaylandSurfaceInterface(surface)
+    : QObject(shell)
+    , QWaylandSurfaceInterface(surface)
 #if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     , QtWaylandServer::wl_shell_surface(client, id, 1)
 #else
@@ -57,7 +58,6 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
     , m_popupSerial()
     , m_state(Normal)
     , m_prevState(Normal)
-    , m_deleting(false)
 {
     // Create client window
     m_window = new ClientWindow(surface, this);
@@ -90,13 +90,8 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
 
 WlShellSurface::~WlShellSurface()
 {
-    // Destroy the resource here but don't do it if the destructor is
-    // called by shell_surface_destroy_resource() which happens when
-    // the resource is destroyed
-    if (!m_deleting) {
-        m_deleting = true;
-        wl_resource_destroy(resource()->handle);
-    }
+    wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
+    surface()->setMapped(false);
 }
 
 WlShellSurface::State WlShellSurface::state() const
@@ -223,11 +218,7 @@ void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
         m_popupGrabber->m_client = Q_NULLPTR;
     }
 
-    // Don't delete twice if we are here from the destructor
-    if (!m_deleting) {
-        m_deleting = true;
-        delete this;
-    }
+    delete this;
 }
 
 void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)

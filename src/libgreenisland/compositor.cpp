@@ -371,7 +371,7 @@ void Compositor::run()
     PlasmaShell *plasmaShell = new PlasmaShell(this);
     addGlobalInterface(plasmaShell);
     addGlobalInterface(new PlasmaEffects(plasmaShell));
-    addGlobalInterface(new WlShell());
+    addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShell());
 
     d->running = true;

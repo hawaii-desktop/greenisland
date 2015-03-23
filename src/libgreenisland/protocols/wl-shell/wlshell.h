@@ -32,29 +32,38 @@
 #include <QtCompositor/QWaylandGlobalInterface>
 #include <QtCompositor/private/qwayland-server-wayland.h>
 
-Q_DECLARE_LOGGING_CATEGORY(WLSHELL_PROTOCOL)
-
 namespace QtWayland {
 class InputDevice;
 }
+
+Q_DECLARE_LOGGING_CATEGORY(WLSHELL_PROTOCOL)
 
 namespace GreenIsland {
 
 class WlShellSurface;
 class WlShellSurfacePopupGrabber;
 
-class WlShell : public QWaylandGlobalInterface, public QtWaylandServer::wl_shell
+class WlShellGlobal : public QObject, public QWaylandGlobalInterface
 {
 public:
-    explicit WlShell();
+    explicit WlShellGlobal(QObject *parent = 0);
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
+};
+
+class WlShell : public QObject, public QtWaylandServer::wl_shell
+{
+public:
+    WlShell(wl_client *client, uint32_t name, uint32_t version, QObject *parent);
+    ~WlShell();
 
 private:
     QHash<QtWayland::InputDevice *, WlShellSurfacePopupGrabber *> m_popupGrabbers;
 
     WlShellSurfacePopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
+
+    void shell_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void shell_get_shell_surface(Resource *resource, uint32_t id,
                                  wl_resource *surfaceResource) Q_DECL_OVERRIDE;
