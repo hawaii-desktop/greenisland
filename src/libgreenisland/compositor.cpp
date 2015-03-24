@@ -51,6 +51,7 @@
 #include "protocols/greenisland/greenislandapps.h"
 #include "protocols/greenisland/greenislandwindows.h"
 #include "protocols/greenisland/greenislandrecorder.h"
+#include "protocols/gtk-shell/gtkshell.h"
 #include "protocols/plasma/plasmaeffects.h"
 #include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
@@ -373,6 +374,7 @@ void Compositor::run()
     addGlobalInterface(new PlasmaEffects(plasmaShell));
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal());
+    addGlobalInterface(new GtkShellGlobal());
 
     d->running = true;
 

@@ -54,6 +54,8 @@ set(SOURCES
     protocols/xdg-shell/xdgsurfaceresizegrabber.cpp
     protocols/xdg-shell/xdgpopup.cpp
     protocols/xdg-shell/xdgpopupgrabber.cpp
+    protocols/gtk-shell/gtkshell.cpp
+    protocols/gtk-shell/gtksurface.cpp
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
@@ -85,6 +87,11 @@ ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-effects.xml
     BASENAME plasma-effects
     PREFIX org_kde_plasma_
+)
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk-shell.xml
+    BASENAME gtk
+    PREFIX gtk_
 )
 
 ecm_add_qtwayland_client_protocol(SOURCES
