@@ -34,15 +34,25 @@ namespace GreenIsland {
 XdgSurfaceResizeGrabber::XdgSurfaceResizeGrabber(XdgSurface *shellSurface)
     : XdgSurfaceGrabber(shellSurface)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void XdgSurfaceResizeGrabber::focus()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void XdgSurfaceResizeGrabber::motion(uint32_t time)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     // Recalculate size
     QSize delta(m_pt.x() - m_pointer->position().x(),
@@ -114,7 +124,11 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
 
 void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     if (button == Qt::LeftButton && !state) {
         //m_pointer->setFocus(0, QPointF());

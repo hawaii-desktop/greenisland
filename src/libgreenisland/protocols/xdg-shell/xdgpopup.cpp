@@ -48,6 +48,10 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
     , m_serial(serial)
     , m_grabber(Q_NULLPTR)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Set surface type
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);
@@ -72,6 +76,10 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
 
 XdgPopup::~XdgPopup()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     m_grabber->removePopup(this);
     m_grabber->m_client = Q_NULLPTR;
 
@@ -80,39 +88,67 @@ XdgPopup::~XdgPopup()
 
 XdgPopupGrabber *XdgPopup::grabber() const
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     return m_grabber;
 }
 
 void XdgPopup::done()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     send_popup_done(m_serial);
 }
 
 bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     Q_UNUSED(op)
     return false;
 }
 
 void XdgPopup::popup_destroy_resource(Resource *resource)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     Q_UNUSED(resource)
     delete this;
 }
 
 void XdgPopup::popup_destroy(Resource *resource)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     wl_resource_destroy(resource->handle);
 }
 
 void XdgPopup::parentSurfaceGone()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     done();
     deleteLater();
 }
 
 void XdgPopup::surfaceMapped()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Handle popup behavior
     if (m_grabber->serial() == m_serial) {
         m_grabber->addPopup(this);
@@ -124,6 +160,10 @@ void XdgPopup::surfaceMapped()
 
 void XdgPopup::surfaceUnmapped()
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Handle popup behavior
     done();
     m_grabber->removePopup(this);
@@ -132,6 +172,10 @@ void XdgPopup::surfaceUnmapped()
 
 void XdgPopup::surfaceConfigured(bool hasBuffer)
 {
+#ifdef ENABLE_XDG_SHELL_TRACE
+    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Map or unmap the surface
     m_surface->setMapped(hasBuffer);
 }

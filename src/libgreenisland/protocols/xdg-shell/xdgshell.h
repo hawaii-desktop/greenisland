@@ -33,6 +33,9 @@
 
 #include "qwayland-server-xdg-shell.h"
 
+// Comment out to disable tracing
+#define ENABLE_XDG_SHELL_TRACE 1
+
 Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_PROTOCOL)
 
 namespace QtWayland {
