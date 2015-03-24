@@ -430,11 +430,6 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     else
         m_prevGlobalGeometry = output->geometry();
 
-    // Resize
-    send_configure(resize_bottom_right,
-                   output->geometry().size().width(),
-                   output->geometry().size().height());
-
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
     m_window->setPosition(QPointF(output->geometry().topLeft()));
