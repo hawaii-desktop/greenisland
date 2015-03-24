@@ -83,13 +83,12 @@ void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, ui
     Q_UNUSED(time);
 
     if (button == Qt::LeftButton && state == 0) {
+        QCursor cursor(Qt::ArrowCursor);
+        QGuiApplication::setOverrideCursor(cursor);
+
         //m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetMoveGrab();
-        delete this;
-
-        QCursor cursor(Qt::ArrowCursor);
-        QGuiApplication::setOverrideCursor(cursor);
     } else {
         QCursor cursor(Qt::OpenHandCursor);
         QGuiApplication::setOverrideCursor(cursor);

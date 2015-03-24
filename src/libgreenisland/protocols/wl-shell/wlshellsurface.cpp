@@ -155,6 +155,7 @@ void WlShellSurface::resetMoveGrab()
     if (!m_moveGrabber)
         return;
 
+    delete m_moveGrabber;
     m_moveGrabber = Q_NULLPTR;
 
     // Notify that motion has finished (a QML shell might want to enable
@@ -172,6 +173,7 @@ void WlShellSurface::resetResizeGrab()
     if (!m_resizeGrabber)
         return;
 
+    delete m_resizeGrabber;
     m_resizeGrabber = Q_NULLPTR;
 
     // Notify that resize has finished (a QML shell might want to enable
