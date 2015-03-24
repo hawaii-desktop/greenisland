@@ -38,6 +38,9 @@
 #include "wlshellsurfacepopupgrabber.h"
 #include "windowview.h"
 
+// Comment out to disable tracing
+#define ENABLE_WL_SHELL_TRACE 1
+
 namespace GreenIsland {
 
 WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
@@ -54,6 +57,10 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
     , m_state(Normal)
     , m_prevState(Normal)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Create client window
     m_window = new ClientWindow(surface, this);
 
@@ -85,6 +92,10 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
 
 WlShellSurface::~WlShellSurface()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     delete m_moveGrabber;
     delete m_resizeGrabber;
 
@@ -114,6 +125,10 @@ void WlShellSurface::restore()
 
 void WlShellSurface::restoreAt(const QPointF &pos)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Makes sense only for maximized windows
     if (m_state == Normal)
         return;
@@ -133,6 +148,10 @@ void WlShellSurface::restoreAt(const QPointF &pos)
 
 void WlShellSurface::resetMoveGrab()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     m_moveGrabber = Q_NULLPTR;
 
     // Notify that motion has finished (a QML shell might want to enable
@@ -143,6 +162,10 @@ void WlShellSurface::resetMoveGrab()
 
 void WlShellSurface::resetResizeGrab()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     m_resizeGrabber = Q_NULLPTR;
 
     // Notify that resize has finished (a QML shell might want to enable
@@ -153,6 +176,10 @@ void WlShellSurface::resetResizeGrab()
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     switch (op->type()) {
     case QWaylandSurfaceOp::Ping:
         ping(static_cast<QWaylandSurfacePingOp *>(op)->serial());
@@ -179,12 +206,20 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 
 void WlShellSurface::ping(uint32_t serial)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     m_pings.insert(serial);
     send_ping(serial);
 }
 
 void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     if (m_moveGrabber || m_resizeGrabber) {
         qCWarning(WLSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
         return;
@@ -210,12 +245,20 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 
 void WlShellSurface::requestResize(const QSize &size)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     send_configure(resize_bottom_right, size.width(), size.height());
 }
 
 void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     // Close popup grabber in case it is still going
     if (m_popupGrabber) {
@@ -229,7 +272,11 @@ void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 
 void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     if (m_pings.remove(serial))
         Q_EMIT m_surface->pong();
@@ -240,8 +287,12 @@ void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)
 void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
                                         uint32_t serial)
 {
-    Q_UNUSED(resource);
-    Q_UNUSED(serial);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
+    Q_UNUSED(serial)
 
     moveWindow(QtWayland::InputDevice::fromSeatResource(seat)->handle());
 }
@@ -249,8 +300,12 @@ void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
 void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
                                           uint32_t serial, uint32_t edges)
 {
-    Q_UNUSED(resource);
-    Q_UNUSED(serial);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
+    Q_UNUSED(serial)
 
     if (m_moveGrabber || m_resizeGrabber) {
         qCWarning(WLSHELL_PROTOCOL) << "Unable to resize surface: a move or resize operation was already requested!";
@@ -295,7 +350,11 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
 
 void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     m_surface->handle()->setTransientParent(Q_NULLPTR);
     m_surface->handle()->setTransientOffset(0, 0);
@@ -320,7 +379,11 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
 void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource *parentResource,
                                                  int32_t x, int32_t y, uint32_t flags)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parentResource);
     m_surface->handle()->setTransientParent(parentSurface->handle());
@@ -335,9 +398,13 @@ void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource
 void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t method,
                                                   uint32_t framerate, wl_resource *outputResource)
 {
-    Q_UNUSED(resource);
-    Q_UNUSED(method);
-    Q_UNUSED(framerate);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
+    Q_UNUSED(method)
+    Q_UNUSED(framerate)
 
     // Check whether the window has gone away
     if (!m_window)
@@ -363,7 +430,9 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     // Change global geometry for all views, this will result in
     // moving the window and set a size that accomodate the surface
     m_window->setPosition(QPointF(output->geometry().topLeft()));
+    qCDebug(WLSHELL_PROTOCOL) << "Set position to" << m_window->position();
     requestResize(output->geometry().size());
+    qCDebug(WLSHELL_PROTOCOL) << "Request resize to" << output->geometry().size();
 
     // Set state
     m_prevState = m_state;
@@ -375,8 +444,12 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
                                              uint32_t serial, wl_resource *parent,
                                              int32_t x, int32_t y, uint32_t flags)
 {
-    Q_UNUSED(resource);
-    Q_UNUSED(flags);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
+    Q_UNUSED(flags)
 
     QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
 
@@ -391,7 +464,11 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
 
 void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource *outputResource)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     // Only top level windows can be maximized
     if (m_surface->windowType() != QWaylandSurface::Toplevel)
@@ -429,14 +506,22 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     setSurfaceTitle(title);
 }
 
 void WlShellSurface::shell_surface_set_class(Resource *resource, const QString &class_)
 {
-    Q_UNUSED(resource);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(resource)
 
     setSurfaceClassName(class_);
 }
