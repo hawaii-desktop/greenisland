@@ -185,6 +185,8 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
     qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
 #endif
 
+    qCDebug(WLSHELL_PROTOCOL) << "Run operation" << op->type();
+
     switch (op->type()) {
     case QWaylandSurfaceOp::Ping:
         ping(static_cast<QWaylandSurfacePingOp *>(op)->serial());
