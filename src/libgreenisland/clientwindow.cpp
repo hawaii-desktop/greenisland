@@ -40,6 +40,8 @@
 #include "output.h"
 #include "windowview.h"
 
+#include "protocols/gtk-shell/gtksurface.h"
+
 namespace GreenIsland {
 
 ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
@@ -65,17 +67,6 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     // Set window type
     setType(m_surface->windowType());
 
-    // Use process name if appId is empty (some applications won't set it, like weston-terminal)
-    if (m_appId.isEmpty()) {
-        QFile file(QStringLiteral("/proc/%1/cmdline").arg(surface->client()->processId()));
-        if (file.open(QIODevice::ReadOnly)) {
-            QFileInfo fi(QString::fromUtf8(file.readAll().split(' ').at(0)));
-            m_appId = fi.baseName();
-            m_iconName = QStringLiteral("application-octet-stream");
-            file.close();
-        }
-    }
-
     // Set size from surface
     m_size = QSizeF(surface->size());
     m_internalGeometry = QRectF(QPointF(0, 0), m_size);
@@ -97,6 +88,9 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
             this, &ClientWindow::surfaceSizeChanged);
     connect(m_surface, &QWaylandSurface::windowTypeChanged,
             this, &ClientWindow::setType);
+
+    // Add window to the list
+    m_compositor->d_func()->addWindow(this);
 }
 
 ClientWindow::~ClientWindow()
@@ -393,7 +387,8 @@ void ClientWindow::terminateProcess(quint32 timeout)
 void ClientWindow::registerWindow()
 {
     // Register this window
-    m_compositor->applicationManager()->d_func()->registerSurface(m_surface, m_appId);
+    if (!m_appId.isEmpty())
+        m_compositor->applicationManager()->d_func()->registerSurface(m_surface, m_appId);
     m_compositor->d_func()->mapWindow(this);
 }
 
@@ -404,7 +399,8 @@ void ClientWindow::unregisterWindow(bool destruction)
         m_compositor->d_func()->destroyWindow(this);
     else
         m_compositor->d_func()->unmapWindow(this);
-    m_compositor->applicationManager()->d_func()->unregisterSurface(m_surface, m_appId);
+    if (!m_appId.isEmpty())
+        m_compositor->applicationManager()->d_func()->unregisterSurface(m_surface, m_appId);
 }
 
 QPointF ClientWindow::calculateInitialPosition() const
@@ -489,9 +485,9 @@ void ClientWindow::initialSetup()
         if (m_parentWindow) {
 #if 0
             m_pos.setX(m_parentWindow->position().x() +
-                     ((m_parentWindow->size().width() - m_size.width()) / 2));
+                       ((m_parentWindow->size().width() - m_size.width()) / 2));
             m_pos.setY(m_parentWindow->position().y() +
-                     ((m_parentWindow->size().height() - m_size.height()) / 2));
+                       ((m_parentWindow->size().height() - m_size.height()) / 2));
 #else
             m_pos.setX((m_parentWindow->size().width() - m_size.width()) / 2);
             m_pos.setY((m_parentWindow->size().height() - m_size.height()) / 2);
@@ -527,11 +523,78 @@ void ClientWindow::maximizeForOutput(Output *output)
     m_surface->sendInterfaceOp(op);
 }
 
-QVariant ClientWindow::readFromDesktopFile(const QString &baseName, const QString &key, const QVariant &defaultValue) const
+void ClientWindow::determineAppId()
 {
-    QString fileName = QStandardPaths::locate(QStandardPaths::ApplicationsLocation,
-                                              baseName);
-    QSettings entry(fileName, QSettings::IniFormat);
+    QString appId, iconName;
+
+    // Try Gtk+ application identifier
+    Q_FOREACH (QWaylandSurfaceInterface *interface, m_surface->interfaces()) {
+        GtkSurface *gtkSurface = dynamic_cast<GtkSurface *>(interface);
+        if (gtkSurface) {
+            // Check if we have a desktop entry with that name
+            const QString tmpAppId = gtkSurface->applicationId();
+            if (!findDesktopFile(tmpAppId).isEmpty()) {
+                appId = tmpAppId;
+                break;
+            }
+        }
+    }
+
+    // Use the app_id from the surface
+    if (appId.isEmpty()) {
+        const QString tmpAppId = m_surface->className()
+                .replace(QStringLiteral(".desktop"), QString())
+                .toLower();
+        if (findDesktopFile(tmpAppId).isEmpty()) {
+            // Try with vendor prefixes (this is not an exhaustive list)
+            QStringList vendors = QStringList()
+                    << QStringLiteral("org.hawaii.")
+                    << QStringLiteral("org.kde.")
+                    << QStringLiteral("org.gnome.");
+            Q_FOREACH (QString vendor, vendors) {
+                if (!findDesktopFile(vendor + tmpAppId).isEmpty()) {
+                    appId = vendor + tmpAppId;
+                    break;
+                }
+            }
+        } else {
+            appId = tmpAppId;
+        }
+    }
+
+    // Use process name if appId is empty (some applications won't set it, like weston-terminal)
+    if (appId.isEmpty()) {
+        QFile file(QStringLiteral("/proc/%1/cmdline").arg(m_surface->client()->processId()));
+        if (file.open(QIODevice::ReadOnly)) {
+            QFileInfo fi(QString::fromUtf8(file.readAll().split(' ').at(0)));
+            appId = fi.baseName();
+            file.close();
+        }
+    }
+
+    // Find desktop entry
+    m_desktopEntry = findDesktopFile(appId);
+
+    // Read icon name from the desktop entry
+    if (iconName.isEmpty())
+        iconName = readFromDesktopFile(QStringLiteral("Icon"),
+                                       QStringLiteral("application-octet-stream")).toString();
+
+    qDebug() << "Found desktop entry" << m_desktopEntry << "for" << appId;
+
+    m_appId = appId;
+    m_iconName = iconName;
+}
+
+QString ClientWindow::findDesktopFile(const QString &appId)
+{
+    return QStandardPaths::locate(QStandardPaths::ApplicationsLocation,
+                                  QStringLiteral("%1.desktop").arg(appId));
+}
+
+QVariant ClientWindow::readFromDesktopFile(const QString &key, const QVariant &defaultValue) const
+{
+    QSettings entry(m_desktopEntry, QSettings::IniFormat);
     entry.setIniCodec("UTF-8");
     entry.beginGroup(QStringLiteral("Desktop Entry"));
     return entry.value(key, defaultValue);
@@ -553,12 +616,7 @@ void ClientWindow::surfaceUnmapped()
 
 void ClientWindow::surfaceAppIdChanged()
 {
-    if (m_surface->className().isEmpty())
-        return;
-
-    m_appId = m_surface->className().replace(QStringLiteral(".desktop"), QString());
-    m_iconName = readFromDesktopFile(m_appId, QStringLiteral("Icon"),
-                                     QStringLiteral("application-octet-stream")).toString();
+    determineAppId();
     Q_EMIT appIdChanged();
     Q_EMIT iconNameChanged();
 }

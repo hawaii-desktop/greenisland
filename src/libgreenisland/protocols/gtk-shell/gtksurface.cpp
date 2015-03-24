@@ -24,6 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include "clientwindow.h"
+#include "compositor.h"
+#include "compositor_p.h"
 #include "gtksurface.h"
 
 namespace GreenIsland {
@@ -89,6 +92,23 @@ void GtkSurface::surface_set_dbus_properties(Resource *resource,
             << "Application object path:" << application_object_path
             << "Unique bus name:" << unique_bus_name;
     m_applicationId = application_id;
+
+    // Find the ClientWindow for this surface and trigger the heuristic to
+    // determine the app_id (which in turn will iterate through the surface
+    // interfaces and get the app_id from GtkSurface)
+    // TODO: Add the following signals to QtCompositor so that ugly code
+    // can be done from ClientWindow:
+    // - QWaylandSurface::interfaceAdded(QWaylandSurfaceInterface *)
+    // - QWaylandSurface::interfaceRemoved(QWaylandSurfaceInterface *)
+    if (surface()) {
+        Compositor *compositor = static_cast<Compositor *>(surface()->compositor());
+        Q_FOREACH (ClientWindow *clientWindow, compositor->d_func()->clientWindowsList) {
+            if (clientWindow->surface() == surface()) {
+                clientWindow->surfaceAppIdChanged();
+                break;
+            }
+        }
+    }
 }
 
 }

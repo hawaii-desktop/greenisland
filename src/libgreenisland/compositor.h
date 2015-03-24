@@ -42,6 +42,7 @@ class Output;
 class ScreenManager;
 class ScreenManagerPrivate;
 class ShellWindow;
+class GtkSurface;
 
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
@@ -147,6 +148,7 @@ private:
     friend class ScreenManagerPrivate;
     friend class ShellWindow;
     friend class OutputWindow;
+    friend class GtkSurface;
 };
 
 }

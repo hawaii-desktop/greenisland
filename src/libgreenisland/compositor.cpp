@@ -138,38 +138,52 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 #endif
 }
 
-void CompositorPrivate::mapWindow(ClientWindow *window)
+void CompositorPrivate::addWindow(ClientWindow *window)
 {
     Q_Q(Compositor);
 
     if (!clientWindowsList.contains(window)) {
         clientWindowsList.append(window);
-        Q_EMIT appManager->windowMapped(window);
-        Q_EMIT q->windowMapped(QVariant::fromValue(window));
         Q_EMIT q->windowsChanged();
     }
+}
+
+void CompositorPrivate::removeWindow(ClientWindow *window)
+{
+    Q_Q(Compositor);
+
+    if (clientWindowsList.removeOne(window))
+        Q_EMIT q->windowsChanged();
+}
+
+void CompositorPrivate::mapWindow(ClientWindow *window)
+{
+    Q_Q(Compositor);
+
+    addWindow(window);
+
+    Q_EMIT appManager->windowMapped(window);
+    Q_EMIT q->windowMapped(QVariant::fromValue(window));
 }
 
 void CompositorPrivate::unmapWindow(ClientWindow *window)
 {
     Q_Q(Compositor);
 
-    if (clientWindowsList.removeOne(window)) {
-        Q_EMIT appManager->windowUnmapped(window);
-        Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
-        Q_EMIT q->windowsChanged();
-    }
+    removeWindow(window);
+
+    Q_EMIT appManager->windowUnmapped(window);
+    Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
 }
 
 void CompositorPrivate::destroyWindow(ClientWindow *window)
 {
     Q_Q(Compositor);
 
-    if (clientWindowsList.removeOne(window)) {
-        Q_EMIT appManager->windowUnmapped(window);
-        Q_EMIT q->windowDestroyed(window->id());
-        Q_EMIT q->windowsChanged();
-    }
+    removeWindow(window);
+
+    Q_EMIT appManager->windowUnmapped(window);
+    Q_EMIT q->windowDestroyed(window->id());
 }
 
 void CompositorPrivate::mapShellWindow(ShellWindow *window)

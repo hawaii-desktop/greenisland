@@ -62,6 +62,9 @@ public:
 
     void dpms(bool on);
 
+    void addWindow(ClientWindow *window);
+    void removeWindow(ClientWindow *window);
+
     void mapWindow(ClientWindow *window);
     void unmapWindow(ClientWindow *window);
     void destroyWindow(ClientWindow *window);

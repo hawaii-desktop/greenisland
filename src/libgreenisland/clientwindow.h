@@ -44,6 +44,7 @@ class QWaylandSurfaceItem;
 namespace GreenIsland {
 
 class Compositor;
+class GtkSurface;
 class Output;
 class WlShellSurface;
 class XdgPopup;
@@ -161,6 +162,7 @@ private:
     Type m_type;
     QString m_appId;
     QString m_iconName;
+    QString m_desktopEntry;
     QPointF m_pos;
     QSizeF m_size;
     QRectF m_internalGeometry;
@@ -188,9 +190,13 @@ private:
 
     void maximizeForOutput(Output *output);
 
-    QVariant readFromDesktopFile(const QString &baseName, const QString &key,
+    void determineAppId();
+    QString findDesktopFile(const QString &appId);
+
+    QVariant readFromDesktopFile(const QString &key,
                                  const QVariant &defaultValue = QVariant()) const;
 
+    friend class GtkSurface;
     friend class WlShellSurface;
     friend class XdgPopup;
     friend class XdgSurface;
