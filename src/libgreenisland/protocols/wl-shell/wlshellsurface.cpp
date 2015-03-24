@@ -152,6 +152,9 @@ void WlShellSurface::resetMoveGrab()
     qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
 #endif
 
+    if (!m_moveGrabber)
+        return;
+
     m_moveGrabber = Q_NULLPTR;
 
     // Notify that motion has finished (a QML shell might want to enable
@@ -165,6 +168,9 @@ void WlShellSurface::resetResizeGrab()
 #ifdef ENABLE_WL_SHELL_TRACE
     qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
 #endif
+
+    if (!m_resizeGrabber)
+        return;
 
     m_resizeGrabber = Q_NULLPTR;
 
