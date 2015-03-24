@@ -67,6 +67,10 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
     if (!window)
         return;
 
+    // Do not move full screen windows
+    if (window->isFullScreen())
+        return;
+
     // Top level windows
     if (window->type() == ClientWindow::TopLevel) {
         // Move the window representation
