@@ -212,54 +212,6 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
     return false;
 }
 
-void WlShellSurface::ping(uint32_t serial)
-{
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
-
-    m_pings.insert(serial);
-    send_ping(serial);
-}
-
-void WlShellSurface::moveWindow(QWaylandInputDevice *device)
-{
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
-
-    if (m_moveGrabber || m_resizeGrabber) {
-        qCWarning(WLSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
-        return;
-    }
-
-    // Can't move if the window is full screen
-    if (m_state == FullScreen)
-        return;
-
-    // Check whether the window has gone away
-    if (!m_window)
-        return;
-
-    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
-
-    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_window->position());
-    pointer->startGrab(m_moveGrabber);
-
-    // Notify that motion is starting (a QML shell might want to disable x,y animations
-    // to make the movement smoother)
-    Q_EMIT m_window->motionStarted();
-}
-
-void WlShellSurface::requestResize(const QSize &size)
-{
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
-
-    send_configure(resize_bottom_right, size.width(), size.height());
-}
-
 void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 {
 #ifdef ENABLE_WL_SHELL_TRACE
@@ -527,6 +479,54 @@ void WlShellSurface::shell_surface_set_class(Resource *resource, const QString &
     Q_UNUSED(resource)
 
     setSurfaceClassName(class_);
+}
+
+void WlShellSurface::ping(uint32_t serial)
+{
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    m_pings.insert(serial);
+    send_ping(serial);
+}
+
+void WlShellSurface::moveWindow(QWaylandInputDevice *device)
+{
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    if (m_moveGrabber || m_resizeGrabber) {
+        qCWarning(WLSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
+        return;
+    }
+
+    // Can't move if the window is full screen
+    if (m_state == FullScreen)
+        return;
+
+    // Check whether the window has gone away
+    if (!m_window)
+        return;
+
+    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+
+    m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_window->position());
+    pointer->startGrab(m_moveGrabber);
+
+    // Notify that motion is starting (a QML shell might want to disable x,y animations
+    // to make the movement smoother)
+    Q_EMIT m_window->motionStarted();
+}
+
+void WlShellSurface::requestResize(const QSize &size)
+{
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    send_configure(resize_bottom_right, size.width(), size.height());
 }
 
 }

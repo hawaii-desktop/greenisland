@@ -58,15 +58,16 @@ public:
     WlShell(wl_client *client, uint32_t name, uint32_t version, QObject *parent);
     ~WlShell();
 
-private:
-    QHash<QtWayland::InputDevice *, WlShellSurfacePopupGrabber *> m_popupGrabbers;
-
-    WlShellSurfacePopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
-
+protected:
     void shell_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void shell_get_shell_surface(Resource *resource, uint32_t id,
                                  wl_resource *surfaceResource) Q_DECL_OVERRIDE;
+
+private:
+    QHash<QtWayland::InputDevice *, WlShellSurfacePopupGrabber *> m_popupGrabbers;
+
+    WlShellSurfacePopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
 
     friend class WlShellSurface;
 };

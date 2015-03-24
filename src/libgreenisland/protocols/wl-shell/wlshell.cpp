@@ -60,14 +60,6 @@ WlShell::~WlShell()
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
-WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)
-{
-    // Create popup grabbers on demand
-    if (!m_popupGrabbers.contains(device))
-        m_popupGrabbers.insert(device, new WlShellSurfacePopupGrabber(device));
-    return m_popupGrabbers.value(device);
-}
-
 void WlShell::shell_destroy_resource(Resource *resource)
 {
     Q_UNUSED(resource)
@@ -81,6 +73,14 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
     Q_ASSERT(surface);
 
     new WlShellSurface(this, surface, resource->client(), id, resource->version());
+}
+
+WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)
+{
+    // Create popup grabbers on demand
+    if (!m_popupGrabbers.contains(device))
+        m_popupGrabbers.insert(device, new WlShellSurfacePopupGrabber(device));
+    return m_popupGrabbers.value(device);
 }
 
 }

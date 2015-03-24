@@ -74,28 +74,6 @@ public:
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
 
-private:
-    WlShell *m_shell;
-    QWaylandSurface *m_surface;
-    QPointer<ClientWindow> m_window;
-
-    WlShellSurfaceMoveGrabber *m_moveGrabber;
-    WlShellSurfaceResizeGrabber *m_resizeGrabber;
-
-    WlShellSurfacePopupGrabber *m_popupGrabber;
-    uint32_t m_popupSerial;
-
-    QSet<uint32_t> m_pings;
-
-    State m_state;
-    State m_prevState;
-    QRectF m_prevGlobalGeometry;
-
-    void ping(uint32_t serial);
-    void moveWindow(QWaylandInputDevice *device);
-    void requestResize(const QSize &size);
-
-
     void shell_surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void shell_surface_pong(Resource *resource, uint32_t serial) Q_DECL_OVERRIDE;
@@ -120,6 +98,27 @@ private:
                                  const QString &title) Q_DECL_OVERRIDE;
     void shell_surface_set_class(Resource *resource,
                                  const QString &class_) Q_DECL_OVERRIDE;
+
+private:
+    WlShell *m_shell;
+    QWaylandSurface *m_surface;
+    QPointer<ClientWindow> m_window;
+
+    WlShellSurfaceMoveGrabber *m_moveGrabber;
+    WlShellSurfaceResizeGrabber *m_resizeGrabber;
+
+    WlShellSurfacePopupGrabber *m_popupGrabber;
+    uint32_t m_popupSerial;
+
+    QSet<uint32_t> m_pings;
+
+    State m_state;
+    State m_prevState;
+    QRectF m_prevGlobalGeometry;
+
+    void ping(uint32_t serial);
+    void moveWindow(QWaylandInputDevice *device);
+    void requestResize(const QSize &size);
 
     friend class WlShellSurfaceMoveGrabber;
     friend class WlShellSurfaceResizeGrabber;
