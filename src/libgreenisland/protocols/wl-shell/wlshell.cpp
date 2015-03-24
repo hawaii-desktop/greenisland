@@ -37,15 +37,26 @@ namespace GreenIsland {
 WlShellGlobal::WlShellGlobal(QObject *parent)
     : QObject(parent)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 const wl_interface *WlShellGlobal::interface() const
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     return &wl_shell_interface;
 }
 
 void WlShellGlobal::bind(wl_client *client, uint32_t version, uint32_t id)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     new WlShell(client, id, version, this);
 }
 
@@ -53,15 +64,26 @@ WlShell::WlShell(wl_client *client, uint32_t name, uint32_t version, QObject *pa
     : QObject(parent)
     , QtWaylandServer::wl_shell(client, name, version)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 WlShell::~WlShell()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 void WlShell::shell_destroy_resource(Resource *resource)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     Q_UNUSED(resource)
     delete this;
 }
@@ -69,6 +91,10 @@ void WlShell::shell_destroy_resource(Resource *resource)
 void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
@@ -77,6 +103,10 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
 
 WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
     // Create popup grabbers on demand
     if (!m_popupGrabbers.contains(device))
         m_popupGrabbers.insert(device, new WlShellSurfacePopupGrabber(device));

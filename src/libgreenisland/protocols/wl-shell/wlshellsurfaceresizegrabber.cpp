@@ -34,15 +34,25 @@ namespace GreenIsland {
 WlShellSurfaceResizeGrabber::WlShellSurfaceResizeGrabber(WlShellSurface *shellSurface)
     : WlShellSurfaceGrabber(shellSurface)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void WlShellSurfaceResizeGrabber::focus()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void WlShellSurfaceResizeGrabber::motion(uint32_t time)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     // Recalculate size
     QSize delta(m_pt.x() - m_pointer->position().x(),
@@ -110,7 +120,11 @@ void WlShellSurfaceResizeGrabber::motion(uint32_t time)
 
 void WlShellSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     if (button == Qt::LeftButton && state == 0) {
         QCursor cursor(Qt::ArrowCursor);

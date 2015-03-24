@@ -38,9 +38,6 @@
 #include "wlshellsurfacepopupgrabber.h"
 #include "windowview.h"
 
-// Comment out to disable tracing
-#define ENABLE_WL_SHELL_TRACE 1
-
 namespace GreenIsland {
 
 WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,

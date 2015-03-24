@@ -36,15 +36,25 @@ WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurfac
     : WlShellSurfaceGrabber(shellSurface)
     , m_offset(offset)
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void WlShellSurfaceMoveGrabber::focus()
 {
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
 }
 
 void WlShellSurfaceMoveGrabber::motion(uint32_t time)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     QCursor cursor(Qt::ClosedHandCursor);
     QGuiApplication::setOverrideCursor(cursor);
@@ -80,7 +90,11 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
 
 void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-    Q_UNUSED(time);
+#ifdef ENABLE_WL_SHELL_TRACE
+    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
+#endif
+
+    Q_UNUSED(time)
 
     if (button == Qt::LeftButton && state == 0) {
         QCursor cursor(Qt::ArrowCursor);
