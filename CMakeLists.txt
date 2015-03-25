@@ -17,6 +17,9 @@ set(CPACK_SOURCE_IGNORE_FILES "/build/;/.git;/.tx/;~$;${CPACK_SOURCE_IGNORE_FILE
 include(CPack)
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
+# Options
+option(ENABLE_XWAYLAND "Enables XWayland support" ON)
+
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
     add_definitions(-DQT_QML_DEBUG)

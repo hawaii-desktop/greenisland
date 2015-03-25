@@ -154,3 +154,5 @@ to learn how to enable them.
 * Plugins:
   * **greenisland.plugins.plasma.shell:** org_kde_plasma_shell protocol
   * **greenisland.plugins.plasma.effects:** org_kde_plasma_effects protocol
+  * **greenisland.xwayland:** xwayland
+  * **greenisland.xwayland.trace:** xwayland protocol trace
