@@ -31,23 +31,24 @@
 
 namespace GreenIsland {
 
-GreenIslandApps::GreenIslandApps(ApplicationManager *appMan)
+GreenIslandApps::GreenIslandApps()
     : m_boundResource(Q_NULLPTR)
-    , m_appMan(appMan)
 {
-    QObject::connect(m_appMan, &ApplicationManager::applicationAdded, [this](const QString &appId, pid_t pid) {
+    ApplicationManager *appMan = ApplicationManager::instance();
+
+    QObject::connect(appMan, &ApplicationManager::applicationAdded, [this](const QString &appId, pid_t pid) {
         if (m_boundResource)
             send_registered(m_boundResource->handle, appId, pid);
     });
-    QObject::connect(m_appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId, pid_t pid) {
+    QObject::connect(appMan, &ApplicationManager::applicationRemoved, [this](const QString &appId, pid_t pid) {
         if (m_boundResource)
             send_unregistered(m_boundResource->handle, appId, pid);
     });
-    QObject::connect(m_appMan, &ApplicationManager::applicationFocused, [this](const QString &appId) {
+    QObject::connect(appMan, &ApplicationManager::applicationFocused, [this](const QString &appId) {
         if (m_boundResource)
             send_focused(m_boundResource->handle, appId);
     });
-    QObject::connect(m_appMan, &ApplicationManager::applicationUnfocused, [this](const QString &appId) {
+    QObject::connect(appMan, &ApplicationManager::applicationUnfocused, [this](const QString &appId) {
         if (m_boundResource)
             send_unfocused(m_boundResource->handle, appId);
     });
@@ -79,7 +80,7 @@ void GreenIslandApps::applications_bind_resource(Resource *resource)
 void GreenIslandApps::applications_quit(Resource *resource, const QString &appId)
 {
     Q_UNUSED(resource)
-    m_appMan->quit(appId);
+    ApplicationManager::instance()->quit(appId);
 }
 
 }

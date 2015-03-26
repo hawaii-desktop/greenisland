@@ -34,6 +34,8 @@
 
 namespace GreenIsland {
 
+static ApplicationManager *s_applicationManager = Q_NULLPTR;
+
 /*
  * ApplicationManagerPrivate
  */
@@ -107,16 +109,25 @@ void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, cons
  * ApplicationManager
  */
 
-ApplicationManager::ApplicationManager(QObject *parent)
-    : QObject(parent)
+ApplicationManager::ApplicationManager()
+    : QObject()
     , d_ptr(new ApplicationManagerPrivate(this))
 {
     qRegisterMetaType<ApplicationManager *>("ApplicationManager*");
+
+    s_applicationManager = this;
 }
 
 ApplicationManager::~ApplicationManager()
 {
     delete d_ptr;
+}
+
+ApplicationManager *ApplicationManager::instance()
+{
+    if (!s_applicationManager)
+        return new ApplicationManager();
+    return s_applicationManager;
 }
 
 bool ApplicationManager::isRegistered(const QString &appId) const

@@ -89,6 +89,10 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     connect(m_surface, &QWaylandSurface::windowTypeChanged,
             this, &ClientWindow::setType);
 
+    // Determine the app_id here because some applications will
+    // never send set_app_id to the shell surface (i.e. weston-terminal)
+    determineAppId();
+
     // Add window to the list
     m_compositor->d_func()->addWindow(this);
 }
@@ -278,11 +282,11 @@ void ClientWindow::activate()
     }
 
     // Application has focus
-    Q_EMIT m_compositor->applicationManager()->applicationFocused(m_appId);
-    Q_FOREACH (const QString &appId, m_compositor->applicationManager()->d_func()->apps) {
+    Q_EMIT ApplicationManager::instance()->applicationFocused(m_appId);
+    Q_FOREACH (const QString &appId, ApplicationManager::instance()->d_func()->apps) {
         if (appId == m_appId)
             continue;
-        Q_EMIT m_compositor->applicationManager()->applicationUnfocused(appId);
+        Q_EMIT ApplicationManager::instance()->applicationUnfocused(appId);
     }
 }
 
@@ -388,7 +392,7 @@ void ClientWindow::registerWindow()
 {
     // Register this window
     if (!m_appId.isEmpty())
-        m_compositor->applicationManager()->d_func()->registerSurface(m_surface, m_appId);
+        ApplicationManager::instance()->d_func()->registerSurface(m_surface, m_appId);
     m_compositor->d_func()->mapWindow(this);
 }
 
@@ -400,7 +404,7 @@ void ClientWindow::unregisterWindow(bool destruction)
     else
         m_compositor->d_func()->unmapWindow(this);
     if (!m_appId.isEmpty())
-        m_compositor->applicationManager()->d_func()->unregisterSurface(m_surface, m_appId);
+        ApplicationManager::instance()->d_func()->unregisterSurface(m_surface, m_appId);
 }
 
 QPointF ClientWindow::calculateInitialPosition() const

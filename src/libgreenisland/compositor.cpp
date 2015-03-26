@@ -84,7 +84,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 {
     settings = new CompositorSettings(self);
     screenManager = new ScreenManager(self);
-    appManager = new ApplicationManager(self);
+
+    ApplicationManager::instance();
 }
 
 QQmlListProperty<ClientWindow> CompositorPrivate::windows()
@@ -162,7 +163,7 @@ void CompositorPrivate::mapWindow(ClientWindow *window)
 
     addWindow(window);
 
-    Q_EMIT appManager->windowMapped(window);
+    Q_EMIT ApplicationManager::instance()->windowMapped(window);
     Q_EMIT q->windowMapped(QVariant::fromValue(window));
 }
 
@@ -172,7 +173,7 @@ void CompositorPrivate::unmapWindow(ClientWindow *window)
 
     removeWindow(window);
 
-    Q_EMIT appManager->windowUnmapped(window);
+    Q_EMIT ApplicationManager::instance()->windowUnmapped(window);
     Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
 }
 
@@ -182,7 +183,7 @@ void CompositorPrivate::destroyWindow(ClientWindow *window)
 
     removeWindow(window);
 
-    Q_EMIT appManager->windowUnmapped(window);
+    Q_EMIT ApplicationManager::instance()->windowUnmapped(window);
     Q_EMIT q->windowDestroyed(window->id());
 }
 
@@ -234,7 +235,6 @@ Compositor::~Compositor()
         d_ptr->shellWindowsList.takeFirst()->deleteLater();
     while (!d_ptr->clientWindowsList.isEmpty())
         d_ptr->clientWindowsList.takeFirst()->deleteLater();
-    delete d_ptr->appManager;
     delete d_ptr->screenManager;
     delete d_ptr;
 
@@ -365,12 +365,6 @@ ScreenManager *Compositor::screenManager() const
     return d->screenManager;
 }
 
-ApplicationManager *Compositor::applicationManager() const
-{
-    Q_D(const Compositor);
-    return d->appManager;
-}
-
 void Compositor::run()
 {
     Q_D(Compositor);
@@ -381,8 +375,8 @@ void Compositor::run()
     // Add global interfaces
     d->recorderManager = new GreenIslandRecorderManager();
     addGlobalInterface(d->recorderManager);
-    addGlobalInterface(new GreenIslandApps(d->appManager));
-    addGlobalInterface(new GreenIslandWindows(d->appManager));
+    addGlobalInterface(new GreenIslandApps());
+    addGlobalInterface(new GreenIslandWindows());
     PlasmaShell *plasmaShell = new PlasmaShell(this);
     addGlobalInterface(plasmaShell);
     addGlobalInterface(new PlasmaEffects(plasmaShell));

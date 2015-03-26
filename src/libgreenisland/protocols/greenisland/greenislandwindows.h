@@ -33,13 +33,12 @@
 
 namespace GreenIsland {
 
-class ApplicationManager;
 class GreenIslandWindow;
 
 class GreenIslandWindows : public QWaylandGlobalInterface, public QtWaylandServer::greenisland_windows
 {
 public:
-    GreenIslandWindows(ApplicationManager *appMan);
+    GreenIslandWindows();
     ~GreenIslandWindows();
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;

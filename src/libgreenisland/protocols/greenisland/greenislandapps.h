@@ -33,19 +33,16 @@
 
 namespace GreenIsland {
 
-class ApplicationManager;
-
 class GreenIslandApps : public QWaylandGlobalInterface, public QtWaylandServer::greenisland_applications
 {
 public:
-    GreenIslandApps(ApplicationManager *appMan);
+    GreenIslandApps();
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
 
 private:
     Resource *m_boundResource;
-    ApplicationManager *m_appMan;
 
     void applications_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
 

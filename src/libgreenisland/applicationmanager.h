@@ -42,8 +42,9 @@ class GREENISLAND_EXPORT ApplicationManager : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)
 public:
-    ApplicationManager(QObject *parent);
     ~ApplicationManager();
+
+    static ApplicationManager *instance();
 
     /*!
      * \brief Returns whether the application is registered or not.
@@ -98,6 +99,8 @@ Q_SIGNALS:
 
 private:
     ApplicationManagerPrivate *const d_ptr;
+
+    ApplicationManager();
 
     friend class ClientWindow;
 };

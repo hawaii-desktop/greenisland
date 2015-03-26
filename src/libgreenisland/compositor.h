@@ -34,7 +34,6 @@
 
 namespace GreenIsland {
 
-class ApplicationManager;
 class CompositorSettings;
 class ClientWindow;
 class CompositorPrivate;
@@ -48,7 +47,6 @@ class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompos
 {
     Q_OBJECT
     Q_PROPERTY(CompositorSettings *settings READ settings CONSTANT)
-    Q_PROPERTY(ApplicationManager *applicationManager READ applicationManager CONSTANT)
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
@@ -85,7 +83,6 @@ public:
 
     CompositorSettings *settings() const;
     ScreenManager *screenManager() const;
-    ApplicationManager *applicationManager() const;
 
     void run();
 

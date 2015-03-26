@@ -33,9 +33,11 @@
 
 namespace GreenIsland {
 
-GreenIslandWindows::GreenIslandWindows(ApplicationManager *appMan)
+GreenIslandWindows::GreenIslandWindows()
     : m_boundResource(Q_NULLPTR)
 {
+    ApplicationManager *appMan = ApplicationManager::instance();
+
     QObject::connect(appMan, &ApplicationManager::windowMapped, [this](ClientWindow *window) {
         if (!m_boundResource)
             return;

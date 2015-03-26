@@ -95,7 +95,6 @@ public:
     GreenIslandRecorderManager *recorderManager;
 
     // Application management
-    ApplicationManager *appManager;
     QHash<QString, QWaylandSurfaceList> appSurfaces;
     QList<ClientWindow *> clientWindowsList;
     QList<ShellWindow *> shellWindowsList;
