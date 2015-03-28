@@ -1,19 +1,23 @@
 Green Island
 ============
 
-This is Green Island, a Qt-based Wayland compositor in library form.
+QtQuick-based Wayland compositor in library form.
 
 The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
 
-The API is based on QtCompositor which is shipped by the qtwayland module.
+The API extends QtCompositor with additional features needed by any real world
+Wayland compositor.
 
-Green Island offers multiple screen support and it also implements specific protocols
-such as those for Plasma 5 that do not make much sense to be sent upstream.
+Green Island offers multiple screen support and it also implements specific
+protocols such as xdg-shell, gtk-shell and those for Plasma 5.
 
-Green Island can be used by any desktop environment that wish to implement its compositor
-by using QML or for shells deeply integrated with the compositor in the same process.
+Also include a screencaster protocol and command line application, plus a
+minimal Wayland compositor written with QML.
 
-It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop).
+It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop),
+however it can be used by any desktop environment that wish to implement
+its compositor by using QML or for shells deeply integrated with the compositor
+in the same process.
 
 ## Dependencies
 
