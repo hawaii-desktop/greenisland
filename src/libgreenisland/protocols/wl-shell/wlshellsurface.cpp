@@ -320,6 +320,8 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
 
     setSurfaceType(QWaylandSurface::Toplevel);
 
+    m_surface->setVisibility(QWindow::Windowed);
+
     // Check whether the window has gone away
     if (!m_window)
         return;
@@ -352,6 +354,8 @@ void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource
         m_surface->handle()->setTransientInactive(true);
 
     setSurfaceType(QWaylandSurface::Transient);
+
+    m_surface->setVisibility(QWindow::AutomaticVisibility);
 }
 
 void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t method,
@@ -388,6 +392,8 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     requestResize(output->geometry().size());
     qCDebug(WLSHELL_PROTOCOL) << "Request resize to" << output->geometry().size();
 
+    m_surface->setVisibility(QWindow::FullScreen);
+
     // Set state
     m_prevState = m_state;
     m_state = FullScreen;
@@ -414,6 +420,8 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
     m_surface->handle()->setTransientOffset(x, y);
 
     setSurfaceType(QWaylandSurface::Popup);
+
+    m_surface->setVisibility(QWindow::AutomaticVisibility);
 }
 
 void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource *outputResource)
@@ -452,6 +460,8 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     m_window->maximizeForOutput(static_cast<Output *>(output));
     m_window->m_maximized = true;
     Q_EMIT m_window->maximizedChanged();
+
+    m_surface->setVisibility(QWindow::Maximized);
 
     // Set state
     m_prevState = m_state;
