@@ -288,7 +288,7 @@ void OutputWindow::printInfo()
 void OutputWindow::readContent()
 {
     // Send frame callbacks for windows rendered on this output
-    m_output->sendFrameCallbacks(m_output->surfaces());
+    m_output->sendFrameCallbacks();
 
     // Record a frame after rendering
     m_output->compositor()->d_ptr->recorderManager->recordFrame(this);
