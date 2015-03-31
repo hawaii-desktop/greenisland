@@ -32,10 +32,8 @@
 #include <QtCompositor/QWaylandGlobalInterface>
 #include <QtCompositor/private/qwayland-server-wayland.h>
 
-// Comment out to disable tracing
-#define ENABLE_WL_SHELL_TRACE 1
-
 Q_DECLARE_LOGGING_CATEGORY(WLSHELL_PROTOCOL)
+Q_DECLARE_LOGGING_CATEGORY(WLSHELL_TRACE)
 
 namespace QtWayland {
 class InputDevice;

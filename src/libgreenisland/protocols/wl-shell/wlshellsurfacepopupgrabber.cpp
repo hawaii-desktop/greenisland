@@ -73,6 +73,7 @@ WlShellSurfacePopupGrabber::WlShellSurfacePopupGrabber(QtWayland::InputDevice *i
     , m_client(Q_NULLPTR)
     , m_initialUp(false)
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 uint32_t WlShellSurfacePopupGrabber::serial() const
@@ -82,6 +83,8 @@ uint32_t WlShellSurfacePopupGrabber::serial() const
 
 void WlShellSurfacePopupGrabber::addPopup(WlShellSurface *popup)
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_popupSurfaces.contains(popup))
         return;
 
@@ -97,6 +100,8 @@ void WlShellSurfacePopupGrabber::addPopup(WlShellSurface *popup)
 
 void WlShellSurfacePopupGrabber::removePopup(WlShellSurface *popup)
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_popupSurfaces.isEmpty())
         return;
 
@@ -108,6 +113,8 @@ void WlShellSurfacePopupGrabber::removePopup(WlShellSurface *popup)
 
 void WlShellSurfacePopupGrabber::focus()
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_pointer->current() && m_pointer->current()->surface()->handle()->resource()->client() == m_client)
         m_pointer->setFocus(m_pointer->current(), m_pointer->currentPosition());
     else
@@ -116,11 +123,15 @@ void WlShellSurfacePopupGrabber::focus()
 
 void WlShellSurfacePopupGrabber::motion(uint32_t time)
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
     m_pointer->motion(time);
 }
 
 void WlShellSurfacePopupGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_pointer->focusResource()) {
         m_pointer->sendButton(time, button, state);
     } else if (state == QtWaylandServer::wl_pointer::button_state_pressed &&

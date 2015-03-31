@@ -36,23 +36,17 @@ WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurfac
     : WlShellSurfaceGrabber(shellSurface)
     , m_offset(offset)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void WlShellSurfaceMoveGrabber::focus()
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void WlShellSurfaceMoveGrabber::motion(uint32_t time)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 
@@ -94,9 +88,7 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
 
 void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 

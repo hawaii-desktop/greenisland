@@ -54,9 +54,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
     , m_state(Normal)
     , m_prevState(Normal)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     // Create client window
     m_window = new ClientWindow(surface, this);
@@ -89,9 +87,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
 
 WlShellSurface::~WlShellSurface()
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     delete m_moveGrabber;
     delete m_resizeGrabber;
@@ -122,9 +118,7 @@ void WlShellSurface::restore()
 
 void WlShellSurface::restoreAt(const QPointF &pos)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     // Makes sense only for maximized windows
     if (m_state == Normal)
@@ -145,9 +139,7 @@ void WlShellSurface::restoreAt(const QPointF &pos)
 
 void WlShellSurface::resetMoveGrab()
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     if (!m_moveGrabber)
         return;
@@ -163,9 +155,7 @@ void WlShellSurface::resetMoveGrab()
 
 void WlShellSurface::resetResizeGrab()
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     if (!m_resizeGrabber)
         return;
@@ -181,10 +171,7 @@ void WlShellSurface::resetResizeGrab()
 
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
-
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
     qCDebug(WLSHELL_PROTOCOL) << "Run operation" << op->type();
 
     switch (op->type()) {
@@ -213,9 +200,7 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 
 void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -231,9 +216,7 @@ void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 
 void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -246,9 +229,7 @@ void WlShellSurface::shell_surface_pong(Resource *resource, uint32_t serial)
 void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
                                         uint32_t serial)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(serial)
@@ -259,9 +240,7 @@ void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
 void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
                                           uint32_t serial, uint32_t edges)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(serial)
@@ -309,9 +288,7 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
 
 void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -340,9 +317,7 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
 void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource *parentResource,
                                                  int32_t x, int32_t y, uint32_t flags)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -361,9 +336,7 @@ void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource
 void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t method,
                                                   uint32_t framerate, wl_resource *outputResource)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(method)
@@ -404,9 +377,7 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
                                              uint32_t serial, wl_resource *parent,
                                              int32_t x, int32_t y, uint32_t flags)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(flags)
@@ -426,9 +397,7 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
 
 void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource *outputResource)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -470,9 +439,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
 
 void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &title)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -481,9 +448,7 @@ void WlShellSurface::shell_surface_set_title(Resource *resource, const QString &
 
 void WlShellSurface::shell_surface_set_class(Resource *resource, const QString &class_)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -492,9 +457,7 @@ void WlShellSurface::shell_surface_set_class(Resource *resource, const QString &
 
 void WlShellSurface::ping(uint32_t serial)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     m_pings.insert(serial);
     send_ping(serial);
@@ -502,9 +465,7 @@ void WlShellSurface::ping(uint32_t serial)
 
 void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     if (m_moveGrabber || m_resizeGrabber) {
         qCWarning(WLSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";
@@ -531,9 +492,7 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
 
 void WlShellSurface::requestResize(const QSize &size)
 {
-#ifdef ENABLE_WL_SHELL_TRACE
-    qCDebug(WLSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     send_configure(resize_bottom_right, size.width(), size.height());
 }

@@ -122,6 +122,7 @@ to learn how to enable them.
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell
   * **greenisland.protocols.wlshell:** wl_shell
+  * **greenisland.protocols.wlshell.trace:** wl_shell trace
   * **greenisland.protocols.greenisland.recorder:** greenisland_recorder
   * **greenisland.protocols.plasma.shell:** org_kde_plasma_shell
   * **greenisland.protocols.plasma.effects:** org_kde_plasma_effects
