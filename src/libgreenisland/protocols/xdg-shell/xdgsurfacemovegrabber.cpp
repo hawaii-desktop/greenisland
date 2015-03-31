@@ -36,23 +36,17 @@ XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPo
     : XdgSurfaceGrabber(shellSurface)
     , m_offset(offset)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void XdgSurfaceMoveGrabber::focus()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void XdgSurfaceMoveGrabber::motion(uint32_t time)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 
@@ -90,9 +84,7 @@ void XdgSurfaceMoveGrabber::motion(uint32_t time)
 
 void XdgSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 

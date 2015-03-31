@@ -121,6 +121,7 @@ to learn how to enable them.
 
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell
+  * **greenisland.protocols.xdgshell.trace:** xdg_shell trace
   * **greenisland.protocols.wlshell:** wl_shell
   * **greenisland.protocols.wlshell.trace:** wl_shell trace
   * **greenisland.protocols.greenisland.recorder:** greenisland_recorder

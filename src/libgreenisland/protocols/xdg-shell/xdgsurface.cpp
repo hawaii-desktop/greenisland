@@ -54,9 +54,7 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     , m_state(Normal)
     , m_savedState(Normal)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     // This is a toplevel window by default
     m_surface->handle()->setTransientParent(Q_NULLPTR);
@@ -85,9 +83,7 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
 
 XdgSurface::~XdgSurface()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     delete m_moveGrabber;
     delete m_resizeGrabber;
@@ -98,63 +94,49 @@ XdgSurface::~XdgSurface()
 
 uint32_t XdgSurface::nextSerial() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return wl_display_next_serial(m_surface->handle()->compositor()->display()->handle());
 }
 
 QWaylandSurface::WindowType XdgSurface::type() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return m_surface->windowType();
 }
 
 XdgSurface::State XdgSurface::state() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return m_state;
 }
 
 QWaylandSurface *XdgSurface::surface() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return m_surface;
 }
 
 ClientWindow *XdgSurface::window() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return m_window;
 }
 
 void XdgSurface::restore()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     restoreAt(m_savedGeometry.topLeft());
 }
 
 void XdgSurface::restoreAt(const QPointF &pos)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     // Makes sense only for maximized windows
     if (m_state == Normal)
@@ -174,9 +156,7 @@ void XdgSurface::restoreAt(const QPointF &pos)
 
 void XdgSurface::resetMoveGrab()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     if (!m_moveGrabber)
         return;
@@ -190,9 +170,7 @@ void XdgSurface::resetMoveGrab()
 
 void XdgSurface::resetResizeGrab()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     if (!m_resizeGrabber)
         return;
@@ -206,9 +184,7 @@ void XdgSurface::resetResizeGrab()
 
 void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     struct wl_array states;
     uint32_t *s;
@@ -250,9 +226,7 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 
 bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     switch (op->type()) {
     case QWaylandSurfaceOp::Resize: {
@@ -285,9 +259,7 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
 
 void XdgSurface::surface_destroy_resource(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     delete this;
@@ -295,18 +267,14 @@ void XdgSurface::surface_destroy_resource(Resource *resource)
 
 void XdgSurface::surface_destroy(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     wl_resource_destroy(resource->handle);
 }
 
 void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -326,9 +294,7 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
 
 void XdgSurface::surface_set_title(Resource *resource, const QString &title)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     setSurfaceTitle(title);
@@ -336,9 +302,7 @@ void XdgSurface::surface_set_title(Resource *resource, const QString &title)
 
 void XdgSurface::surface_set_app_id(Resource *resource, const QString &app_id)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     setSurfaceClassName(app_id);
@@ -347,9 +311,7 @@ void XdgSurface::surface_set_app_id(Resource *resource, const QString &app_id)
 void XdgSurface::surface_show_window_menu(Resource *resource, wl_resource *seat,
                                           uint32_t serial, int32_t x, int32_t y)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(seat)
@@ -360,9 +322,7 @@ void XdgSurface::surface_show_window_menu(Resource *resource, wl_resource *seat,
 
 void XdgSurface::surface_move(Resource *resource, wl_resource *seat, uint32_t serial)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(serial)
@@ -372,9 +332,7 @@ void XdgSurface::surface_move(Resource *resource, wl_resource *seat, uint32_t se
 
 void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t serial, uint32_t edges)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     Q_UNUSED(serial)
@@ -421,9 +379,7 @@ void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t 
 
 void XdgSurface::surface_ack_configure(Resource *resource, uint32_t serial)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -464,9 +420,7 @@ void XdgSurface::surface_set_window_geometry(Resource *resource,
                                              int32_t x, int32_t y,
                                              int32_t width, int32_t height)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     m_window->setInternalGeometry(QRectF(QPointF(x, y), QSizeF(width, height)));
@@ -474,9 +428,7 @@ void XdgSurface::surface_set_window_geometry(Resource *resource,
 
 void XdgSurface::surface_set_maximized(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -507,9 +459,7 @@ void XdgSurface::surface_set_maximized(Resource *resource)
 
 void XdgSurface::surface_unset_maximized(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -528,9 +478,7 @@ void XdgSurface::surface_unset_maximized(Resource *resource)
 
 void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputResource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -562,9 +510,7 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
 
 void XdgSurface::surface_unset_fullscreen(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -583,9 +529,7 @@ void XdgSurface::surface_unset_fullscreen(Resource *resource)
 
 void XdgSurface::surface_set_minimized(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 
@@ -595,9 +539,7 @@ void XdgSurface::surface_set_minimized(Resource *resource)
 
 void XdgSurface::moveWindow(QWaylandInputDevice *device)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     if (m_moveGrabber || m_resizeGrabber) {
         qCWarning(XDGSHELL_PROTOCOL) << "Unable to move surface: a move or resize operation was already requested!";

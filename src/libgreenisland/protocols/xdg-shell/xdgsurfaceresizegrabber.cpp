@@ -34,23 +34,17 @@ namespace GreenIsland {
 XdgSurfaceResizeGrabber::XdgSurfaceResizeGrabber(XdgSurface *shellSurface)
     : XdgSurfaceGrabber(shellSurface)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void XdgSurfaceResizeGrabber::focus()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 void XdgSurfaceResizeGrabber::motion(uint32_t time)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 
@@ -124,9 +118,7 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
 
 void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
 

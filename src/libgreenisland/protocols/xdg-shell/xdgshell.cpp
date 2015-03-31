@@ -34,31 +34,26 @@
 #include "xdgpopupgrabber.h"
 
 Q_LOGGING_CATEGORY(XDGSHELL_PROTOCOL, "greenisland.protocols.xdgshell")
+Q_LOGGING_CATEGORY(XDGSHELL_TRACE, "greenisland.protocols.xdgshell.trace")
 
 namespace GreenIsland {
 
 XdgShellGlobal::XdgShellGlobal(QObject *parent)
     : QObject(parent)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 const wl_interface *XdgShellGlobal::interface() const
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     return &xdg_shell_interface;
 }
 
 void XdgShellGlobal::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     new XdgShell(client, id, version, this);
 }
@@ -67,16 +62,12 @@ XdgShell::XdgShell(wl_client *client, uint32_t name, uint32_t version, QObject *
     : QObject(parent)
     , QtWaylandServer::xdg_shell(client, name, version)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 XdgShell::~XdgShell()
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 
@@ -85,9 +76,7 @@ XdgShell::~XdgShell()
 
 void XdgShell::pingSurface(XdgSurface *surface)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     uint32_t serial = surface->nextSerial();
     m_pings[serial] = surface;
@@ -97,9 +86,7 @@ void XdgShell::pingSurface(XdgSurface *surface)
 
 XdgPopupGrabber *XdgShell::popupGrabberForDevice(QtWayland::InputDevice *device)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     // Create popup grabbers on demand
     if (!m_popupGrabbers.contains(device))
@@ -109,9 +96,7 @@ XdgPopupGrabber *XdgShell::popupGrabberForDevice(QtWayland::InputDevice *device)
 
 void XdgShell::shell_destroy_resource(Resource *resource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     delete this;
@@ -119,9 +104,7 @@ void XdgShell::shell_destroy_resource(Resource *resource)
 
 void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     if (version != version_current)
         wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
@@ -131,9 +114,7 @@ void XdgShell::shell_use_unstable_version(Resource *resource, int32_t version)
 
 void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
@@ -155,9 +136,7 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
                                    wl_resource *parentResource, wl_resource *seatResource,
                                    uint32_t serial, int32_t x, int32_t y, uint32_t flags)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(flags)
 
@@ -183,9 +162,7 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
 
 void XdgShell::shell_pong(Resource *resource, uint32_t serial)
 {
-#ifdef ENABLE_XDG_SHELL_TRACE
-    qCDebug(XDGSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 

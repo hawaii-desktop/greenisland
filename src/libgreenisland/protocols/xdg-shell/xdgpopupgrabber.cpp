@@ -73,6 +73,7 @@ XdgPopupGrabber::XdgPopupGrabber(QtWayland::InputDevice *inputDevice)
     , m_client(Q_NULLPTR)
     , m_initialUp(false)
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 uint32_t XdgPopupGrabber::serial() const
@@ -82,6 +83,8 @@ uint32_t XdgPopupGrabber::serial() const
 
 void XdgPopupGrabber::addPopup(XdgPopup *popup)
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_popupSurfaces.contains(popup))
         return;
 
@@ -97,6 +100,8 @@ void XdgPopupGrabber::addPopup(XdgPopup *popup)
 
 void XdgPopupGrabber::removePopup(XdgPopup *popup)
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_popupSurfaces.isEmpty())
         return;
 
@@ -108,6 +113,8 @@ void XdgPopupGrabber::removePopup(XdgPopup *popup)
 
 void XdgPopupGrabber::focus()
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_pointer->current() && m_pointer->current()->surface()->handle()->resource()->client() == m_client)
         m_pointer->setFocus(m_pointer->current(), m_pointer->currentPosition());
     else
@@ -116,11 +123,15 @@ void XdgPopupGrabber::focus()
 
 void XdgPopupGrabber::motion(uint32_t time)
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
     m_pointer->motion(time);
 }
 
 void XdgPopupGrabber::button(uint32_t time, Qt::MouseButton button, uint32_t state)
 {
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
     if (m_pointer->focusResource()) {
         m_pointer->sendButton(time, button, state);
     } else if (state == QtWaylandServer::wl_pointer::button_state_pressed &&
