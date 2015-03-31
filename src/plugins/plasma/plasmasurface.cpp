@@ -26,6 +26,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCompositor/QtCompositorVersion>
+#include <QtCompositor/private/qwlsurface_p.h>
 
 #include "compositor.h"
 #include "compositor_p.h"
@@ -176,10 +177,10 @@ void PlasmaSurface::surface_set_output(Resource *resource,
     // Move the surface to another output
     // TODO: Maybe check whether a surface with the same role already exist
     // on the new output
-    QWaylandOutput *oldOutput = m_surface->output();
-    QWaylandOutput *newOutput = QWaylandOutput::fromResource(outputResource);
-    QWaylandOutputChangedEvent e(oldOutput, newOutput);
-    QCoreApplication::sendEvent(m_surface, &e);
+    QList<QtWayland::Output *> outputs = m_surface->handle()->outputs();
+    m_surface->handle()->addToOutput(QWaylandOutput::fromResource(outputResource)->handle());
+    Q_FOREACH (QtWayland::Output *output, outputs)
+        m_surface->handle()->removeFromOutput(output);
     Q_EMIT m_window->outputChanged();
 }
 

@@ -79,7 +79,7 @@ QWaylandSurfaceItem *ShellWindow::view() const
 
 QWaylandOutput *ShellWindow::output() const
 {
-    return m_surface->output();
+    return m_surface->mainOutput();
 }
 
 ShellWindow::Role ShellWindow::role() const

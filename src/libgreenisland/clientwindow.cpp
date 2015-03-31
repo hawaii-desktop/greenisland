@@ -32,6 +32,8 @@
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandOutput>
+#include <QtCompositor/private/qwloutput_p.h>
+#include <QtCompositor/private/qwlsurface_p.h>
 
 #include "applicationmanager_p.h"
 #include "clientwindow.h"
@@ -47,7 +49,7 @@ namespace GreenIsland {
 ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     : QObject(parent)
     , m_appId(surface->className())
-    , m_pos(QPointF(surface->output()->availableGeometry().topLeft()))
+    , m_pos(QPointF(surface->mainOutput()->availableGeometry().topLeft()))
     , m_internalGeometryChanged(false)
     , m_active(false)
     , m_minimized(false)
@@ -73,7 +75,7 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
 
     // Create a view for the surface output, views for other outputs
     // will be created on demand
-    viewForOutput(static_cast<Output *>(surface->output()));
+    viewForOutput(static_cast<Output *>(surface->mainOutput()));
 
     // Connect to surface signals
     connect(m_surface, &QWaylandSurface::mapped,
@@ -144,7 +146,7 @@ QWaylandOutput *ClientWindow::output() const
     // present windows to present only windows for the output it is
     // running on (effects run once for each output)
     int maxArea = 0, area = 0;
-    QWaylandOutput *main = m_surface->output();
+    QWaylandOutput *main = m_surface->mainOutput();
 
     Q_FOREACH (QWaylandOutput *output, m_surface->compositor()->outputs()) {
         QRectF intersection = QRectF(output->geometry()).intersected(geometry());
@@ -212,13 +214,21 @@ void ClientWindow::setPosition(const QPointF &pos)
     Q_EMIT positionChanged();
     Q_EMIT geometryChanged();
 
+    // Set main output and send enter/leave events
+    Output *oldOutput = static_cast<Output *>(m_surface->mainOutput());
+    Output *newOutput = static_cast<Output *>(output());
+    if (newOutput != oldOutput) {
+        m_surface->setMainOutput(newOutput);
+        m_surface->handle()->removeFromOutput(oldOutput->handle());
+        m_surface->handle()->addToOutput(newOutput->handle());
+    }
+
     // ClientWindow position is in compositor space, but the view
     // position is expressed in output space; QML window representation
     // will be moved according to view coordinates using
     // property binding
-    Q_FOREACH (Output *o, m_views.keys()) {
+    Q_FOREACH (Output *o, m_views.keys())
         m_views[o]->setLocalPosition(o->mapToOutput(m_pos));
-    }
 }
 
 QSizeF ClientWindow::size() const
