@@ -88,6 +88,11 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     ApplicationManager::instance();
 }
 
+CompositorPrivate::~CompositorPrivate()
+{
+    screenManager->deleteLater();
+}
+
 QQmlListProperty<ClientWindow> CompositorPrivate::windows()
 {
     Q_Q(Compositor);
@@ -235,20 +240,11 @@ Compositor::~Compositor()
         d_ptr->shellWindowsList.takeFirst()->deleteLater();
     while (!d_ptr->clientWindowsList.isEmpty())
         d_ptr->clientWindowsList.takeFirst()->deleteLater();
-    delete d_ptr->screenManager;
     delete d_ptr;
 
     // Cleanup graphics resources
     qCDebug(GREENISLAND_COMPOSITOR) << "Cleanup graphics resources...";
     cleanupGraphicsResources();
-
-    // Delete windows and outputs
-    qCDebug(GREENISLAND_COMPOSITOR) << "Closing all remaining windows...";
-    for (QWaylandOutput *output: outputs()) {
-        if (output->window())
-            output->window()->deleteLater();
-        output->deleteLater();
-    }
 }
 
 Compositor::State Compositor::state() const
@@ -359,12 +355,6 @@ CompositorSettings *Compositor::settings() const
     return d->settings;
 }
 
-ScreenManager *Compositor::screenManager() const
-{
-    Q_D(const Compositor);
-    return d->screenManager;
-}
-
 void Compositor::run()
 {
     Q_D(Compositor);
@@ -383,6 +373,9 @@ void Compositor::run()
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal());
     addGlobalInterface(new GtkShellGlobal());
+
+    // Create outputs
+    d->screenManager->acquireConfiguration();
 
     d->running = true;
 

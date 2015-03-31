@@ -39,7 +39,6 @@ class ClientWindow;
 class CompositorPrivate;
 class Output;
 class ScreenManager;
-class ScreenManagerPrivate;
 class ShellWindow;
 class GtkSurface;
 
@@ -82,7 +81,6 @@ public:
     void setLocked(bool value);
 
     CompositorSettings *settings() const;
-    ScreenManager *screenManager() const;
 
     void run();
 
@@ -142,7 +140,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
 
     friend class ClientWindow;
-    friend class ScreenManagerPrivate;
+    friend class ScreenManager;
     friend class ShellWindow;
     friend class OutputWindow;
     friend class GtkSurface;

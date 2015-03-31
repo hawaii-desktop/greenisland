@@ -12,6 +12,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/screen
 )
 
 if(systemd_FOUND)
@@ -30,9 +31,11 @@ set(SOURCES
     output.cpp
     outputwindow.cpp
     windowview.cpp
-    screenmanager.cpp
     shellwindow.cpp
     utilities.cpp
+    screen/screenbackend.cpp
+    screen/nativescreenbackend.cpp
+    screen/screenmanager.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/greenisland/greenislandapps.cpp
     protocols/greenisland/greenislandwindow.cpp
@@ -111,7 +114,6 @@ target_link_libraries(GreenIsland
     Qt5::Widgets
     Qt5::Quick
     Qt5::Compositor
-    KF5::Screen
     Wayland::Client
     Wayland::Server
     ${EGL_TARGET}

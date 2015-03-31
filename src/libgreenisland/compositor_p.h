@@ -56,6 +56,7 @@ class CompositorPrivate
 {
 public:
     CompositorPrivate(Compositor *self);
+    ~CompositorPrivate();
 
     QQmlListProperty<ClientWindow> windows();
     QQmlListProperty<ShellWindow> shellWindows();

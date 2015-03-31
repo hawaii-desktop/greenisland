@@ -24,10 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCore/QtMath>
-
-#include <KScreen/EDID>
-
 #include "compositor.h"
 #include "output.h"
 #include "outputwindow.h"
@@ -43,11 +39,10 @@ class OutputPrivate
 public:
     OutputPrivate(Output *parent);
 
-    void _q_currentModeIdChanged();
-    void _q_posChanged();
-
     Compositor *compositor;
-    KScreen::OutputPtr output;
+
+    int id;
+    QString name;
     bool primary;
 
     QSize hotSpotSize;
@@ -60,86 +55,29 @@ private:
 };
 
 OutputPrivate::OutputPrivate(Output *parent)
-    : compositor(Q_NULLPTR)
-    , output(Q_NULLPTR)
-    , primary(false)
+    : primary(false)
     , hotSpotSize(QSize(10, 10))
     , hotSpotThreshold(1000)
     , hotSpotPushTime(150)
     , q_ptr(parent)
 {
-}
-
-void OutputPrivate::_q_currentModeIdChanged()
-{
-    Q_Q(Output);
-
-    // Mode
-    QWaylandOutput::Mode mode;
-    mode.size = output->currentMode()->size();
-    mode.refreshRate = output->currentMode()->refreshRate();
-    q->setMode(mode);
-
-    // Rotation
-    switch (output->rotation()) {
-    case KScreen::Output::None:
-        q->setTransform(QWaylandOutput::TransformNormal);
-        break;
-    case KScreen::Output::Left:
-        q->setTransform(QWaylandOutput::Transform90);
-        break;
-    case KScreen::Output::Inverted:
-        q->setTransform(QWaylandOutput::Transform180);
-        break;
-    case KScreen::Output::Right:
-        q->setTransform(QWaylandOutput::Transform270);
-        break;
-    }
-
-    // Resize window
-    q->window()->resize(mode.size);
-    q->window()->setMinimumSize(mode.size);
-    q->window()->setMaximumSize(mode.size);
-}
-
-void OutputPrivate::_q_posChanged()
-{
-    Q_Q(Output);
-
-    // Move window
-    q->window()->setPosition(output->pos());
-
-    // Set position
-    q->setPosition(output->pos());
+    static int seed = 0;
+    id = seed++;
 }
 
 /*
  * Output
  */
 
-Output::Output(Compositor *compositor, const KScreen::OutputPtr &output)
-    : QWaylandQuickOutput(compositor, new OutputWindow(this),
-                          output->edid()->vendor(), output->edid()->serial())
+Output::Output(Compositor *compositor, const QString &name)
+    : QWaylandQuickOutput(compositor, new OutputWindow(this), "", "")
     , d_ptr(new OutputPrivate(this))
 {
     qRegisterMetaType<Output *>("Output*");
 
     Q_D(Output);
     d->compositor = compositor;
-    d->output = output;
-
-    // Set output properties
-    setPhysicalSize(d->output->sizeMm());
-    d->_q_currentModeIdChanged();
-    d->_q_posChanged();
-
-    // React to output changes
-    connect(output.data(), SIGNAL(currentModeIdChanged()),
-            this, SLOT(_q_currentModeIdChanged()),
-            Qt::UniqueConnection);
-    connect(output.data(), SIGNAL(posChanged()),
-            this, SLOT(_q_posChanged()),
-            Qt::UniqueConnection);
+    d->name = name;
 }
 
 Compositor *Output::compositor() const
@@ -148,22 +86,16 @@ Compositor *Output::compositor() const
     return d->compositor;
 }
 
-KScreen::OutputPtr Output::output() const
-{
-    Q_D(const Output);
-    return d->output;
-}
-
 QString Output::name() const
 {
     Q_D(const Output);
-    return d->output->name();
+    return d->name;
 }
 
 int Output::number() const
 {
     Q_D(const Output);
-    return d->output->id();
+    return d->id;
 }
 
 bool Output::isPrimary() const

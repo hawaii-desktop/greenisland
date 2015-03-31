@@ -49,7 +49,7 @@ class Output;
 class WlShellSurface;
 class XdgPopup;
 class XdgSurface;
-class ScreenManagerPrivate;
+class ScreenManager;
 class WindowView;
 
 class GREENISLAND_EXPORT ClientWindow : public QObject
@@ -200,7 +200,7 @@ private:
     friend class WlShellSurface;
     friend class XdgPopup;
     friend class XdgSurface;
-    friend class ScreenManagerPrivate;
+    friend class ScreenManager;
 
 private Q_SLOTS:
     void surfaceMapped();

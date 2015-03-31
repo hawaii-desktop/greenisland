@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -29,29 +29,28 @@
 
 #include <QtCore/QObject>
 
-namespace KScreen {
-class Output;
-}
-
 namespace GreenIsland {
 
 class Compositor;
-class ScreenManagerPrivate;
+class Output;
+class ScreenBackend;
 
 class ScreenManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ScreenManager(Compositor *compositor);
-    ~ScreenManager();
+    ScreenManager(Compositor *compositor);
+
+    void acquireConfiguration();
 
 private:
-    Q_DECLARE_PRIVATE(ScreenManager)
-    ScreenManagerPrivate *const d_ptr;
+    Compositor *m_compositor;
+    ScreenBackend *m_backend;
 
-    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(const KScreen::OutputPtr &output))
-    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(int id))
-    Q_PRIVATE_SLOT(d_func(), void _q_primaryOutputChanged(const KScreen::OutputPtr &output))
+private Q_SLOTS:
+    void outputAdded(Output *output);
+    void outputRemoved(Output *output);
+    void primaryOutputChanged(Output *output);
 };
 
 }

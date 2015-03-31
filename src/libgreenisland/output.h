@@ -29,15 +29,13 @@
 
 #include <QtCompositor/QWaylandQuickOutput>
 
-#include <KScreen/Output>
-
 #include <greenisland/greenisland_export.h>
 
 namespace GreenIsland {
 
 class Compositor;
 class OutputPrivate;
-class ScreenManagerPrivate;
+class NativeScreenBackend;
 
 class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
 {
@@ -57,10 +55,9 @@ public:
         BottomRightHotSpot
     };
 
-    Output(Compositor *compositor, const KScreen::OutputPtr &output);
+    Output(Compositor *compositor, const QString &name);
 
     Compositor *compositor() const;
-    KScreen::OutputPtr output() const;
 
     QString name() const;
 
@@ -96,12 +93,9 @@ private:
     Q_DECLARE_PRIVATE(Output)
     OutputPrivate *const d_ptr;
 
-    friend class ScreenManagerPrivate;
+    friend class NativeScreenBackend;
 
     void setPrimary(bool value);
-
-    Q_PRIVATE_SLOT(d_func(), void _q_currentModeIdChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_posChanged())
 };
 
 }

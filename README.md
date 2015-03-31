@@ -29,7 +29,6 @@ gcc >= 4.8 is required to build this software.
   * qtdeclarative
   * qtwayland
 * ECM >= 1.4.0
-* libkscreen >= 5.2.0
 
 
 A development version of qtwayland is required.
@@ -118,6 +117,7 @@ to learn how to enable them.
 
 * Compositor:
   * **greenisland.compositor:** Compositor
+  * **greenisland.screenbackend.native:** Native screen backend
 
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell
