@@ -33,29 +33,44 @@
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
+#include "fakescreenbackend.h"
 #include "logging.h"
+#include "nativescreenbackend.h"
 #include "output.h"
 #include "outputwindow.h"
 #include "screenmanager.h"
-#include "nativescreenbackend.h"
 
 namespace GreenIsland {
 
 ScreenManager::ScreenManager(Compositor *compositor)
     : QObject()
     , m_compositor(compositor)
-    , m_backend(new NativeScreenBackend(compositor, this))
+    , m_backend(Q_NULLPTR)
 {
+}
+
+void ScreenManager::acquireConfiguration(const QString &fileName)
+{
+    if (m_backend) {
+        qCWarning(GREENISLAND_COMPOSITOR) << "Cannot change backend at runtime!";
+        return;
+    }
+
+    if (fileName.isEmpty())
+        m_backend = new NativeScreenBackend(m_compositor, this);
+    else
+        m_backend = new FakeScreenBackend(m_compositor, this);
+
     connect(m_backend, &ScreenBackend::outputAdded,
             this, &ScreenManager::outputAdded);
     connect(m_backend, &ScreenBackend::outputRemoved,
             this, &ScreenManager::outputRemoved);
     connect(m_backend, &ScreenBackend::primaryOutputChanged,
             this, &ScreenManager::primaryOutputChanged);
-}
 
-void ScreenManager::acquireConfiguration()
-{
+    if (!fileName.isEmpty())
+        static_cast<FakeScreenBackend *>(m_backend)->loadConfiguration(fileName);
+
     m_backend->acquireConfiguration();
 }
 

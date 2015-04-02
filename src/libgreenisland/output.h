@@ -34,6 +34,7 @@
 namespace GreenIsland {
 
 class Compositor;
+class FakeScreenBackend;
 class OutputPrivate;
 class NativeScreenBackend;
 
@@ -93,6 +94,7 @@ private:
     Q_DECLARE_PRIVATE(Output)
     OutputPrivate *const d_ptr;
 
+    friend class FakeScreenBackend;
     friend class NativeScreenBackend;
 
     void setPrimary(bool value);

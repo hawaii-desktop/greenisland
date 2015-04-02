@@ -34,6 +34,8 @@ set(SOURCES
     shellwindow.cpp
     utilities.cpp
     screen/screenbackend.cpp
+    screen/screenconfiguration.cpp
+    screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/screenmanager.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp

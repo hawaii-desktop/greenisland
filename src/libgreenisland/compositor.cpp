@@ -247,6 +247,12 @@ Compositor::~Compositor()
     cleanupGraphicsResources();
 }
 
+void Compositor::setFakeScreenConfiguration(const QString &fileName)
+{
+    Q_D(Compositor);
+    d->fakeScreenConfiguration = fileName;
+}
+
 Compositor::State Compositor::state() const
 {
     Q_D(const Compositor);
@@ -375,7 +381,7 @@ void Compositor::run()
     addGlobalInterface(new GtkShellGlobal());
 
     // Create outputs
-    d->screenManager->acquireConfiguration();
+    d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
     d->running = true;
 

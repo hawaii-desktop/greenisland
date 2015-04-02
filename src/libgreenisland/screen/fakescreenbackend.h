@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,35 +24,39 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMANAGER_H
-#define SCREENMANAGER_H
+#ifndef FAKESCREENBACKEND_H
+#define FAKESCREENBACKEND_H
 
-#include <QtCore/QObject>
+#include "screenbackend.h"
+
+Q_DECLARE_LOGGING_CATEGORY(FAKE_BACKEND)
 
 namespace GreenIsland {
 
-class Compositor;
-class Output;
-class ScreenBackend;
+class ScreenConfiguration;
+class ScreenOutput;
 
-class ScreenManager : public QObject
+class FakeScreenBackend : public ScreenBackend
 {
     Q_OBJECT
 public:
-    ScreenManager(Compositor *compositor);
+    FakeScreenBackend(Compositor *compositor, QObject *parent = 0);
+    ~FakeScreenBackend();
 
-    void acquireConfiguration(const QString &fileName = QString());
+    void loadConfiguration(const QString &fileName);
+
+public Q_SLOTS:
+    void acquireConfiguration();
 
 private:
-    Compositor *m_compositor;
-    ScreenBackend *m_backend;
+    ScreenConfiguration *m_config;
+    QMap<ScreenOutput *, Output *> m_outputMap;
 
 private Q_SLOTS:
-    void outputAdded(Output *output);
-    void outputRemoved(Output *output);
-    void primaryOutputChanged(Output *output);
+    void screenAdded(ScreenOutput *so);
+    void screenRemoved(ScreenOutput *so);
 };
 
 }
 
-#endif // SCREENMANAGER_H
+#endif // FAKESCREENBACKEND_H

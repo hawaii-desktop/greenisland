@@ -68,6 +68,8 @@ public:
     Compositor(const QString &socket = QString());
     ~Compositor();
 
+    void setFakeScreenConfiguration(const QString &fileName);
+
     State state() const;
     void setState(State state);
 

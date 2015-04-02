@@ -91,6 +91,7 @@ public:
 
     QWaylandSurface *lastKeyboardFocus;
 
+    QString fakeScreenConfiguration;
     CompositorSettings *settings;
     ScreenManager *screenManager;
     GreenIslandRecorderManager *recorderManager;

@@ -118,6 +118,8 @@ to learn how to enable them.
 * Compositor:
   * **greenisland.compositor:** Compositor
   * **greenisland.screenbackend.native:** Native screen backend
+  * **greenisland.screenbackend.fake:** Fake screen backend
+  * **greenisland.screenconfiguration:** Screen configuration loader
 
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell

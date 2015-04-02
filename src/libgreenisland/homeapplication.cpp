@@ -130,27 +130,17 @@ bool HomeApplication::run(const QString &plugin)
     }
 
     // Screen configuration
-    if (m_fakeScreenFileName.isEmpty()) {
-        // Always use QScreen backend when no fake data is provided
-        // TODO: Use "Wayland" when running inside another Wayland compositor
-        //       (postponed until an actual Wayland backend is implemented)
-        qputenv("KSCREEN_BACKEND", QByteArray("QScreen"));
-    } else {
-        // Need a real backend, possibly QScreen or native Wayland when nested
+    if (!m_fakeScreenFileName.isEmpty()) {
+        // Need the native backend
         if (QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qCWarning(GREENISLAND_COMPOSITOR)
                     << "Fake screen configuration is not allowed when Green Island"
-                    << "is nested into another compositor, please use the QScreen"
-                    << "or Wayland backend for KScreen!";
+                    << "is nested into another compositor";
 #if HAVE_SYSTEMD
             sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
 #endif
             return false;
         }
-
-        // Use fake backend for KSCreen
-        qputenv("KSCREEN_BACKEND", QByteArray("Fake"));
-        qputenv("TEST_DATA", m_fakeScreenFileName.toUtf8());
     }
 
     // Bind to globals such as full screen shell if we are a Wayland client
@@ -159,6 +149,8 @@ bool HomeApplication::run(const QString &plugin)
 
     // Create the compositor
     m_compositor = new GreenIsland::Compositor(m_socket);
+    if (!m_fakeScreenFileName.isEmpty())
+        m_compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
     m_compositor->run();
 
     return true;
