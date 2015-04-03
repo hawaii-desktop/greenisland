@@ -34,14 +34,6 @@ int main(int argc, char *argv[])
     // Application
     GreenIsland::HomeApplication app(argc, argv);
 
-    // Enable debug messages
-    QLoggingCategory::setFilterRules(QStringLiteral("*.debug=true"));
-    QLoggingCategory::setFilterRules(QStringLiteral("*.warning=true"));
-    QLoggingCategory::setFilterRules(QStringLiteral("*.critical=true"));
-
-    // Set message pattern
-    qSetMessagePattern("%{message}");
-
     // Command line parser
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("Command line parser", "Wayland compositor for the Hawaii desktop environment"));
