@@ -41,15 +41,10 @@ ProcessController::ProcessController(QObject *parent)
 {
     // Compositor process
     m_compositor = new QProcess(this);
+    m_compositor->setProcessChannelMode(QProcess::ForwardedChannels);
     m_compositor->setProgram(QStringLiteral(INSTALL_BINDIR "/greenisland"));
     connect(m_compositor, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(compositorFinished(int,QProcess::ExitStatus)));
-    connect(m_compositor, &QProcess::readyReadStandardError, [=]() {
-        qWarning() << qPrintable(m_compositor->readAllStandardError());
-    });
-    connect(m_compositor, &QProcess::readyReadStandardOutput, [=]() {
-        qDebug() << qPrintable(m_compositor->readAllStandardOutput());
-    });
 
     // Wayland sockets
     QString random = randomString();
@@ -74,6 +69,7 @@ void ProcessController::setFullScreenShellEnabled(bool value)
 
     if (value) {
         m_fullScreenShell = new QProcess(this);
+        m_fullScreenShell->setProcessChannelMode(QProcess::ForwardedChannels);
         m_fullScreenShell->setProgram(QStringLiteral("weston"));
         m_fullScreenShell->setArguments(QStringList()
                                         << QStringLiteral("--shell=fullscreen-shell.so")
