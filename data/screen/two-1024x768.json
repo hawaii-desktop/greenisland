@@ -1,0 +1,34 @@
+{
+    "outputs": [
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 768,
+                    "width": 1024
+                }
+            },
+            "name": "Fake1",
+            "orientation": 2,
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 768,
+                    "width": 1024
+                }
+            },
+            "name": "Fake2",
+            "orientation": 2,
+            "position": {
+                "x": 1024,
+                "y": 0
+            }
+        }
+    ]
+}

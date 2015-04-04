@@ -1,0 +1,64 @@
+{
+    "outputs": [
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 540,
+                    "width": 960
+                }
+            },
+            "name": "Fake1",
+            "orientation": 2,
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        },
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 540,
+                    "width": 960
+                }
+            },
+            "name": "Fake2",
+            "orientation": 2,
+            "position": {
+                "x": 960,
+                "y": 0
+            }
+        },
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 540,
+                    "width": 960
+                }
+            },
+            "name": "Fake3",
+            "orientation": 2,
+            "position": {
+                "x": 0,
+                "y": 540
+            }
+        },
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 540,
+                    "width": 960
+                }
+            },
+            "name": "Fake4",
+            "orientation": 2,
+            "position": {
+                "x": 960,
+                "y": 540
+            }
+        }
+    ]
+}

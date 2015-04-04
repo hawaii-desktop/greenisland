@@ -1,0 +1,19 @@
+{
+    "outputs": [
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 1280,
+                    "width": 720
+                }
+            },
+            "name": "Phone",
+            "orientation": 2,
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ]
+}

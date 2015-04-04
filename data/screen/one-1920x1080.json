@@ -1,0 +1,19 @@
+{
+    "outputs": [
+        {
+            "mode": {
+                "refreshRate": 60000,
+                "size": {
+                    "height": 1080,
+                    "width": 1920
+                }
+            },
+            "name": "Fake1",
+            "orientation": 2,
+            "position": {
+                "x": 0,
+                "y": 0
+            }
+        }
+    ]
+}

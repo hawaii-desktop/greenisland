@@ -1,0 +1,51 @@
+#!/usr/bin/python
+#
+# This file is part of Green Island.
+#
+# Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+
+# Convert from kscreen JSON to Green Island JSON.
+
+import sys
+import json
+
+f = open(sys.argv[1])
+data = json.load(f)
+f.close()
+
+newdata = {"outputs": []}
+
+for output in data["outputs"]:
+    if not output["enabled"] or not output["connected"]:
+        continue
+
+    mode_id = 0
+    if output["currentModeId"] and output["currentModeId"] >= 1:
+        mode_id = output["currentModeId"] - 1
+    oldmode = output["modes"][mode_id]
+    mode = {"size": oldmode["size"], "refreshRate": oldmode["refreshRate"] * 1000}
+
+    rotation = output["rotation"]
+    if rotation == 1:
+        # None -> Landscape
+        orientation = 0x02
+    elif rotation == 2:
+        # Left -> Portrait
+        orientation = 0x01
+    elif rotation == 4:
+        # Inverted -> InvertedLandscape
+        orientation = 0x08
+    elif rotation == 8:
+        # Right -> InvertedPortrait
+        orientation = 0x04
+
+    newoutput = {"name": output["name"], "position": output["pos"], "mode": mode, "orientation": orientation}
+    newdata["outputs"].append(newoutput)
+
+print(json.dumps(newdata, sort_keys=True, indent=4, separators=(',', ': ')))
