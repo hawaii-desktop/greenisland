@@ -58,9 +58,9 @@ Compositor *HomeApplication::compositor() const
     return m_compositor;
 }
 
-QString HomeApplication::plugin() const
+QString HomeApplication::shellName() const
 {
-    return GreenIsland::Compositor::s_fixedPlugin;
+    return GreenIsland::Compositor::s_fixedShell;
 }
 
 QString HomeApplication::socket() const
@@ -99,7 +99,7 @@ void HomeApplication::setIdleTime(int time)
     m_idleTime = time;
 }
 
-bool HomeApplication::run(const QString &plugin)
+bool HomeApplication::run(const QString &shell)
 {
     // If a compositor is already running we cannot continue
     if (m_compositor) {
@@ -108,7 +108,7 @@ bool HomeApplication::run(const QString &plugin)
     }
 
     // Set plugin
-    GreenIsland::Compositor::s_fixedPlugin = plugin;
+    GreenIsland::Compositor::s_fixedShell = shell;
 
     // Check whether XDG_RUNTIME_DIR is ok or not
     GreenIsland::verifyXdgRuntimeDir();

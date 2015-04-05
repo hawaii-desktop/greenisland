@@ -65,10 +65,10 @@ int main(int argc, char *argv[])
     parser.addOption(fakeScreenOption);
 
     // Compositor package
-    QCommandLineOption pluginOption(QStringList() << QStringLiteral("p") << QStringLiteral("compositor-plugin"),
-                                    QCoreApplication::translate("Command line parser", "Force loading the given compositor plugin"),
-                                    QStringLiteral("plugin"));
-    parser.addOption(pluginOption);
+    QCommandLineOption shellOption(QStringLiteral("shell"),
+                                   QCoreApplication::translate("Command line parser", "Force loading the given shell"),
+                                   QStringLiteral("shell"));
+    parser.addOption(shellOption);
 
     // Parse command line
     parser.process(app);
@@ -84,8 +84,8 @@ int main(int argc, char *argv[])
     if (idleInterval >= 5)
         app.setIdleTime(idleInterval * 1000);
 
-            // Create the compositor and run
-    if (!app.run(parser.value(pluginOption)))
+    // Create the compositor and run
+    if (!app.run(parser.value(shellOption)))
         return 1;
 
     return app.exec();

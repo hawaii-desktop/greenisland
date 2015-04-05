@@ -149,24 +149,24 @@ void OutputWindow::loadScene()
 
     // Load QML and setup window
     setResizeMode(QQuickView::SizeRootObjectToView);
-    if (Compositor::s_fixedPlugin.isEmpty()) {
+    if (Compositor::s_fixedShell.isEmpty()) {
         qFatal("No plugin specified, cannot continue!");
     } else {
         // Load main file or bail out
         qCDebug(GREENISLAND_COMPOSITOR)
-                << "Loading" << Compositor::s_fixedPlugin
-                << "plugin for output"
+                << "Loading" << Compositor::s_fixedShell
+                << "shell for output"
                 << m_output->name() << m_output->geometry();
 
         m_perfTimer.start();
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedPlugin));
+                                              QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedShell));
         if (QFile(path).exists(path))
             setSource(QUrl::fromLocalFile(path));
         else
-            qFatal("Plugin \"%s\" is not valid, cannot continue!",
-                   qPrintable(Compositor::s_fixedPlugin));
+            qFatal("Shell \"%s\" is not valid, cannot continue!",
+                   qPrintable(Compositor::s_fixedShell));
     }
 }
 

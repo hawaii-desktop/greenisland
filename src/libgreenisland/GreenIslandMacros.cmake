@@ -26,16 +26,16 @@
 #=============================================================================
 
 #
-# greenisland_install_plugin(plugin srcpath)
+# greenisland_install_shell(shell srcpath)
 #
-# Installs a Green Island plugin.
+# Installs a Green Island shell
 #
-# \param plugin the plugin name (something like org.vendor.plugin)
+# \param shell the shell name (something like org.vendor.shell)
 # \param srcpath the source path to install from
 #
-macro(greenisland_install_plugin plugin srcpath)
+macro(greenisland_install_shell shell srcpath)
     install(DIRECTORY ${srcpath}/
-            DESTINATION ${DATA_INSTALL_DIR}/greenisland/${plugin}
+            DESTINATION ${DATA_INSTALL_DIR}/greenisland/${shell}
             PATTERN .svn EXCLUDE
             PATTERN CMakeLists.txt EXCLUDE
             PATTERN Messages.sh EXCLUDE

@@ -97,7 +97,7 @@ public:
 
     Q_INVOKABLE void abortSession();
 
-    static QString s_fixedPlugin;
+    static QString s_fixedShell;
 
 Q_SIGNALS:
     void surfaceMapped(QVariant surface);

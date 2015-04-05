@@ -54,10 +54,10 @@ int main(int argc, char *argv[])
     parser.addOption(fullScreenShellOption);
 
     // Compositor package
-    QCommandLineOption pluginOption(QStringList() << QStringLiteral("p") << QStringLiteral("compositor-plugin"),
-                                    TR("Force loading the given compositor plugin"),
-                                    QStringLiteral("plugin"));
-    parser.addOption(pluginOption);
+    QCommandLineOption shellOption(QStringList() << QStringLiteral("s") << QStringLiteral("shell"),
+                                   TR("Force loading the given shell"),
+                                   QStringLiteral("shell"));
+    parser.addOption(shellOption);
 
     // Parse command line
     parser.process(app);
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     processController.setFullScreenShellEnabled(parser.isSet(fullScreenShellOption));
 
     // Pass additional arguments
-    processController.setPlugin(parser.value(pluginOption));
+    processController.setPlugin(parser.value(shellOption));
 
     // Start the compositor
     processController.start();

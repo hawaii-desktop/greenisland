@@ -38,7 +38,7 @@ class Compositor;
 class GREENISLAND_EXPORT HomeApplication : public QApplication
 {
     Q_OBJECT
-    Q_PROPERTY(QString plugin READ plugin CONSTANT)
+    Q_PROPERTY(QString shellName READ shellName CONSTANT)
     Q_PROPERTY(QString socket READ socket CONSTANT)
 public:
     HomeApplication(int &argc, char **argv);
@@ -46,7 +46,7 @@ public:
 
     Compositor *compositor() const;
 
-    QString plugin() const;
+    QString shellName() const;
 
     QString socket() const;
     void setSocket(const QString &socket);
@@ -57,7 +57,7 @@ public:
     int idleTime() const;
     void setIdleTime(int time);
 
-    bool run(const QString &plugin);
+    bool run(const QString &shell);
 
 private:
     QString m_socket;
