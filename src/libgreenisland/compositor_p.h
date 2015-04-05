@@ -47,6 +47,7 @@ typedef QList<QWaylandSurface *> QWaylandSurfaceList;
 
 namespace GreenIsland {
 
+class AbstractPlugin;
 class Compositor;
 class ClientWindow;
 class ShellWindow;
@@ -60,6 +61,8 @@ public:
 
     QQmlListProperty<ClientWindow> windows();
     QQmlListProperty<ShellWindow> shellWindows();
+
+    void loadPlugins();
 
     void dpms(bool on);
 
@@ -100,6 +103,9 @@ public:
     QHash<QString, QWaylandSurfaceList> appSurfaces;
     QList<ClientWindow *> clientWindowsList;
     QList<ShellWindow *> shellWindowsList;
+
+    // Plugins
+    QList<AbstractPlugin *> plugins;
 
 protected:
     Q_DECLARE_PUBLIC(Compositor)

@@ -66,6 +66,9 @@ Compositor::Compositor(const QString &socket)
     Q_D(Compositor);
 
     connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
+        // Load plugins
+        d->loadPlugins();
+
 #if HAVE_SYSTEMD
         qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
         sd_notify(0, "READY=1");

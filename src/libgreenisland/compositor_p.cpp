@@ -24,8 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QDir>
+#include <QtCore/QPluginLoader>
 #include <QtGui/QGuiApplication>
 
+#include "abstractplugin.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
 #  include "bufferattacher.h"
 #endif
@@ -58,6 +61,9 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 
 CompositorPrivate::~CompositorPrivate()
 {
+    while (!plugins.isEmpty())
+        plugins.takeFirst()->deleteLater();
+
     screenManager->deleteLater();
 }
 
@@ -85,6 +91,47 @@ QQmlListProperty<ShellWindow> CompositorPrivate::shellWindows()
         return static_cast<Compositor *>(prop->object)->d_func()->shellWindowsList.at(index);
     };
     return QQmlListProperty<ShellWindow>(q, 0, countFunc, atFunc);
+}
+
+void CompositorPrivate::loadPlugins()
+{
+    Q_Q(Compositor);
+
+    const QStringList paths = QCoreApplication::libraryPaths();
+    qCDebug(GREENISLAND_COMPOSITOR) << "Lookup paths:" << qPrintable(paths.join(' '));
+
+    Q_FOREACH (const QString &path, paths) {
+        const QDir dir(path + QStringLiteral("/greenisland/"),
+                       QStringLiteral("*.so"),
+                       QDir::SortFlags(QDir::QDir::NoSort),
+                       QDir::NoDotAndDotDot | QDir::Files);
+        const QFileInfoList infoList = dir.entryInfoList();
+
+        Q_FOREACH (const QFileInfo &info, infoList) {
+            qCDebug(GREENISLAND_COMPOSITOR) << "Trying" << info.filePath();
+            QPluginLoader loader(info.filePath());
+            loader.load();
+
+            QObject *instance = loader.instance();
+            if (!instance) {
+                qCWarning(GREENISLAND_COMPOSITOR, "Plugin loading failed: %s",
+                          qPrintable(loader.errorString()));
+                loader.unload();
+                continue;
+            }
+
+            AbstractPlugin *plugin = qobject_cast<AbstractPlugin *>(instance);
+            if (plugin) {
+                qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << plugin->name() << "plugin";
+                plugin->start(q);
+                plugins.append(plugin);
+            } else {
+                qCWarning(GREENISLAND_COMPOSITOR,
+                          "Plugin instantiation failed: \"%s\" doesn't provide a valid plugin",
+                          qPrintable(info.fileName()));
+            }
+        }
+    }
 }
 
 void CompositorPrivate::dpms(bool on)
