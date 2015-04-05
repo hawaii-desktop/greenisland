@@ -30,6 +30,7 @@
 #include <QtCore/QVariantMap>
 #include <QtQuick/QQuickItem>
 #include <QtQuick/QQuickWindow>
+#include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
@@ -470,8 +471,7 @@ void Compositor::abortSession()
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
-//#ifdef QT_COMPOSITOR_WAYLAND_GL
-#if 0
+#if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
     Q_D(Compositor);
 
     // Setup cursor
