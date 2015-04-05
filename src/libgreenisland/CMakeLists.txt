@@ -23,6 +23,7 @@ set(SOURCES
     applicationmanager.cpp
     clientwindow.cpp
     compositor.cpp
+    compositor_p.cpp
     compositorsettings.cpp
     globalregistry.cpp
     gldebug.cpp

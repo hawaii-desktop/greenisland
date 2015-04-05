@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,17 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCore/QProcess>
 #include <QtGui/QGuiApplication>
-#include <QtGui/QScreen>
-#include <QtCore/QVariantMap>
-#include <QtQuick/QQuickItem>
-#include <QtQuick/QQuickWindow>
 #include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
 
 #include "applicationmanager_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
@@ -46,6 +38,7 @@
 #include "compositor_p.h"
 #include "config.h"
 #include "logging.h"
+#include "output.h"
 #include "windowview.h"
 #include "shellwindow.h"
 
@@ -65,168 +58,6 @@
 namespace GreenIsland {
 
 QString Compositor::s_fixedPlugin;
-
-/*
- * CompositorPrivate
- */
-
-CompositorPrivate::CompositorPrivate(Compositor *self)
-    : running(false)
-    , state(Compositor::Active)
-    , idleInterval(5 * 60000)
-    , idleInhibit(0)
-    , locked(false)
-    , cursorSurface(Q_NULLPTR)
-    , cursorHotspotX(0)
-    , cursorHotspotY(0)
-    , lastKeyboardFocus(Q_NULLPTR)
-    , recorderManager(Q_NULLPTR)
-    , q_ptr(self)
-{
-    settings = new CompositorSettings(self);
-    screenManager = new ScreenManager(self);
-
-    ApplicationManager::instance();
-}
-
-CompositorPrivate::~CompositorPrivate()
-{
-    screenManager->deleteLater();
-}
-
-QQmlListProperty<ClientWindow> CompositorPrivate::windows()
-{
-    Q_Q(Compositor);
-
-    auto countFunc = [](QQmlListProperty<ClientWindow> *prop) {
-        return static_cast<Compositor *>(prop->object)->d_func()->clientWindowsList.count();
-    };
-    auto atFunc = [](QQmlListProperty<ClientWindow> *prop, int index) {
-        return static_cast<Compositor *>(prop->object)->d_func()->clientWindowsList.at(index);
-    };
-    return QQmlListProperty<ClientWindow>(q, 0, countFunc, atFunc);
-}
-
-QQmlListProperty<ShellWindow> CompositorPrivate::shellWindows()
-{
-    Q_Q(Compositor);
-
-    auto countFunc = [](QQmlListProperty<ShellWindow> *prop) {
-        return static_cast<Compositor *>(prop->object)->d_func()->shellWindowsList.count();
-    };
-    auto atFunc = [](QQmlListProperty<ShellWindow> *prop, int index) {
-        return static_cast<Compositor *>(prop->object)->d_func()->shellWindowsList.at(index);
-    };
-    return QQmlListProperty<ShellWindow>(q, 0, countFunc, atFunc);
-}
-
-void CompositorPrivate::dpms(bool on)
-{
-    // TODO
-    Q_UNUSED(on);
-}
-
-void CompositorPrivate::_q_updateCursor(bool hasBuffer)
-{
-    if (!hasBuffer || !cursorSurface || !cursorSurface->bufferAttacher())
-        return;
-
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-    QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
-    QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
-
-    static bool cursorIsSet = false;
-    if (cursorIsSet) {
-        QGuiApplication::changeOverrideCursor(cursor);
-    } else {
-        QGuiApplication::setOverrideCursor(cursor);
-        cursorIsSet = true;
-    }
-#endif
-}
-
-void CompositorPrivate::addWindow(ClientWindow *window)
-{
-    Q_Q(Compositor);
-
-    if (!clientWindowsList.contains(window)) {
-        clientWindowsList.append(window);
-        Q_EMIT q->windowsChanged();
-    }
-}
-
-void CompositorPrivate::removeWindow(ClientWindow *window)
-{
-    Q_Q(Compositor);
-
-    if (clientWindowsList.removeOne(window))
-        Q_EMIT q->windowsChanged();
-}
-
-void CompositorPrivate::mapWindow(ClientWindow *window)
-{
-    Q_Q(Compositor);
-
-    addWindow(window);
-
-    Q_EMIT ApplicationManager::instance()->windowMapped(window);
-    Q_EMIT q->windowMapped(QVariant::fromValue(window));
-}
-
-void CompositorPrivate::unmapWindow(ClientWindow *window)
-{
-    Q_Q(Compositor);
-
-    removeWindow(window);
-
-    Q_EMIT ApplicationManager::instance()->windowUnmapped(window);
-    Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
-}
-
-void CompositorPrivate::destroyWindow(ClientWindow *window)
-{
-    Q_Q(Compositor);
-
-    removeWindow(window);
-
-    Q_EMIT ApplicationManager::instance()->windowUnmapped(window);
-    Q_EMIT q->windowDestroyed(window->id());
-}
-
-void CompositorPrivate::mapShellWindow(ShellWindow *window)
-{
-    Q_Q(Compositor);
-
-    if (!shellWindowsList.contains(window)) {
-        shellWindowsList.append(window);
-        Q_EMIT q->shellWindowMapped(QVariant::fromValue(window));
-        Q_EMIT q->shellWindowsChanged();
-    }
-}
-
-void CompositorPrivate::unmapShellWindow(ShellWindow *window)
-{
-    Q_Q(Compositor);
-
-    if (shellWindowsList.removeOne(window)) {
-        Q_EMIT q->shellWindowUnmapped(QVariant::fromValue(window));
-        Q_EMIT q->shellWindowsChanged();
-    }
-}
-
-void CompositorPrivate::destroyShellWindow(ShellWindow *window)
-{
-    Q_Q(Compositor);
-
-    if (shellWindowsList.removeOne(window)) {
-        Q_EMIT q->shellWindowDestroyed(window->id());
-        Q_EMIT q->shellWindowsChanged();
-    }
-}
-
-/*
- * Compositor
- */
 
 Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
