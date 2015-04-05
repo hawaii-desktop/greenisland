@@ -50,6 +50,7 @@ public Q_SLOTS:
     virtual void acquireConfiguration() = 0;
 
 Q_SIGNALS:
+    void configurationAcquired();
     void outputAdded(Output *output);
     void outputRemoved(Output *output);
     void primaryOutputChanged(Output *output);

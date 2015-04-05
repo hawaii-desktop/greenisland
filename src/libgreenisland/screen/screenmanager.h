@@ -43,6 +43,9 @@ public:
 
     void acquireConfiguration(const QString &fileName = QString());
 
+Q_SIGNALS:
+    void configurationAcquired();
+
 private:
     Compositor *m_compositor;
     ScreenBackend *m_backend;

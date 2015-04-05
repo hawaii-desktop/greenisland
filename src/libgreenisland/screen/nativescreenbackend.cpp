@@ -56,6 +56,8 @@ void NativeScreenBackend::acquireConfiguration()
     Q_FOREACH (QScreen *screen, qGuiApp->screens())
         screenAdded(screen);
 
+    Q_EMIT configurationAcquired();
+
     connect(qGuiApp, &QGuiApplication::screenAdded,
             this, &NativeScreenBackend::screenAdded);
     connect(qGuiApp, &QGuiApplication::screenRemoved,

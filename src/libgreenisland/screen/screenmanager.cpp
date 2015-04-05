@@ -61,6 +61,8 @@ void ScreenManager::acquireConfiguration(const QString &fileName)
     else
         m_backend = new FakeScreenBackend(m_compositor, this);
 
+    connect(m_backend, &ScreenBackend::configurationAcquired,
+            this, &ScreenManager::configurationAcquired);
     connect(m_backend, &ScreenBackend::outputAdded,
             this, &ScreenManager::outputAdded);
     connect(m_backend, &ScreenBackend::outputRemoved,

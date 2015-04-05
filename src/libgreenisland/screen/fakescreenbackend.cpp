@@ -67,6 +67,8 @@ void FakeScreenBackend::acquireConfiguration()
 {
     Q_FOREACH (ScreenOutput *output, m_config->outputs())
         screenAdded(output);
+
+    Q_EMIT configurationAcquired();
 }
 
 void FakeScreenBackend::screenAdded(ScreenOutput *so)

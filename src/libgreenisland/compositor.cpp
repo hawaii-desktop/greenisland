@@ -232,6 +232,14 @@ Compositor::Compositor(const QString &socket)
     : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
+    Q_D(Compositor);
+
+    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
+#if HAVE_SYSTEMD
+        qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+        sd_notify(0, "READY=1");
+#endif
+    });
 }
 
 Compositor::~Compositor()
@@ -385,11 +393,6 @@ void Compositor::run()
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
     d->running = true;
-
-#if HAVE_SYSTEMD
-    qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
-    sd_notify(0, "READY=1");
-#endif
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
