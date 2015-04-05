@@ -39,8 +39,7 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     app.setApplicationName(QStringLiteral("Green Island"));
     app.setApplicationVersion(QStringLiteral(GREENISLAND_VERSION_STRING));
-    app.setOrganizationDomain(QStringLiteral("maui-project.org"));
-    app.setOrganizationName(QStringLiteral("Maui"));
+    app.setOrganizationName(QStringLiteral("Green Island"));
 
     // Command line parser
     QCommandLineParser parser;
