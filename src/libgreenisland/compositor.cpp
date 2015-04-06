@@ -267,13 +267,13 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     Q_D(Compositor);
 
     // Connect surface signals
-    connect(surface, &QWaylandSurface::mapped, [=] {
+    connect(surface, &QWaylandSurface::mapped, this, [this, surface] {
         Q_EMIT surfaceMapped(QVariant::fromValue(surface));
     });
-    connect(surface, &QWaylandSurface::unmapped, [=] {
+    connect(surface, &QWaylandSurface::unmapped, this, [this, surface] {
         Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
     });
-    connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
+    connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, surface] {
         Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
     });
 }
