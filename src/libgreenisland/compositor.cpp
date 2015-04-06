@@ -268,6 +268,8 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 
     qCDebug(GREENISLAND_COMPOSITOR) << "Surface created" << surface;
 
+    Q_EMIT newSurfaceCreated(surface);
+
     // Connect surface signals
     connect(surface, &QWaylandSurface::mapped, this, [this, surface] {
         Q_EMIT surfaceMapped(QVariant::fromValue(surface));

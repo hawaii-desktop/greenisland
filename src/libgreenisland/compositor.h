@@ -100,6 +100,7 @@ public:
     static QString s_fixedShell;
 
 Q_SIGNALS:
+    void newSurfaceCreated(QWaylandSurface *surface);
     void surfaceMapped(QVariant surface);
     void surfaceUnmapped(QVariant surface);
     void surfaceDestroyed(QVariant surface);
