@@ -45,9 +45,6 @@ set(SOURCES
     protocols/greenisland/greenislandwindow.cpp
     protocols/greenisland/greenislandwindows.cpp
     protocols/greenisland/greenislandrecorder.cpp
-    protocols/plasma/plasmaeffects.cpp
-    protocols/plasma/plasmashell.cpp
-    protocols/plasma/plasmasurface.cpp
     protocols/wl-shell/wlshell.cpp
     protocols/wl-shell/wlshellsurface.cpp
     protocols/wl-shell/wlshellsurfacegrabber.cpp
@@ -84,16 +81,6 @@ ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
     BASENAME xdg-shell
     PREFIX xdg_
-)
-ecm_add_qtwayland_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-shell.xml
-    BASENAME plasma-shell
-    PREFIX org_kde_plasma_
-)
-ecm_add_qtwayland_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-effects.xml
-    BASENAME plasma-effects
-    PREFIX org_kde_plasma_
 )
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk-shell.xml

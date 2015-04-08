@@ -47,8 +47,6 @@
 #include "protocols/greenisland/greenislandwindows.h"
 #include "protocols/greenisland/greenislandrecorder.h"
 #include "protocols/gtk-shell/gtkshell.h"
-#include "protocols/plasma/plasmaeffects.h"
-#include "protocols/plasma/plasmashell.h"
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
@@ -218,9 +216,6 @@ void Compositor::run()
     addGlobalInterface(d->recorderManager);
     addGlobalInterface(new GreenIslandApps());
     addGlobalInterface(new GreenIslandWindows());
-    PlasmaShell *plasmaShell = new PlasmaShell(this);
-    addGlobalInterface(plasmaShell);
-    addGlobalInterface(new PlasmaEffects(plasmaShell));
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal());
     addGlobalInterface(new GtkShellGlobal());
