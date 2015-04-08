@@ -67,9 +67,13 @@ Compositor::Compositor(const QString &socket)
     // Load plugins
     d->loadPlugins();
 
-    // Notify systemd when the screen configuration is ready
-    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
+    // Actions to do when the screen configuration is acquired
+    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this] {
+        // Emit a signal which is handy for plugins
+        Q_EMIT screenConfigurationAcquired();
+
 #if HAVE_SYSTEMD
+        // Notify systemd when the screen configuration is ready
         qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
         sd_notify(0, "READY=1");
 #endif

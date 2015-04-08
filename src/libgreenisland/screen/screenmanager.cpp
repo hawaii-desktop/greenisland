@@ -46,6 +46,7 @@ ScreenManager::ScreenManager(Compositor *compositor)
     : QObject()
     , m_compositor(compositor)
     , m_backend(Q_NULLPTR)
+    , m_outputsDone(0)
 {
 }
 
@@ -88,7 +89,7 @@ void ScreenManager::outputAdded(Output *output)
         m_compositor->setPrimaryOutput(output);
 
     // Load scene
-    output->loadScene();
+    QMetaObject::invokeMethod(output, "loadScene", Qt::QueuedConnection);
 }
 
 void ScreenManager::outputRemoved(Output *output)

@@ -133,6 +133,8 @@ Q_SIGNALS:
     void fadeIn();
     void fadeOut();
 
+    void screenConfigurationAcquired();
+
 protected:
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
 

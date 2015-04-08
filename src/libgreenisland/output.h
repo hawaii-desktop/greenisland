@@ -36,6 +36,7 @@ namespace GreenIsland {
 class Compositor;
 class FakeScreenBackend;
 class OutputPrivate;
+class OutputWindow;
 class NativeScreenBackend;
 
 class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
@@ -59,6 +60,7 @@ public:
     Output(Compositor *compositor, const QString &name);
 
     Compositor *compositor() const;
+    OutputWindow *outputWindow() const;
 
     QString name() const;
 
@@ -75,13 +77,14 @@ public:
     quint64 hotSpotPushTime() const;
     void setHotSpotPushTime(quint64 value);
 
-    void loadScene();
-
     // Maps global coordinates to local space
     Q_INVOKABLE QPointF mapToOutput(const QPointF &pt);
 
     // Map output local coordinates to global space
     Q_INVOKABLE QPointF mapToGlobal(const QPointF &pt);
+
+public Q_SLOTS:
+    void loadScene();
 
 Q_SIGNALS:
     void primaryChanged();

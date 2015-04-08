@@ -86,6 +86,11 @@ Compositor *Output::compositor() const
     return d->compositor;
 }
 
+OutputWindow *Output::outputWindow() const
+{
+    return static_cast<OutputWindow *>(window());
+}
+
 QString Output::name() const
 {
     Q_D(const Output);
