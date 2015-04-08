@@ -32,6 +32,10 @@ AbstractPlugin::~AbstractPlugin()
 {
 }
 
+void AbstractPlugin::addGlobalInterfaces()
+{
+}
+
 }
 
 #include "moc_abstractplugin.cpp"

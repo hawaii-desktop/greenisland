@@ -123,7 +123,7 @@ void CompositorPrivate::loadPlugins()
             AbstractPlugin *plugin = qobject_cast<AbstractPlugin *>(instance);
             if (plugin) {
                 qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << plugin->name() << "plugin";
-                plugin->start(q);
+                plugin->registerPlugin(q);
                 plugins.append(plugin);
             } else {
                 qCWarning(GREENISLAND_COMPOSITOR,

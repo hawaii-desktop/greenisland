@@ -28,6 +28,7 @@
 #include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
+#include "abstractplugin.h"
 #include "applicationmanager_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
 #  include "bufferattacher.h"
@@ -65,10 +66,11 @@ Compositor::Compositor(const QString &socket)
 {
     Q_D(Compositor);
 
-    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
-        // Load plugins
-        d->loadPlugins();
+    // Load plugins
+    d->loadPlugins();
 
+    // Notify systemd when the screen configuration is ready
+    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
 #if HAVE_SYSTEMD
         qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
         sd_notify(0, "READY=1");
@@ -222,6 +224,10 @@ void Compositor::run()
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal());
     addGlobalInterface(new GtkShellGlobal());
+
+    // Add global interfaces from plugins
+    Q_FOREACH (AbstractPlugin *plugin, d->plugins)
+        plugin->addGlobalInterfaces();
 
     // Create outputs
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);

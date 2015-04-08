@@ -46,10 +46,25 @@ public:
     virtual QString name() const = 0;
 
     /*!
-     * \brief Starts plugin's business.
+     * \brief  Registers plugin.
      * \param compositor The compositor instance.
+     *
+     * Register the plugin within the compositor.
+     * At this point the compositor still has to perform some actions,
+     * such as acquiring the screen configuration and creating outputs.
+     *
+     * When implementing this method, the plugin can connect to the
+     * Compositor signals or save the pointer to do something later.
      */
-    virtual void start(Compositor *compositor) = 0;
+    virtual void registerPlugin(Compositor *compositor) = 0;
+
+    /*!
+     * \brief Add global interfaces.
+     *
+     * Plugins can override this method to add their global
+     * interfaces in order to implement custom Wayland protocols.
+     */
+    virtual void addGlobalInterfaces();
 };
 
 }
