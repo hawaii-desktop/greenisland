@@ -97,6 +97,13 @@ void CompositorPrivate::loadPlugins()
 {
     Q_Q(Compositor);
 
+    // We rely on an environment variable that tells us what plugins to load,
+    // if it's empty there's no point
+    if (qEnvironmentVariableIsEmpty("GREENISLAND_PLUGINS"))
+        return;
+
+    QStringList pluginsToLoad = QString::fromUtf8(qgetenv("GREENISLAND_PLUGINS")).split(':');
+
     const QStringList paths = QCoreApplication::libraryPaths();
     qCDebug(GREENISLAND_COMPOSITOR) << "Lookup paths:" << qPrintable(paths.join(' '));
 
@@ -108,6 +115,10 @@ void CompositorPrivate::loadPlugins()
         const QFileInfoList infoList = dir.entryInfoList();
 
         Q_FOREACH (const QFileInfo &info, infoList) {
+            // Load only the plugins from the environment variable
+            if (!pluginsToLoad.contains(info.fileName()))
+                continue;
+
             qCDebug(GREENISLAND_COMPOSITOR) << "Trying" << info.filePath();
             QPluginLoader loader(info.filePath());
             loader.load();

@@ -105,6 +105,16 @@ from the build directory.
 
 # Notes
 
+## Plugins
+
+Green Island can be extend with plugins.
+Specify a colon separated list of plugins with the ``GREENISLAND_PLUGINS``
+environment variable.
+
+List of plugins:
+
+* **plasma:** Wayland protocols for Plasma
+
 ## Logging categories
 
 Qt 5.2 introduced logging categories and Hawaii takes advantage of
