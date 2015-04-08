@@ -33,7 +33,7 @@
 #include "plasmashell.h"
 #include "plasmasurface.h"
 
-Q_LOGGING_CATEGORY(PLASMA_EFFECTS_PROTOCOL, "greenisland.protocols.plasma.effects")
+Q_LOGGING_CATEGORY(PLASMA_EFFECTS_PROTOCOL, "greenisland.plugins.plasma.effects")
 
 namespace GreenIsland {
 

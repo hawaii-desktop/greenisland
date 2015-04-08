@@ -35,7 +35,7 @@
 #include "plasmashell.h"
 #include "plasmasurface.h"
 
-Q_LOGGING_CATEGORY(PLASMA_SHELL_PROTOCOL, "greenisland.protocols.plasma.shell")
+Q_LOGGING_CATEGORY(PLASMA_SHELL_PROTOCOL, "greenisland.plugins.plasma.shell")
 
 namespace GreenIsland {
 
