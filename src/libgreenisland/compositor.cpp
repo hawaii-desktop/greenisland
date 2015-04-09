@@ -128,6 +128,7 @@ void Compositor::setState(Compositor::State state)
                 d->idleInhibit = 0;
                 d->idleTimer->start();
             }
+            break;
         case Compositor::Idle:
             d->idleInhibit = 0;
             d->idleTimer->stop();
@@ -236,8 +237,9 @@ void Compositor::run()
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
     // Start idle timer
-    connect(d->idleTimer, &QTimer::timeout, this, [this] {
-        setState(Idle);
+    connect(d->idleTimer, &QTimer::timeout, this, [this, d] {
+        if (d->idleInhibit == 0)
+            setState(Idle);
     });
     d->idleTimer->start();
 }
