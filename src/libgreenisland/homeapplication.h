@@ -56,11 +56,13 @@ public:
 
     bool run(const QString &shell);
 
-private:
+protected:
     QString m_socket;
     QString m_fakeScreenFileName;
     int m_idleTime;
     Compositor *m_compositor;
+
+    void compositorLaunched();
 };
 
 } // namespace GreenIsland

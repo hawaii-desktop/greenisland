@@ -147,8 +147,13 @@ bool HomeApplication::run(const QString &shell)
     if (!m_fakeScreenFileName.isEmpty())
         m_compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
     m_compositor->run();
+    compositorLaunched();
 
     return true;
+}
+
+void HomeApplication::compositorLaunched()
+{
 }
 
 } // namespace GreenIsland
