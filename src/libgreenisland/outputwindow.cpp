@@ -189,28 +189,28 @@ void OutputWindow::unloadScene()
 
 void OutputWindow::keyPressEvent(QKeyEvent *event)
 {
-    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() + 1);
+    m_output->compositor()->setState(Compositor::Active);
 
     QQuickView::keyPressEvent(event);
 }
 
 void OutputWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() - 1);
+    m_output->compositor()->setState(Compositor::Active);
 
     QQuickView::keyReleaseEvent(event);
 }
 
 void OutputWindow::mousePressEvent(QMouseEvent *event)
 {
-    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() + 1);
+    m_output->compositor()->setState(Compositor::Active);
 
     QQuickView::mousePressEvent(event);
 }
 
 void OutputWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    m_output->compositor()->setIdleInhibit(m_output->compositor()->idleInhibit() - 1);
+    m_output->compositor()->setState(Compositor::Active);
 
     QQuickView::mouseReleaseEvent(event);
 }
