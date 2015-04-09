@@ -101,7 +101,6 @@ add_library(GreenIsland::GreenIsland ALIAS GreenIsland)
 target_link_libraries(GreenIsland
     Qt5::Core
     Qt5::Gui
-    Qt5::Widgets
     Qt5::Quick
     Qt5::Compositor
     Wayland::Client

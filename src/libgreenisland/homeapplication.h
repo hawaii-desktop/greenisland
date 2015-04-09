@@ -27,7 +27,7 @@
 #ifndef HOMEAPPLICATION_H
 #define HOMEAPPLICATION_H
 
-#include <QtWidgets/QApplication>
+#include <QtGui/QGuiApplication>
 
 #include <greenisland/greenisland_export.h>
 
@@ -35,13 +35,10 @@ namespace GreenIsland {
 
 class Compositor;
 
-class GREENISLAND_EXPORT HomeApplication : public QApplication
+class GREENISLAND_EXPORT HomeApplication
 {
-    Q_OBJECT
-    Q_PROPERTY(QString shellName READ shellName CONSTANT)
-    Q_PROPERTY(QString socket READ socket CONSTANT)
 public:
-    HomeApplication(int &argc, char **argv);
+    HomeApplication();
     ~HomeApplication();
 
     Compositor *compositor() const;

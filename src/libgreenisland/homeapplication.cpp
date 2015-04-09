@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "compositor.h"
 #include "config.h"
+#include "compositor.h"
 #include "globalregistry.h"
 #include "homeapplication.h"
 #include "logging.h"
@@ -37,15 +37,10 @@
 
 namespace GreenIsland {
 
-HomeApplication::HomeApplication(int &argc, char **argv)
-    : QApplication(argc, argv)
-    , m_idleTime(5000)
+HomeApplication::HomeApplication()
+    : m_idleTime(5000)
     , m_compositor(Q_NULLPTR)
 {
-    // Application
-    setApplicationName("Green Island");
-    setApplicationVersion(GREENISLAND_VERSION_STRING);
-    setQuitOnLastWindowClosed(false);
 }
 
 HomeApplication::~HomeApplication()
@@ -117,7 +112,7 @@ bool HomeApplication::run(const QString &shell)
     // another compositor, let's do some checks
     if (!m_socket.isEmpty()) {
         // We need wayland QPA plugin
-        if (!QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qCWarning(GREENISLAND_COMPOSITOR)
                     << "By passing the \"--socket\" argument you are requesting to nest"
                     << "this compositor into another, but you forgot to pass "
@@ -132,7 +127,7 @@ bool HomeApplication::run(const QString &shell)
     // Screen configuration
     if (!m_fakeScreenFileName.isEmpty()) {
         // Need the native backend
-        if (QApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qCWarning(GREENISLAND_COMPOSITOR)
                     << "Fake screen configuration is not allowed when Green Island"
                     << "is nested into another compositor";
@@ -144,7 +139,7 @@ bool HomeApplication::run(const QString &shell)
     }
 
     // Bind to globals such as full screen shell if we are a Wayland client
-    if (QApplication::platformName().startsWith(QStringLiteral("wayland")))
+    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
         GreenIsland::GlobalRegistry::instance()->start();
 
     // Create the compositor
@@ -157,5 +152,3 @@ bool HomeApplication::run(const QString &shell)
 }
 
 } // namespace GreenIsland
-
-#include "moc_homeapplication.cpp"

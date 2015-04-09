@@ -26,19 +26,28 @@
 
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QCommandLineParser>
+#include <QtGui/QGuiApplication>
 
 #include <greenisland/homeapplication.h>
+
+#include "config.h"
 
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
 
 int main(int argc, char *argv[])
 {
     // Application
-    GreenIsland::HomeApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
+    app.setApplicationName("Green Island");
+    app.setApplicationVersion(GREENISLAND_VERSION_STRING);
+    app.setQuitOnLastWindowClosed(false);
+
+    // Home application
+    GreenIsland::HomeApplication homeApp;
 
     // Command line parser
     QCommandLineParser parser;
-    parser.setApplicationDescription(TR("Wayland compositor for the Hawaii desktop environment"));
+    parser.setApplicationDescription(TR("QtQuick Wayland compositor"));
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -74,18 +83,18 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     // Socket
-    app.setSocket(parser.value(socketOption));
+    homeApp.setSocket(parser.value(socketOption));
 
     // Fake screen data
-    app.setFakeScreenData(parser.value(fakeScreenOption));
+    homeApp.setFakeScreenData(parser.value(fakeScreenOption));
 
     // Idle timer
     int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)
-        app.setIdleTime(idleInterval * 1000);
+        homeApp.setIdleTime(idleInterval * 1000);
 
     // Create the compositor and run
-    if (!app.run(parser.value(shellOption)))
+    if (!homeApp.run(parser.value(shellOption)))
         return 1;
 
     return app.exec();
