@@ -236,7 +236,9 @@ void Compositor::run()
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
     // Start idle timer
-    connect(d->idleTimer, SIGNAL(timeout()), this, SIGNAL(idle()));
+    connect(d->idleTimer, &QTimer::timeout, this, [this] {
+        setState(Idle);
+    });
     d->idleTimer->start();
 }
 
