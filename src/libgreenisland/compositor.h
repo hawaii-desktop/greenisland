@@ -128,8 +128,6 @@ Q_SIGNALS:
     void idle();
     void wake();
 
-    void ready();
-
     void fadeIn();
     void fadeOut();
 
