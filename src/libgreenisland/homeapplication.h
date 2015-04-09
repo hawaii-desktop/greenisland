@@ -39,7 +39,7 @@ class GREENISLAND_EXPORT HomeApplication
 {
 public:
     HomeApplication();
-    ~HomeApplication();
+    virtual ~HomeApplication();
 
     Compositor *compositor() const;
 
@@ -62,7 +62,7 @@ protected:
     int m_idleTime;
     Compositor *m_compositor;
 
-    void compositorLaunched();
+    virtual void compositorLaunched();
 };
 
 } // namespace GreenIsland
