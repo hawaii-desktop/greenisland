@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
 #include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlcompositor_p.h>
@@ -111,8 +112,8 @@ void Compositor::setState(Compositor::State state)
     Q_D(Compositor);
 
     if (state == Compositor::Active && d->state == state) {
-        Q_EMIT idleInhibitResetRequested();
-        Q_EMIT idleTimerStartRequested();
+        d->idleInhibit = 0;
+        d->idleTimer->start();
         return;
     }
 
@@ -124,25 +125,25 @@ void Compositor::setState(Compositor::State state)
                 d->dpms(true);
             default:
                 Q_EMIT wake();
-                Q_EMIT idleInhibitResetRequested();
-                Q_EMIT idleTimerStartRequested();
+                d->idleInhibit = 0;
+                d->idleTimer->start();
             }
         case Compositor::Idle:
+            d->idleInhibit = 0;
+            d->idleTimer->stop();
             Q_EMIT idle();
-            Q_EMIT idleInhibitResetRequested();
-            Q_EMIT idleTimerStopRequested();
             break;
         case Compositor::Offscreen:
             switch (d->state) {
             case Compositor::Sleeping:
                 d->dpms(true);
             default:
-                Q_EMIT idleInhibitResetRequested();
-                Q_EMIT idleTimerStopRequested();
+                d->idleInhibit = 0;
+                d->idleTimer->stop();
             }
         case Compositor::Sleeping:
-            Q_EMIT idleInhibitResetRequested();
-            Q_EMIT idleTimerStopRequested();
+            d->idleInhibit = 0;
+            d->idleTimer->stop();
             d->dpms(false);
             break;
         }
@@ -155,15 +156,16 @@ void Compositor::setState(Compositor::State state)
 int Compositor::idleInterval() const
 {
     Q_D(const Compositor);
-    return d->idleInterval;
+    return d->idleTimer->interval();
 }
 
 void Compositor::setIdleInterval(int value)
 {
     Q_D(Compositor);
 
-    if (d->idleInterval != value) {
-        d->idleInterval = value;
+    if (d->idleTimer->interval() != value) {
+        d->idleTimer->setInterval(value);
+        d->idleTimer->start();
         Q_EMIT idleIntervalChanged();
     }
 }
@@ -233,9 +235,9 @@ void Compositor::run()
     // Create outputs
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
-
-
-
+    // Start idle timer
+    connect(d->idleTimer, SIGNAL(timeout()), this, SIGNAL(idle()));
+    d->idleTimer->start();
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const

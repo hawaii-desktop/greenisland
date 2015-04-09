@@ -26,6 +26,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QPluginLoader>
+#include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
 
 #include "abstractplugin.h"
@@ -43,7 +44,7 @@ namespace GreenIsland {
 CompositorPrivate::CompositorPrivate(Compositor *self)
     : running(false)
     , state(Compositor::Active)
-    , idleInterval(5 * 60000)
+    , idleTimer(new QTimer())
     , idleInhibit(0)
     , locked(false)
     , cursorSurface(Q_NULLPTR)
@@ -53,6 +54,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , recorderManager(Q_NULLPTR)
     , q_ptr(self)
 {
+    idleTimer->setInterval(5 * 60000);
+
     settings = new CompositorSettings(self);
     screenManager = new ScreenManager(self);
 
@@ -61,6 +64,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 
 CompositorPrivate::~CompositorPrivate()
 {
+    idleTimer->deleteLater();
+
     while (!plugins.isEmpty())
         plugins.takeFirst()->deleteLater();
 

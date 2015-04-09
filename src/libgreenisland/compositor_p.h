@@ -82,7 +82,7 @@ public:
     bool running;
 
     Compositor::State state;
-    int idleInterval;
+    QTimer *idleTimer;
     int idleInhibit;
 
     bool locked;

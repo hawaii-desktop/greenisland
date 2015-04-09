@@ -119,10 +119,6 @@ Q_SIGNALS:
     void windowsChanged();
     void shellWindowsChanged();
 
-    void idleInhibitResetRequested();
-    void idleTimerStartRequested();
-    void idleTimerStopRequested();
-
     void lockedChanged();
 
     void idle();
