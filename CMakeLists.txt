@@ -54,7 +54,7 @@ endif()
 
 # Find Qt5
 set(REQUIRED_QT_VERSION 5.3.0)
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED DBus Gui Qml Quick Widgets Compositor)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Gui Qml Quick Widgets Compositor)
 
 # EGL
 find_package(BcmHost)
