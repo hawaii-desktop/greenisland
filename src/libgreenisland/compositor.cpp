@@ -212,8 +212,10 @@ void Compositor::run()
 {
     Q_D(Compositor);
 
+    // Can call run only once
     if (d->running)
         return;
+    d->running = true;
 
     // Add global interfaces
     d->recorderManager = new GreenIslandRecorderManager();
@@ -231,7 +233,9 @@ void Compositor::run()
     // Create outputs
     d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
 
-    d->running = true;
+
+
+
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
