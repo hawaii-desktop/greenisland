@@ -79,6 +79,9 @@ public:
     int idleInhibit() const;
     void setIdleInhibit(int value);
 
+    void incrementIdleInhibit();
+    void decrementIdleInhibit();
+
     bool isLocked() const;
     void setLocked(bool value);
 

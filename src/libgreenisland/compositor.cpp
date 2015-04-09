@@ -187,6 +187,16 @@ void Compositor::setIdleInhibit(int value)
     }
 }
 
+void Compositor::incrementIdleInhibit()
+{
+    setIdleInhibit(idleInhibit() + 1);
+}
+
+void Compositor::decrementIdleInhibit()
+{
+    setIdleInhibit(idleInhibit() - 1);
+}
+
 bool Compositor::isLocked() const
 {
     Q_D(const Compositor);
