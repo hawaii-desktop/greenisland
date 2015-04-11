@@ -38,28 +38,12 @@ Item {
 
     id: compositorRoot
 
-    Timer {
-        id: idleTimer
-        //interval: compositor.idleInterval
-        onIntervalChanged: {
-            if (running)
-                restart();
-        }
-    }
-
     ListModel {
         id: surfaceModel
     }
 
     Connections {
         target: compositor
-        onIdleInhibitResetRequested: compositor.idleInhibit = 0
-        onIdleTimerStartRequested: idleTimer.running = true
-        onIdleTimerStopRequested: idleTimer.running = false
-        onReady: {
-            // Start idle timer
-            idleTimer.running = true
-        }
         onWindowMapped: {
             // A window was mapped
             WindowManagement.windowMapped(window);
