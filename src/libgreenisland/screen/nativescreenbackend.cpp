@@ -69,6 +69,7 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
     qCDebug(NATIVE_BACKEND) << "Screen added" << screen->name() << screen->availableGeometry();
 
     Output *output = new Output(compositor(), screen->name());
+    output->window()->setScreen(screen);
     output->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
     changePosition(screen);
