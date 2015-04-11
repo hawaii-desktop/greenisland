@@ -30,6 +30,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QHash>
 #include <QtCore/QPointF>
+#include <QtCore/QPointer>
 #include <QtCore/QRectF>
 #include <QtCore/QSizeF>
 
@@ -61,7 +62,7 @@ class GREENISLAND_EXPORT ClientWindow : public QObject
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
     Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
-    Q_PROPERTY(ClientWindow *parentWindow READ parentWindow CONSTANT)
+    Q_PROPERTY(ClientWindow *parentWindow READ parentWindow NOTIFY parentWindowChanged)
     Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
     Q_PROPERTY(qreal x READ x WRITE setX NOTIFY positionChanged)
     Q_PROPERTY(qreal y READ y WRITE setY NOTIFY positionChanged)
@@ -103,6 +104,7 @@ public:
     QWaylandOutput *output() const;
 
     Q_INVOKABLE WindowView *viewForOutput(Output *output);
+    Q_INVOKABLE WindowView *parentViewForOutput(Output *output);
 
     qreal x() const;
     void setX(qreal value);
@@ -142,6 +144,7 @@ Q_SIGNALS:
     void titleChanged();
     void appIdChanged();
     void iconNameChanged();
+    void parentWindowChanged();
     void outputChanged();
     void positionChanged();
     void sizeChanged();
@@ -174,7 +177,7 @@ private:
     bool m_initialSetup;
     Compositor *m_compositor;
     QWaylandSurface *m_surface;
-    ClientWindow *m_parentWindow;
+    QPointer<ClientWindow> m_parentWindow;
     QHash<Output *, WindowView *> m_views;
 
     void setSize(const QSizeF &size);
@@ -208,6 +211,7 @@ private Q_SLOTS:
     void surfaceAppIdChanged();
     void surfaceSizeChanged();
     void setType(QWaylandSurface::WindowType windowType);
+    void parentSurfaceChanged(QWaylandSurface *newParent, QWaylandSurface *oldParent);
 };
 
 } // namespace GreenIsland

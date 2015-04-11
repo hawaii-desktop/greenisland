@@ -90,6 +90,8 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
             this, &ClientWindow::surfaceSizeChanged);
     connect(m_surface, &QWaylandSurface::windowTypeChanged,
             this, &ClientWindow::setType);
+    connect(m_surface, &QWaylandSurface::parentChanged,
+            this, &ClientWindow::parentSurfaceChanged);
 
     // Determine the app_id here because some applications will
     // never send set_app_id to the shell surface (i.e. weston-terminal)
@@ -136,7 +138,7 @@ QString ClientWindow::iconName() const
 
 ClientWindow *ClientWindow::parentWindow() const
 {
-    return m_parentWindow;
+    return m_parentWindow.data();
 }
 
 QWaylandOutput *ClientWindow::output() const
@@ -178,6 +180,21 @@ WindowView *ClientWindow::viewForOutput(Output *output)
     }
 
     return view;
+}
+
+WindowView *ClientWindow::parentViewForOutput(Output *output)
+{
+    // Spare the loop if the surface doesn't have a parent
+    if (!m_surface->transientParent())
+        return Q_NULLPTR;
+
+    // Find the transient parent window
+    Q_FOREACH (ClientWindow *parentWindow, m_compositor->d_func()->clientWindowsList) {
+        if (parentWindow->surface() == m_surface->transientParent())
+            return parentWindow->viewForOutput(output);
+    }
+
+    return Q_NULLPTR;
 }
 
 qreal ClientWindow::x() const
@@ -463,16 +480,6 @@ void ClientWindow::initialSetup()
     if (m_initialSetup)
         return;
 
-    if (!m_parentWindow) {
-        // Find the transient parent window
-        for (ClientWindow *parentWindow: m_compositor->d_func()->clientWindowsList) {
-            if (parentWindow->surface() == m_surface->transientParent()) {
-                m_parentWindow = parentWindow;
-                break;
-            }
-        }
-    }
-
     // Honor position for windows that start maximized or full screen
     if (isFullScreen() || isMaximized())
         return;
@@ -481,10 +488,10 @@ void ClientWindow::initialSetup()
     switch (m_surface->windowType()) {
     case QWaylandSurface::Popup:
         // Move popups relative to parent window
-        if (m_parentWindow) {
+        if (parentWindow()) {
 #if 0
-            m_pos.setX(m_parentWindow->position().x() + m_surface->transientOffset().x());
-            m_pos.setY(m_parentWindow->position().y() + m_surface->transientOffset().y());
+            m_pos.setX(parentWindow()->position().x() + m_surface->transientOffset().x());
+            m_pos.setY(parentWindow()->position().y() + m_surface->transientOffset().y());
 #else
             m_pos.setX(m_surface->transientOffset().x());
             m_pos.setY(m_surface->transientOffset().y());
@@ -496,15 +503,15 @@ void ClientWindow::initialSetup()
         break;
     case QWaylandSurface::Transient:
         // Center transient windows
-        if (m_parentWindow) {
+        if (parentWindow()) {
 #if 0
-            m_pos.setX(m_parentWindow->position().x() +
-                       ((m_parentWindow->size().width() - m_size.width()) / 2));
-            m_pos.setY(m_parentWindow->position().y() +
-                       ((m_parentWindow->size().height() - m_size.height()) / 2));
+            m_pos.setX(parentWindow()->position().x() +
+                       ((parentWindow()->size().width() - m_size.width()) / 2));
+            m_pos.setY(parentWindow()->position().y() +
+                       ((parentWindow()->size().height() - m_size.height()) / 2));
 #else
-            m_pos.setX((m_parentWindow->size().width() - m_size.width()) / 2);
-            m_pos.setY((m_parentWindow->size().height() - m_size.height()) / 2);
+            m_pos.setX((m_surface->transientParent()->size().width() - m_size.width()) / 2);
+            m_pos.setY((m_surface->transientParent()->size().height() - m_size.height()) / 2);
 #endif
         } else {
             m_pos.setX(0);
@@ -642,6 +649,7 @@ void ClientWindow::surfaceSizeChanged()
 
 void ClientWindow::setType(QWaylandSurface::WindowType windowType)
 {
+    // Save type
     switch (windowType) {
     case QWaylandSurface::Transient:
         m_type = Transient;
@@ -655,6 +663,20 @@ void ClientWindow::setType(QWaylandSurface::WindowType windowType)
     }
 
     Q_EMIT typeChanged();
+}
+
+void ClientWindow::parentSurfaceChanged(QWaylandSurface *newParent,
+                                        QWaylandSurface *oldParent)
+{
+    Q_UNUSED(oldParent)
+
+    // Find the transient parent window
+    Q_FOREACH (ClientWindow *parentWindow, m_compositor->d_func()->clientWindowsList) {
+        if (parentWindow->surface() == newParent) {
+            m_parentWindow = parentWindow;
+            break;
+        }
+    }
 }
 
 } // namespace GreenIsland
