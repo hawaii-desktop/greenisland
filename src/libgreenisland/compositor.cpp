@@ -297,13 +297,13 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
 
     // Connect surface signals
     connect(surface, &QWaylandSurface::mapped, this, [this, surface] {
-        Q_EMIT surfaceMapped(QVariant::fromValue(surface));
+        Q_EMIT surfaceMapped(surface);
     });
     connect(surface, &QWaylandSurface::unmapped, this, [this, surface] {
-        Q_EMIT surfaceUnmapped(QVariant::fromValue(surface));
+        Q_EMIT surfaceUnmapped(surface);
     });
     connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, surface] {
-        Q_EMIT surfaceDestroyed(QVariant::fromValue(surface));
+        Q_EMIT surfaceDestroyed(surface);
     });
 }
 

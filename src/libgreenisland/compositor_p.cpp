@@ -200,7 +200,7 @@ void CompositorPrivate::mapWindow(ClientWindow *window)
     addWindow(window);
 
     Q_EMIT ApplicationManager::instance()->windowMapped(window);
-    Q_EMIT q->windowMapped(QVariant::fromValue(window));
+    Q_EMIT q->windowMapped(window);
 }
 
 void CompositorPrivate::unmapWindow(ClientWindow *window)
@@ -210,7 +210,7 @@ void CompositorPrivate::unmapWindow(ClientWindow *window)
     removeWindow(window);
 
     Q_EMIT ApplicationManager::instance()->windowUnmapped(window);
-    Q_EMIT q->windowUnmapped(QVariant::fromValue(window));
+    Q_EMIT q->windowUnmapped(window);
 }
 
 void CompositorPrivate::destroyWindow(ClientWindow *window)
@@ -229,7 +229,7 @@ void CompositorPrivate::mapShellWindow(ShellWindow *window)
 
     if (!shellWindowsList.contains(window)) {
         shellWindowsList.append(window);
-        Q_EMIT q->shellWindowMapped(QVariant::fromValue(window));
+        Q_EMIT q->shellWindowMapped(window);
         Q_EMIT q->shellWindowsChanged();
     }
 }
@@ -239,7 +239,7 @@ void CompositorPrivate::unmapShellWindow(ShellWindow *window)
     Q_Q(Compositor);
 
     if (shellWindowsList.removeOne(window)) {
-        Q_EMIT q->shellWindowUnmapped(QVariant::fromValue(window));
+        Q_EMIT q->shellWindowUnmapped(window);
         Q_EMIT q->shellWindowsChanged();
     }
 }

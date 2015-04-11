@@ -104,16 +104,16 @@ public:
 
 Q_SIGNALS:
     void newSurfaceCreated(QWaylandSurface *surface);
-    void surfaceMapped(QVariant surface);
-    void surfaceUnmapped(QVariant surface);
-    void surfaceDestroyed(QVariant surface);
+    void surfaceMapped(QWaylandSurface *surface);
+    void surfaceUnmapped(QWaylandSurface *surface);
+    void surfaceDestroyed(QWaylandSurface *surface);
 
-    void windowMapped(QVariant window);
-    void windowUnmapped(QVariant window);
+    void windowMapped(ClientWindow *window);
+    void windowUnmapped(ClientWindow *window);
     void windowDestroyed(uint id);
 
-    void shellWindowMapped(QVariant window);
-    void shellWindowUnmapped(QVariant window);
+    void shellWindowMapped(ShellWindow *window);
+    void shellWindowUnmapped(ShellWindow *window);
     void shellWindowDestroyed(uint id);
 
     void stateChanged();
