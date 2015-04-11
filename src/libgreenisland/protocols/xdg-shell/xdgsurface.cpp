@@ -65,20 +65,20 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     m_window = new ClientWindow(surface, this);
 
     // Tell the client when this window is active
-    connect(m_window, &ClientWindow::activeChanged, [=] {
+    connect(m_window, &ClientWindow::activeChanged, this, [this] {
         Changes changes;
         changes.newState = false;
         changes.active = m_window->isActive();
         changes.moving = false;
         changes.resizing = false;
         requestConfigure(changes);
-    });
+    }, Qt::QueuedConnection);
 
     // Surface events
-    connect(m_surface, &QWaylandSurface::configure, [=](bool hasBuffer) {
+    connect(m_surface, &QWaylandSurface::configure, this, [this](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
-    });
+    }, Qt::QueuedConnection);
 }
 
 XdgSurface::~XdgSurface()

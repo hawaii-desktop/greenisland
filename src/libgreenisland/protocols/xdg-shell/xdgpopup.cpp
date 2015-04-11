@@ -60,13 +60,17 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
 
     // Connect surface signals
     connect(m_parentSurface, &QWaylandSurface::surfaceDestroyed,
-            this, &XdgPopup::parentSurfaceGone);
+            this, &XdgPopup::parentSurfaceGone,
+            Qt::QueuedConnection);
     connect(m_surface, &QWaylandSurface::mapped,
-            this, &XdgPopup::surfaceMapped);
+            this, &XdgPopup::surfaceMapped,
+            Qt::QueuedConnection);
     connect(m_surface, &QWaylandSurface::unmapped,
-            this, &XdgPopup::surfaceUnmapped);
+            this, &XdgPopup::surfaceUnmapped,
+            Qt::QueuedConnection);
     connect(m_surface, &QWaylandSurface::configure,
-            this, &XdgPopup::surfaceConfigured);
+            this, &XdgPopup::surfaceConfigured,
+            Qt::QueuedConnection);
 
     // Create the window
     m_window = new ClientWindow(m_surface, this);
