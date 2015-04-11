@@ -53,7 +53,6 @@ OutputWindow::OutputWindow(Output *output)
 
     // Setup window
     setColor(Qt::black);
-    winId();
 
     // Print GL information
     connect(this, SIGNAL(sceneGraphInitialized()),
