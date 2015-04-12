@@ -33,6 +33,7 @@ var activeWindow = null;
 
 function _printWindowInfo(window) {
     console.debug("\twindow:", window);
+    console.debug("\twindow id:", window.id);
     console.debug("\tsurface:", window.surface);
     console.debug("\tappId:", window.appId);
     console.debug("\ttitle:", window.title);
@@ -127,7 +128,8 @@ function windowMapped(window) {
     item.runMapAnimation();
 
     // Add surface to the model
-    surfaceModel.append({"id": window.id, "window": window, "item": item, "surface": window.surface});
+    surfaceModel.append({"id": window.id, "window": window,
+                            "item": item, "surface": window.surface});
 }
 
 function windowUnmapped(window) {
@@ -167,7 +169,9 @@ function windowDestroyed(id) {
 
     // Debug
     console.debug("Application window destroyed");
-    _printWindowInfo(entry.window);
+    //_printWindowInfo(entry.window);
+    console.debug("\twindow id:", id);
+    console.debug("\tscreen:", compositorRoot.screenView.name);
 
     // Forget window
     _forgetWindow(i, entry.window, entry.item, true);
@@ -206,16 +210,16 @@ function moveFront(window) {
 }
 
 function _forgetWindow(i, window, item, destruction) {
+    var j;
+
     // Remove from model
     surfaceModel.remove(i);
 
     // Remove from z-order list
-    if (window.type === ClientWindow.TopLevel) {
-        for (i = 0; i < windowList.length; ++i) {
-            if (windowList[i] === item) {
-                windowList.splice(i, 1);
-                break;
-            }
+    for (j = 0; j < windowList.length; j++) {
+        if (windowList[j] === item) {
+            windowList.splice(j, 1);
+            break;
         }
     }
 
@@ -227,10 +231,11 @@ function _forgetWindow(i, window, item, destruction) {
 
     // Unset transient children so that the parent can go back to normal
     // and also bring to front
-    if (window.type === ClientWindow.Transient) {
-        var parentItem = window.parentWindow.viewForOutput(_greenisland_output).parent;
-        parentItem.transientChildren = null;
-        parentItem.child.takeFocus();
+    for (j = 0; j < windowList.length; j++) {
+        if (windowList[j].transientChildren === item) {
+            windowList[j].transientChildren = null;
+            windowList[j].child.takeFocus();
+        }
     }
 }
 
