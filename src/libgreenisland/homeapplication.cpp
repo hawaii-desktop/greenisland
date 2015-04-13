@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
+
 #include "config.h"
 #include "compositor.h"
 #include "globalregistry.h"

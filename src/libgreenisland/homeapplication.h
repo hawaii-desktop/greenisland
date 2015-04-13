@@ -27,7 +27,7 @@
 #ifndef HOMEAPPLICATION_H
 #define HOMEAPPLICATION_H
 
-#include <QtGui/QGuiApplication>
+#include <QtCore/QString>
 
 #include <greenisland/greenisland_export.h>
 
