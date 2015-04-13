@@ -38,6 +38,7 @@ public:
     }
 
     Compositor *compositor;
+    Qt::KeyboardModifier windowActionKey;
     QWaylandKeymap keymap;
 };
 
@@ -49,11 +50,29 @@ CompositorSettings::CompositorSettings(Compositor *compositor)
 
     Q_D(CompositorSettings);
     d->compositor = compositor;
+    d->windowActionKey = Qt::MetaModifier;
 }
 
 CompositorSettings::~CompositorSettings()
 {
     delete d_ptr;
+}
+
+Qt::KeyboardModifier CompositorSettings::windowActionKey() const
+{
+    Q_D(const CompositorSettings);
+    return d->windowActionKey;
+}
+
+void CompositorSettings::setWindowActionKey(Qt::KeyboardModifier mod)
+{
+    Q_D(CompositorSettings);
+
+    if (d->windowActionKey == mod)
+        return;
+
+    d->windowActionKey = mod;
+    Q_EMIT windowActionKeyChanged();
 }
 
 QString CompositorSettings::keyboardLayout() const
