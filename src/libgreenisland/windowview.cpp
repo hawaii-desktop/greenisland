@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
 #include <QtCompositor/QWaylandQuickSurface>
@@ -35,7 +36,6 @@ namespace GreenIsland {
 
 WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
     : QWaylandSurfaceItem(surface, parent)
-    , m_modifierPressed(false)
     , m_pos(0, 0)
 {
     qRegisterMetaType<WindowView *>("WindowView*");
@@ -75,45 +75,25 @@ void WindowView::mousePressEvent(QMouseEvent *event)
     Q_EMIT mousePressed();
 
     // If the modifier is pressed we initiate a move operation
-    if (m_modifierPressed)
+    if (QGuiApplication::queryKeyboardModifiers() & Qt::MetaModifier)
         startMove();
 }
 
 void WindowView::mouseReleaseEvent(QMouseEvent *event)
 {
-    // If the modifier is pressed we finish the move operation
-    if (m_modifierPressed) {
-        m_modifierPressed = false;
-        stopMove();
-    }
+    // Stop the move operation nevertheless
+    stopMove();
 
     QWaylandSurfaceItem::mouseReleaseEvent(event);
 }
 
-void WindowView::keyPressEvent(QKeyEvent *event)
+void WindowView::mouseMoveEvent(QMouseEvent *event)
 {
-    // Set modifier pressed flag
-    if (event->key() == Qt::Key_Meta ||
-            event->key() == Qt::Key_Super_L ||
-            event->key() == Qt::Key_Super_R)
-        m_modifierPressed = true;
-
-    QWaylandSurfaceItem::keyPressEvent(event);
-}
-
-void WindowView::keyReleaseEvent(QKeyEvent *event)
-{
-    // Set modifier pressed flag
-    if (event->key() == Qt::Key_Meta ||
-            event->key() == Qt::Key_Super_L ||
-            event->key() == Qt::Key_Super_R)
-        m_modifierPressed = false;
-
-    // If the modifier is pressed we stop the move operation
-    if (!m_modifierPressed)
+    // Stop the move operation if the modifier is not pressed anymore
+    if (!(QGuiApplication::queryKeyboardModifiers() & Qt::MetaModifier))
         stopMove();
 
-    QWaylandSurfaceItem::keyReleaseEvent(event);
+    QWaylandSurfaceItem::mouseMoveEvent(event);
 }
 
 void WindowView::takeFocus(QWaylandInputDevice *device)

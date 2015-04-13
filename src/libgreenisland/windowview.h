@@ -53,16 +53,14 @@ Q_SIGNALS:
     void mousePressed();
 
 protected:
-    void mouseReleaseEvent(QMouseEvent *event);
-
-    void keyPressEvent(QKeyEvent *event);
-    void keyReleaseEvent(QKeyEvent *event);
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
     bool m_modifierPressed;
     QPointF m_pos;
 
-    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;
 
     void startMove();
