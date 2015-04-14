@@ -32,6 +32,15 @@
 
 Q_LOGGING_CATEGORY(NATIVE_BACKEND, "greenisland.screenbackend.native")
 
+// QtDeclarative 5.5 suffers from this bug: QTBUG-45279
+// which happens here on multi screen setups, as a temporary
+// workaround we only create the primary output
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+#  define QTBUG_WORKAROUND 1
+#else
+#  define QTBUG_WORKAROUND 0
+#endif
+
 namespace GreenIsland {
 
 NativeScreenBackend::NativeScreenBackend(Compositor *compositor, QObject *parent)
@@ -53,15 +62,22 @@ void NativeScreenBackend::acquireConfiguration()
     disconnect(qGuiApp, &QGuiApplication::screenRemoved,
                this, &NativeScreenBackend::screenRemoved);
 
-    Q_FOREACH (QScreen *screen, qGuiApp->screens())
+    Q_FOREACH (QScreen *screen, qGuiApp->screens()) {
+#if QTBUG_WORKAROUND
+        if (qGuiApp->primaryScreen() != screen)
+            continue;
+#endif
         screenAdded(screen);
+    }
 
     Q_EMIT configurationAcquired();
 
+#if !QTBUG_WORKAROUND
     connect(qGuiApp, &QGuiApplication::screenAdded,
             this, &NativeScreenBackend::screenAdded);
     connect(qGuiApp, &QGuiApplication::screenRemoved,
             this, &NativeScreenBackend::screenRemoved);
+#endif
 }
 
 void NativeScreenBackend::screenAdded(QScreen *screen)
@@ -139,7 +155,11 @@ void NativeScreenBackend::changePosition(QScreen *screen)
         return;
 
     Output *output = m_screenMap[screen];
+#if QTBUG_WORKAROUND
+    output->setPosition(QPoint(0, 0));
+#else
     output->setPosition(screen->availableGeometry().topLeft());
+#endif
     output->window()->setPosition(output->position());
 }
 
