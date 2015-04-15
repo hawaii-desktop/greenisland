@@ -73,6 +73,10 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     m_size = QSizeF(surface->size());
     m_internalGeometry = QRectF(QPointF(0, 0), m_size);
 
+    // Determine parent window
+    if (m_surface->transientParent())
+        parentSurfaceChanged(m_surface->transientParent(), Q_NULLPTR);
+
     // Create a view for the surface output, views for other outputs
     // will be created on demand
     viewForOutput(static_cast<Output *>(surface->mainOutput()));
