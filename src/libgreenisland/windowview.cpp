@@ -30,6 +30,8 @@
 #include <QtCompositor/QWaylandQuickSurface>
 
 #include "clientwindow.h"
+#include "compositor.h"
+#include "compositorsettings.h"
 #include "windowview.h"
 
 namespace GreenIsland {
@@ -75,7 +77,8 @@ void WindowView::mousePressEvent(QMouseEvent *event)
     Q_EMIT mousePressed();
 
     // If the modifier is pressed we initiate a move operation
-    if (QGuiApplication::queryKeyboardModifiers() & Qt::MetaModifier)
+    Qt::KeyboardModifier mod = static_cast<Compositor *>(surface()->compositor())->settings()->windowActionKey();
+    if (QGuiApplication::queryKeyboardModifiers() & mod)
         startMove();
 }
 
@@ -90,7 +93,8 @@ void WindowView::mouseReleaseEvent(QMouseEvent *event)
 void WindowView::mouseMoveEvent(QMouseEvent *event)
 {
     // Stop the move operation if the modifier is not pressed anymore
-    if (!(QGuiApplication::queryKeyboardModifiers() & Qt::MetaModifier))
+    Qt::KeyboardModifier mod = static_cast<Compositor *>(surface()->compositor())->settings()->windowActionKey();
+    if (!(QGuiApplication::queryKeyboardModifiers() & mod))
         stopMove();
 
     QWaylandSurfaceItem::mouseMoveEvent(event);
