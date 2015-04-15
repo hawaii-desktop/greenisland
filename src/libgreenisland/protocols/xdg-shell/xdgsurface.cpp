@@ -227,6 +227,7 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
 bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(XDGSHELL_TRACE) << "Run operation" << op->type();
 
     switch (op->type()) {
     case QWaylandSurfaceOp::Resize: {
