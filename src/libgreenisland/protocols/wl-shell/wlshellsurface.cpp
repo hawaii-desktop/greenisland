@@ -172,7 +172,7 @@ void WlShellSurface::resetResizeGrab()
 bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
-    qCDebug(WLSHELL_PROTOCOL) << "Run operation" << op->type();
+    qCDebug(WLSHELL_TRACE) << "Run operation" << op->type();
 
     switch (op->type()) {
     case QWaylandSurfaceOp::Ping:
