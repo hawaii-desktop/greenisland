@@ -32,6 +32,7 @@
 
 #include "applicationmanager.h"
 #include "compositorsettings.h"
+#include "keybinding.h"
 #include "screenmanager.h"
 
 //  W A R N I N G
@@ -92,7 +93,9 @@ public:
     int cursorHotspotX;
     int cursorHotspotY;
 
+    // Keyboard
     QWaylandSurface *lastKeyboardFocus;
+    QList<KeyBinding> keyBindings;
 
     QString fakeScreenConfiguration;
     CompositorSettings *settings;

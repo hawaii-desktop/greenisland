@@ -29,6 +29,7 @@ set(SOURCES
     globalregistry.cpp
     gldebug.cpp
     homeapplication.cpp
+    keybinding.cpp
     logging.cpp
     output.cpp
     outputwindow.cpp
@@ -137,6 +138,7 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
     CompositorSettings
     ClientWindow
     HomeApplication
+    KeyBinding
     Output
     OutputWindow
     WindowView
@@ -160,6 +162,7 @@ install(
       compositor.h
       clientwindow.h
       homeapplication.h
+      keybinding.h
       output.h
       outputwindow.h
       windowview.h

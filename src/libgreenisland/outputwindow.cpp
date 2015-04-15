@@ -33,6 +33,7 @@
 #include "gldebug.h"
 #include "globalregistry.h"
 #include "logging.h"
+#include "keybinding.h"
 #include "output.h"
 #include "outputwindow.h"
 #include "windowview.h"
@@ -189,6 +190,15 @@ void OutputWindow::unloadScene()
 void OutputWindow::keyPressEvent(QKeyEvent *event)
 {
     m_output->compositor()->setState(Compositor::Active);
+
+    // Key bindings
+    Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
+        if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
+            event->accept();
+            Q_EMIT m_output->compositor()->keyBindingTriggered(keyBinding.name());
+            return;
+        }
+    }
 
     QQuickView::keyPressEvent(event);
 }

@@ -37,6 +37,7 @@ namespace GreenIsland {
 class CompositorSettings;
 class ClientWindow;
 class CompositorPrivate;
+class KeyBinding;
 class Output;
 class ScreenManager;
 class ShellWindow;
@@ -87,6 +88,8 @@ public:
 
     CompositorSettings *settings() const;
 
+    QList<KeyBinding> keyBindings() const;
+
     void run();
 
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
@@ -97,6 +100,9 @@ public:
 
     Q_INVOKABLE void clearKeyboardFocus();
     Q_INVOKABLE void restoreKeyboardFocus();
+
+    Q_INVOKABLE bool registerKeyBinding(const QString &name, const QString &keys);
+    Q_INVOKABLE bool unregisterKeyBinding(const QString &name);
 
     Q_INVOKABLE void abortSession();
 
@@ -131,6 +137,8 @@ Q_SIGNALS:
     void fadeOut();
 
     void screenConfigurationAcquired();
+
+    void keyBindingTriggered(const QString &name);
 
 protected:
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
