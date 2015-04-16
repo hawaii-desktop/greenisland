@@ -674,6 +674,14 @@ void ClientWindow::parentSurfaceChanged(QWaylandSurface *newParent,
 {
     Q_UNUSED(oldParent)
 
+    // Spare the loop below if the parent is null
+    if (!newParent && m_parentWindow) {
+        m_parentWindow = Q_NULLPTR;
+        Q_EMIT parentWindowChanged();
+    } else if (!newParent && !m_parentWindow) {
+        return;
+    }
+
     // Find the transient parent window
     Q_FOREACH (ClientWindow *parentWindow, m_compositor->d_func()->clientWindowsList) {
         if (parentWindow->surface() == newParent) {
