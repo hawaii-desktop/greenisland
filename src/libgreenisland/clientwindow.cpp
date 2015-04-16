@@ -492,14 +492,9 @@ void ClientWindow::initialSetup()
     switch (m_surface->windowType()) {
     case QWaylandSurface::Popup:
         // Move popups relative to parent window
-        if (parentWindow()) {
-#if 0
-            m_pos.setX(parentWindow()->position().x() + m_surface->transientOffset().x());
-            m_pos.setY(parentWindow()->position().y() + m_surface->transientOffset().y());
-#else
+        if (m_surface->transientParent()) {
             m_pos.setX(m_surface->transientOffset().x());
             m_pos.setY(m_surface->transientOffset().y());
-#endif
         } else {
             m_pos.setX(m_surface->transientOffset().x());
             m_pos.setY(m_surface->transientOffset().y());
@@ -507,16 +502,9 @@ void ClientWindow::initialSetup()
         break;
     case QWaylandSurface::Transient:
         // Center transient windows
-        if (parentWindow()) {
-#if 0
-            m_pos.setX(parentWindow()->position().x() +
-                       ((parentWindow()->size().width() - m_size.width()) / 2));
-            m_pos.setY(parentWindow()->position().y() +
-                       ((parentWindow()->size().height() - m_size.height()) / 2));
-#else
+        if (m_surface->transientParent()) {
             m_pos.setX((m_surface->transientParent()->size().width() - m_size.width()) / 2);
             m_pos.setY((m_surface->transientParent()->size().height() - m_size.height()) / 2);
-#endif
         } else {
             m_pos.setX(0);
             m_pos.setY(0);
