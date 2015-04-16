@@ -66,6 +66,7 @@ void GlobalRegistry::start()
     if (!m_registry)
         qFatal("Wayland registry unavailable, aborting...");
     wl_registry_add_listener(m_registry, &GlobalRegistry::m_listener, this);
+    QCoreApplication::processEvents();
 }
 
 GlobalRegistry *GlobalRegistry::instance()
