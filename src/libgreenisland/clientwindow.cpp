@@ -678,6 +678,7 @@ void ClientWindow::parentSurfaceChanged(QWaylandSurface *newParent,
     Q_FOREACH (ClientWindow *parentWindow, m_compositor->d_func()->clientWindowsList) {
         if (parentWindow->surface() == newParent) {
             m_parentWindow = parentWindow;
+            Q_EMIT parentWindowChanged();
             break;
         }
     }
