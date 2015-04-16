@@ -195,7 +195,7 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
     Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
         if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
             event->accept();
-            Q_EMIT m_output->compositor()->keyBindingTriggered(keyBinding.name());
+            Q_EMIT m_output->compositor()->keyBindingPressed(keyBinding.name());
             return;
         }
     }
@@ -206,6 +206,15 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
 void OutputWindow::keyReleaseEvent(QKeyEvent *event)
 {
     m_output->compositor()->setState(Compositor::Active);
+
+    // Key bindings
+    Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
+        if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
+            event->accept();
+            Q_EMIT m_output->compositor()->keyBindingReleased(keyBinding.name());
+            return;
+        }
+    }
 
     QQuickView::keyReleaseEvent(event);
 }

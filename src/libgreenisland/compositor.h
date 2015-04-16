@@ -138,7 +138,8 @@ Q_SIGNALS:
 
     void screenConfigurationAcquired();
 
-    void keyBindingTriggered(const QString &name);
+    void keyBindingPressed(const QString &name);
+    void keyBindingReleased(const QString &name);
 
 protected:
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
