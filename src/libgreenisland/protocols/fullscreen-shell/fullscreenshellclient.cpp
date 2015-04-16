@@ -76,20 +76,8 @@ void FullScreenShellClient::showOutput(Output *output)
     if (!wlSurface)
         qFatal("Unable to get wl_surface from output window, aborting...");
 
-    QScreen *found = Q_NULLPTR;
-    for (QScreen *screen: QGuiApplication::screens()) {
-        if (screen->name() == output->name() &&
-                screen->geometry() == output->geometry()) {
-            found = screen;
-            break;
-        }
-    }
-
-    if (!found)
-        qFatal("Can't find a QScreen for \"%s\"", qPrintable(output->name()));
-
     wl_output *wlOutput = static_cast<wl_output *>(
-                native->nativeResourceForScreen("output", found));
+                native->nativeResourceForScreen("output", output->window()->screen()));
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
@@ -108,20 +96,8 @@ void FullScreenShellClient::hideOutput(Output *output)
     if (!native)
         qFatal("Platform native interface not found, aborting...");
 
-    QScreen *found = Q_NULLPTR;
-    for (QScreen *screen: QGuiApplication::screens()) {
-        if (screen->name() == output->name() &&
-                screen->geometry() == output->geometry()) {
-            found = screen;
-            break;
-        }
-    }
-
-    if (!found)
-        qFatal("Can't find a QScreen for \"%s\"", qPrintable(output->name()));
-
     wl_output *wlOutput = static_cast<wl_output *>(
-                native->nativeResourceForScreen("output", found));
+                native->nativeResourceForScreen("output", output->window()->screen()));
     if (!wlOutput)
         qFatal("Unable to get wl_output from output, aborting...");
 
