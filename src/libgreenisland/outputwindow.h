@@ -69,6 +69,9 @@ private:
 
     void handleMotion(quint64 time, const QPoint &pt);
 
+    void showOutput();
+    void hideOutput();
+
 private Q_SLOTS:
     void printInfo();
     void readContent();
