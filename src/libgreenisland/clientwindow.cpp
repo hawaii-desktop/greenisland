@@ -178,9 +178,9 @@ WindowView *ClientWindow::viewForOutput(Output *output)
         m_views[output] = view;
 
         // Activate this window when the mouse is pressed
-        connect(view, &WindowView::mousePressed, [this] {
+        connect(view, &WindowView::mousePressed, this, [this] {
             activate();
-        });
+        }, Qt::QueuedConnection);
     }
 
     return view;
