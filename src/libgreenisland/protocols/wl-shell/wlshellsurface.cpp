@@ -26,6 +26,7 @@
 
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
+#include <QtCompositor/private/qwlcompositor_p.h>
 #include <QtCompositor/private/qwlinputdevice_p.h>
 #include <QtCompositor/private/qwlpointer_p.h>
 #include <QtCompositor/private/qwlsurface_p.h>
@@ -180,6 +181,9 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
         return true;
     case QWaylandSurfaceOp::Resize:
         requestResize(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
+        return true;
+    case QWaylandSurfaceOp::Close:
+        m_surface->compositor()->handle()->destroySurface(m_surface->handle());
         return true;
     case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
