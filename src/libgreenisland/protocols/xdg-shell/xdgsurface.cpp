@@ -241,6 +241,9 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Ping:
         m_shell->pingSurface(this);
         return true;
+    case QWaylandSurfaceOp::Close:
+        send_close();
+        return true;
     case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
         return true;
