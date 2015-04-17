@@ -36,6 +36,7 @@ set(SOURCES
     windowview.cpp
     shellwindow.cpp
     utilities.cpp
+    client/wlclientconnection.cpp
     client/wlregistry.cpp
     screen/screenbackend.cpp
     screen/screenconfiguration.cpp
