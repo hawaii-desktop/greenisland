@@ -48,6 +48,7 @@ public:
     bool matches(int key, const Qt::KeyboardModifiers &modifiers,
                  const QString &text) const;
 
+    KeyBinding &operator=(const KeyBinding &other);
     bool operator==(const KeyBinding &other);
 
 private:

@@ -101,6 +101,16 @@ bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers, const 
     return false;
 }
 
+KeyBinding &KeyBinding::operator=(const KeyBinding &other)
+{
+    if (this != &other) {
+        d_ptr->name = other.name();
+        d_ptr->sequence = other.sequence();
+    }
+
+    return *this;
+}
+
 bool KeyBinding::operator==(const KeyBinding &other)
 {
     return (d_ptr->name == other.name() && d_ptr->sequence == other.sequence());
