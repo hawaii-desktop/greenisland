@@ -404,6 +404,12 @@ void ClientWindow::stopMove()
     m_surface->sendInterfaceOp(op);
 }
 
+void ClientWindow::close()
+{
+    QWaylandSurfaceOp op(QWaylandSurfaceOp::Close);
+    m_surface->sendInterfaceOp(op);
+}
+
 void ClientWindow::terminateProcess(quint32 timeout)
 {
     if (m_surface && m_surface->client()) {
