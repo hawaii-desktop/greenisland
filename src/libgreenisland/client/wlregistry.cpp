@@ -37,7 +37,9 @@ namespace GreenIsland {
 
 static WlRegistry::Interface nameToInterface(const char *interface)
 {
-    if (strcmp(interface, "_wl_fullscreen_shell") == 0)
+    if (strcmp(interface, "wl_shm") == 0)
+        return WlRegistry::Shm;
+    else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
         return WlRegistry::FullscreenShell;
     return WlRegistry::Unknown;
 }
@@ -90,6 +92,9 @@ private:
         m_interfaces.append({i, name, version});
 
         switch (i) {
+        case WlRegistry::Shm:
+            Q_EMIT q->shmAnnounced(name, version);
+            break;
         case WlRegistry::FullscreenShell:
             Q_EMIT q->fullscreenShellAnnounced(name, version);
             break;
@@ -107,6 +112,9 @@ private:
                 m_interfaces.erase(it);
 
                 switch (info.interface) {
+                case WlRegistry::Shm:
+                    Q_EMIT q->shmRemoved(name);
+                    break;
                 case WlRegistry::FullscreenShell:
                     Q_EMIT q->fullscreenShellRemoved(name);
                     break;

@@ -41,7 +41,8 @@ class WlRegistry : public QObject
     Q_OBJECT
 public:
     enum Interface {
-        Unknown = 0,
+        Unknown,
+        Shm,
         FullscreenShell
     };
 
@@ -61,6 +62,9 @@ Q_SIGNALS:
 
     void interfacesAnnounced();
     void interfacesRemoved();
+
+    void shmAnnounced(quint32 name, quint32 version);
+    void shmRemoved(quint32 name);
 
     void fullscreenShellAnnounced(quint32 name, quint32 version);
     void fullscreenShellRemoved(quint32 name);
