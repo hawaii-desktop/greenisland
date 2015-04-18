@@ -25,13 +25,11 @@
  ***************************************************************************/
 
 #include <QtCore/QStandardPaths>
-#include <QtGui/QGuiApplication>
 #include <QtQml/QQmlContext>
 
 #include "compositor.h"
 #include "compositor_p.h"
 #include "gldebug.h"
-#include "globalregistry.h"
 #include "logging.h"
 #include "keybinding.h"
 #include "output.h"
@@ -64,17 +62,6 @@ OutputWindow::OutputWindow(Output *output)
     connect(this, &QQuickView::afterRendering,
             this, &OutputWindow::readContent,
             Qt::DirectConnection);
-
-    // Retrieve full screen shell client object, this will be available
-    // only when Green Island is nested into another compositor
-    // that supports the fullscreen-shell interface
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-        if (fsh) {
-            // Disable decorations
-            setFlags(flags() | Qt::BypassWindowManagerHint);
-        }
-    }
 
     // Show loading errors
     connect(this, &QQuickView::statusChanged, this, [this](const QQuickView::Status &status) {
@@ -286,32 +273,33 @@ void OutputWindow::handleMotion(quint64 time, const QPoint &pt)
 
 void OutputWindow::showOutput()
 {
+    FullScreenShellClient *fsh = m_output->compositor()->d_func()->fullscreenShell;
+
+    // Disable decorations for fullscreen shell
+    if (fsh)
+        setFlags(flags() | Qt::BypassWindowManagerHint);
+
     // Show
     show();
 
-    // Show output on full screen shell
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-        if (fsh) {
-            qCDebug(GREENISLAND_COMPOSITOR)
-                    << "Showing output on full screen shell for output"
-                    << m_output->name() << m_output->geometry();
-            fsh->showOutput(m_output);
-        }
+    // Show output on fullscreen shell
+    if (fsh) {
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Showing output on full screen shell for output"
+                << m_output->name() << m_output->geometry();
+        fsh->showOutput(m_output);
     }
 }
 
 void OutputWindow::hideOutput()
 {
-    // Hide output from full screen shell
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-        FullScreenShellClient *fsh = GlobalRegistry::fullScreenShell();
-        if (fsh) {
-            qCDebug(GREENISLAND_COMPOSITOR)
-                    << "Hiding output on full screen shell for output"
-                    << m_output->name() << m_output->geometry();
-            fsh->hideOutput(m_output);
-        }
+    // Hide output from fullscreen shell
+    FullScreenShellClient *fsh = m_output->compositor()->d_func()->fullscreenShell;
+    if (fsh) {
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Hiding output on full screen shell for output"
+                << m_output->name() << m_output->geometry();
+        fsh->hideOutput(m_output);
     }
 
     // Hide

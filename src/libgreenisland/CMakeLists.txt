@@ -26,7 +26,6 @@ set(SOURCES
     compositor.cpp
     compositor_p.cpp
     compositorsettings.cpp
-    globalregistry.cpp
     gldebug.cpp
     homeapplication.cpp
     keybinding.cpp

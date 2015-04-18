@@ -28,7 +28,6 @@
 
 #include "config.h"
 #include "compositor.h"
-#include "globalregistry.h"
 #include "homeapplication.h"
 #include "logging.h"
 #include "utilities.h"
@@ -139,10 +138,6 @@ bool HomeApplication::run(const QString &shell)
             return false;
         }
     }
-
-    // Bind to globals such as full screen shell if we are a Wayland client
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland")))
-        GreenIsland::GlobalRegistry::instance()->start();
 
     // Create the compositor
     m_compositor = new GreenIsland::Compositor(m_socket);

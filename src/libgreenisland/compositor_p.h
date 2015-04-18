@@ -51,7 +51,9 @@ namespace GreenIsland {
 class AbstractPlugin;
 class Compositor;
 class ClientWindow;
+class WlClientConnection;
 class ShellWindow;
+class FullScreenShellClient;
 class GreenIslandRecorderManager;
 
 class CompositorPrivate
@@ -101,6 +103,10 @@ public:
     CompositorSettings *settings;
     ScreenManager *screenManager;
     GreenIslandRecorderManager *recorderManager;
+
+    // Client
+    WlClientConnection *clientConnection;
+    FullScreenShellClient *fullscreenShell;
 
     // Application management
     QHash<QString, QWaylandSurfaceList> appSurfaces;

@@ -27,32 +27,20 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/QScreen>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/QtCompositorVersion>
 
 #include "fullscreenshellclient.h"
-#include "globalregistry.h"
 #include "output.h"
 
 Q_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL, "greenisland.protocols.fullscreenshell.client")
 
 namespace GreenIsland {
 
-FullScreenShellClient::FullScreenShellClient(quint32 id)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
-    : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id, 1)
-#else
-    : QtWayland::_wl_fullscreen_shell(GlobalRegistry::registry(), id)
-#endif
-    , m_id(id)
+FullScreenShellClient::FullScreenShellClient(wl_registry *registry, quint32 name, quint32 version)
+    : QtWayland::_wl_fullscreen_shell(registry, name, version)
     , m_capabilities(0)
 {
 }
 
-quint32 FullScreenShellClient::id() const
-{
-    return m_id;
-}
 
 FullScreenShellClient::Capabilities FullScreenShellClient::capabilities() const
 {

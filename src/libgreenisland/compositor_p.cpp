@@ -52,6 +52,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorHotspotY(0)
     , lastKeyboardFocus(Q_NULLPTR)
     , recorderManager(Q_NULLPTR)
+    , clientConnection(Q_NULLPTR)
+    , fullscreenShell(Q_NULLPTR)
     , q_ptr(self)
 {
     idleTimer->setInterval(5 * 60000);

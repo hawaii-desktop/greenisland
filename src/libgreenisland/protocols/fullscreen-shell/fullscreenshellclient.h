@@ -48,9 +48,7 @@ public:
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
-    explicit FullScreenShellClient(quint32 id);
-
-    quint32 id() const;
+    FullScreenShellClient(wl_registry *registry, quint32 name, quint32 version);
 
     Capabilities capabilities() const;
 
@@ -58,7 +56,6 @@ public:
     void hideOutput(Output *output);
 
 private:
-    quint32 m_id;
     Capabilities m_capabilities;
 
     void fullscreen_shell_capability(uint32_t capabilty) Q_DECL_OVERRIDE;
