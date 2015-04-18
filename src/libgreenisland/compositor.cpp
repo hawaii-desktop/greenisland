@@ -73,7 +73,7 @@ Compositor::Compositor(const QString &socket)
     d->loadPlugins();
 
     // Actions to do when the screen configuration is acquired
-    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this] {
+    connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
         // Emit a signal which is handy for plugins
         Q_EMIT screenConfigurationAcquired();
 
@@ -82,6 +82,13 @@ Compositor::Compositor(const QString &socket)
         qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
         sd_notify(0, "READY=1");
 #endif
+
+        // Start idle timer
+        connect(d->idleTimer, &QTimer::timeout, this, [this, d] {
+            if (d->idleInhibit == 0)
+                setState(Idle);
+        });
+        d->idleTimer->start();
     });
 }
 
@@ -289,13 +296,6 @@ void Compositor::run()
         // Create outputs right away
         d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
     }
-
-    // Start idle timer
-    connect(d->idleTimer, &QTimer::timeout, this, [this, d] {
-        if (d->idleInhibit == 0)
-            setState(Idle);
-    });
-    d->idleTimer->start();
 }
 
 QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
