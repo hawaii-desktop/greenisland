@@ -41,7 +41,9 @@ namespace GreenIsland {
 
 static WlRegistry::Interface nameToInterface(const char *interface)
 {
-    if (strcmp(interface, "wl_shm") == 0)
+    if (strcmp(interface, "wl_compositor") == 0)
+        return WlRegistry::Compositor;
+    else if (strcmp(interface, "wl_shm") == 0)
         return WlRegistry::Shm;
     else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
         return WlRegistry::FullscreenShell;
@@ -51,6 +53,8 @@ static WlRegistry::Interface nameToInterface(const char *interface)
 static const wl_interface *wlInterface(WlRegistry::Interface interface)
 {
     switch (interface) {
+    case WlRegistry::Compositor:
+        return &wl_compositor_interface;
     case WlRegistry::Shm:
         return &wl_shm_interface;
     case WlRegistry::FullscreenShell:
@@ -128,6 +132,9 @@ private:
         m_interfaces.append({i, name, version});
 
         switch (i) {
+        case WlRegistry::Compositor:
+            Q_EMIT q->compositorAnnounced(name, version);
+            break;
         case WlRegistry::Shm:
             Q_EMIT q->shmAnnounced(name, version);
             break;
@@ -148,6 +155,9 @@ private:
                 m_interfaces.erase(it);
 
                 switch (info.interface) {
+                case WlRegistry::Compositor:
+                    Q_EMIT q->compositorRemoved(name);
+                    break;
                 case WlRegistry::Shm:
                     Q_EMIT q->shmRemoved(name);
                     break;
@@ -252,6 +262,12 @@ void WlRegistry::setup()
     Q_D(WlRegistry);
     Q_ASSERT(isValid());
     d->setup();
+}
+
+wl_compositor *WlRegistry::bindCompositor()
+{
+    Q_D(WlRegistry);
+    return d->bind<wl_compositor>(Compositor);
 }
 
 WlShmPool *WlRegistry::createShmPool(QObject *parent)

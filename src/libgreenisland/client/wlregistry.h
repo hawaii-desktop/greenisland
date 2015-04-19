@@ -32,6 +32,7 @@
 
 Q_DECLARE_LOGGING_CATEGORY(WLREGISTRY)
 
+struct wl_compositor;
 struct wl_display;
 struct wl_registry;
 
@@ -46,6 +47,7 @@ class WlRegistry : public QObject
 public:
     enum Interface {
         Unknown,
+        Compositor,
         Shm,
         FullscreenShell
     };
@@ -60,6 +62,8 @@ public:
     void create(wl_display *display);
     void setup();
 
+    wl_compositor *bindCompositor();
+
     WlShmPool *createShmPool(QObject *parent);
 
 Q_SIGNALS:
@@ -68,6 +72,9 @@ Q_SIGNALS:
 
     void interfacesAnnounced();
     void interfacesRemoved();
+
+    void compositorAnnounced(quint32 name, quint32 version);
+    void compositorRemoved(quint32 name);
 
     void shmAnnounced(quint32 name, quint32 version);
     void shmRemoved(quint32 name);
