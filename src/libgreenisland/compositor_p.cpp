@@ -41,6 +41,7 @@
 #include "logging.h"
 #include "shellwindow.h"
 #include "client/wlclientconnection.h"
+#include "client/wlcursortheme.h"
 #include "client/wlregistry.h"
 #include "client/wlseat.h"
 #include "client/wlshmpool.h"
@@ -186,6 +187,19 @@ void CompositorPrivate::dpms(bool on)
     Q_UNUSED(on);
 }
 
+void CompositorPrivate::setCursorImage(const QImage &image)
+{
+    QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
+
+    static bool cursorIsSet = false;
+    if (cursorIsSet) {
+        QGuiApplication::changeOverrideCursor(cursor);
+    } else {
+        QGuiApplication::setOverrideCursor(cursor);
+        cursorIsSet = true;
+    }
+}
+
 void CompositorPrivate::_q_createNestedConnection()
 {
     Q_Q(Compositor);
@@ -283,7 +297,7 @@ void CompositorPrivate::_q_createInternalConnection()
         });
 
         q->connect(registry, &WlRegistry::shmAnnounced, q,
-                   [this, registry](quint32, quint32) {
+                   [this, registry, q](quint32, quint32) {
             // Create a shared memory pool
             clientData.shmPool = registry->createShmPool(clientData.connection);
         });
@@ -320,15 +334,7 @@ void CompositorPrivate::_q_updateCursor(bool hasBuffer)
 
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
-    QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
-
-    static bool cursorIsSet = false;
-    if (cursorIsSet) {
-        QGuiApplication::changeOverrideCursor(cursor);
-    } else {
-        QGuiApplication::setOverrideCursor(cursor);
-        cursorIsSet = true;
-    }
+    setCursorImage(image);
 #endif
 }
 

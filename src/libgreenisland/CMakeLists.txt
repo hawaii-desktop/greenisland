@@ -38,6 +38,7 @@ set(SOURCES
     shellwindow.cpp
     utilities.cpp
     client/wlclientconnection.cpp
+    client/wlcursortheme.cpp
     client/wlpointer.cpp
     client/wlregistry.cpp
     client/wlseat.cpp
@@ -117,6 +118,7 @@ target_link_libraries(GreenIsland
     Qt5::Compositor
     Wayland::Client
     Wayland::Server
+    Wayland::Cursor
     ${EGL_TARGET}
 )
 

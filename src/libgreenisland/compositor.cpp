@@ -57,6 +57,8 @@
 #  include <systemd/sd-daemon.h>
 #endif
 
+#include <wayland-client-protocol.h>
+
 namespace GreenIsland {
 
 QString Compositor::s_fixedShell;

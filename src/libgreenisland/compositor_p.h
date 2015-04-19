@@ -55,6 +55,7 @@ class Compositor;
 class ClientWindow;
 class WlClientConnection;
 class WlSeat;
+class WlCursorTheme;
 class WlShmPool;
 class ShellWindow;
 class FullScreenShellClient;
@@ -72,6 +73,8 @@ public:
     void loadPlugins();
 
     void dpms(bool on);
+
+    void setCursorImage(const QImage &image);
 
     void addWindow(ClientWindow *window);
     void removeWindow(ClientWindow *window);
