@@ -19,6 +19,8 @@ if(systemd_FOUND)
     include_directories(${systemd_INCLUDE_DIRS})
 endif()
 
+add_definitions(-Wno-deprecated-declarations)
+
 set(SOURCES
     abstractplugin.cpp
     applicationmanager.cpp
@@ -93,6 +95,11 @@ ecm_add_qtwayland_server_protocol(SOURCES
     PREFIX gtk_
 )
 
+ecm_add_qtwayland_client_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland.xml
+    BASENAME wayland
+    PREFIX wl_
+)
 ecm_add_qtwayland_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
     BASENAME fullscreen-shell

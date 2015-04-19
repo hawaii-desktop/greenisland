@@ -26,7 +26,6 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
-#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
@@ -47,7 +46,6 @@
 
 #include "client/wlclientconnection.h"
 #include "client/wlregistry.h"
-#include "protocols/fullscreen-shell/fullscreenshellclient.h"
 #include "protocols/greenisland/greenislandapps.h"
 #include "protocols/greenisland/greenislandwindows.h"
 #include "protocols/greenisland/greenislandrecorder.h"
@@ -260,41 +258,24 @@ void Compositor::run()
     Q_FOREACH (AbstractPlugin *plugin, d->plugins)
         plugin->addGlobalInterfaces();
 
-    // Bind to globals such as full screen shell if we are a Wayland client
-    if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-        QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
-        if (!native)
-            qFatal("Platform native interface not found, aborting...");
-
-        wl_display *display = static_cast<wl_display *>(
-                    native->nativeResourceForIntegration("display"));
-        if (!display)
-            qFatal("Wayland connection is not available, aborting...");
-
-        d->clientConnection = new WlClientConnection(this);
-        d->clientConnection->setDisplay(display);
-        connect(d->clientConnection, &WlClientConnection::connected, this, [this, display, d] {
-            WlRegistry *registry = new WlRegistry(d->clientConnection);
-            registry->create(display);
-            connect(registry, &WlRegistry::fullscreenShellAnnounced, this,
-                    [this, registry, d](quint32 name, quint32 version) {
-                d->fullscreenShell = new FullScreenShellClient(registry->registry(), name, version);
-
-                // Create outputs only now so that OutputWindow will be able to
-                // show itself on fullscreen shell
-                d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
-            });
-            connect(registry, &WlRegistry::fullscreenShellRemoved, this,
-                    [this, d](quint32) {
-                delete d->fullscreenShell;
-                d->fullscreenShell = Q_NULLPTR;
-            });
-            registry->setup();
-        });
-        d->clientConnection->initializeConnection();
+    // Connect to the main compositor if we are nested into another compositor and
+    // queue internal connection creation; we need to create an internal connection
+    // in any case to be able to create the shm pool used by cursor themes
+    if (d->nested) {
+        // Queue nested connection initialization, internal connection
+        // will be initialized once the connection to the main compositor
+        // is established
+        QMetaObject::invokeMethod(this, "_q_createNestedConnection",
+                                  Qt::QueuedConnection);
     } else {
-        // Create outputs right away
-        d->screenManager->acquireConfiguration(d->fakeScreenConfiguration);
+        // Queue internal connection initialization
+        QMetaObject::invokeMethod(this, "_q_createInternalConnection",
+                                  Qt::QueuedConnection);
+
+        // Queue screen configuration acquisition
+        QMetaObject::invokeMethod(d->screenManager, "acquireConfiguration",
+                                  Qt::QueuedConnection,
+                                  Q_ARG(QString, d->fakeScreenConfiguration));
     }
 }
 

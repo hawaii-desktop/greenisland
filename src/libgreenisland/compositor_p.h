@@ -44,6 +44,8 @@
 //
 // We mean it.
 
+struct wl_compositor;
+
 typedef QList<QWaylandSurface *> QWaylandSurfaceList;
 
 namespace GreenIsland {
@@ -52,6 +54,8 @@ class AbstractPlugin;
 class Compositor;
 class ClientWindow;
 class WlClientConnection;
+class WlSeat;
+class WlShmPool;
 class ShellWindow;
 class FullScreenShellClient;
 class GreenIslandRecorderManager;
@@ -80,6 +84,8 @@ public:
     void unmapShellWindow(ShellWindow *window);
     void destroyShellWindow(ShellWindow *window);
 
+    void _q_createNestedConnection();
+    void _q_createInternalConnection();
     void _q_updateCursor(bool hasBuffer);
 
     bool running;
@@ -104,9 +110,21 @@ public:
     ScreenManager *screenManager;
     GreenIslandRecorderManager *recorderManager;
 
-    // Client
-    WlClientConnection *clientConnection;
+    // Nested mode
+    bool nested;
+    WlClientConnection *nestedConnection;
     FullScreenShellClient *fullscreenShell;
+
+    // Client
+    struct WlClientData {
+        wl_client *client;
+        WlClientConnection *connection;
+        wl_compositor *compositor;
+        WlSeat *seat;
+        WlShmPool *shmPool;
+        WlCursorTheme *cursorTheme;
+    };
+    WlClientData clientData;
 
     // Application management
     QHash<QString, QWaylandSurfaceList> appSurfaces;

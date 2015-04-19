@@ -41,6 +41,7 @@ class ScreenManager : public QObject
 public:
     ScreenManager(Compositor *compositor);
 
+public Q_SLOTS:
     void acquireConfiguration(const QString &fileName = QString());
 
 Q_SIGNALS:
