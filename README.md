@@ -131,6 +131,10 @@ to learn how to enable them.
   * **greenisland.screenbackend.fake:** Fake screen backend
   * **greenisland.screenconfiguration:** Screen configuration loader
 
+* Client-side:
+  * **greenisland.wlregistry:** Registry
+  * **greenisland.wlshmpool:** Shared memory pool
+
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell
   * **greenisland.protocols.xdgshell.trace:** xdg_shell trace

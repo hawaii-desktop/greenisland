@@ -24,62 +24,43 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLREGISTRY_H
-#define WLREGISTRY_H
+#ifndef WLSHMPOOL_H
+#define WLSHMPOOL_H
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
 
-Q_DECLARE_LOGGING_CATEGORY(WLREGISTRY)
+Q_DECLARE_LOGGING_CATEGORY(WLSHMPOOL)
 
-struct wl_display;
-struct wl_registry;
+struct wl_shm;
 
 namespace GreenIsland {
 
-class WlRegistryPrivate;
-class WlShmPool;
+class WlRegistry;
+class WlShmPoolPrivate;
 
-class WlRegistry : public QObject
+class WlShmPool : public QObject
 {
     Q_OBJECT
 public:
-    enum Interface {
-        Unknown,
-        Shm,
-        FullscreenShell
-    };
-
-    WlRegistry(QObject *parent = 0);
-    ~WlRegistry();
+    ~WlShmPool();
 
     bool isValid() const;
 
-    wl_registry *registry() const;
-
-    void create(wl_display *display);
-    void setup();
-
-    WlShmPool *createShmPool(QObject *parent);
+    wl_shm *shm() const;
 
 Q_SIGNALS:
-    void interfaceAnnounced(const QString &interface, quint32 name, quint32 version);
-    void interfaceRemoved(quint32 name);
-
-    void interfacesAnnounced();
-    void interfacesRemoved();
-
-    void shmAnnounced(quint32 name, quint32 version);
-    void shmRemoved(quint32 name);
-
-    void fullscreenShellAnnounced(quint32 name, quint32 version);
-    void fullscreenShellRemoved(quint32 name);
+    void resized();
 
 private:
-    Q_DECLARE_PRIVATE(WlRegistry)
-    WlRegistryPrivate *const d_ptr;
+    Q_DECLARE_PRIVATE(WlShmPool)
+    WlShmPoolPrivate *const d_ptr;
+
+    WlShmPool(wl_shm *shm, QObject *parent = 0);
+
+    friend class WlRegistry;
 };
 
 }
 
-#endif // WLREGISTRY_H
+#endif // WLSHMPOOL_H

@@ -25,9 +25,13 @@
  ***************************************************************************/
 
 #include "wlregistry.h"
+#include "wlshmpool.h"
+#include "qwayland-fullscreen-shell.h"
 
 #include <wayland-client.h>
 #include <wayland-server.h>
+
+Q_LOGGING_CATEGORY(WLREGISTRY, "greenisland.wlregistry")
 
 namespace GreenIsland {
 
@@ -42,6 +46,20 @@ static WlRegistry::Interface nameToInterface(const char *interface)
     else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
         return WlRegistry::FullscreenShell;
     return WlRegistry::Unknown;
+}
+
+static const wl_interface *wlInterface(WlRegistry::Interface interface)
+{
+    switch (interface) {
+    case WlRegistry::Shm:
+        return &wl_shm_interface;
+    case WlRegistry::FullscreenShell:
+        return &_wl_fullscreen_shell_interface;
+    default:
+        break;
+    }
+
+    return Q_NULLPTR;
 }
 
 class WlRegistryPrivate
@@ -66,6 +84,24 @@ public:
     {
         wl_registry_add_listener(registry, &s_registryListener, this);
         wl_callback_add_listener(callback, &s_callbackListener, this);
+    }
+
+    template <typename T>
+    T *bind(WlRegistry::Interface interface)
+    {
+        QList<InterfaceInfo>::iterator it;
+        for (it = m_interfaces.begin(); it != m_interfaces.end(); ++it) {
+            InterfaceInfo info = *it;
+
+            if (info.interface == interface) {
+                auto t = reinterpret_cast<T*>(wl_registry_bind(registry, info.name,
+                                                               wlInterface(interface), info.version));
+                return t;
+            }
+        }
+
+        qCWarning(WLREGISTRY) << "Cannot bind unknown interface";
+        return Q_NULLPTR;
     }
 
     wl_registry *registry;
@@ -216,6 +252,12 @@ void WlRegistry::setup()
     Q_D(WlRegistry);
     Q_ASSERT(isValid());
     d->setup();
+}
+
+WlShmPool *WlRegistry::createShmPool(QObject *parent)
+{
+    Q_D(WlRegistry);
+    return new WlShmPool(d->bind<wl_shm>(Shm), parent);
 }
 
 }

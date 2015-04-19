@@ -37,6 +37,7 @@ set(SOURCES
     utilities.cpp
     client/wlclientconnection.cpp
     client/wlregistry.cpp
+    client/wlshmpool.cpp
     screen/screenbackend.cpp
     screen/screenconfiguration.cpp
     screen/fakescreenbackend.cpp
