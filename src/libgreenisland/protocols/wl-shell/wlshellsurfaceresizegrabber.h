@@ -30,6 +30,7 @@
 #include <QtCompositor/private/qwayland-server-wayland.h>
 
 #include "wlshellsurfacegrabber.h"
+#include "client/wlcursortheme.h"
 
 namespace GreenIsland {
 
@@ -37,6 +38,7 @@ class WlShellSurfaceResizeGrabber : public WlShellSurfaceGrabber
 {
 public:
     explicit WlShellSurfaceResizeGrabber(WlShellSurface *shellSurface);
+    ~WlShellSurfaceResizeGrabber();
 
     void focus() Q_DECL_OVERRIDE;
     void motion(uint32_t time) Q_DECL_OVERRIDE;
@@ -47,6 +49,7 @@ private:
     QtWaylandServer::wl_shell_surface::resize m_resizeEdges;
     int32_t m_width;
     int32_t m_height;
+    WlCursorTheme::CursorShape m_lastShape;
 
     friend class WlShellSurface;
 };

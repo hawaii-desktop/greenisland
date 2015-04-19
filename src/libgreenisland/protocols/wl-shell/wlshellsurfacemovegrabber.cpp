@@ -27,8 +27,11 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
+#include "compositor.h"
+#include "compositor_p.h"
 #include "clientwindow.h"
 #include "wlshellsurfacemovegrabber.h"
+#include "client/wlcursortheme.h"
 
 namespace GreenIsland {
 
@@ -37,6 +40,27 @@ WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurfac
     , m_offset(offset)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Change cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::ClosedHandCursor);
+        compositor->d_func()->grabCursor = true;
+    }
+}
+
+WlShellSurfaceMoveGrabber::~WlShellSurfaceMoveGrabber()
+{
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Reset cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+        compositor->d_func()->grabCursor = false;
+    }
 }
 
 void WlShellSurfaceMoveGrabber::focus()
@@ -49,9 +73,6 @@ void WlShellSurfaceMoveGrabber::motion(uint32_t time)
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
-
-    QCursor cursor(Qt::ClosedHandCursor);
-    QGuiApplication::setOverrideCursor(cursor);
 
     // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
@@ -93,15 +114,9 @@ void WlShellSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, ui
     Q_UNUSED(time)
 
     if (button == Qt::LeftButton && state == 0) {
-        QCursor cursor(Qt::ArrowCursor);
-        QGuiApplication::setOverrideCursor(cursor);
-
         //m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetMoveGrab();
-    } else {
-        QCursor cursor(Qt::OpenHandCursor);
-        QGuiApplication::setOverrideCursor(cursor);
     }
 }
 

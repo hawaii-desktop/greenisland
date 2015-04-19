@@ -26,8 +26,11 @@
 
 #include <QtGui/QGuiApplication>
 
+#include "compositor.h"
+#include "compositor_p.h"
 #include "clientwindow.h"
 #include "wlshellsurfaceresizegrabber.h"
+#include "client/wlcursortheme.h"
 
 namespace GreenIsland {
 
@@ -35,6 +38,60 @@ WlShellSurfaceResizeGrabber::WlShellSurfaceResizeGrabber(WlShellSurface *shellSu
     : WlShellSurfaceGrabber(shellSurface)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Change cursor
+    if (m_resizeEdges != QtWaylandServer::wl_shell_surface::resize_none) {
+        WlCursorTheme::CursorShape shape = WlCursorTheme::BlankCursor;
+
+        switch (m_resizeEdges) {
+        case QtWaylandServer::wl_shell_surface::resize_top:
+            shape = WlCursorTheme::ResizeNorthCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_top_left:
+            shape = WlCursorTheme::ResizeNorthWestCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_top_right:
+            shape = WlCursorTheme::ResizeNorthEastCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_bottom:
+            shape = WlCursorTheme::ResizeSouthCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_bottom_left:
+            shape = WlCursorTheme::ResizeSouthWestCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_bottom_right:
+            shape = WlCursorTheme::ResizeSouthEastCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_left:
+            shape = WlCursorTheme::ResizeWestCursor;
+            break;
+        case QtWaylandServer::wl_shell_surface::resize_right:
+            shape = WlCursorTheme::ResizeEastCursor;
+            break;
+        default:
+            break;
+        }
+
+        Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+        Q_ASSERT(compositor);
+        if (compositor->d_func()->clientData.cursorTheme && shape != WlCursorTheme::BlankCursor) {
+            compositor->d_func()->clientData.cursorTheme->changeCursor(shape);
+            compositor->d_func()->grabCursor = true;
+        }
+    }
+}
+
+WlShellSurfaceResizeGrabber::~WlShellSurfaceResizeGrabber()
+{
+    qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Reset cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+        compositor->d_func()->grabCursor = false;
+    }
 }
 
 void WlShellSurfaceResizeGrabber::focus()
@@ -64,35 +121,6 @@ void WlShellSurfaceResizeGrabber::motion(uint32_t time)
     else if (m_resizeEdges & QtWaylandServer::wl_shell_surface::resize_right)
         newWidth = qMax(newWidth - delta.width(), 1);
 
-    // Change cursor
-    if (m_resizeEdges != QtWaylandServer::wl_shell_surface::resize_none) {
-        Qt::CursorShape shape = Qt::ArrowCursor;
-
-        switch (m_resizeEdges) {
-        case QtWaylandServer::wl_shell_surface::resize_top_left:
-        case QtWaylandServer::wl_shell_surface::resize_bottom_right:
-            shape = Qt::SizeFDiagCursor;
-            break;
-        case QtWaylandServer::wl_shell_surface::resize_top_right:
-        case QtWaylandServer::wl_shell_surface::resize_bottom_left:
-            shape = Qt::SizeBDiagCursor;
-            break;
-        case QtWaylandServer::wl_shell_surface::resize_top:
-        case QtWaylandServer::wl_shell_surface::resize_bottom:
-            shape = Qt::SizeVerCursor;
-            break;
-        case QtWaylandServer::wl_shell_surface::resize_left:
-        case QtWaylandServer::wl_shell_surface::resize_right:
-            shape = Qt::SizeHorCursor;
-            break;
-        default:
-            break;
-        }
-
-        QCursor cursor(shape);
-        QGuiApplication::setOverrideCursor(cursor);
-    }
-
     // Resize
     m_shellSurface->send_configure(m_resizeEdges, newWidth, newHeight);
 
@@ -119,9 +147,6 @@ void WlShellSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, 
     Q_UNUSED(time)
 
     if (button == Qt::LeftButton && state == 0) {
-        QCursor cursor(Qt::ArrowCursor);
-        QGuiApplication::setOverrideCursor(cursor);
-
         //m_pointer->setFocus(0, QPointF());
         m_pointer->endGrab();
         m_shellSurface->resetResizeGrab();

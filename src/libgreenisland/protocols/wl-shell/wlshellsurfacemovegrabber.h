@@ -35,6 +35,7 @@ class WlShellSurfaceMoveGrabber : public WlShellSurfaceGrabber
 {
 public:
     explicit WlShellSurfaceMoveGrabber(WlShellSurface *shellSurface, const QPointF &offset);
+    ~WlShellSurfaceMoveGrabber();
 
     void focus() Q_DECL_OVERRIDE;
     void motion(uint32_t time) Q_DECL_OVERRIDE;

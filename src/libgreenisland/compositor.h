@@ -44,6 +44,8 @@ class ShellWindow;
 class GtkSurface;
 class WlCursorTheme;
 class WlCursorThemePrivate;
+class WlShellSurfaceMoveGrabber;
+class WlShellSurfaceResizeGrabber;
 
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
@@ -161,6 +163,8 @@ private:
     friend class GtkSurface;
     friend class WlCursorTheme;
     friend class WlCursorThemePrivate;
+    friend class WlShellSurfaceMoveGrabber;
+    friend class WlShellSurfaceResizeGrabber;
 };
 
 }
