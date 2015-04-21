@@ -27,6 +27,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
 #include <QtCompositor/QtCompositorVersion>
+#include <QtCompositor/QWaylandClient>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
 #include "abstractplugin.h"
@@ -401,6 +402,11 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 {
 #if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
     Q_D(Compositor);
+
+    // Do not change the cursor if the compositor wants to
+    // exclusively change it (for example during a window move operation)
+    if (d->grabCursor && surface->client()->client() != d->clientData.client)
+        return;
 
     // Setup cursor
     d->cursorHotspotX = hotspotX;

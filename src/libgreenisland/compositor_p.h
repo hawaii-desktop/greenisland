@@ -103,6 +103,7 @@ public:
     QWaylandSurface *cursorSurface;
     int cursorHotspotX;
     int cursorHotspotY;
+    bool grabCursor;
 
     // Keyboard
     QWaylandSurface *lastKeyboardFocus;
