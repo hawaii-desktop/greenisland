@@ -55,6 +55,7 @@ bool GtkSurface::runOperation(QWaylandSurfaceOp *op)
 {
 #ifdef ENABLE_GTK_SHELL_TRACE
     qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
+    qCDebug(GTKSHELL_PROTOCOL) << "Run operation" << op->type();
 #endif
 
     return false;
