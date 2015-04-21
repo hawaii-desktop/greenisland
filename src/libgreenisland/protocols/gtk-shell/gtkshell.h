@@ -32,10 +32,8 @@
 
 #include "qwayland-server-gtk.h"
 
-// Comment out to disable tracing
-#define ENABLE_GTK_SHELL_TRACE 1
-
 Q_DECLARE_LOGGING_CATEGORY(GTKSHELL_PROTOCOL)
+Q_DECLARE_LOGGING_CATEGORY(GTKSHELL_TRACE)
 
 namespace GreenIsland {
 

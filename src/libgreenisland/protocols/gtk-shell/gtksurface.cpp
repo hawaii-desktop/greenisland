@@ -37,35 +37,27 @@ GtkSurface::GtkSurface(GtkShell *shell, QWaylandSurface *surface,
     , QWaylandSurfaceInterface(surface)
     , QtWaylandServer::gtk_surface(client, id, version)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 GtkSurface::~GtkSurface()
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 bool GtkSurface::runOperation(QWaylandSurfaceOp *op)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-    qCDebug(GTKSHELL_PROTOCOL) << "Run operation" << op->type();
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(GTKSHELL_TRACE) << "Run operation" << op->type();
 
     return false;
 }
 
 void GtkSurface::surface_destroy_resource(Resource *resource)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     delete this;
@@ -79,9 +71,7 @@ void GtkSurface::surface_set_dbus_properties(Resource *resource,
                                              const QString &application_object_path,
                                              const QString &unique_bus_name)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
 

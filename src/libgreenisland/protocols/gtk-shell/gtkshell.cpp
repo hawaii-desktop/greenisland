@@ -30,31 +30,26 @@
 #include "gtksurface.h"
 
 Q_LOGGING_CATEGORY(GTKSHELL_PROTOCOL, "greenisland.protocols.gtkshell")
+Q_LOGGING_CATEGORY(GTKSHELL_TRACE, "greenisland.protocols.gtkshell.trace")
 
 namespace GreenIsland {
 
 GtkShellGlobal::GtkShellGlobal(QObject *parent)
     : QObject(parent)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 }
 
 const wl_interface *GtkShellGlobal::interface() const
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     return &gtk_shell_interface;
 }
 
 void GtkShellGlobal::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     new GtkShell(client, id, version, this);
 }
@@ -63,9 +58,7 @@ GtkShell::GtkShell(wl_client *client, uint32_t name, uint32_t version, QObject *
     : QObject(parent)
     , QtWaylandServer::gtk_shell(client, name, version)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     // We have no capabilities
     send_capabilities(0);
@@ -73,18 +66,14 @@ GtkShell::GtkShell(wl_client *client, uint32_t name, uint32_t version, QObject *
 
 GtkShell::~GtkShell()
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
 void GtkShell::shell_destroy_resource(Resource *resource)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     delete this;
@@ -92,9 +81,7 @@ void GtkShell::shell_destroy_resource(Resource *resource)
 
 void GtkShell::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
-#ifdef ENABLE_GTK_SHELL_TRACE
-    qCDebug(GTKSHELL_PROTOCOL) << Q_FUNC_INFO;
-#endif
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
