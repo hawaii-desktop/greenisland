@@ -35,6 +35,7 @@ Q_DECLARE_LOGGING_CATEGORY(WLREGISTRY)
 struct wl_compositor;
 struct wl_display;
 struct wl_registry;
+struct wl_seat;
 
 namespace GreenIsland {
 
@@ -48,6 +49,7 @@ public:
     enum Interface {
         Unknown,
         Compositor,
+        Seat,
         Shm,
         FullscreenShell
     };
@@ -75,6 +77,9 @@ Q_SIGNALS:
 
     void compositorAnnounced(quint32 name, quint32 version);
     void compositorRemoved(quint32 name);
+
+    void seatAnnounced(quint32 name, quint32 version);
+    void seatRemoved(quint32 name);
 
     void shmAnnounced(quint32 name, quint32 version);
     void shmRemoved(quint32 name);

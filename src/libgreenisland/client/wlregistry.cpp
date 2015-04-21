@@ -43,6 +43,8 @@ static WlRegistry::Interface nameToInterface(const char *interface)
 {
     if (strcmp(interface, "wl_compositor") == 0)
         return WlRegistry::Compositor;
+    else if (strcmp(interface, "wl_seat") == 0)
+        return WlRegistry::Seat;
     else if (strcmp(interface, "wl_shm") == 0)
         return WlRegistry::Shm;
     else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
@@ -55,6 +57,8 @@ static const wl_interface *wlInterface(WlRegistry::Interface interface)
     switch (interface) {
     case WlRegistry::Compositor:
         return &wl_compositor_interface;
+    case WlRegistry::Seat:
+        return &wl_seat_interface;
     case WlRegistry::Shm:
         return &wl_shm_interface;
     case WlRegistry::FullscreenShell:
@@ -135,6 +139,9 @@ private:
         case WlRegistry::Compositor:
             Q_EMIT q->compositorAnnounced(name, version);
             break;
+        case WlRegistry::Seat:
+            Q_EMIT q->seatAnnounced(name, version);
+            break;
         case WlRegistry::Shm:
             Q_EMIT q->shmAnnounced(name, version);
             break;
@@ -157,6 +164,9 @@ private:
                 switch (info.interface) {
                 case WlRegistry::Compositor:
                     Q_EMIT q->compositorRemoved(name);
+                    break;
+                case WlRegistry::Seat:
+                    Q_EMIT q->seatRemoved(name);
                     break;
                 case WlRegistry::Shm:
                     Q_EMIT q->shmRemoved(name);
