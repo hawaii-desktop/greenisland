@@ -36,7 +36,9 @@ set(SOURCES
     shellwindow.cpp
     utilities.cpp
     client/wlclientconnection.cpp
+    client/wlpointer.cpp
     client/wlregistry.cpp
+    client/wlseat.cpp
     client/wlshmpool.cpp
     screen/screenbackend.cpp
     screen/screenconfiguration.cpp
