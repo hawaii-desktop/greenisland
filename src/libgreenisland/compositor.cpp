@@ -400,6 +400,10 @@ void Compositor::abortSession()
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
+    // Sanity check
+    if (!surface)
+        return;
+
 #if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
     Q_D(Compositor);
 
