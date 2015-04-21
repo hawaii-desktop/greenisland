@@ -26,8 +26,11 @@
 
 #include <QtGui/QGuiApplication>
 
+#include "compositor.h"
+#include "compositor_p.h"
 #include "clientwindow.h"
 #include "xdgsurfaceresizegrabber.h"
+#include "client/wlcursortheme.h"
 
 namespace GreenIsland {
 
@@ -35,6 +38,60 @@ XdgSurfaceResizeGrabber::XdgSurfaceResizeGrabber(XdgSurface *shellSurface)
     : XdgSurfaceGrabber(shellSurface)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Change cursor
+    if (m_resizeEdges != QtWaylandServer::xdg_surface::resize_edge_none) {
+        WlCursorTheme::CursorShape shape = WlCursorTheme::BlankCursor;
+
+        switch (m_resizeEdges) {
+        case QtWaylandServer::xdg_surface::resize_edge_top:
+            shape = WlCursorTheme::ResizeNorthCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_top_left:
+            shape = WlCursorTheme::ResizeNorthWestCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_top_right:
+            shape = WlCursorTheme::ResizeNorthEastCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_bottom:
+            shape = WlCursorTheme::ResizeSouthCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_bottom_left:
+            shape = WlCursorTheme::ResizeSouthWestCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_bottom_right:
+            shape = WlCursorTheme::ResizeSouthEastCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_left:
+            shape = WlCursorTheme::ResizeWestCursor;
+            break;
+        case QtWaylandServer::xdg_surface::resize_edge_right:
+            shape = WlCursorTheme::ResizeEastCursor;
+            break;
+        default:
+            break;
+        }
+
+        Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+        Q_ASSERT(compositor);
+        if (compositor->d_func()->clientData.cursorTheme && shape != WlCursorTheme::BlankCursor) {
+            compositor->d_func()->clientData.cursorTheme->changeCursor(shape);
+            compositor->d_func()->grabCursor = true;
+        }
+    }
+}
+
+XdgSurfaceResizeGrabber::~XdgSurfaceResizeGrabber()
+{
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Reset cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+        compositor->d_func()->grabCursor = false;
+    }
 }
 
 void XdgSurfaceResizeGrabber::focus()
@@ -63,35 +120,6 @@ void XdgSurfaceResizeGrabber::motion(uint32_t time)
         newWidth = qMax(newWidth + delta.width(), 1);
     else if (m_resizeEdges & QtWaylandServer::xdg_surface::resize_edge_right)
         newWidth = qMax(newWidth - delta.width(), 1);
-
-    // Change cursor
-    if (m_resizeEdges != QtWaylandServer::xdg_surface::resize_edge_none) {
-        Qt::CursorShape shape = Qt::ArrowCursor;
-
-        switch (m_resizeEdges) {
-        case QtWaylandServer::xdg_surface::resize_edge_top_left:
-        case QtWaylandServer::xdg_surface::resize_edge_bottom_right:
-            shape = Qt::SizeFDiagCursor;
-            break;
-        case QtWaylandServer::xdg_surface::resize_edge_top_right:
-        case QtWaylandServer::xdg_surface::resize_edge_bottom_left:
-            shape = Qt::SizeBDiagCursor;
-            break;
-        case QtWaylandServer::xdg_surface::resize_edge_top:
-        case QtWaylandServer::xdg_surface::resize_edge_bottom:
-            shape = Qt::SizeVerCursor;
-            break;
-        case QtWaylandServer::xdg_surface::resize_edge_left:
-        case QtWaylandServer::xdg_surface::resize_edge_right:
-            shape = Qt::SizeHorCursor;
-            break;
-        default:
-            break;
-        }
-
-        QCursor cursor(shape);
-        QGuiApplication::setOverrideCursor(cursor);
-    }
 
     // Resize
     XdgSurface::Changes changes;
@@ -127,9 +155,6 @@ void XdgSurfaceResizeGrabber::button(uint32_t time, Qt::MouseButton button, uint
         m_pointer->endGrab();
         m_shellSurface->resetResizeGrab();
         delete this;
-
-        QCursor cursor(Qt::ArrowCursor);
-        QGuiApplication::setOverrideCursor(cursor);
     }
 }
 

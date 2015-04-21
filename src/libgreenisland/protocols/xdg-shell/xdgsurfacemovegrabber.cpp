@@ -27,8 +27,11 @@
 #include <QtGui/QGuiApplication>
 #include <QtQuick/QQuickItem>
 
+#include "compositor.h"
+#include "compositor_p.h"
 #include "clientwindow.h"
 #include "xdgsurfacemovegrabber.h"
+#include "client/wlcursortheme.h"
 
 namespace GreenIsland {
 
@@ -37,6 +40,27 @@ XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPo
     , m_offset(offset)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Change cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::ClosedHandCursor);
+        compositor->d_func()->grabCursor = true;
+    }
+}
+
+XdgSurfaceMoveGrabber::~XdgSurfaceMoveGrabber()
+{
+    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+
+    // Reset cursor
+    Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+    Q_ASSERT(compositor);
+    if (compositor->d_func()->clientData.cursorTheme) {
+        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+        compositor->d_func()->grabCursor = false;
+    }
 }
 
 void XdgSurfaceMoveGrabber::focus()
@@ -49,9 +73,6 @@ void XdgSurfaceMoveGrabber::motion(uint32_t time)
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(time)
-
-    QCursor cursor(Qt::ClosedHandCursor);
-    QGuiApplication::setOverrideCursor(cursor);
 
     // Determine pointer coordinates
     QPointF pt(m_pointer->position() - m_offset);
@@ -93,12 +114,6 @@ void XdgSurfaceMoveGrabber::button(uint32_t time, Qt::MouseButton button, uint32
         m_pointer->endGrab();
         m_shellSurface->resetMoveGrab();
         delete this;
-
-        QCursor cursor(Qt::ArrowCursor);
-        QGuiApplication::setOverrideCursor(cursor);
-    } else {
-        QCursor cursor(Qt::OpenHandCursor);
-        QGuiApplication::setOverrideCursor(cursor);
     }
 }
 

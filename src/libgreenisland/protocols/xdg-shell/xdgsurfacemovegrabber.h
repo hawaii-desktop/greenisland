@@ -35,6 +35,7 @@ class XdgSurfaceMoveGrabber : public XdgSurfaceGrabber
 {
 public:
     explicit XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPointF &offset);
+    ~XdgSurfaceMoveGrabber();
 
     void focus() Q_DECL_OVERRIDE;
     void motion(uint32_t time) Q_DECL_OVERRIDE;

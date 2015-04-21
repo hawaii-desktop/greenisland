@@ -46,6 +46,8 @@ class WlCursorTheme;
 class WlCursorThemePrivate;
 class WlShellSurfaceMoveGrabber;
 class WlShellSurfaceResizeGrabber;
+class XdgSurfaceMoveGrabber;
+class XdgSurfaceResizeGrabber;
 
 class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
@@ -165,6 +167,8 @@ private:
     friend class WlCursorThemePrivate;
     friend class WlShellSurfaceMoveGrabber;
     friend class WlShellSurfaceResizeGrabber;
+    friend class XdgSurfaceMoveGrabber;
+    friend class XdgSurfaceResizeGrabber;
 };
 
 }

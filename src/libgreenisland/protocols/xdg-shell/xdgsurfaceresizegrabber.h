@@ -30,12 +30,14 @@
 #include "xdgsurfacegrabber.h"
 #include "qwayland-server-xdg-shell.h"
 
+
 namespace GreenIsland {
 
 class XdgSurfaceResizeGrabber : public XdgSurfaceGrabber
 {
 public:
     explicit XdgSurfaceResizeGrabber(XdgSurface *shellSurface);
+    ~XdgSurfaceResizeGrabber();
 
     void focus() Q_DECL_OVERRIDE;
     void motion(uint32_t time) Q_DECL_OVERRIDE;
