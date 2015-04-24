@@ -148,7 +148,7 @@ Q_SIGNALS:
     void keyBindingReleased(const QString &name);
 
 protected:
-    void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY);
+    void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY) Q_DECL_OVERRIDE;
 
 private:
     Q_DECLARE_PRIVATE(Compositor)
