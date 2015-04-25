@@ -89,7 +89,7 @@ XdgSurface::~XdgSurface()
     delete m_resizeGrabber;
 
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
-    //m_surface->setMapped(false);
+    m_surface->setMapped(false);
 }
 
 uint32_t XdgSurface::nextSerial() const
@@ -293,6 +293,7 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
         // Some applications such as gnome-cloks send a set_parent(nil), in
         // this case we assume it's a toplevel window
         setSurfaceType(QWaylandSurface::Toplevel);
+        m_surface->handle()->setTransientParent(Q_NULLPTR);
     }
 }
 
@@ -427,7 +428,8 @@ void XdgSurface::surface_set_window_geometry(Resource *resource,
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
-    m_window->setInternalGeometry(QRectF(QPointF(x, y), QSizeF(width, height)));
+    if (width > 0 && height > 0)
+        m_window->setInternalGeometry(QRectF(QPointF(x, y), QSizeF(width, height)));
 }
 
 void XdgSurface::surface_set_maximized(Resource *resource)

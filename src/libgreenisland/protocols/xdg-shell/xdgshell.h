@@ -42,17 +42,24 @@ class InputDevice;
 
 namespace GreenIsland {
 
+class Compositor;
 class XdgSurface;
 class XdgPopup;
 class XdgPopupGrabber;
 
 class XdgShellGlobal : public QObject, public QWaylandGlobalInterface
 {
+    Q_OBJECT
 public:
-    explicit XdgShellGlobal(QObject *parent = 0);
+    explicit XdgShellGlobal(Compositor *compositor);
 
     const wl_interface *interface() const Q_DECL_OVERRIDE;
     void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
+
+    inline Compositor *compositor() const { return m_compositor; }
+
+private:
+    Compositor *m_compositor;
 };
 
 class XdgShell : public QObject, public QtWaylandServer::xdg_shell
@@ -66,12 +73,13 @@ public:
 protected:
     void shell_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
+    void shell_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void shell_use_unstable_version(Resource *resource, int32_t version) Q_DECL_OVERRIDE;
     void shell_get_xdg_surface(Resource *resource, uint32_t id,
                                wl_resource *surfaceResource)  Q_DECL_OVERRIDE;
     void shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource *surfaceResource,
                              wl_resource *parentResource, wl_resource *seatResource,
-                             uint32_t serial, int32_t x, int32_t y, uint32_t flags)  Q_DECL_OVERRIDE;
+                             uint32_t serial, int32_t x, int32_t y)  Q_DECL_OVERRIDE;
     void shell_pong(Resource *resource, uint32_t serial)  Q_DECL_OVERRIDE;
 
 private:

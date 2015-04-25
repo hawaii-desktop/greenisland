@@ -97,7 +97,7 @@ void XdgPopup::done()
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
-    send_popup_done(m_serial);
+    send_popup_done();
 }
 
 bool XdgPopup::runOperation(QWaylandSurfaceOp *op)

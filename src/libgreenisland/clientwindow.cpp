@@ -494,21 +494,25 @@ void ClientWindow::initialSetup()
     if (isFullScreen() || isMaximized())
         return;
 
+    // Determine the parent window
+    parentSurfaceChanged(m_surface->transientParent(), Q_NULLPTR);
+
     // Set initial position
     switch (m_surface->windowType()) {
     case QWaylandSurface::Popup:
         // Move popups relative to parent window
-        if (m_surface->transientParent()) {
+        if (parentWindow()) {
             m_pos.setX(m_surface->transientOffset().x());
             m_pos.setY(m_surface->transientOffset().y());
+            m_pos += parentWindow()->internalGeometry().topLeft();
         } else {
-            m_pos.setX(m_surface->transientOffset().x());
-            m_pos.setY(m_surface->transientOffset().y());
+            m_pos.setX(0);
+            m_pos.setY(0);
         }
         break;
     case QWaylandSurface::Transient:
         // Center transient windows
-        if (m_surface->transientParent()) {
+        if (parentWindow()) {
             m_pos.setX((m_surface->transientParent()->size().width() - m_size.width()) / 2);
             m_pos.setY((m_surface->transientParent()->size().height() - m_size.height()) / 2);
         } else {

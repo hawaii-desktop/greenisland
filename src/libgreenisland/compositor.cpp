@@ -254,7 +254,7 @@ void Compositor::run()
     addGlobalInterface(new GreenIslandApps());
     addGlobalInterface(new GreenIslandWindows());
     addGlobalInterface(new WlShellGlobal());
-    addGlobalInterface(new XdgShellGlobal());
+    addGlobalInterface(new XdgShellGlobal(this));
     addGlobalInterface(new GtkShellGlobal());
 
     // Add global interfaces from plugins
