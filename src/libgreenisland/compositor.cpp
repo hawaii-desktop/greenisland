@@ -46,6 +46,7 @@
 #include "shellwindow.h"
 
 #include "client/wlclientconnection.h"
+#include "client/wlcursortheme.h"
 #include "client/wlregistry.h"
 #include "protocols/greenisland/greenislandapps.h"
 #include "protocols/greenisland/greenislandwindows.h"
@@ -356,6 +357,22 @@ void Compositor::restoreKeyboardFocus()
         defaultInputDevice()->setKeyboardFocus(d->lastKeyboardFocus);
         d->lastKeyboardFocus = Q_NULLPTR;
     }
+}
+
+void Compositor::unsetMouseCursor()
+{
+    Q_D(Compositor);
+
+    if (d->clientData.cursorTheme)
+        d->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+}
+
+void Compositor::resetMouseCursor()
+{
+    Q_D(Compositor);
+
+    if (d->clientData.cursorTheme)
+        d->clientData.cursorTheme->changeCursor(WlCursorTheme::ArrowCursor);
 }
 
 bool Compositor::registerKeyBinding(const QString &name, const QString &keys)

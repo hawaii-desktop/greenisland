@@ -107,6 +107,9 @@ public:
     Q_INVOKABLE void clearKeyboardFocus();
     Q_INVOKABLE void restoreKeyboardFocus();
 
+    Q_INVOKABLE void unsetMouseCursor();
+    Q_INVOKABLE void resetMouseCursor();
+
     Q_INVOKABLE bool registerKeyBinding(const QString &name, const QString &keys);
     Q_INVOKABLE bool unregisterKeyBinding(const QString &name);
 
