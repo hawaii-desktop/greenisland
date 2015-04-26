@@ -24,15 +24,25 @@ in the same process.
 
 ## Dependencies
 
-gcc >= 4.8 is required to build this software.
+Compiler requirements:
 
-* Wayland >= 1.6.0
-* Qt >= 5.4.0 with at least the follow modules:
-  * qtbase
-  * qtdeclarative
-  * qtwayland
-* ECM >= 1.4.0
+* [gcc >= 4.8](https://gcc.gnu.org/gcc-4.8/) or
+* [Clang](http://clang.llvm.org/)
 
+Qt >= 5.4 with at least the following modules is required:
+
+* [qtbase](http://code.qt.io/cgit/qt/qtbase.git)
+* [qtdeclarative](http://code.qt.io/cgit/qt/qtdeclarative.git)
+* [qtwayland](http://code.qt.io/cgit/qt/qtwayland.git)
+
+You may also need [Weston >= 1.5.0](http://wayland.freedesktop.org) for
+fullscreen shell support.  However if you have Qt >= 5.5 you won't likely need it.
+
+The following modules and their dependencies are required:
+
+* [ECM >= 1.4.0](http://quickgit.kde.org/?p=extra-cmake-modules.git)
+
+### qtwayland
 
 A development version of qtwayland is required.
 
@@ -49,16 +59,6 @@ git clone -b output55 https://github.com/maui-packages/qtwayland
 ```
 
 and build it yourself.
-
-## Optional dependencies
-
-* Weston >= 1.5.0 to nest the compositor into fullscreen shell
-
-## Additional information on dependencies
-
-Read Wayland and Weston build instructions from [here](http://wayland.freedesktop.org/building.html).
-
-More information about building Qt from git can be found [here](http://qt-project.org/wiki/Building-Qt-5-from-Git).
 
 ## Build
 
