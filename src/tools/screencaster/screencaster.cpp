@@ -118,6 +118,13 @@ public:
 class BuffersHandler : public QObject
 {
 public:
+    BuffersHandler(QIODevice *output, unsigned int numberOfFrames)
+        : output(output)
+        , countingFrames(numberOfFrames > 0)
+        , remainingFrames(numberOfFrames)
+    {
+    }
+
     bool event(QEvent *e) Q_DECL_OVERRIDE
     {
         if (e->type() == FrameEventType) {
@@ -128,15 +135,23 @@ public:
             buf->busy = false;
             if (rec->m_starving)
                 rec->recordFrame();
-            QString filename = QString("frame%1.bmp").arg(id++, 3, 10, QChar('0'));
-            qDebug("saving %s.", qPrintable(filename));
-            img.save(filename);
+
+            output->write((const char*) img.bits(), img.byteCount());
+
+            if (countingFrames && --remainingFrames == 0)
+                QCoreApplication::exit(0);
+
             return true;
         }
         return QObject::event(e);
     }
 
     ScreenCaster *rec;
+
+private:
+    QIODevice *output;
+    bool countingFrames;
+    unsigned int remainingFrames;
 };
 
 static void callback(void *data, wl_callback *cb, uint32_t time)
@@ -146,7 +161,7 @@ static void callback(void *data, wl_callback *cb, uint32_t time)
     QMetaObject::invokeMethod(static_cast<ScreenCaster *>(data), "start");
 }
 
-ScreenCaster::ScreenCaster()
+ScreenCaster::ScreenCaster(QIODevice *output, unsigned int numberOfFrames)
     : QObject()
     , m_manager(Q_NULLPTR)
     , m_starving(false)
@@ -168,7 +183,7 @@ ScreenCaster::ScreenCaster()
     wl_callback_add_listener(cb, &callbackListener, this);
 
     m_buffersThread = new QThread;
-    m_buffersHandler = new BuffersHandler;
+    m_buffersHandler = new BuffersHandler(output, numberOfFrames);
     m_buffersHandler->rec = this;
     m_buffersHandler->moveToThread(m_buffersThread);
     m_buffersThread->start();
@@ -222,10 +237,25 @@ void ScreenCaster::recordFrame()
     }
 }
 
+QString formatToString(int format)
+{
+    switch (format) {
+        case WL_SHM_FORMAT_RGBA8888:
+            return QString("rgba8888");
+        default:
+            break;
+    }
+
+    return QString("unknown");
+}
+
 void ScreenCaster::setup(void *data, greenisland_recorder *recorder, int width, int height, int stride, int format)
 {
     ScreenCaster *rec = static_cast<ScreenCaster *>(data);
     QMutexLocker lock(&rec->m_mutex);
+
+    qWarning("Recording with output size %dx%d format %s",
+             width, height, formatToString(format).toUtf8().constData());
 
     for (int i = 0; i < 6; ++i) {
         Buffer *buffer = Buffer::create(rec->m_shm, width, height, stride, format);

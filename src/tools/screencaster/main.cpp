@@ -31,6 +31,7 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QCommandLineOption>
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
 #include <QtGui/QGuiApplication>
 
 #include "config.h"
@@ -75,7 +76,19 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+    // Output file name
+    const QString fileName = parser.value(outputOption);
+    QFile file(fileName);
+    if (!file.open(QIODevice::WriteOnly)) {
+        qCritical() << "Failed to open output file for writing";
+        return 1;
+    }
+
+    unsigned int numberOfFrames = 0;
+    if (parser.isSet(framesOption))
+        numberOfFrames = parser.value(framesOption).toInt();
+
     // Start the screen caster
-    ScreenCaster screenCaster;
+    ScreenCaster screenCaster(&file, numberOfFrames);
     return app.exec();
 }

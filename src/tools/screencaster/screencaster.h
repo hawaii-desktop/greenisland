@@ -50,7 +50,7 @@ class ScreenCaster : public QObject
 {
     Q_OBJECT
 public:
-    ScreenCaster();
+    ScreenCaster(QIODevice *output, unsigned int numberOfFrames = 0);
     ~ScreenCaster();
 
 private slots:
