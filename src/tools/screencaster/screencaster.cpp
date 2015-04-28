@@ -47,6 +47,13 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#define WCAP_HEADER_MAGIC 0x57434150
+
+#define WCAP_FORMAT_XRGB8888 0x34325258
+#define WCAP_FORMAT_XBGR8888 0x34324258
+#define WCAP_FORMAT_RGBX8888 0x34325852
+#define WCAP_FORMAT_BGRX8888 0x34325842
+
 class Buffer
 {
 public:
@@ -123,6 +130,19 @@ public:
         , countingFrames(numberOfFrames > 0)
         , remainingFrames(numberOfFrames)
     {
+        stream.setDevice(output);
+    }
+
+    ~BuffersHandler()
+    {
+        output->close();
+    }
+
+    void initialize(quint32 width, quint32 height, quint32 format)
+    {
+        // Write WCAP header
+        qDebug() << ":::::::::::::";
+        stream << WCAP_HEADER_MAGIC << format << width << height;
     }
 
     bool event(QEvent *e) Q_DECL_OVERRIDE
@@ -136,10 +156,18 @@ public:
             if (rec->m_starving)
                 rec->recordFrame();
 
-            output->write((const char*) img.bits(), img.byteCount());
+            //output->write((const char*) img.bits(), img.byteCount());
+            // Write frame header
+            stream << fe->timestamp << 1;
+
+            // Write rectangle
+            stream << 0 << 0 << fe->buffer->image.width() << fe->buffer->image.height();
+
+            // Write data
+            stream << img.bits();
 
             if (countingFrames && --remainingFrames == 0)
-                QCoreApplication::exit(0);
+                QCoreApplication::quit();
 
             return true;
         }
@@ -152,6 +180,7 @@ private:
     QIODevice *output;
     bool countingFrames;
     unsigned int remainingFrames;
+    QDataStream stream;
 };
 
 static void callback(void *data, wl_callback *cb, uint32_t time)
@@ -256,6 +285,8 @@ void ScreenCaster::setup(void *data, greenisland_recorder *recorder, int width, 
 
     qWarning("Recording with output size %dx%d format %s",
              width, height, formatToString(format).toUtf8().constData());
+
+    rec->m_buffersHandler->initialize(width, height, WCAP_FORMAT_RGBX8888);
 
     for (int i = 0; i < 6; ++i) {
         Buffer *buffer = Buffer::create(rec->m_shm, width, height, stride, format);

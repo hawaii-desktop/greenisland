@@ -28,7 +28,8 @@ add_library(plasma SHARED ${SOURCES})
 set_target_properties(plasma PROPERTIES PREFIX "")
 target_link_libraries(plasma
                       Qt5::Compositor
-                      GreenIsland::GreenIsland)
+                      GreenIsland::GreenIsland
+                      Wayland::Server)
 
 install(TARGETS plasma
     DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland)

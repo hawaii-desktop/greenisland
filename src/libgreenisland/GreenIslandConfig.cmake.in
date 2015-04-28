@@ -1,7 +1,6 @@
 @PACKAGE_INIT@
 
-find_dependency(@EGL_IMPLEMENTATION@)
-find_dependency(Wayland @REQUIRED_WAYLAND_VERSION@)
+#find_dependency(@EGL_IMPLEMENTATION@)
 find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
 find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)

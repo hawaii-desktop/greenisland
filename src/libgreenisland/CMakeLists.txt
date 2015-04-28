@@ -112,26 +112,28 @@ generate_export_header(GreenIsland EXPORT_FILE_NAME greenisland/greenisland_expo
 add_library(GreenIsland::GreenIsland ALIAS GreenIsland)
 
 target_link_libraries(GreenIsland
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Quick
-    Qt5::Compositor
-    Wayland::Client
-    Wayland::Server
-    Wayland::Cursor
-    ${EGL_TARGET}
+    PUBLIC
+        Qt5::Core
+        Qt5::Gui
+        Qt5::Quick
+        Qt5::Compositor
+    PRIVATE
+        Wayland::Client
+        Wayland::Server
+        Wayland::Cursor
+        ${EGL_TARGET}
 )
 
 if(EGL_FOUND)
     if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-        target_link_libraries(GreenIsland ${OPENGL_LIBRARIES})
+        target_link_libraries(GreenIsland PRIVATE ${OPENGL_LIBRARIES})
     else()
-        target_link_libraries(GreenIsland ${OPENGLES_LIBRARIES})
+        target_link_libraries(GreenIsland PRIVATE ${OPENGLES_LIBRARIES})
     endif()
 endif()
 
 if(systemd_FOUND)
-    target_link_libraries(GreenIsland ${systemd_LIBRARIES})
+    target_link_libraries(GreenIsland PRIVATE ${systemd_LIBRARIES})
 endif()
 
 set(GREENISLAND_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/GreenIsland")
