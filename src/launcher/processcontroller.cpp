@@ -82,14 +82,14 @@ void ProcessController::setFullScreenShellEnabled(bool value)
     }
 }
 
-QString ProcessController::plugin() const
+QString ProcessController::shell() const
 {
-    return m_plugin;
+    return m_shell;
 }
 
-void ProcessController::setPlugin(const QString &plugin)
+void ProcessController::setShell(const QString &shell)
 {
-    m_plugin = plugin;
+    m_shell = shell;
 }
 
 void ProcessController::start()
@@ -146,9 +146,9 @@ void ProcessController::startCompositor()
         env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("xcb"));
     }
 
-    if (!m_plugin.isEmpty())
+    if (!m_shell.isEmpty())
         m_compositor->setArguments(m_compositor->arguments()
-                                   << QStringLiteral("-p") << m_plugin);
+                                   << QStringLiteral("--shell") << m_shell);
 
     // Start the process
     qDebug() << "Running:" << qPrintable(m_compositor->program())

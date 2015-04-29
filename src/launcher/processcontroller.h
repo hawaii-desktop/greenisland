@@ -35,14 +35,17 @@ class QFileSystemWatcher;
 class ProcessController : public QObject
 {
     Q_OBJECT
+
+    Q_PROPERTY(QString shell READ shell WRITE setShell)
+
 public:
     explicit ProcessController(QObject *parent = Q_NULLPTR);
 
     bool isFullScreenShellEnabled() const;
     void setFullScreenShellEnabled(bool value);
 
-    QString plugin() const;
-    void setPlugin(const QString &plugin);
+    QString shell() const;
+    void setShell(const QString &plugin);
 
     void start();
 
@@ -56,7 +59,7 @@ private:
     QString m_fullScreenShellSocket;
     QFileSystemWatcher *m_fullScreenShellWatcher;
 
-    QString m_plugin;
+    QString m_shell;
 
     QString randomString() const;
 
