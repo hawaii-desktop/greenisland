@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     processController.setFullScreenShellEnabled(parser.isSet(fullScreenShellOption));
 
     // Pass additional arguments
-    processController.setPlugin(parser.value(shellOption));
+    processController.setShell(parser.value(shellOption));
 
     // Start the compositor
     processController.start();
