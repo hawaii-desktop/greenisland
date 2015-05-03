@@ -414,7 +414,7 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 
     // Do not change the cursor if the compositor wants to
     // exclusively change it (for example during a window move operation)
-    if (d->grabCursor && surface->client()->client() != d->clientData.client)
+    if (d->cursorGrabbed != WlCursorTheme::BlankCursor && surface->client()->client() != d->clientData.client)
         return;
 
     // Setup cursor

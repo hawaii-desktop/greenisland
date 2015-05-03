@@ -41,7 +41,6 @@
 #include "logging.h"
 #include "shellwindow.h"
 #include "client/wlclientconnection.h"
-#include "client/wlcursortheme.h"
 #include "client/wlregistry.h"
 #include "client/wlseat.h"
 #include "client/wlshmpool.h"
@@ -63,7 +62,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
-    , grabCursor(false)
+    , cursorGrabbed(WlCursorTheme::BlankCursor)
     , lastKeyboardFocus(Q_NULLPTR)
     , recorderManager(Q_NULLPTR)
     , nestedConnection(Q_NULLPTR)
@@ -186,6 +185,22 @@ void CompositorPrivate::dpms(bool on)
 {
     // TODO
     Q_UNUSED(on);
+}
+
+void CompositorPrivate::grabCursor(WlCursorTheme::CursorShape shape)
+{
+    if (clientData.cursorTheme && cursorGrabbed != shape) {
+        cursorGrabbed = shape;
+        clientData.cursorTheme->changeCursor(cursorGrabbed);
+    }
+}
+
+void CompositorPrivate::ungrabCursor()
+{
+    if (clientData.cursorTheme) {
+        cursorGrabbed = WlCursorTheme::BlankCursor;
+        clientData.cursorTheme->changeCursor(cursorGrabbed);
+    }
 }
 
 void CompositorPrivate::setCursorImage(const QImage &image)

@@ -44,10 +44,7 @@ XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPo
     // Change cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    if (compositor->d_func()->clientData.cursorTheme) {
-        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::ClosedHandCursor);
-        compositor->d_func()->grabCursor = true;
-    }
+    compositor->d_func()->grabCursor(WlCursorTheme::ClosedHandCursor);
 }
 
 XdgSurfaceMoveGrabber::~XdgSurfaceMoveGrabber()
@@ -57,10 +54,7 @@ XdgSurfaceMoveGrabber::~XdgSurfaceMoveGrabber()
     // Reset cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    if (compositor->d_func()->clientData.cursorTheme) {
-        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::ArrowCursor);
-        compositor->d_func()->grabCursor = false;
-    }
+    compositor->d_func()->ungrabCursor();
 }
 
 void XdgSurfaceMoveGrabber::focus()

@@ -34,6 +34,7 @@
 #include "compositorsettings.h"
 #include "keybinding.h"
 #include "screenmanager.h"
+#include "client/wlcursortheme.h"
 
 //  W A R N I N G
 //  -------------
@@ -55,7 +56,6 @@ class Compositor;
 class ClientWindow;
 class WlClientConnection;
 class WlSeat;
-class WlCursorTheme;
 class WlShmPool;
 class ShellWindow;
 class FullScreenShellClient;
@@ -73,6 +73,9 @@ public:
     void loadPlugins();
 
     void dpms(bool on);
+
+    void grabCursor(WlCursorTheme::CursorShape shape);
+    void ungrabCursor();
 
     void setCursorImage(const QImage &image);
 
@@ -103,7 +106,7 @@ public:
     QWaylandSurface *cursorSurface;
     int cursorHotspotX;
     int cursorHotspotY;
-    bool grabCursor;
+    WlCursorTheme::CursorShape cursorGrabbed;
 
     // Keyboard
     QWaylandSurface *lastKeyboardFocus;

@@ -44,10 +44,7 @@ WlShellSurfaceMoveGrabber::WlShellSurfaceMoveGrabber(WlShellSurface *shellSurfac
     // Change cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    if (compositor->d_func()->clientData.cursorTheme) {
-        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::ClosedHandCursor);
-        compositor->d_func()->grabCursor = true;
-    }
+    compositor->d_func()->grabCursor(WlCursorTheme::ClosedHandCursor);
 }
 
 WlShellSurfaceMoveGrabber::~WlShellSurfaceMoveGrabber()
@@ -57,10 +54,7 @@ WlShellSurfaceMoveGrabber::~WlShellSurfaceMoveGrabber()
     // Reset cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    if (compositor->d_func()->clientData.cursorTheme) {
-        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
-        compositor->d_func()->grabCursor = false;
-    }
+    compositor->d_func()->ungrabCursor();
 }
 
 void WlShellSurfaceMoveGrabber::focus()

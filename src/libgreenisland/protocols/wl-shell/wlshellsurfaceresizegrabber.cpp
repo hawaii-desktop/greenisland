@@ -72,11 +72,10 @@ WlShellSurfaceResizeGrabber::WlShellSurfaceResizeGrabber(WlShellSurface *shellSu
             break;
         }
 
-        Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
-        Q_ASSERT(compositor);
-        if (compositor->d_func()->clientData.cursorTheme && shape != WlCursorTheme::BlankCursor) {
-            compositor->d_func()->clientData.cursorTheme->changeCursor(shape);
-            compositor->d_func()->grabCursor = true;
+        if (shape != WlCursorTheme::BlankCursor) {
+            Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
+            Q_ASSERT(compositor);
+            compositor->d_func()->grabCursor(shape);
         }
     }
 }
@@ -88,10 +87,7 @@ WlShellSurfaceResizeGrabber::~WlShellSurfaceResizeGrabber()
     // Reset cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    if (compositor->d_func()->clientData.cursorTheme) {
-        compositor->d_func()->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
-        compositor->d_func()->grabCursor = false;
-    }
+    compositor->d_func()->ungrabCursor();
 }
 
 void WlShellSurfaceResizeGrabber::focus()
