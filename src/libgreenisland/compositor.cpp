@@ -55,10 +55,6 @@
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
-#if HAVE_SYSTEMD
-#  include <systemd/sd-daemon.h>
-#endif
-
 #include <wayland-client-protocol.h>
 
 namespace GreenIsland {
@@ -78,12 +74,6 @@ Compositor::Compositor(const QString &socket)
     connect(d->screenManager, &ScreenManager::configurationAcquired, this, [this, d] {
         // Emit a signal which is handy for plugins
         Q_EMIT screenConfigurationAcquired();
-
-#if HAVE_SYSTEMD
-        // Notify systemd when the screen configuration is ready
-        qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
-        sd_notify(0, "READY=1");
-#endif
 
         // Start idle timer
         connect(d->idleTimer, &QTimer::timeout, this, [this, d] {

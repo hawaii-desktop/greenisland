@@ -40,6 +40,7 @@ namespace GreenIsland {
 
 HomeApplication::HomeApplication()
     : m_idleTime(5000)
+    , m_notify(false)
     , m_compositor(Q_NULLPTR)
 {
 }
@@ -95,6 +96,18 @@ void HomeApplication::setIdleTime(int time)
     m_idleTime = time;
 }
 
+bool HomeApplication::notifyLoginManager() const
+{
+    return m_notify;
+}
+
+void HomeApplication::setNotifyLoginManager(bool notify)
+{
+#if HAVE_SYSTEMD
+    m_notify = notify;
+#endif
+}
+
 bool HomeApplication::run(const QString &shell)
 {
     // If a compositor is already running we cannot continue
@@ -119,7 +132,8 @@ bool HomeApplication::run(const QString &shell)
                     << "this compositor into another, but you forgot to pass "
                     << "also \"-platform wayland\"!";
 #if HAVE_SYSTEMD
-            sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
+            if (m_notify)
+                sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
 #endif
             return false;
         }
@@ -133,7 +147,8 @@ bool HomeApplication::run(const QString &shell)
                     << "Fake screen configuration is not allowed when Green Island"
                     << "is nested into another compositor";
 #if HAVE_SYSTEMD
-            sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
+            if (m_notify)
+                sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
 #endif
             return false;
         }
@@ -143,6 +158,15 @@ bool HomeApplication::run(const QString &shell)
     m_compositor = new GreenIsland::Compositor(m_socket);
     if (!m_fakeScreenFileName.isEmpty())
         m_compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
+    QObject::connect(m_compositor, &Compositor::screenConfigurationAcquired, [this] {
+#if HAVE_SYSTEMD
+        // Notify systemd when the screen configuration is ready
+        if (m_notify) {
+            qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+            sd_notify(0, "READY=1");
+        }
+#endif
+    });
     m_compositor->run();
     compositorLaunched();
 

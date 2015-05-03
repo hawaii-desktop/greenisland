@@ -54,12 +54,16 @@ public:
     int idleTime() const;
     void setIdleTime(int time);
 
+    bool notifyLoginManager() const;
+    void setNotifyLoginManager(bool notify);
+
     bool run(const QString &shell);
 
 protected:
     QString m_socket;
     QString m_fakeScreenFileName;
     int m_idleTime;
+    bool m_notify;
     Compositor *m_compositor;
 
     virtual void compositorLaunched();
