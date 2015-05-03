@@ -308,8 +308,6 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
-    Q_D(Compositor);
-
     qCDebug(GREENISLAND_COMPOSITOR) << "Surface created" << surface;
 
     Q_EMIT newSurfaceCreated(surface);
