@@ -50,7 +50,6 @@ Q_SIGNALS:
 private:
     Compositor *m_compositor;
     ScreenBackend *m_backend;
-    int m_outputsDone;
 
 private Q_SLOTS:
     void outputAdded(Output *output);

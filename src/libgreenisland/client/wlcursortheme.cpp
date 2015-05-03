@@ -46,11 +46,10 @@ namespace GreenIsland {
 class WlCursorThemePrivate
 {
 public:
-    WlCursorThemePrivate(WlCursorTheme *q, WlShmPool *pool, WlSeat *seat)
+    WlCursorThemePrivate(WlShmPool *pool, WlSeat *seat)
         : pool(pool)
         , seat(seat)
         , theme(Q_NULLPTR)
-        , q(q)
     {
         // Cursor theme name
         cursorThemeName = QString::fromUtf8(qgetenv("XCURSOR_THEME"));
@@ -250,9 +249,6 @@ public:
     wl_cursor_theme *theme;
     QMultiMap<WlCursorTheme::CursorShape, QByteArray> cursorShapes;
     QMap<WlCursorTheme::CursorShape, wl_cursor *> cursors;
-
-private:
-    WlCursorTheme *q;
 };
 
 /*
@@ -260,7 +256,7 @@ private:
  */
 
 WlCursorTheme::WlCursorTheme(WlShmPool *pool, WlSeat *seat)
-    : d(new WlCursorThemePrivate(this, pool, seat))
+    : d(new WlCursorThemePrivate(pool, seat))
 {
 }
 

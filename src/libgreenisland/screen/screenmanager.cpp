@@ -46,7 +46,6 @@ ScreenManager::ScreenManager(Compositor *compositor)
     : QObject()
     , m_compositor(compositor)
     , m_backend(Q_NULLPTR)
-    , m_outputsDone(0)
 {
 }
 
