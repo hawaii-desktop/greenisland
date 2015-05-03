@@ -67,6 +67,11 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
+    // Login manager notifications
+    QCommandLineOption notifyOption(QStringLiteral("notify"),
+                                    TR("Notify login manager about startup"));
+    parser.addOption(notifyOption);
+
     // Fake screen configuration
     QCommandLineOption fakeScreenOption(QStringLiteral("fake-screen"),
                                         TR("Use fake screen configuration"),
@@ -82,10 +87,9 @@ int main(int argc, char *argv[])
     // Parse command line
     parser.process(app);
 
-    // Socket
+    // Home application parameters
     homeApp.setSocket(parser.value(socketOption));
-
-    // Fake screen data
+    homeApp.setNotifyLoginManager(parser.isSet(notifyOption));
     homeApp.setFakeScreenData(parser.value(fakeScreenOption));
 
     // Idle timer
