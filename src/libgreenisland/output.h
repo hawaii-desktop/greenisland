@@ -57,7 +57,8 @@ public:
         BottomRightHotSpot
     };
 
-    Output(Compositor *compositor, const QString &name);
+    Output(Compositor *compositor, const QString &name,
+           const QString &manufacturer, const QString &model);
 
     Compositor *compositor() const;
     OutputWindow *outputWindow() const;

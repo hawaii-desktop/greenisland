@@ -69,8 +69,10 @@ OutputPrivate::OutputPrivate(Output *parent)
  * Output
  */
 
-Output::Output(Compositor *compositor, const QString &name)
-    : QWaylandQuickOutput(compositor, new OutputWindow(this), "", "")
+Output::Output(Compositor *compositor, const QString &name,
+               const QString &manufacturer, const QString &model)
+    : QWaylandQuickOutput(compositor, new OutputWindow(this),
+                          manufacturer, model)
     , d_ptr(new OutputPrivate(this))
 {
     qRegisterMetaType<Output *>("Output*");

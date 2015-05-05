@@ -80,7 +80,9 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
         return;
     }
 
-    Output *output = new Output(compositor(), so->name());
+    Output *output = new Output(compositor(), so->name(),
+                                QStringLiteral("Green Island"),
+                                so->name());
     output->setPrimary(so->isPrimary());
     output->setPosition(so->position());
 
