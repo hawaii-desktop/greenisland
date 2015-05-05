@@ -84,10 +84,11 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
     output->setPrimary(so->isPrimary());
     output->setPosition(so->position());
 
-    QWaylandOutput::Mode mode;
-    mode.size = so->mode().size;
-    mode.refreshRate = so->mode().refreshRate;
-    output->setMode(mode);
+    QWaylandOutputMode *mode =
+            new QWaylandOutputMode(QStringLiteral("defaultMode"),
+                                   so->mode().size,
+                                   so->mode().refreshRate);
+    output->setModes(QWaylandOutputModeList() << mode);
 
     switch (so->orientation()) {
     case Qt::PortraitOrientation:

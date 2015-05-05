@@ -168,12 +168,13 @@ void NativeScreenBackend::changeMode(QScreen *screen)
     if (!m_screenMap.contains(screen))
         return;
 
-    QWaylandOutput::Mode mode;
-    mode.size = screen->availableGeometry().size();
-    mode.refreshRate = screen->refreshRate() * 1000;
+    QWaylandOutputMode *mode =
+            new QWaylandOutputMode(QStringLiteral("defaultMode"),
+                                   screen->availableGeometry().size(),
+                                   screen->refreshRate() * 1000);
 
     Output *output = m_screenMap[screen];
-    output->setMode(mode);
+    output->setModes(QWaylandOutputModeList() << mode);
 }
 
 void NativeScreenBackend::changePhysicalSize(QScreen *screen)
