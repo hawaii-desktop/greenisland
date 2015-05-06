@@ -37,6 +37,41 @@ public:
     {
     }
 
+    void setKeymapLayout(const QString &layout)
+    {
+        QWaylandKeymap newKeymap(layout, keymap.variant(), keymap.options(),
+                                 keymap.model(), keymap.rules());
+        keymap = newKeymap;
+    }
+
+    void setKeymapVariant(const QString &variant)
+    {
+        QWaylandKeymap newKeymap(keymap.layout(), variant, keymap.options(),
+                                 keymap.model(), keymap.rules());
+        keymap = newKeymap;
+    }
+
+    void setKeymapOptions(const QString &options)
+    {
+        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), options,
+                                 keymap.model(), keymap.rules());
+        keymap = newKeymap;
+    }
+
+    void setKeymapModel(const QString &model)
+    {
+        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
+                                 model, keymap.rules());
+        keymap = newKeymap;
+    }
+
+    void setKeymapRules(const QString &rules)
+    {
+        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
+                                 keymap.model(), rules);
+        keymap = newKeymap;
+    }
+
     Compositor *compositor;
     Qt::KeyboardModifier windowActionKey;
     QWaylandKeymap keymap;
@@ -88,6 +123,7 @@ void CompositorSettings::setKeyboardLayout(const QString &layout)
     if (d->keymap.layout() == layout)
         return;
 
+    d->setKeymapLayout(layout);
     d->compositor->defaultInputDevice()->setKeymap(d->keymap);
     Q_EMIT keyMapChanged();
 }
@@ -105,6 +141,7 @@ void CompositorSettings::setKeyboardVariant(const QString &variant)
     if (d->keymap.variant() == variant)
         return;
 
+    d->setKeymapVariant(variant);
     d->compositor->defaultInputDevice()->setKeymap(d->keymap);
     Q_EMIT keyMapChanged();
 }
@@ -122,6 +159,7 @@ void CompositorSettings::setKeyboardOptions(const QString &options)
     if (d->keymap.options() == options)
         return;
 
+    d->setKeymapOptions(options);
     d->compositor->defaultInputDevice()->setKeymap(d->keymap);
     Q_EMIT keyMapChanged();
 }
@@ -139,6 +177,7 @@ void CompositorSettings::setKeyboardRules(const QString &rules)
     if (d->keymap.rules() == rules)
         return;
 
+    d->setKeymapRules(rules);
     d->compositor->defaultInputDevice()->setKeymap(d->keymap);
     Q_EMIT keyMapChanged();
 }
@@ -156,6 +195,7 @@ void CompositorSettings::setKeyboardModel(const QString &model)
     if (d->keymap.model() == model)
         return;
 
+    d->setKeymapModel(model);
     d->compositor->defaultInputDevice()->setKeymap(d->keymap);
     Q_EMIT keyMapChanged();
 }
