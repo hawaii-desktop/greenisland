@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:GPL2+$
  *
@@ -27,6 +29,8 @@
 import QtQuick 2.0
 
 Item {
+    id: root
+    
     property Item windowItem
 
     property var mapAnimation: null
@@ -42,7 +46,6 @@ Item {
     signal destroyAnimationStarted()
     signal destroyAnimationStopped()
 
-    id: root
     onMapAnimationChanged: {
         if (mapAnimation) {
             mapAnimation.started.connect(root.mapAnimationStarted);

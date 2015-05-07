@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:GPL2+$
  *
@@ -25,14 +27,42 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import QtCompositor 1.0
 import GreenIsland 1.0
 
 WindowWrapper {
     id: window
     objectName: "clientWindow"
-    animation: PopupWindowAnimation {
-        windowItem: window
-    }
     z: 3
+
+    property var popupChild: null
+    property var transientChildren: null
+    
+    property bool dimForDialogs: true
+
+    // Decrease contrast for transient parents
+    ContrastEffect {
+        id: contrast
+        x: clientWindow ? clientWindow.internalGeometry.x : 0
+        y: clientWindow ? clientWindow.internalGeometry.y : 0
+        width: clientWindow ? clientWindow.internalGeometry.width : 0
+        height: clientWindow ? clientWindow.internalGeometry.height : 0
+        source: window
+        blend: 0.742
+        color: "black"
+        z: 2
+        opacity: dimForDialogs && transientChildren ? 1 : 0
+
+        Behavior on opacity {
+            NumberAnimation {
+                easing.type: transientChildren ? Easing.InQuad : Easing.OutQuad
+                duration: 500
+            }
+        }
+    }
+
+    // Connect to the client window
+    Connections {
+        target: clientWindow
+        onActiveChanged: if (clientWindow.active) window.child.takeFocus()
+    }
 }
