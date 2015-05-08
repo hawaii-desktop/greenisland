@@ -166,7 +166,7 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
     // Key bindings
     Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
         if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
-            event->accept();
+            event->ignore();
             Q_EMIT m_output->compositor()->keyBindingPressed(keyBinding.name());
             return;
         }
@@ -182,7 +182,7 @@ void OutputWindow::keyReleaseEvent(QKeyEvent *event)
     // Key bindings
     Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
         if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
-            event->accept();
+            event->ignore();
             Q_EMIT m_output->compositor()->keyBindingReleased(keyBinding.name());
             return;
         }
