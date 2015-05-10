@@ -109,6 +109,7 @@ endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
 
 # Subdirectories
+add_subdirectory(data)
 add_subdirectory(headers)
 add_subdirectory(src)
 
