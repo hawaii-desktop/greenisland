@@ -133,7 +133,7 @@ void OutputWindow::loadScene()
         m_perfTimer.start();
 
         QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              QString("greenisland/%1/Compositor.qml").arg(Compositor::s_fixedShell));
+                                              QString("greenisland/shells/%1/Compositor.qml").arg(Compositor::s_fixedShell));
         if (QFile(path).exists(path))
             setSource(QUrl::fromLocalFile(path));
         else

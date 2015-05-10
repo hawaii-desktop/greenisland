@@ -35,7 +35,7 @@
 #
 macro(greenisland_install_shell shell srcpath)
     install(DIRECTORY ${srcpath}/
-            DESTINATION ${DATA_INSTALL_DIR}/greenisland/${shell}
+            DESTINATION ${DATA_INSTALL_DIR}/greenisland/shells/${shell}
             PATTERN .svn EXCLUDE
             PATTERN CMakeLists.txt EXCLUDE
             PATTERN Messages.sh EXCLUDE
