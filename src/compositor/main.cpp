@@ -82,7 +82,8 @@ int main(int argc, char *argv[])
     // Compositor package
     QCommandLineOption shellOption(QStringLiteral("shell"),
                                    TR("Force loading the given shell"),
-                                   TR("shell"));
+                                   TR("shell"),
+                                   QStringLiteral("org.greenisland.simple"));
     parser.addOption(shellOption);
 
     // Parse command line
