@@ -26,6 +26,7 @@
 
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QCommandLineParser>
+#include <QtCore/QStandardPaths>
 #include <QtGui/QGuiApplication>
 
 #include <greenisland/homeapplication.h>
@@ -91,6 +92,15 @@ int main(int argc, char *argv[])
     homeApp.setSocket(parser.value(socketOption));
     homeApp.setNotifyLoginManager(parser.isSet(notifyOption));
     homeApp.setFakeScreenData(parser.value(fakeScreenOption));
+
+    // Use default fake screen data on X11
+    if (qEnvironmentVariableIsSet("DISPLAY") && homeApp.fakeScreenData().isEmpty()) {
+        const QString fileName = QString("greenisland/screen-data/one-1920x1080.json");
+        QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                              fileName);
+        if (!path.isEmpty())
+            homeApp.setFakeScreenData(path);
+    }
 
     // Idle timer
     int idleInterval = parser.value(idleTimeOption).toInt();
