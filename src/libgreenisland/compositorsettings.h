@@ -40,6 +40,8 @@ class GREENISLAND_EXPORT CompositorSettings : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Qt::KeyboardModifier windowActionKey READ windowActionKey WRITE setWindowActionKey NOTIFY windowActionKeyChanged)
+    Q_PROPERTY(quint32 keyboardRepeatRate READ keyboardRepeatRate WRITE setKeyboardRepeatRate NOTIFY keyboardRepeatRateChanged)
+    Q_PROPERTY(quint32 keyboardRepeatDelay READ keyboardRepeatDelay WRITE setKeyboardRepeatDelay NOTIFY keyboardRepeatDelayChanged)
     Q_PROPERTY(QString keyboardLayout READ keyboardLayout WRITE setKeyboardLayout NOTIFY keyMapChanged)
     Q_PROPERTY(QString keyboardVariant READ keyboardVariant WRITE setKeyboardVariant NOTIFY keyMapChanged)
     Q_PROPERTY(QString keyboardOptions READ keyboardOptions WRITE setKeyboardOptions NOTIFY keyMapChanged)
@@ -51,6 +53,12 @@ public:
 
     Qt::KeyboardModifier windowActionKey() const;
     void setWindowActionKey(Qt::KeyboardModifier mod);
+
+    quint32 keyboardRepeatRate() const;
+    void setKeyboardRepeatRate(quint32 rate);
+
+    quint32 keyboardRepeatDelay() const;
+    void setKeyboardRepeatDelay(quint32 delay);
 
     QString keyboardLayout() const;
     void setKeyboardLayout(const QString &layout);
@@ -69,6 +77,8 @@ public:
 
 Q_SIGNALS:
     void windowActionKeyChanged();
+    void keyboardRepeatRateChanged();
+    void keyboardRepeatDelayChanged();
     void keyMapChanged();
 
 private:

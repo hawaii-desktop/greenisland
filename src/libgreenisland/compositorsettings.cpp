@@ -74,6 +74,8 @@ public:
 
     Compositor *compositor;
     Qt::KeyboardModifier windowActionKey;
+    quint32 defaultKeyboardRate = { 40 };
+    quint32 defaultKeyboardDelay = { 400 };
     QWaylandKeymap keymap;
 };
 
@@ -108,6 +110,52 @@ void CompositorSettings::setWindowActionKey(Qt::KeyboardModifier mod)
 
     d->windowActionKey = mod;
     Q_EMIT windowActionKeyChanged();
+}
+
+quint32 CompositorSettings::keyboardRepeatRate() const
+{
+    Q_D(const CompositorSettings);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    return d->compositor->defaultInputDevice()->keyboardRepeatRate();
+#else
+    return d->defaultKeyboardRate;
+#endif
+}
+
+void CompositorSettings::setKeyboardRepeatRate(quint32 rate)
+{
+    Q_D(CompositorSettings);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    if (keyboardRepeatRate() == rate)
+        return;
+    d->compositor->defaultInputDevice()->setKeyboardRepeatRate(rate);
+    Q_EMIT keyboardRepeatRateChanged();
+#endif
+}
+
+quint32 CompositorSettings::keyboardRepeatDelay() const
+{
+    Q_D(const CompositorSettings);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    return d->compositor->defaultInputDevice()->keyboardRepeatDelay();
+#else
+    return d->defaultKeyboardDelay;
+#endif
+}
+
+void CompositorSettings::setKeyboardRepeatDelay(quint32 delay)
+{
+    Q_D(CompositorSettings);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    if (keyboardRepeatDelay() == delay)
+        return;
+    d->compositor->defaultInputDevice()->setKeyboardRepeatDelay(delay);
+    Q_EMIT keyboardRepeatDelayChanged();
+#endif
 }
 
 QString CompositorSettings::keyboardLayout() const
