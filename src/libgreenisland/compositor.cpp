@@ -62,7 +62,7 @@ namespace GreenIsland {
 QString Compositor::s_fixedShell;
 
 Compositor::Compositor(const QString &socket)
-    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | QtKeyExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
+    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     Q_D(Compositor);
