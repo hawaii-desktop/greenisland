@@ -141,6 +141,9 @@ Q_SIGNALS:
 
     void screenConfigurationAcquired();
 
+    void outputAdded(Output *output);
+    void outputRemoved(Output *output);
+
 protected:
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY) Q_DECL_OVERRIDE;
 

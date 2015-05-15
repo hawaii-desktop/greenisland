@@ -87,6 +87,9 @@ void ScreenManager::outputAdded(Output *output)
     if (output->isPrimary())
         m_compositor->setPrimaryOutput(output);
 
+    // Emit signal for the compositor
+    Q_EMIT m_compositor->outputAdded(output);
+
     // Load scene
     QMetaObject::invokeMethod(output, "loadScene", Qt::QueuedConnection);
 }
@@ -121,6 +124,9 @@ void ScreenManager::outputRemoved(Output *output)
     // Delete window and output
     output->window()->deleteLater();
     output->deleteLater();
+
+    // Emit signal for the compositor
+    Q_EMIT m_compositor->outputRemoved(output);
 
     // Debug
     qCDebug(GREENISLAND_COMPOSITOR) << "Removed output" << output->name() << output->geometry();
