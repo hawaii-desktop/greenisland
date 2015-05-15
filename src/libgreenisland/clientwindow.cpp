@@ -358,12 +358,16 @@ bool ClientWindow::isMaximized() const
     return m_maximized;
 }
 
-void ClientWindow::maximize()
+void ClientWindow::maximize(Output *designedOutput)
 {
     if (m_maximized)
         return;
 
-    maximizeForOutput(static_cast<Output *>(output()));
+    Output *o = designedOutput ? designedOutput : static_cast<Output *>(output());
+    connect(o, &Output::availableGeometryChanged,
+            this, &ClientWindow::outputAvailableGeometryChanged,
+            Qt::UniqueConnection);
+    maximizeForOutput(o);
 
     m_maximized = true;
     Q_EMIT maximizedChanged();
@@ -688,6 +692,14 @@ void ClientWindow::parentSurfaceChanged(QWaylandSurface *newParent,
             break;
         }
     }
+}
+
+void ClientWindow::outputAvailableGeometryChanged()
+{
+    // Resize maximized windows to fit the new available geometry
+    Output *outputSender = static_cast<Output *>(sender());
+    if (output() == outputSender && m_type == TopLevel && m_maximized)
+        maximizeForOutput(outputSender);
 }
 
 } // namespace GreenIsland

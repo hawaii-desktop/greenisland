@@ -430,9 +430,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
         m_prevGlobalGeometry = output->availableGeometry();
 
     // Maximize for this output
-    m_window->maximizeForOutput(static_cast<Output *>(output));
-    m_window->m_maximized = true;
-    Q_EMIT m_window->maximizedChanged();
+    m_window->maximize(static_cast<Output *>(output));
 
     m_surface->setVisibility(QWindow::Maximized);
 

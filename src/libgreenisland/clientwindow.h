@@ -128,7 +128,7 @@ public:
     Q_INVOKABLE void unminimize();
 
     bool isMaximized() const;
-    Q_INVOKABLE void maximize();
+    Q_INVOKABLE void maximize(Output *designedOutput = Q_NULLPTR);
     Q_INVOKABLE void unmaximize();
 
     bool isFullScreen() const;
@@ -214,6 +214,8 @@ private Q_SLOTS:
     void surfaceSizeChanged();
     void setType(QWaylandSurface::WindowType windowType);
     void parentSurfaceChanged(QWaylandSurface *newParent, QWaylandSurface *oldParent);
+
+    void outputAvailableGeometryChanged();
 };
 
 } // namespace GreenIsland
