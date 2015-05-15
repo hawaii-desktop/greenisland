@@ -55,7 +55,8 @@ public:
 void GreenIslandPlugin::registerTypes(const char *uri)
 {
     // @uri GreenIsland
-    qmlRegisterType<Compositor>(uri, 1, 0, "Compositor");
+    qmlRegisterUncreatableType<Compositor>(uri, 1, 0, "Compositor",
+                                           QStringLiteral("You can't create Compositor objects"));
     qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManager",
                                                    QStringLiteral("You can't create ApplicationManager objects"));
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
