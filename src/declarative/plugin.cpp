@@ -32,11 +32,17 @@
 #include <GreenIsland/Compositor>
 #include <GreenIsland/CompositorSettings>
 #include <GreenIsland/Output>
+#include <GreenIsland/KeyBindings>
 #include <GreenIsland/ShellWindow>
 
 #include "fpscounter.h"
 
 using namespace GreenIsland;
+
+static QObject *keyBindingsProvider(QQmlEngine *, QJSEngine *)
+{
+    return KeyBindings::instance();
+}
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -61,6 +67,7 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<ShellWindow>(uri, 1, 0, "ShellWindow",
                                             QStringLiteral("You can't create ShellWindow objects"));
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
+    qmlRegisterSingletonType<KeyBindings>(uri, 1, 0, "KeyBindings", keyBindingsProvider);
 }
 
 #include "plugin.moc"

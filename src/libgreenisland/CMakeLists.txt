@@ -31,6 +31,7 @@ set(SOURCES
     gldebug.cpp
     homeapplication.cpp
     keybinding.cpp
+    keybindings.cpp
     logging.cpp
     output.cpp
     outputwindow.cpp
@@ -154,6 +155,7 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
     ClientWindow
     HomeApplication
     KeyBinding
+    KeyBindings
     Output
     OutputWindow
     WindowView

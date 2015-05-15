@@ -224,12 +224,6 @@ CompositorSettings *Compositor::settings() const
     return d->settings;
 }
 
-QList<KeyBinding> Compositor::keyBindings() const
-{
-    Q_D(const Compositor);
-    return d->keyBindings;
-}
-
 void Compositor::run()
 {
     Q_D(Compositor);
@@ -362,41 +356,6 @@ void Compositor::resetMouseCursor()
     if (d->clientData.cursorTheme)
         d->clientData.cursorTheme->changeCursor(WlCursorTheme::ArrowCursor);
 }
-
-bool Compositor::registerKeyBinding(const QString &name, const QString &keys)
-{
-    Q_D(Compositor);
-
-    // Do we already have this keybinding?
-    Q_FOREACH (const KeyBinding &binding, d->keyBindings) {
-        if (binding.name() == name)
-            return false;
-    }
-
-    // Is the keybinding text valid?
-    QKeySequence sequence(keys);
-    if (!sequence.isEmpty()) {
-        d->keyBindings.append(KeyBinding(name, sequence));
-        return true;
-    }
-
-    return false;
-}
-
-bool Compositor::unregisterKeyBinding(const QString &name)
-{
-    Q_D(Compositor);
-
-    Q_FOREACH (const KeyBinding &binding, d->keyBindings) {
-        if (binding.name() == name) {
-            d->keyBindings.removeOne(binding);
-            return true;
-        }
-    }
-
-    return false;
-}
-
 
 void Compositor::abortSession()
 {

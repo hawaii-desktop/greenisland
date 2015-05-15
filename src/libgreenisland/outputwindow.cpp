@@ -32,6 +32,7 @@
 #include "gldebug.h"
 #include "logging.h"
 #include "keybinding.h"
+#include "keybindings.h"
 #include "output.h"
 #include "outputwindow.h"
 #include "windowview.h"
@@ -164,10 +165,12 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
     m_output->compositor()->setState(Compositor::Active);
 
     // Key bindings
-    Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
+    KeyBindings *keyBindingsManager = KeyBindings::instance();
+    QList<KeyBinding> keyBindings = keyBindingsManager->keyBindings();
+    Q_FOREACH (const KeyBinding &keyBinding, keyBindings) {
         if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
             event->ignore();
-            Q_EMIT m_output->compositor()->keyBindingPressed(keyBinding.name());
+            Q_EMIT keyBindingsManager->keyBindingPressed(keyBinding.name());
             return;
         }
     }
@@ -180,10 +183,12 @@ void OutputWindow::keyReleaseEvent(QKeyEvent *event)
     m_output->compositor()->setState(Compositor::Active);
 
     // Key bindings
-    Q_FOREACH (const KeyBinding &keyBinding, m_output->compositor()->keyBindings()) {
+    KeyBindings *keyBindingsManager = KeyBindings::instance();
+    QList<KeyBinding> keyBindings = keyBindingsManager->keyBindings();
+    Q_FOREACH (const KeyBinding &keyBinding, keyBindings) {
         if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
             event->ignore();
-            Q_EMIT m_output->compositor()->keyBindingReleased(keyBinding.name());
+            Q_EMIT keyBindingsManager->keyBindingReleased(keyBinding.name());
             return;
         }
     }

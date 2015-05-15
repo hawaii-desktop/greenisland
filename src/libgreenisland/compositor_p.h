@@ -110,7 +110,6 @@ public:
 
     // Keyboard
     QWaylandSurface *lastKeyboardFocus;
-    QList<KeyBinding> keyBindings;
 
     QString fakeScreenConfiguration;
     CompositorSettings *settings;

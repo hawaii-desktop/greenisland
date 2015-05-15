@@ -39,6 +39,7 @@
 #include "compositor_p.h"
 #include "clientwindow.h"
 #include "logging.h"
+#include "keybindings.h"
 #include "shellwindow.h"
 #include "client/wlclientconnection.h"
 #include "client/wlregistry.h"
@@ -77,6 +78,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     settings = new CompositorSettings(self);
     screenManager = new ScreenManager(self);
 
+    // Singletons
+    KeyBindings::instance();
     ApplicationManager::instance();
 
     // Wayland client connections
