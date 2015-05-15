@@ -455,26 +455,23 @@ QPointF ClientWindow::calculateInitialPosition() const
     // TODO: Do something clever for touch too
     QPoint pos = QCursor::pos();
 
-    // Find the target screen (the one where the coordinates are in)
-    QRect geometry;
-    bool targetScreenFound = false;
-    for (QWaylandOutput *output: m_surface->compositor()->outputs()) {
-        geometry = output->availableGeometry();
-        if (geometry.contains(pos)) {
-            targetScreenFound = true;
+    // Find the target output (the one where the coordinates are in)
+    QWaylandOutput *targetOutput = m_surface->compositor()->primaryOutput();
+    Q_FOREACH (QWaylandOutput *output, m_surface->compositor()->outputs()) {
+        if (output->geometry().contains(pos)) {
+            targetOutput = output;
             break;
         }
     }
 
-    // Fallback to the primary output
-    if (!targetScreenFound)
-        geometry = m_surface->compositor()->primaryOutput()->availableGeometry();
+    // Target output geometry
+    QRect geometry = targetOutput->geometry();
 
     // Valid range within output where the surface will still be onscreen.
     // If this is negative it means that the surface is bigger than
     // output in this case we fallback to 0,0 in available geometry space.
-    int rangeX = geometry.size().width() - m_surface->size().width();
-    int rangeY = geometry.size().height() - m_surface->size().height();
+    int rangeX = geometry.x() + (geometry.size().width() - m_surface->size().width());
+    int rangeY = geometry.y() + (geometry.size().height() - m_surface->size().height());
 
     int dx = 0, dy = 0;
     if (rangeX > 0)
