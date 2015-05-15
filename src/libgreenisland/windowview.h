@@ -58,7 +58,6 @@ protected:
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private:
-    bool m_modifierPressed;
     QPointF m_pos;
 
     void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;

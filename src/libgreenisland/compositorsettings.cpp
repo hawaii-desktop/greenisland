@@ -125,13 +125,16 @@ quint32 CompositorSettings::keyboardRepeatRate() const
 
 void CompositorSettings::setKeyboardRepeatRate(quint32 rate)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     Q_D(CompositorSettings);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     if (keyboardRepeatRate() == rate)
         return;
+
     d->compositor->defaultInputDevice()->setKeyboardRepeatRate(rate);
     Q_EMIT keyboardRepeatRateChanged();
+#else
+    Q_UNUSED(rate)
 #endif
 }
 
@@ -148,13 +151,16 @@ quint32 CompositorSettings::keyboardRepeatDelay() const
 
 void CompositorSettings::setKeyboardRepeatDelay(quint32 delay)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     Q_D(CompositorSettings);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     if (keyboardRepeatDelay() == delay)
         return;
+
     d->compositor->defaultInputDevice()->setKeyboardRepeatDelay(delay);
     Q_EMIT keyboardRepeatDelayChanged();
+#else
+    Q_UNUSED(delay)
 #endif
 }
 

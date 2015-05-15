@@ -66,7 +66,7 @@ QKeySequence KeyBinding::sequence() const
     return d_ptr->sequence;
 }
 
-bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers, const QString &text) const
+bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers) const
 {
     Qt::Key qtKey = static_cast<Qt::Key>(key);
     if (qtKey == Qt::Key_unknown)

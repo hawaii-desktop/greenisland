@@ -168,7 +168,7 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
     KeyBindings *keyBindingsManager = KeyBindings::instance();
     QList<KeyBinding> keyBindings = keyBindingsManager->keyBindings();
     Q_FOREACH (const KeyBinding &keyBinding, keyBindings) {
-        if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
+        if (keyBinding.matches(event->key(), event->modifiers())) {
             event->ignore();
             Q_EMIT keyBindingsManager->keyBindingPressed(keyBinding.name());
             return;
@@ -186,7 +186,7 @@ void OutputWindow::keyReleaseEvent(QKeyEvent *event)
     KeyBindings *keyBindingsManager = KeyBindings::instance();
     QList<KeyBinding> keyBindings = keyBindingsManager->keyBindings();
     Q_FOREACH (const KeyBinding &keyBinding, keyBindings) {
-        if (keyBinding.matches(event->key(), event->modifiers(), event->text())) {
+        if (keyBinding.matches(event->key(), event->modifiers())) {
             event->ignore();
             Q_EMIT keyBindingsManager->keyBindingReleased(keyBinding.name());
             return;
