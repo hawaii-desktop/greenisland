@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="greenisland_screenshooter">
+  <copyright><![CDATA[
+    Copyright (C) 2015 Pier Luigi Fiorini
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 2.1 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ]]></copyright>
+
+  <interface name="greenisland_screenshooter" version="1">
+    <description summary="dump the contents of an output to a buffer">
+      This interface is used by programs to take a screenshot of an output.
+      Output contents are dumped into a buffer that is read by
+      the screenshot application and saved as an image file.
+      The done event is sent when the buffer is filled.
+    </description>
+
+    <enum name="result">
+      <entry name="bad_output" value="1"/>
+      <entry name="bad_buffer" value="2"/>
+      <entry name="success" value="3"/>
+    </enum>
+
+    <request name="shoot">
+      <description summary="quit an application">
+        Ask the compositor to terminate a Wayland client with the specified application identifier.
+      </description>
+      <arg name="output" type="object" summary="wl_output"/>
+      <arg name="buffer" type="object" summary="wl_buffer"/>
+    </request>
+
+    <event name="done">
+      <description summary="emitted when the buffer is filled">
+        This event is sent when the buffer is filled and the screenshot has been done.
+      </description>
+      <arg name="result" type="int"/>
+    </event>
+  </interface>
+</protocol>

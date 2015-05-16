@@ -146,6 +146,7 @@ to learn how to enable them.
   * **greenisland.protocols.gtkshell:** gtk_shell
   * **greenisland.protocols.gtkshell.trace:** gtk_shell trace
   * **greenisland.protocols.greenisland.recorder:** greenisland_recorder
+  * **greenisland.protocols.greenisland.screenshooter:** greenisland_screenshooter
   * **greenisland.protocols.fullscreenshell.client:** wl_fullscreen_shell client side
 
 * Plugins:

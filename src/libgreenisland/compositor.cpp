@@ -51,6 +51,7 @@
 #include "protocols/greenisland/greenislandapps.h"
 #include "protocols/greenisland/greenislandwindows.h"
 #include "protocols/greenisland/greenislandrecorder.h"
+#include "protocols/greenisland/greenislandscreenshooter.h"
 #include "protocols/gtk-shell/gtkshell.h"
 #include "protocols/wl-shell/wlshell.h"
 #include "protocols/xdg-shell/xdgshell.h"
@@ -218,6 +219,7 @@ void Compositor::run()
     // Add global interfaces
     d->recorderManager = new GreenIslandRecorderManager();
     addGlobalInterface(d->recorderManager);
+    addGlobalInterface(new GreenIslandScreenshooterGlobal());
     addGlobalInterface(new GreenIslandApps());
     addGlobalInterface(new GreenIslandWindows());
     addGlobalInterface(new WlShellGlobal());

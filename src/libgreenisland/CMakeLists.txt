@@ -54,6 +54,7 @@ set(SOURCES
     protocols/greenisland/greenislandwindow.cpp
     protocols/greenisland/greenislandwindows.cpp
     protocols/greenisland/greenislandrecorder.cpp
+    protocols/greenisland/greenislandscreenshooter.cpp
     protocols/wl-shell/wlshell.cpp
     protocols/wl-shell/wlshellsurface.cpp
     protocols/wl-shell/wlshellsurfacegrabber.cpp
@@ -84,6 +85,11 @@ ecm_add_qtwayland_server_protocol(SOURCES
 ecm_add_qtwayland_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
     BASENAME greenisland-recorder
+    PREFIX greenisland_
+)
+ecm_add_qtwayland_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-screenshooter.xml
+    BASENAME greenisland-screenshooter
     PREFIX greenisland_
 )
 ecm_add_qtwayland_server_protocol(SOURCES
