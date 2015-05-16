@@ -55,7 +55,6 @@ class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompos
     Q_PROPERTY(State state READ state WRITE setState NOTIFY stateChanged)
     Q_PROPERTY(int idleInterval READ idleInterval WRITE setIdleInterval NOTIFY idleIntervalChanged)
     Q_PROPERTY(int idleInhibit READ idleInhibit WRITE setIdleInhibit NOTIFY idleInhibitChanged)
-    Q_PROPERTY(bool locked READ isLocked WRITE setLocked NOTIFY lockedChanged)
     Q_PRIVATE_PROPERTY(Compositor::d_func(), QQmlListProperty<ClientWindow> windows READ windows NOTIFY windowsChanged)
     Q_PRIVATE_PROPERTY(Compositor::d_func(), QQmlListProperty<ShellWindow> shellWindows READ shellWindows NOTIFY shellWindowsChanged)
     Q_ENUMS(State)
@@ -87,9 +86,6 @@ public:
 
     void incrementIdleInhibit();
     void decrementIdleInhibit();
-
-    bool isLocked() const;
-    void setLocked(bool value);
 
     CompositorSettings *settings() const;
 

@@ -100,8 +100,6 @@ public:
     QTimer *idleTimer;
     int idleInhibit;
 
-    bool locked;
-
     // Cursor
     QWaylandSurface *cursorSurface;
     int cursorHotspotX;

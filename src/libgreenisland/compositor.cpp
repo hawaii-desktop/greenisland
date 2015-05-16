@@ -200,24 +200,6 @@ void Compositor::decrementIdleInhibit()
     setIdleInhibit(idleInhibit() - 1);
 }
 
-bool Compositor::isLocked() const
-{
-    Q_D(const Compositor);
-
-    return d->locked;
-}
-
-void Compositor::setLocked(bool value)
-{
-    Q_D(Compositor);
-
-    if (d->locked == value)
-        return;
-
-    d->locked = value;
-    Q_EMIT lockedChanged();
-}
-
 CompositorSettings *Compositor::settings() const
 {
     Q_D(const Compositor);
