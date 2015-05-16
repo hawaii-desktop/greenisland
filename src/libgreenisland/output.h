@@ -58,7 +58,8 @@ public:
     };
 
     Output(Compositor *compositor, const QString &name,
-           const QString &manufacturer, const QString &model);
+           const QString &manufacturer, const QString &model,
+           const QWaylandOutputModeList &modes);
 
     Compositor *compositor() const;
     OutputWindow *outputWindow() const;

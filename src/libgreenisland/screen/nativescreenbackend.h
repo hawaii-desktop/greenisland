@@ -51,7 +51,6 @@ private Q_SLOTS:
     void screenRemoved(QScreen *screen);
 
     void changePosition(QScreen *screen);
-    void changeMode(QScreen *screen);
     void changePhysicalSize(QScreen *screen);
     void changeOrientation(QScreen *screen);
 };

@@ -80,17 +80,18 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
         return;
     }
 
-    Output *output = new Output(compositor(), so->name(),
-                                QStringLiteral("Green Island"),
-                                so->name());
-    output->setPrimary(so->isPrimary());
-    output->setPosition(so->position());
-
     QWaylandOutputMode *mode =
             new QWaylandOutputMode(QStringLiteral("defaultMode"),
                                    so->mode().size,
                                    so->mode().refreshRate);
-    output->setModes(QWaylandOutputModeList() << mode);
+
+    Output *output = new Output(compositor(),
+                                so->name(),
+                                QStringLiteral("Green Island"),
+                                so->name(),
+                                QWaylandOutputModeList() << mode);
+    output->setPrimary(so->isPrimary());
+    output->setPosition(so->position());
 
     switch (so->orientation()) {
     case Qt::PortraitOrientation:

@@ -68,14 +68,20 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
 {
     qCDebug(NATIVE_BACKEND) << "Screen added" << screen->name() << screen->availableGeometry();
 
-    Output *output = new Output(compositor(), screen->name(),
+    QWaylandOutputMode *mode =
+            new QWaylandOutputMode(QStringLiteral("defaultMode"),
+                                   screen->availableGeometry().size(),
+                                   screen->refreshRate() * 1000);
+
+    Output *output = new Output(compositor(),
+                                screen->name(),
                                 QStringLiteral("Green Island"),
-                                screen->name());
+                                screen->name(),
+                                QWaylandOutputModeList() << mode);
     output->window()->setScreen(screen);
     output->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
     changePosition(screen);
-    changeMode(screen);
     changePhysicalSize(screen);
     changeOrientation(screen);
     Q_EMIT outputAdded(output);
@@ -83,7 +89,6 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
     connect(screen, &QScreen::availableGeometryChanged, this,
             [this, screen](const QRect &) {
         changePosition(screen);
-        changeMode(screen);
     }, Qt::DirectConnection);
     connect(screen, &QScreen::physicalSizeChanged, this,
             [this, screen](const QSizeF &) {
@@ -143,20 +148,6 @@ void NativeScreenBackend::changePosition(QScreen *screen)
     Output *output = m_screenMap[screen];
     output->setPosition(screen->availableGeometry().topLeft());
     output->window()->setPosition(output->position());
-}
-
-void NativeScreenBackend::changeMode(QScreen *screen)
-{
-    if (!m_screenMap.contains(screen))
-        return;
-
-    QWaylandOutputMode *mode =
-            new QWaylandOutputMode(QStringLiteral("defaultMode"),
-                                   screen->availableGeometry().size(),
-                                   screen->refreshRate() * 1000);
-
-    Output *output = m_screenMap[screen];
-    output->setModes(QWaylandOutputModeList() << mode);
 }
 
 void NativeScreenBackend::changePhysicalSize(QScreen *screen)

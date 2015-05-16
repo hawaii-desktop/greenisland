@@ -70,9 +70,10 @@ OutputPrivate::OutputPrivate(Output *parent)
  */
 
 Output::Output(Compositor *compositor, const QString &name,
-               const QString &manufacturer, const QString &model)
+               const QString &manufacturer, const QString &model,
+               const QWaylandOutputModeList &modes)
     : QWaylandQuickOutput(compositor, new OutputWindow(this),
-                          manufacturer, model)
+                          manufacturer, model, modes)
     , d_ptr(new OutputPrivate(this))
 {
     qRegisterMetaType<Output *>("Output*");
