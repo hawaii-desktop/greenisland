@@ -254,6 +254,19 @@ Item {
         }
     }
 
+    function focusApplication(appId) {
+        var i, entry;
+        for (var i = 0; i < windows.count; i++) {
+            var entry = windows.get(i);
+            if (entry.window.appId === appId) {
+                if (entry.window.minimized)
+                    entry.window.unminimize();
+                if (!entry.window.active)
+                    entry.window.activate();
+            }
+        }
+    }
+
     Connections {
         target: compositor
 
