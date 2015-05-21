@@ -53,6 +53,7 @@ private Q_SLOTS:
     void changeGeometry(QScreen *screen);
     void changePhysicalSize(QScreen *screen);
     void changeOrientation(QScreen *screen);
+    void changeSubpixelAntialiasing(QScreen *screen);
 };
 
 }

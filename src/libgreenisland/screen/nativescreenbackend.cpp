@@ -27,6 +27,7 @@
 #include <QtCore/QRect>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
+#include <QtGui/qpa/qplatformscreen.h>
 
 #include "nativescreenbackend.h"
 
@@ -91,6 +92,7 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
     changeGeometry(screen);
     changePhysicalSize(screen);
     changeOrientation(screen);
+    changeSubpixelAntialiasing(screen);
     Q_EMIT outputAdded(output);
 
     connect(screen, &QScreen::availableGeometryChanged, this,
@@ -191,6 +193,41 @@ void NativeScreenBackend::changeOrientation(QScreen *screen)
     default:
         break;
     }
+}
+
+void NativeScreenBackend::changeSubpixelAntialiasing(QScreen *screen)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+    if (!screen->handle())
+        return;
+    if (!m_screenMap.contains(screen))
+        return;
+
+    QWaylandOutput::Subpixel wlType = QWaylandOutput::SubpixelUnknown;
+    QPlatformScreen::SubpixelAntialiasingType type = screen->handle()->subpixelAntialiasingTypeHint();
+    switch (type) {
+    case QPlatformScreen::Subpixel_None:
+        wlType = QWaylandOutput::SubpixelNone;
+        break;
+    case QPlatformScreen::Subpixel_RGB:
+        wlType = QWaylandOutput::SubpixelHorizontalRgb;
+        break;
+    case QPlatformScreen::Subpixel_BGR:
+        wlType = QWaylandOutput::SubpixelHorizontalBgr;
+        break;
+    case QPlatformScreen::Subpixel_VRGB:
+        wlType = QWaylandOutput::SubpixelVerticalRgb;
+        break;
+    case QPlatformScreen::Subpixel_VBGR:
+        wlType = QWaylandOutput::SubpixelVerticalBgr;
+        break;
+    }
+
+    Output *output = m_screenMap[screen];
+    output->setSubpixel(wlType);
+#else
+    Q_UNUSED(screen)
+#endif
 }
 
 }
