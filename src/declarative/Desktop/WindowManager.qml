@@ -256,6 +256,7 @@ Item {
 
     function focusApplication(appId) {
         var i, entry;
+        var workspace
         for (var i = 0; i < windows.count; i++) {
             var entry = windows.get(i);
             if (entry.window.appId === appId) {
@@ -263,8 +264,13 @@ Item {
                     entry.window.unminimize();
                 if (!entry.window.active)
                     entry.window.activate();
+                if (workspace != currentWorkspace)
+                    workspace = entry.item.workspace
             }
         }
+
+        if (workspace != currentWorkspace)
+            selectWorkspace(workspace)
     }
 
     Connections {
