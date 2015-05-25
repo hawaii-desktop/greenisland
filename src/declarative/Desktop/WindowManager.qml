@@ -91,11 +91,11 @@ Item {
 
         function removeWindow(window) {
             var id = window.clientWindow.id
+            window.workspace.windows.removeById(id)
+            window.workspace.orderedWindows.removeById(id)
             surfaces.removeById(id)
             windows.removeById(id)
             orderedWindows.removeById(id)
-            window.workspace.windows.removeById(id)
-            window.workspace.orderedWindows.removeById(id)
         }
     }
 
@@ -109,6 +109,12 @@ Item {
 
     ListModel {
         id: workspaces
+
+        onCountChanged: {
+            for (var i = 0; i < workspaces.count; i++) {
+                workspaces.get(i).workspace.index = i
+            }
+        }
     }
 
     Workspace {
@@ -117,6 +123,10 @@ Item {
 
         __defaultWorkspace: true
         visible: !usesWorkspaces
+    }
+
+    function removeWorkspace(index) {
+        workspaces.remove(index, 1)
     }
 
     function sourceForIconName(iconName) {

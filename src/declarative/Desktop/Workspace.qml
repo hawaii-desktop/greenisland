@@ -72,6 +72,7 @@ Item {
 
         // Give focus to the window
         window.child.takeFocus();
+        window.clientWindow.activate();
     }
 
     function forgetWindow(window, destruction) {
