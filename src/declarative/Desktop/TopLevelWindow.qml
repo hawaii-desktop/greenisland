@@ -32,14 +32,14 @@ import GreenIsland 1.0
 WindowWrapper {
     id: window
     objectName: "clientWindow"
-    
+
     property var popupChild: null
     property var transientChildren: null
-    
+
     property bool animationsEnabled: visible
-    
+
     property alias savedProperties: saved
-    
+
     property bool dimForDialogs: true
 
     signal minimize()
@@ -119,7 +119,7 @@ WindowWrapper {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.OutQuad
-            duration: 500
+            duration: 300
         }
     }
 
@@ -127,7 +127,7 @@ WindowWrapper {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.OutQuad
-            duration: 500
+            duration: 300
         }
     }
 
@@ -135,7 +135,7 @@ WindowWrapper {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.OutQuad
-            duration: 500
+            duration: 300
         }
     }
 
@@ -143,7 +143,7 @@ WindowWrapper {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.OutQuad
-            duration: 500
+            duration: 300
         }
     }
 
@@ -151,7 +151,7 @@ WindowWrapper {
         enabled: visible
         NumberAnimation {
             easing.type: Easing.OutQuad
-            duration: 500
+            duration: 300
         }
     }
 
@@ -159,7 +159,7 @@ WindowWrapper {
         enabled: visible
         NumberAnimation {
             easing.type: Easing.Linear
-            duration: 500
+            duration: 300
         }
     }
 }
