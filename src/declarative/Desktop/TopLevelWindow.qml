@@ -73,6 +73,12 @@ WindowWrapper {
         onResizeStarted: animationsEnabled = false
         onResizeFinished: animationsEnabled = true
         onActiveChanged: if (clientWindow.active) windowManager.moveFront(window)
+        onMaximizedChanged: {
+            if (clientWindow.maximized)
+                window.parent.maximizedCount++
+            else
+                window.parent.maximizedCount--
+        }
         onMinimizedChanged: {
             print("MINIMIZE!")
             if (clientWindow.minimized) {

@@ -30,12 +30,13 @@ Item {
     property bool isCurrentWorkspace
 
     property string title: "Desktop " + (index + 1)
-    
-    property alias windowLayer: windowLayer
 
     property alias windows: windows
     property alias orderedWindows: orderedWindows
     property var activeWindow
+
+    property int maximizedCount
+    readonly property bool hasMaximizedWindow: maximizedCount > 0
 
     property bool __defaultWorkspace: false
 
@@ -79,14 +80,14 @@ Item {
         print("Forgetting window", window.clientWindow.id)
 
         windowManager.surfaces.removeWindow(window);
-        
+
         window.close()
 
         // Activate previous top level window
-        
+
         if (orderedWindows.count > 0) {
             var newWindow = orderedWindows.get(0)
-            
+
             print("FOCUSING WINDOW")
             newWindow.item.clientWindow.activate();
             windowManager.selectWorkspace(newWindow.workspace);
@@ -115,12 +116,5 @@ Item {
 
     WindowListModel {
         id: orderedWindows
-    }
-
-    Item {
-        id: windowLayer
-        z: 1
-
-        anchors.fill: parent
     }
 }

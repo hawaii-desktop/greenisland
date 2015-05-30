@@ -47,42 +47,42 @@ Item {
 
         function add(window) {
             surfaces.append({
-                "id": window.clientWindow.id, 
-                "window": window.clientWindow, 
-                "item": window, 
+                "id": window.clientWindow.id,
+                "window": window.clientWindow,
+                "item": window,
                 "surface": window.clientWindow.surface,
                 "workspace": currentWorkspace
             });
 
             if (window.clientWindow.type == ClientWindow.TopLevel) {
                 windows.append({
-                    "id": window.clientWindow.id, 
-                    "window": window.clientWindow, 
-                    "item": window, 
+                    "id": window.clientWindow.id,
+                    "window": window.clientWindow,
+                    "item": window,
                     "surface": window.clientWindow.surface,
                     "workspace": currentWorkspace
                 });
 
                 orderedWindows.insert(0, {
-                    "id": window.clientWindow.id, 
-                    "window": window.clientWindow, 
-                    "item": window, 
+                    "id": window.clientWindow.id,
+                    "window": window.clientWindow,
+                    "item": window,
                     "surface": window.clientWindow.surface,
                     "workspace": currentWorkspace
                 });
 
                 currentWorkspace.windows.append({
-                    "id": window.clientWindow.id, 
-                    "window": window.clientWindow, 
-                    "item": window, 
+                    "id": window.clientWindow.id,
+                    "window": window.clientWindow,
+                    "item": window,
                     "surface": window.clientWindow.surface,
                     "workspace": currentWorkspace
                 });
 
                 currentWorkspace.orderedWindows.insert(0, {
-                    "id": window.clientWindow.id, 
-                    "window": window.clientWindow, 
-                    "item": window, 
+                    "id": window.clientWindow.id,
+                    "window": window.clientWindow,
+                    "item": window,
                     "surface": window.clientWindow.surface,
                     "workspace": currentWorkspace
                 });
@@ -96,6 +96,9 @@ Item {
             surfaces.removeById(id)
             windows.removeById(id)
             orderedWindows.removeById(id)
+
+            if (window.clientWindow.maximized)
+                window.parent.maximizedCount--
         }
     }
 
@@ -146,7 +149,7 @@ Item {
         console.debug("\ttitle:", window.title);
         console.debug("\tposition:", window.x + "," + window.y);
         console.debug("\tsize:", window.size.width + "x" + window.size.height);
-        
+
         switch (window.type) {
             case ClientWindow.TopLevel:
                 console.debug("\ttype: TopLevel");
@@ -176,7 +179,7 @@ Item {
         switch (window.type) {
             case ClientWindow.TopLevel:
                 component = windowManager.topLevelWindowComponent;
-                parentItem = currentWorkspace.windowLayer
+                parentItem = currentWorkspace
                 break;
             case ClientWindow.Popup:
                 component = windowManager.popupWindowComponent;
@@ -197,7 +200,7 @@ Item {
             "windowManager": windowManager,
             "workspace": currentWorkspace
         });
-        
+
         // TODO: Animate the window, or show a fullscreen workspace
 
         surfaces.add(item)
@@ -242,7 +245,7 @@ Item {
 
     function _forgetWindow(window, destruction) {
         print("Forgetting window", window.clientWindow.id, destruction)
-        
+
         var workspace = window.workspace
         workspace.forgetWindow(window)
         print("WINDOW REMOVED!!")
