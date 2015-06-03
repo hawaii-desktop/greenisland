@@ -88,14 +88,14 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
     output->window()->setScreen(screen);
     output->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
-    changePosition(screen);
+    changeGeometry(screen);
     changePhysicalSize(screen);
     changeOrientation(screen);
     Q_EMIT outputAdded(output);
 
     connect(screen, &QScreen::availableGeometryChanged, this,
             [this, screen](const QRect &) {
-        changePosition(screen);
+        changeGeometry(screen);
     }, Qt::DirectConnection);
     connect(screen, &QScreen::physicalSizeChanged, this,
             [this, screen](const QSizeF &) {
@@ -147,7 +147,7 @@ void NativeScreenBackend::screenRemoved(QScreen *screen)
     output->deleteLater();
 }
 
-void NativeScreenBackend::changePosition(QScreen *screen)
+void NativeScreenBackend::changeGeometry(QScreen *screen)
 {
     if (!m_screenMap.contains(screen))
         return;
@@ -155,6 +155,12 @@ void NativeScreenBackend::changePosition(QScreen *screen)
     Output *output = m_screenMap[screen];
     output->setPosition(screen->availableGeometry().topLeft());
     output->window()->setPosition(output->position());
+
+#if QTCOMPOSITOR_VERSION < QT_VERSION_CHECK(5, 6, 0)
+    int refreshRate = screen->refreshRate() * 1000;
+    output->setMode({ screen->availableGeometry().size(),
+                      refreshRate });
+#endif
 }
 
 void NativeScreenBackend::changePhysicalSize(QScreen *screen)
