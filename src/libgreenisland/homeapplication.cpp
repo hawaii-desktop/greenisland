@@ -41,18 +41,11 @@ namespace GreenIsland {
 HomeApplication::HomeApplication()
     : m_idleTime(5000)
     , m_notify(false)
-    , m_compositor(Q_NULLPTR)
 {
 }
 
 HomeApplication::~HomeApplication()
 {
-    m_compositor->deleteLater();
-}
-
-Compositor *HomeApplication::compositor() const
-{
-    return m_compositor;
 }
 
 QString HomeApplication::shellName() const
@@ -111,7 +104,7 @@ void HomeApplication::setNotifyLoginManager(bool notify)
 bool HomeApplication::run(const QString &shell)
 {
     // If a compositor is already running we cannot continue
-    if (m_compositor) {
+    if (Compositor::instance()->isRunning()) {
         qCWarning(GREENISLAND_COMPOSITOR) << "Compositor already running, don't call run() more than once!";
         return false;
     }
@@ -155,10 +148,10 @@ bool HomeApplication::run(const QString &shell)
     }
 
     // Create the compositor
-    m_compositor = new GreenIsland::Compositor(m_socket);
+    Compositor *compositor = Compositor::instance();
     if (!m_fakeScreenFileName.isEmpty())
-        m_compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
-    QObject::connect(m_compositor, &Compositor::screenConfigurationAcquired, [this] {
+        compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
+    QObject::connect(compositor, &Compositor::screenConfigurationAcquired, [this] {
 #if HAVE_SYSTEMD
         // Notify systemd when the screen configuration is ready
         if (m_notify) {
@@ -167,7 +160,7 @@ bool HomeApplication::run(const QString &shell)
         }
 #endif
     });
-    m_compositor->run();
+    compositor->run();
     compositorLaunched();
 
     return true;

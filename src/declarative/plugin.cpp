@@ -39,6 +39,11 @@
 
 using namespace GreenIsland;
 
+static QObject *compositorProvider(QQmlEngine *, QJSEngine *)
+{
+    return Compositor::instance();
+}
+
 static QObject *keyBindingsProvider(QQmlEngine *, QJSEngine *)
 {
     return KeyBindings::instance();
@@ -55,8 +60,7 @@ public:
 void GreenIslandPlugin::registerTypes(const char *uri)
 {
     // @uri GreenIsland
-    qmlRegisterUncreatableType<Compositor>(uri, 1, 0, "Compositor",
-                                           QStringLiteral("You can't create Compositor objects"));
+    qmlRegisterSingletonType<Compositor>(uri, 1, 0, "Compositor", compositorProvider);
     qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManager",
                                                    QStringLiteral("You can't create ApplicationManager objects"));
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",

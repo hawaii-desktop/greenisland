@@ -96,6 +96,8 @@ public:
 
     bool running;
 
+    // Compositor
+    QString socketName;
     Compositor::State state;
     QTimer *idleTimer;
     int idleInhibit;

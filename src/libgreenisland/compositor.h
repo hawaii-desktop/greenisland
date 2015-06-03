@@ -70,10 +70,13 @@ public:
         Sleeping
     };
 
-    Compositor(const QString &socket = QString());
-    ~Compositor();
+    virtual ~Compositor();
+
+    static Compositor *instance();
 
     void setFakeScreenConfiguration(const QString &fileName);
+
+    bool isRunning() const;
 
     State state() const;
     void setState(State state);
@@ -141,6 +144,8 @@ Q_SIGNALS:
     void outputRemoved(Output *output);
 
 protected:
+    Compositor(QObject *parent = 0);
+
     void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY) Q_DECL_OVERRIDE;
 
 private:

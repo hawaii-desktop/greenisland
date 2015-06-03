@@ -60,10 +60,14 @@
 
 namespace GreenIsland {
 
+class CompositorSingleton : public Compositor {};
+Q_GLOBAL_STATIC(CompositorSingleton, s_compositor)
+
 QString Compositor::s_fixedShell;
 
-Compositor::Compositor(const QString &socket)
-    : QWaylandQuickCompositor(socket.isEmpty() ? 0 : qPrintable(socket), WindowManagerExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
+Compositor::Compositor(QObject *parent)
+    : QObject(parent)
+    , QWaylandQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     Q_D(Compositor);
@@ -99,10 +103,21 @@ Compositor::~Compositor()
     cleanupGraphicsResources();
 }
 
+Compositor *Compositor::instance()
+{
+    return s_compositor();
+}
+
 void Compositor::setFakeScreenConfiguration(const QString &fileName)
 {
     Q_D(Compositor);
     d->fakeScreenConfiguration = fileName;
+}
+
+bool Compositor::isRunning() const
+{
+    Q_D(const Compositor);
+    return d->running;
 }
 
 Compositor::State Compositor::state() const

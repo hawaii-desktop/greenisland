@@ -41,8 +41,6 @@ public:
     HomeApplication();
     virtual ~HomeApplication();
 
-    Compositor *compositor() const;
-
     QString shellName() const;
 
     QString socket() const;
@@ -64,7 +62,6 @@ protected:
     QString m_fakeScreenFileName;
     int m_idleTime;
     bool m_notify;
-    Compositor *m_compositor;
 
     virtual void compositorLaunched();
 };
