@@ -26,6 +26,7 @@
 
 #include <QtCore/QStandardPaths>
 #include <QtQml/QQmlContext>
+#include <QtQml/QQmlEngine>
 
 #include "compositor.h"
 #include "compositor_p.h"
@@ -43,8 +44,10 @@
 namespace GreenIsland {
 
 OutputWindow::OutputWindow(Output *output)
-    : QQuickView()
+    : QQuickWindow()
     , m_output(output)
+    , m_component(Q_NULLPTR)
+    , m_context(Q_NULLPTR)
     , m_hotSpotLastTime(0)
     , m_hotSpotEntered(0)
 {
@@ -60,31 +63,9 @@ OutputWindow::OutputWindow(Output *output)
             Qt::DirectConnection);
 
     // Read content after rendering
-    connect(this, &QQuickView::afterRendering,
+    connect(this, &QQuickWindow::afterRendering,
             this, &OutputWindow::readContent,
             Qt::DirectConnection);
-
-    // Show loading errors
-    connect(this, &QQuickView::statusChanged, this, [this](const QQuickView::Status &status) {
-        switch (status) {
-        case QQuickView::Null:
-            qCWarning(GREENISLAND_COMPOSITOR) << "No source set yet";
-            break;
-        case QQuickView::Loading:
-            qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
-            break;
-        case QQuickView::Ready:
-            qCDebug(GREENISLAND_COMPOSITOR) << "QML scene loaded successfully";
-            break;
-        default:
-            qCWarning(GREENISLAND_COMPOSITOR) << "One or more errors have occurred loading the plugin:";
-            Q_FOREACH (const QQmlError &error, errors())
-                qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
-            break;
-        }
-
-        qCDebug(GREENISLAND_COMPOSITOR) << "Scene load time:" << m_perfTimer.elapsed() << "ms";
-    });
 }
 
 OutputWindow::~OutputWindow()
@@ -111,33 +92,41 @@ void OutputWindow::loadScene()
             << "Loading scene on output"
             << m_output->name() << m_output->geometry();
 
-    // Add a context property to reference this window
-    rootContext()->setContextProperty("_greenisland_window", this);
-
-    // Add a context property to reference the output
-    rootContext()->setContextProperty("_greenisland_output", m_output);
-
     // Load QML and setup window
-    setResizeMode(QQuickView::SizeRootObjectToView);
-    if (Compositor::s_fixedShell.isEmpty()) {
+    if (Compositor::s_fixedShell.isEmpty())
         qFatal("No plugin specified, cannot continue!");
-    } else {
-        // Load main file or bail out
-        qCDebug(GREENISLAND_COMPOSITOR)
-                << "Loading" << Compositor::s_fixedShell
-                << "shell for output"
-                << m_output->name() << m_output->geometry();
 
-        m_perfTimer.start();
+    // Load main file or bail out
+    qCDebug(GREENISLAND_COMPOSITOR)
+            << "Loading" << Compositor::s_fixedShell
+            << "shell for output"
+            << m_output->name() << m_output->geometry();
 
-        QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              QString("greenisland/shells/%1/Compositor.qml").arg(Compositor::s_fixedShell));
-        if (QFile(path).exists(path))
-            setSource(QUrl::fromLocalFile(path));
-        else
-            qFatal("Shell \"%s\" is not valid, cannot continue!",
-                   qPrintable(Compositor::s_fixedShell));
+    m_perfTimer.start();
+
+    QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                          QString("greenisland/shells/%1/Compositor.qml").arg(Compositor::s_fixedShell));
+    if (!QFile(path).exists(path))
+        qFatal("Shell \"%s\" is not valid, cannot continue!",
+               qPrintable(Compositor::s_fixedShell));
+
+    // Engine
+    QQmlEngine *engine = Compositor::instance()->engine();
+
+    // Context
+    if (!m_context) {
+        m_context = new QQmlContext(engine->rootContext(), this);
+        m_context->setContextProperty("_greenisland_window", this);
+        m_context->setContextProperty("_greenisland_output", m_output);
     }
+
+    // Component
+    m_component = new QQmlComponent(engine, QUrl::fromLocalFile(path));
+    if (m_component->isLoading())
+        connect(m_component, &QQmlComponent::statusChanged,
+                this, &OutputWindow::statusChanged);
+    else
+        statusChanged(QQmlComponent::Ready);
 }
 
 void OutputWindow::unloadScene()
@@ -146,7 +135,12 @@ void OutputWindow::unloadScene()
     qCDebug(GREENISLAND_COMPOSITOR)
             << "Unloading scene from output"
             << m_output->name() << m_output->geometry();
-    setSource(QUrl());
+    if (m_component) {
+        disconnect(m_component, &QQmlComponent::statusChanged,
+                   this, &OutputWindow::statusChanged);
+        m_component->deleteLater();
+    }
+    m_component = Q_NULLPTR;
 
     // Hide window
     if (isVisible()) {
@@ -172,7 +166,7 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
         }
     }
 
-    QQuickView::keyPressEvent(event);
+    QQuickWindow::keyPressEvent(event);
 }
 
 void OutputWindow::keyReleaseEvent(QKeyEvent *event)
@@ -190,21 +184,21 @@ void OutputWindow::keyReleaseEvent(QKeyEvent *event)
         }
     }
 
-    QQuickView::keyReleaseEvent(event);
+    QQuickWindow::keyReleaseEvent(event);
 }
 
 void OutputWindow::mousePressEvent(QMouseEvent *event)
 {
     m_output->compositor()->setState(Compositor::Active);
 
-    QQuickView::mousePressEvent(event);
+    QQuickWindow::mousePressEvent(event);
 }
 
 void OutputWindow::mouseReleaseEvent(QMouseEvent *event)
 {
     m_output->compositor()->setState(Compositor::Active);
 
-    QQuickView::mouseReleaseEvent(event);
+    QQuickWindow::mouseReleaseEvent(event);
 }
 
 void OutputWindow::mouseMoveEvent(QMouseEvent *event)
@@ -224,14 +218,14 @@ void OutputWindow::mouseMoveEvent(QMouseEvent *event)
         }
     }
 
-    QQuickView::mouseMoveEvent(event);
+    QQuickWindow::mouseMoveEvent(event);
 }
 
 void OutputWindow::wheelEvent(QWheelEvent *event)
 {
     m_output->compositor()->setState(Compositor::Active);
 
-    QQuickView::wheelEvent(event);
+    QQuickWindow::wheelEvent(event);
 }
 
 void OutputWindow::handleMotion(quint64 time, const QPoint &pt)
@@ -320,6 +314,40 @@ void OutputWindow::readContent()
 
     // Record a frame after rendering
     m_output->compositor()->d_ptr->recorderManager->recordFrame(this);
+}
+
+void OutputWindow::statusChanged(QQmlComponent::Status status)
+{
+    switch (status) {
+    case QQmlComponent::Null:
+        qCWarning(GREENISLAND_COMPOSITOR) << "No source set yet";
+        break;
+    case QQmlComponent::Loading:
+        qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
+        break;
+    case QQmlComponent::Ready:
+        qCDebug(GREENISLAND_COMPOSITOR) << "QML scene loaded ready";
+        break;
+    default:
+        qCWarning(GREENISLAND_COMPOSITOR) << "One or more errors have occurred loading the scene:";
+        Q_FOREACH (const QQmlError &error, m_component->errors())
+            qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
+        break;
+    }
+
+    continueLoading();
+}
+
+void OutputWindow::continueLoading()
+{
+    if (!m_component->isReady())
+        return;
+
+    QQuickItem *rootItem = qobject_cast<QQuickItem *>(m_component->create(m_context));
+    rootItem->setParentItem(contentItem());
+    rootItem->setSize(size());
+
+    qCDebug(GREENISLAND_COMPOSITOR) << "Scene load time:" << m_perfTimer.elapsed() << "ms";
 }
 
 }

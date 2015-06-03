@@ -28,15 +28,18 @@
 #define GREENISLAND_OUTPUTWINDOW_H
 
 #include <QtCore/QElapsedTimer>
-#include <QtQuick/QQuickView>
+#include <QtQml/QQmlComponent>
+#include <QtQuick/QQuickWindow>
 
 #include <greenisland/greenisland_export.h>
+
+class QQmlContext;
 
 namespace GreenIsland {
 
 class Output;
 
-class GREENISLAND_EXPORT OutputWindow : public QQuickView
+class GREENISLAND_EXPORT OutputWindow : public QQuickWindow
 {
     Q_OBJECT
 public:
@@ -60,6 +63,8 @@ protected:
 
 private:
     Output *m_output;
+    QQmlComponent *m_component;
+    QQmlContext *m_context;
     QElapsedTimer m_perfTimer;
 
     // Hot spots
@@ -75,6 +80,8 @@ private:
 private Q_SLOTS:
     void printInfo();
     void readContent();
+    void statusChanged(QQmlComponent::Status status);
+    void continueLoading();
 };
 
 }

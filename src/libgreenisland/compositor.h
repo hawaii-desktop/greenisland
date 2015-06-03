@@ -78,6 +78,8 @@ public:
 
     bool isRunning() const;
 
+    QQmlEngine *engine() const;
+
     State state() const;
     void setState(State state);
 

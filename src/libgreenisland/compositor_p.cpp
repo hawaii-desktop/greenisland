@@ -29,6 +29,7 @@
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
 #include <QtGui/qpa/qplatformnativeinterface.h>
+#include <QtQml/QQmlEngine>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
 #include "abstractplugin.h"
@@ -69,6 +70,9 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , fullscreenShell(Q_NULLPTR)
     , q_ptr(self)
 {
+    // Create a QML engine shared among all the output windows to save memory
+    engine = new QQmlEngine(self);
+
     // Are we nested into another compositor?
     nested = QGuiApplication::platformName().startsWith(QStringLiteral("wayland"));
 

@@ -101,6 +101,7 @@ public:
     Compositor::State state;
     QTimer *idleTimer;
     int idleInhibit;
+    QQmlEngine *engine;
 
     // Cursor
     QWaylandSurface *cursorSurface;

@@ -120,6 +120,12 @@ bool Compositor::isRunning() const
     return d->running;
 }
 
+QQmlEngine *Compositor::engine() const
+{
+    Q_D(const Compositor);
+    return d->engine;
+}
+
 Compositor::State Compositor::state() const
 {
     Q_D(const Compositor);
