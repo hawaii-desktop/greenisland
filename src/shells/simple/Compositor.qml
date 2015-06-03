@@ -26,7 +26,7 @@
 
 import QtQuick 2.0
 import QtCompositor 1.0
-import GreenIsland 1.0
+import GreenIsland 1.0 as GreenIsland
 import "WindowManagement.js" as WindowManagement
 
 Item {
@@ -43,7 +43,7 @@ Item {
     }
 
     Connections {
-        target: compositor
+        target: GreenIsland.Compositor
         onWindowMapped: {
             // A window was mapped
             WindowManagement.windowMapped(window);
