@@ -96,6 +96,7 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
                                 so->name(),
                                 QStringLiteral("Green Island"),
                                 so->name());
+    output->setMode({ so->mode().size, so->mode().refreshRate });
 #endif
     output->setPrimary(so->isPrimary());
     output->setPosition(so->position());
