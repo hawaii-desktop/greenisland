@@ -174,7 +174,7 @@ install(FILES ${GreenIsland_CamelCase_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
         COMPONENT Devel)
 
-install(TARGETS GreenIsland EXPORT GreenIslandTargets ${KF5_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS GreenIsland EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(
     FILES
