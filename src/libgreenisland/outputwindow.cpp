@@ -111,9 +111,6 @@ void OutputWindow::loadScene()
             << "Loading scene on output"
             << m_output->name() << m_output->geometry();
 
-    // Make compositor instance available to QML
-    rootContext()->setContextProperty("compositor", m_output->compositor());
-
     // Add a context property to reference this window
     rootContext()->setContextProperty("_greenisland_window", this);
 
