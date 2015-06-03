@@ -80,6 +80,7 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
         return;
     }
 
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QWaylandOutputMode *mode =
             new QWaylandOutputMode(QStringLiteral("defaultMode"),
                                    so->mode().size,
@@ -90,6 +91,12 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
                                 QStringLiteral("Green Island"),
                                 so->name(),
                                 QWaylandOutputModeList() << mode);
+#else
+    Output *output = new Output(compositor(),
+                                so->name(),
+                                QStringLiteral("Green Island"),
+                                so->name());
+#endif
     output->setPrimary(so->isPrimary());
     output->setPosition(so->position());
 

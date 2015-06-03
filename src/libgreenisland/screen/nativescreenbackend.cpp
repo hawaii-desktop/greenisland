@@ -68,6 +68,7 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
 {
     qCDebug(NATIVE_BACKEND) << "Screen added" << screen->name() << screen->availableGeometry();
 
+#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QWaylandOutputMode *mode =
             new QWaylandOutputMode(QStringLiteral("defaultMode"),
                                    screen->availableGeometry().size(),
@@ -78,6 +79,12 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
                                 QStringLiteral("Green Island"),
                                 screen->name(),
                                 QWaylandOutputModeList() << mode);
+#else
+    Output *output = new Output(compositor(),
+                                screen->name(),
+                                QStringLiteral("Green Island"),
+                                screen->name());
+#endif
     output->window()->setScreen(screen);
     output->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
