@@ -80,7 +80,8 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
         return;
     }
 
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+#if 0
     QWaylandOutputMode *mode =
             new QWaylandOutputMode(QStringLiteral("defaultMode"),
                                    so->mode().size,
