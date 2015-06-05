@@ -69,7 +69,8 @@ OutputPrivate::OutputPrivate(Output *parent)
  * Output
  */
 
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+#if 0
 Output::Output(Compositor *compositor, const QString &name,
                const QString &manufacturer, const QString &model,
                const QWaylandOutputModeList &modes)
