@@ -159,7 +159,8 @@ void NativeScreenBackend::changeGeometry(QScreen *screen)
     output->setPosition(screen->availableGeometry().topLeft());
     output->window()->setPosition(output->position());
 
-#if QTCOMPOSITOR_VERSION < QT_VERSION_CHECK(5, 6, 0)
+//#if QTCOMPOSITOR_VERSION < QT_VERSION_CHECK(5, 6, 0)
+#if 1
     int refreshRate = screen->refreshRate() * 1000;
     output->setMode({ screen->availableGeometry().size(),
                       refreshRate });
