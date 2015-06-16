@@ -156,7 +156,6 @@ private:
 
     Q_PRIVATE_SLOT(d_func(), void _q_createNestedConnection())
     Q_PRIVATE_SLOT(d_func(), void _q_createInternalConnection())
-    Q_PRIVATE_SLOT(d_func(), void _q_updateCursor(bool hasBuffer))
 
     friend class ClientWindow;
     friend class ScreenManager;

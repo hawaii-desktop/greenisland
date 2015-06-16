@@ -369,10 +369,6 @@ void Compositor::abortSession()
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
-    // Sanity check
-    if (!surface)
-        return;
-
 #if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
     Q_D(Compositor);
 
@@ -381,22 +377,36 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
     if (d->cursorGrabbed != WlCursorTheme::BlankCursor && surface->client()->client() != d->clientData.client)
         return;
 
+    // Update cursor when mapped
+    if ((d->cursorSurface != surface) && surface) {
+        connect(surface, &QWaylandSurface::configure, this, [this, d](bool) {
+            if (!d->cursorSurface)
+                return;
+
+            QImage image = static_cast<BufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
+            QCursor cursor(QPixmap::fromImage(image), d->cursorHotspotX, d->cursorHotspotY);
+
+            if (d->cursorIsSet) {
+                QGuiApplication::changeOverrideCursor(cursor);
+            } else {
+                QGuiApplication::setOverrideCursor(cursor);
+                d->cursorIsSet = true;
+            }
+        });
+    }
+
     // Setup cursor
+    d->cursorSurface = surface;
     d->cursorHotspotX = hotspotX;
     d->cursorHotspotY = hotspotY;
 
-    if ((d->cursorSurface != surface) && surface) {
-        // Buffer attacher
-        d->cursorSurface = surface;
+    // Buffer attacher
+    if (d->cursorSurface && !d->cursorSurface->bufferAttacher())
         d->cursorSurface->setBufferAttacher(new BufferAttacher());
-
-        // Update cursor when mapped
-        connect(surface, SIGNAL(configure(bool)), this, SLOT(_q_updateCursor(bool)));
-    }
 #else
-    Q_UNUSED(surface);
-    Q_UNUSED(hotspotX);
-    Q_UNUSED(hotspotY);
+    Q_UNUSED(surface)
+    Q_UNUSED(hotspotX)
+    Q_UNUSED(hotspotY)
 #endif
 }
 

@@ -77,8 +77,6 @@ public:
     void grabCursor(WlCursorTheme::CursorShape shape);
     void ungrabCursor();
 
-    void setCursorImage(const QImage &image);
-
     void addWindow(ClientWindow *window);
     void removeWindow(ClientWindow *window);
 
@@ -92,7 +90,6 @@ public:
 
     void _q_createNestedConnection();
     void _q_createInternalConnection();
-    void _q_updateCursor(bool hasBuffer);
 
     bool running;
 
@@ -108,6 +105,7 @@ public:
     int cursorHotspotX;
     int cursorHotspotY;
     WlCursorTheme::CursorShape cursorGrabbed;
+    bool cursorIsSet;
 
     // Keyboard
     QWaylandSurface *lastKeyboardFocus;

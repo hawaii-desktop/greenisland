@@ -64,6 +64,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
     , cursorGrabbed(WlCursorTheme::BlankCursor)
+    , cursorIsSet(false)
     , lastKeyboardFocus(Q_NULLPTR)
     , recorderManager(Q_NULLPTR)
     , nestedConnection(Q_NULLPTR)
@@ -209,19 +210,6 @@ void CompositorPrivate::ungrabCursor()
     }
 }
 
-void CompositorPrivate::setCursorImage(const QImage &image)
-{
-    QCursor cursor(QPixmap::fromImage(image), cursorHotspotX, cursorHotspotY);
-
-    static bool cursorIsSet = false;
-    if (cursorIsSet) {
-        QGuiApplication::changeOverrideCursor(cursor);
-    } else {
-        QGuiApplication::setOverrideCursor(cursor);
-        cursorIsSet = true;
-    }
-}
-
 void CompositorPrivate::_q_createNestedConnection()
 {
     Q_Q(Compositor);
@@ -347,17 +335,6 @@ void CompositorPrivate::_q_createInternalConnection()
 
     // Initialize the client connection
     clientData.connection->initializeConnection();
-}
-
-void CompositorPrivate::_q_updateCursor(bool hasBuffer)
-{
-    if (!hasBuffer || !cursorSurface || !cursorSurface->bufferAttacher())
-        return;
-
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-    QImage image = static_cast<BufferAttacher *>(cursorSurface->bufferAttacher())->image();
-    setCursorImage(image);
-#endif
 }
 
 void CompositorPrivate::addWindow(ClientWindow *window)
