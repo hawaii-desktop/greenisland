@@ -48,35 +48,37 @@
 
 namespace GreenIsland {
 
-static GLuint textureFromImage(const QImage &image)
+BufferAttacher::BufferAttacher()
+    : QWaylandBufferAttacher()
+    , shmTexture(Q_NULLPTR)
 {
-    GLuint texture = 0;
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    QImage tx = image.convertToFormat(QImage::Format_RGBA8888_Premultiplied);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tx.width(), tx.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, tx.constBits());
-    glBindTexture(GL_TEXTURE_2D, 0);
-    return texture;
+}
+
+BufferAttacher::~BufferAttacher()
+{
+    delete shmTexture;
 }
 
 void BufferAttacher::attach(const QWaylandBufferRef &ref)
 {
     if (bufferRef) {
-        if (ownTexture)
-            glDeleteTextures(1, &texture);
-        else
+        if (bufferRef.isShm()) {
+            delete shmTexture;
+            shmTexture = Q_NULLPTR;
+        } else {
             bufferRef.destroyTexture();
+        }
     }
 
     bufferRef = ref;
 
     if (bufferRef) {
         if (bufferRef.isShm()) {
-            texture = textureFromImage(bufferRef.image());
-            ownTexture = true;
+            shmTexture = new QOpenGLTexture(bufferRef.image(), QOpenGLTexture::DontGenerateMipMaps);
+            shmTexture->setWrapMode(QOpenGLTexture::ClampToEdge);
+            texture = shmTexture->textureId();
         } else {
             texture = bufferRef.createTexture();
-            ownTexture = false;
         }
     }
 }
