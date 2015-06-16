@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
         qCritical() << "Failed to open output file for writing";
         return 1;
     }
-    file.setTextModeEnabled(false);
 
     unsigned int numberOfFrames = 0;
     if (parser.isSet(framesOption))
