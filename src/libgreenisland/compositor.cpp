@@ -378,7 +378,8 @@ void Compositor::abortSession()
 
 void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
 {
-#if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
+//#if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
+#if 0
     Q_D(Compositor);
 
     // Do not change the cursor if the compositor wants to
