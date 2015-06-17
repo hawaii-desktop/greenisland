@@ -307,6 +307,15 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {
+    Q_D(Compositor);
+
+    // Ignore cursor surface: we just need its buffer to retrieve
+    // the image, we don't really need to do anything but that
+    if (surface == d->cursorSurface)
+        qDebug() << "::::: cursor created";
+    if (surface == d->cursorSurface)
+        return;
+
     qCDebug(GREENISLAND_COMPOSITOR) << "Surface created" << surface;
 
     Q_EMIT newSurfaceCreated(surface);
@@ -374,18 +383,26 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 
     // Do not change the cursor if the compositor wants to
     // exclusively change it (for example during a window move operation)
-    if (d->cursorGrabbed != WlCursorTheme::BlankCursor && surface->client()->client() != d->clientData.client)
-        return;
+    if (surface) {
+        if (d->cursorGrabbed != WlCursorTheme::BlankCursor && surface->client()->client() != d->clientData.client)
+            return;
+    }
+
+    // Disconnect configure from the old cursor surface
+    if (d->cursorSurface && d->cursorSurface != surface)
+        disconnect(d->cursorSurface, SIGNAL(configure(bool)));
 
     // Update cursor when mapped
     if ((d->cursorSurface != surface) && surface) {
-        connect(surface, &QWaylandSurface::configure, this, [this, d](bool) {
-            if (!d->cursorSurface)
+        connect(surface, &QWaylandSurface::configure, this, [this, d](bool hasBuffer) {
+            if (!d->cursorSurface || !hasBuffer)
                 return;
 
             QImage image = static_cast<BufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
-            QCursor cursor(QPixmap::fromImage(image), d->cursorHotspotX, d->cursorHotspotY);
+            if (image.isNull())
+                return;
 
+            QCursor cursor(QPixmap::fromImage(image), d->cursorHotspotX, d->cursorHotspotY);
             if (d->cursorIsSet) {
                 QGuiApplication::changeOverrideCursor(cursor);
             } else {
