@@ -287,7 +287,7 @@ Item {
     }
 
     Connections {
-        target: compositor
+        target: Compositor
 
         onWindowMapped: windowManager.windowMapped(window);
         onWindowUnmapped: windowManager.windowUnmapped(window);
