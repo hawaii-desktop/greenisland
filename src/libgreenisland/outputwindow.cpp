@@ -80,14 +80,6 @@ Output *OutputWindow::output() const
 
 void OutputWindow::loadScene()
 {
-    // Show window
-    if (!isVisible()) {
-        qCDebug(GREENISLAND_COMPOSITOR)
-                << "Showing window for output"
-                << m_output->name() << m_output->geometry();
-        showOutput();
-    }
-
     qCDebug(GREENISLAND_COMPOSITOR)
             << "Loading scene on output"
             << m_output->name() << m_output->geometry();
@@ -326,12 +318,9 @@ void OutputWindow::statusChanged(QQmlComponent::Status status)
         qCDebug(GREENISLAND_COMPOSITOR) << "Loading QML scene...";
         break;
     case QQmlComponent::Ready:
-        qCDebug(GREENISLAND_COMPOSITOR) << "QML scene loaded ready";
+        qCDebug(GREENISLAND_COMPOSITOR) << "QML scene ready";
         break;
     default:
-        qCWarning(GREENISLAND_COMPOSITOR) << "One or more errors have occurred loading the scene:";
-        Q_FOREACH (const QQmlError &error, m_component->errors())
-            qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
         break;
     }
 
@@ -340,14 +329,26 @@ void OutputWindow::statusChanged(QQmlComponent::Status status)
 
 void OutputWindow::continueLoading()
 {
-    if (!m_component->isReady())
+    if (m_component->isError()) {
+        qCWarning(GREENISLAND_COMPOSITOR) << "One or more errors have occurred loading the scene:";
+        Q_FOREACH (const QQmlError &error, m_component->errors())
+            qCWarning(GREENISLAND_COMPOSITOR) << "*" << error.toString();
         return;
+    }
 
     QQuickItem *rootItem = qobject_cast<QQuickItem *>(m_component->create(m_context));
     rootItem->setParentItem(contentItem());
     rootItem->setSize(size());
 
     qCDebug(GREENISLAND_COMPOSITOR) << "Scene load time:" << m_perfTimer.elapsed() << "ms";
+
+    // Show window
+    if (!isVisible()) {
+        qCDebug(GREENISLAND_COMPOSITOR)
+                << "Showing window for output"
+                << m_output->name() << m_output->geometry();
+        showOutput();
+    }
 }
 
 }
