@@ -40,13 +40,13 @@ function _printWindowInfo(window) {
     console.debug("\tposition:", window.x + "," + window.y);
     console.debug("\tsize:", window.size.width + "x" + window.size.height);
     switch (window.type) {
-    case ClientWindow.TopLevel:
+    case GreenIsland.ClientWindow.TopLevel:
         console.debug("\ttype: TopLevel");
         break;
-    case ClientWindow.Popup:
+    case GreenIsland.ClientWindow.Popup:
         console.debug("\ttype: Popup");
         break;
-    case ClientWindow.Transient:
+    case GreenIsland.ClientWindow.Transient:
         console.debug("\ttype: Transient");
         break;
     default:
@@ -63,10 +63,10 @@ function windowMapped(window) {
     // Create surface item
     var componentName = "ToplevelWindow.qml";
     switch (window.type) {
-    case ClientWindow.Popup:
+    case GreenIsland.ClientWindow.Popup:
         componentName = "PopupWindow.qml";
         break;
-    case ClientWindow.Transient:
+    case GreenIsland.ClientWindow.Transient:
         componentName = "TransientWindow.qml";
         break;
     default:
@@ -84,11 +84,11 @@ function windowMapped(window) {
     // Determine the parent
     var parentItem = compositorRoot;
     switch (window.type) {
-    case ClientWindow.TopLevel:
+    case GreenIsland.ClientWindow.TopLevel:
         parentItem = compositorRoot.screenView.currentWorkspace
         break;
-    case ClientWindow.Popup:
-    case ClientWindow.Transient:
+    case GreenIsland.ClientWindow.Popup:
+    case GreenIsland.ClientWindow.Transient:
         parentItem = window.parentViewForOutput(_greenisland_output).parent;
         break;
     default:
@@ -109,17 +109,17 @@ function windowMapped(window) {
     console.debug("\titem position:", item.x + "," + item.y);
 
     // Set transient children so that the parent can be desaturated
-    if (window.type === ClientWindow.Transient)
+    if (window.type === GreenIsland.ClientWindow.Transient)
         parentItem.transientChildren = item;
     // Set popup child to enable dim effect
-    else if (window.type === ClientWindow.Popup)
+    else if (window.type === GreenIsland.ClientWindow.Popup)
         parentItem.popupChild = item;
 
     // Make it visible
     item.visible = true;
 
     // z-order and focus
-    if (window.type === ClientWindow.TopLevel) {
+    if (window.type === GreenIsland.ClientWindow.TopLevel) {
         item.z = windowList.length;
         window.activate();
     }

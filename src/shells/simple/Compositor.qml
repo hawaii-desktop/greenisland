@@ -76,7 +76,7 @@ Item {
         color: "white"
         visible: false
 
-        FpsCounter {
+        GreenIsland.FpsCounter {
             id: fpsCounter
         }
     }
