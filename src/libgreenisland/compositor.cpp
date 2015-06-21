@@ -93,9 +93,9 @@ Compositor::~Compositor()
 {
     // Cleanup
     while (!d_ptr->shellWindowsList.isEmpty())
-        d_ptr->shellWindowsList.takeFirst()->deleteLater();
+        delete d_ptr->shellWindowsList.takeFirst();
     while (!d_ptr->clientWindowsList.isEmpty())
-        d_ptr->clientWindowsList.takeFirst()->deleteLater();
+        delete d_ptr->clientWindowsList.takeFirst();
     delete d_ptr;
 
     // Cleanup graphics resources

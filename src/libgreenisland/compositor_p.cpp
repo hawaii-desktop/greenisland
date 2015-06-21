@@ -72,7 +72,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , q_ptr(self)
 {
     // Create a QML engine shared among all the output windows to save memory
-    engine = new QQmlEngine(self);
+    engine = new QQmlEngine;
 
     // Are we nested into another compositor?
     nested = QGuiApplication::platformName().startsWith(QStringLiteral("wayland"));
@@ -99,15 +99,30 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 
 CompositorPrivate::~CompositorPrivate()
 {
-    if (clientData.client)
+    if (clientData.client) {
+        qCDebug(GREENISLAND_COMPOSITOR) << "Terminate client connection...";
         wl_client_destroy(clientData.client);
+        clientData.client = Q_NULLPTR;
+    }
 
-    idleTimer->deleteLater();
+    delete idleTimer;
+    idleTimer = Q_NULLPTR;
 
+    qCDebug(GREENISLAND_COMPOSITOR) << "Destroy plugins...";
     while (!plugins.isEmpty())
-        plugins.takeFirst()->deleteLater();
+        delete plugins.takeFirst();
 
-    screenManager->deleteLater();
+    qCDebug(GREENISLAND_COMPOSITOR) << "Destroy screen manager...";
+    delete screenManager;
+    screenManager = Q_NULLPTR;
+
+    qCDebug(GREENISLAND_COMPOSITOR) << "Destroy QML engine...";
+    delete engine;
+    engine = Q_NULLPTR;
+
+    qCDebug(GREENISLAND_COMPOSITOR) << "Destroy settings interface...";
+    delete settings;
+    settings = Q_NULLPTR;
 }
 
 QQmlListProperty<ClientWindow> CompositorPrivate::windows()
