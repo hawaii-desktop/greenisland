@@ -116,13 +116,11 @@ CompositorPrivate::~CompositorPrivate()
     delete screenManager;
     screenManager = Q_NULLPTR;
 
-    qCDebug(GREENISLAND_COMPOSITOR) << "Destroy QML engine...";
-    delete engine;
-    engine = Q_NULLPTR;
-
     qCDebug(GREENISLAND_COMPOSITOR) << "Destroy settings interface...";
     delete settings;
     settings = Q_NULLPTR;
+
+    engine = Q_NULLPTR;
 }
 
 QQmlListProperty<ClientWindow> CompositorPrivate::windows()
