@@ -88,6 +88,7 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
                                 screen->name());
 #endif
     output->window()->setScreen(screen);
+    output->window()->setFlags(Qt::FramelessWindowHint);
     output->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
     changeGeometry(screen);
