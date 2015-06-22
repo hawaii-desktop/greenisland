@@ -38,7 +38,6 @@ class NativeScreenBackend : public ScreenBackend
     Q_OBJECT
 public:
     NativeScreenBackend(Compositor *compositor, QObject *parent = 0);
-    ~NativeScreenBackend();
 
 public Q_SLOTS:
     void acquireConfiguration();

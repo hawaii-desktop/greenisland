@@ -86,6 +86,10 @@ Item {
         id: screenView
         anchors.fill: parent
         z: 998
+MouseArea {
+anchors.fill: parent
+onClicked: GreenIsland.Compositor.abortSession()
+}
     }
 
     /*

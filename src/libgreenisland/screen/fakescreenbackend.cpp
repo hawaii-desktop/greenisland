@@ -39,10 +39,6 @@ FakeScreenBackend::FakeScreenBackend(Compositor *compositor, QObject *parent)
 
 FakeScreenBackend::~FakeScreenBackend()
 {
-    QList<ScreenOutput *> outputs = m_outputMap.keys();
-    Q_FOREACH (ScreenOutput *so, outputs)
-        screenRemoved(so);
-
     if (m_config)
         m_config->deleteLater();
 }
