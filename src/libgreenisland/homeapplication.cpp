@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -79,6 +81,16 @@ void HomeApplication::setFakeScreenData(const QString &fileName)
     m_fakeScreenFileName = fileName;
 }
 
+bool HomeApplication::detectFakeScreen() const
+{
+    return m_detectFakeScreen;
+}
+
+void HomeApplication::setDetectFakeScreen(bool detectFakeScreen)
+{
+    m_detectFakeScreen = detectFakeScreen;
+}
+
 int HomeApplication::idleTime() const
 {
     return m_idleTime;
@@ -151,6 +163,8 @@ bool HomeApplication::run(const QString &shell)
     Compositor *compositor = Compositor::instance();
     if (!m_fakeScreenFileName.isEmpty())
         compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
+    else
+        compositor->setDetectFakeScreen(m_detectFakeScreen);
     QObject::connect(compositor, &Compositor::screenConfigurationAcquired, [this] {
 #if HAVE_SYSTEMD
         // Notify systemd when the screen configuration is ready

@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -27,6 +29,8 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QScreen>
+#include <QGuiApplication>
 
 #include "screenconfiguration.h"
 
@@ -184,6 +188,28 @@ ScreenConfiguration *ScreenConfiguration::parseJson(const QByteArray &data)
     // explicitly set by the configuration
     if (!primarySet && config->m_outputs.size() > 0)
         config->m_outputs.at(0)->setPrimary(true);
+
+    return config;
+}
+
+ScreenConfiguration *ScreenConfiguration::detectConfiguration()
+{
+    ScreenConfiguration *config = new ScreenConfiguration;
+    int titleBarHeight = 50; // Hardcoded since we can't detect it
+
+    Q_FOREACH(QScreen *screen, QGuiApplication::screens()) {
+        ScreenOutput::Mode mode;
+        mode.size = QSize(screen->availableGeometry().width(),
+                screen->availableGeometry().height() - titleBarHeight);
+        mode.refreshRate = screen->refreshRate() * 1000;
+
+        QPoint pos(screen->availableGeometry().x(), screen->availableGeometry().y());
+        bool isPrimary = screen == QGuiApplication::primaryScreen();
+
+        ScreenOutput *output = new ScreenOutput(screen->name(), isPrimary, pos, mode, config);
+        output->setOrientation(screen->orientation());
+        config->m_outputs.append(output);
+    }
 
     return config;
 }

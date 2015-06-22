@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -49,6 +51,9 @@ public:
     QString fakeScreenData() const;
     void setFakeScreenData(const QString &fileName);
 
+    bool detectFakeScreen() const;
+    void setDetectFakeScreen(bool detectFakeScreen);
+
     int idleTime() const;
     void setIdleTime(int time);
 
@@ -60,6 +65,7 @@ public:
 protected:
     QString m_socket;
     QString m_fakeScreenFileName;
+    bool m_detectFakeScreen;
     int m_idleTime;
     bool m_notify;
 
@@ -69,4 +75,3 @@ protected:
 } // namespace GreenIsland
 
 #endif // HOMEAPPLICATION_H
-

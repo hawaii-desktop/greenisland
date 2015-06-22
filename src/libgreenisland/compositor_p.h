@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -111,6 +113,8 @@ public:
     QWaylandSurface *lastKeyboardFocus;
 
     QString fakeScreenConfiguration;
+    bool detectFakeScreen;
+
     CompositorSettings *settings;
     ScreenManager *screenManager;
     GreenIslandRecorderManager *recorderManager;
@@ -147,4 +151,3 @@ protected:
 }
 
 #endif // COMPOSITOR_P_H
-

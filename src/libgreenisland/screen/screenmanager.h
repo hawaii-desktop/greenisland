@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -42,7 +44,7 @@ public:
     ScreenManager(Compositor *compositor);
 
 public Q_SLOTS:
-    void acquireConfiguration(const QString &fileName = QString());
+    void acquireConfiguration(const QString &fileName = QString(), bool detectFakeScreen = false);
 
 Q_SIGNALS:
     void configurationAcquired();

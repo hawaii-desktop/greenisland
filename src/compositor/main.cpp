@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:GPL2+$
  *
@@ -96,11 +98,7 @@ int main(int argc, char *argv[])
 
     // Use default fake screen data on X11
     if (qEnvironmentVariableIsSet("DISPLAY") && homeApp.fakeScreenData().isEmpty()) {
-        const QString fileName = QString("greenisland/screen-data/one-1920x1080.json");
-        QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              fileName);
-        if (!path.isEmpty())
-            homeApp.setFakeScreenData(path);
+        homeApp.setDetectFakeScreen(true);
     }
 
     // Idle timer
