@@ -57,6 +57,9 @@ OutputWindow::OutputWindow(Output *output)
     // Setup window
     setColor(Qt::black);
 
+    // Remove title bar from windows
+    setFlags(Qt::FramelessWindowHint);
+
     // Print GL information
     connect(this, SIGNAL(sceneGraphInitialized()),
             this, SLOT(printInfo()),
