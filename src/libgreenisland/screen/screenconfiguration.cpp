@@ -195,12 +195,11 @@ ScreenConfiguration *ScreenConfiguration::parseJson(const QByteArray &data)
 ScreenConfiguration *ScreenConfiguration::detectConfiguration()
 {
     ScreenConfiguration *config = new ScreenConfiguration;
-    int titleBarHeight = 50; // Hardcoded since we can't detect it
 
     Q_FOREACH(QScreen *screen, QGuiApplication::screens()) {
         ScreenOutput::Mode mode;
         mode.size = QSize(screen->availableGeometry().width(),
-                screen->availableGeometry().height() - titleBarHeight);
+                screen->availableGeometry().height());
         mode.refreshRate = screen->refreshRate() * 1000;
 
         QPoint pos(screen->availableGeometry().x(), screen->availableGeometry().y());
