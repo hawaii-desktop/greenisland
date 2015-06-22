@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -61,6 +63,13 @@ void FakeScreenBackend::loadConfiguration(const QString &fileName)
     m_config = ScreenConfiguration::parseJson(file.readAll());
 
     file.close();
+}
+
+void FakeScreenBackend::detectConfiguration()
+{
+    qCDebug(FAKE_BACKEND) << "Detecting configuration from existing desktop environment";
+
+    m_config = ScreenConfiguration::detectConfiguration();
 }
 
 void FakeScreenBackend::acquireConfiguration()

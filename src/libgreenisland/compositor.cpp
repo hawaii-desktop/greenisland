@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -112,6 +114,12 @@ void Compositor::setFakeScreenConfiguration(const QString &fileName)
 {
     Q_D(Compositor);
     d->fakeScreenConfiguration = fileName;
+}
+
+void Compositor::setDetectFakeScreen(bool detectFakeScreen)
+{
+    Q_D(Compositor);
+    d->detectFakeScreen = detectFakeScreen;
 }
 
 bool Compositor::isRunning() const
@@ -268,7 +276,8 @@ void Compositor::run()
         // Queue screen configuration acquisition
         QMetaObject::invokeMethod(d->screenManager, "acquireConfiguration",
                                   Qt::QueuedConnection,
-                                  Q_ARG(QString, d->fakeScreenConfiguration));
+                                  Q_ARG(QString, d->fakeScreenConfiguration),
+                                  Q_ARG(bool, d->detectFakeScreen));
     }
 }
 

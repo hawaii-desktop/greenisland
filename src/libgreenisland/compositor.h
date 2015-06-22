@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -75,6 +77,7 @@ public:
     static Compositor *instance();
 
     void setFakeScreenConfiguration(const QString &fileName);
+    void setDetectFakeScreen(bool detectFakeScreen);
 
     bool isRunning() const;
 

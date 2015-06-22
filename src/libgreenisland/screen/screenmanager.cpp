@@ -2,9 +2,11 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *               2015 Michael Spencer <sonrisesoftware@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
+ *    Michael Spencer
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -49,14 +51,14 @@ ScreenManager::ScreenManager(Compositor *compositor)
 {
 }
 
-void ScreenManager::acquireConfiguration(const QString &fileName)
+void ScreenManager::acquireConfiguration(const QString &fileName, bool detectFakeScreen)
 {
     if (m_backend) {
         qCWarning(GREENISLAND_COMPOSITOR) << "Cannot change backend at runtime!";
         return;
     }
 
-    if (fileName.isEmpty())
+    if (fileName.isEmpty() && !detectFakeScreen)
         m_backend = new NativeScreenBackend(m_compositor, this);
     else
         m_backend = new FakeScreenBackend(m_compositor, this);
@@ -72,6 +74,8 @@ void ScreenManager::acquireConfiguration(const QString &fileName)
 
     if (!fileName.isEmpty())
         static_cast<FakeScreenBackend *>(m_backend)->loadConfiguration(fileName);
+    else if (detectFakeScreen)
+        static_cast<FakeScreenBackend *>(m_backend)->detectConfiguration();
 
     m_backend->acquireConfiguration();
 }
