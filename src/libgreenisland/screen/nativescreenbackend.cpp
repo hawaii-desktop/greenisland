@@ -40,13 +40,6 @@ NativeScreenBackend::NativeScreenBackend(Compositor *compositor, QObject *parent
 {
 }
 
-NativeScreenBackend::~NativeScreenBackend()
-{
-    QList<QScreen *> screens = m_screenMap.keys();
-    Q_FOREACH (QScreen *screen, screens)
-        screenRemoved(screen);
-}
-
 void NativeScreenBackend::acquireConfiguration()
 {
     disconnect(qGuiApp, &QGuiApplication::screenAdded,

@@ -42,8 +42,10 @@ ScreenBackend::~ScreenBackend()
     qCDebug(SCREEN_BACKEND) << "Removing all outputs...";
 
     Q_FOREACH (Output *output, m_outputs) {
-        if (m_outputs.removeOne(output))
+        if (m_outputs.removeOne(output)) {
             Q_EMIT outputRemoved(output);
+            output->deleteLater();
+        }
     }
 }
 
