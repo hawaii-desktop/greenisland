@@ -312,8 +312,6 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     // Ignore cursor surface: we just need its buffer to retrieve
     // the image, we don't really need to do anything but that
     if (surface == d->cursorSurface)
-        qDebug() << "::::: cursor created";
-    if (surface == d->cursorSurface)
         return;
 
     qCDebug(GREENISLAND_COMPOSITOR) << "Surface created" << surface;
