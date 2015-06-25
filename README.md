@@ -15,8 +15,12 @@ Wayland compositor.
 Green Island offers multiple screen support and it also implements specific
 protocols such as xdg-shell, gtk-shell and those for Plasma 5.
 
-Also include a screencaster protocol and command line application, plus a
-minimal Wayland compositor written with QML.
+Additional Wayland protocols for shells built with Green Island are provided,
+such as greenisland_applications and greenisland_windows for task managers.
+
+Also include a launcher that executes the compositor on different hardware,
+a screencaster protocol and command line application, plus a
+minimal Wayland compositor and shell written with QML.
 
 It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop),
 however it can be used by any desktop environment that wish to implement
