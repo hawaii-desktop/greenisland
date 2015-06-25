@@ -67,7 +67,7 @@ QString Compositor::s_fixedShell;
 
 Compositor::Compositor(QObject *parent)
     : QObject(parent)
-    , QWaylandQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension | SubSurfaceExtension)
+    , QWaylandQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     Q_D(Compositor);
