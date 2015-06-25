@@ -590,7 +590,7 @@ void ClientWindow::determineAppId()
     if (appId.isEmpty()) {
         QFile file(QStringLiteral("/proc/%1/cmdline").arg(m_surface->client()->processId()));
         if (file.open(QIODevice::ReadOnly)) {
-            QFileInfo fi(QString::fromUtf8(file.readAll().split(' ').at(0)));
+            QFileInfo fi(QString::fromUtf8(file.readAll().split('\0').at(0)));
             appId = fi.baseName();
             file.close();
         }
