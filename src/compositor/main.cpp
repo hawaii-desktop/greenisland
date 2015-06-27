@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
     QCommandLineOption shellOption(QStringLiteral("shell"),
                                    TR("Force loading the given shell"),
                                    TR("shell"),
-                                   QStringLiteral("org.greenisland.simple"));
+                                   QStringLiteral("org.hawaiios.greenisland"));
     parser.addOption(shellOption);
 
     // Parse command line

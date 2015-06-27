@@ -69,6 +69,6 @@ public:
 
 }
 
-Q_DECLARE_INTERFACE(GreenIsland::AbstractPlugin, "org.greenisland.Plugin")
+Q_DECLARE_INTERFACE(GreenIsland::AbstractPlugin, "org.hawaiios.greenisland.Plugin")
 
 #endif // ABSTRACTPLUGIN_H

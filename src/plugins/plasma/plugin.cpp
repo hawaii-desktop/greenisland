@@ -35,7 +35,7 @@ namespace GreenIsland {
 class GREENISLAND_EXPORT PlasmaPlugin : public AbstractPlugin
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.greenisland.Plugin")
+    Q_PLUGIN_METADATA(IID "org.hawaiios.greenisland.Plugin")
     Q_INTERFACES(GreenIsland::AbstractPlugin)
 public:
     PlasmaPlugin()
