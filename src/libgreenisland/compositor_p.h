@@ -97,6 +97,7 @@ public:
     QString shell;
     Compositor::State state;
     QTimer *idleTimer;
+    int idleInterval;
     int idleInhibit;
     QQmlEngine *engine;
 

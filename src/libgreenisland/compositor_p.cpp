@@ -59,6 +59,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     : running(false)
     , state(Compositor::Active)
     , idleTimer(new QTimer())
+    , idleInterval(5 * 60000)
     , idleInhibit(0)
     , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
@@ -72,8 +73,6 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
 {
     // Create a QML engine shared among all the output windows to save memory
     engine = new QQmlEngine;
-
-    idleTimer->setInterval(5 * 60000);
 
     settings = new CompositorSettings(self);
     screenManager = new ScreenManager(self);

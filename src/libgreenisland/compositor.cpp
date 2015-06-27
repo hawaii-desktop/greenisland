@@ -79,6 +79,7 @@ Compositor::Compositor(QObject *parent)
         Q_EMIT screenConfigurationAcquired();
 
         // Start idle timer
+        d->idleTimer->setInterval(d->idleInterval);
         connect(d->idleTimer, &QTimer::timeout, this, [this, d] {
             if (d->idleInhibit == 0)
                 setState(Idle);
@@ -192,7 +193,7 @@ void Compositor::setState(Compositor::State state)
 int Compositor::idleInterval() const
 {
     Q_D(const Compositor);
-    return d->idleTimer->interval();
+    return d->idleInterval;
 }
 
 void Compositor::setIdleInterval(int value)
@@ -200,6 +201,7 @@ void Compositor::setIdleInterval(int value)
     Q_D(Compositor);
 
     if (d->idleTimer->interval() != value) {
+        d->idleInterval = value;
         d->idleTimer->setInterval(value);
         d->idleTimer->start();
         Q_EMIT idleIntervalChanged();

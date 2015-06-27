@@ -40,7 +40,7 @@
 namespace GreenIsland {
 
 HomeApplication::HomeApplication()
-    : m_idleTime(5000)
+    : m_idleTime(0)
     , m_notify(false)
 {
 }
@@ -96,6 +96,8 @@ bool HomeApplication::run(bool nested, const QString &shell)
     Compositor *compositor = Compositor::instance();
     compositor->d_func()->nested = nested;
     compositor->d_func()->shell = shell;
+    if (m_idleTime > 0)
+        compositor->d_func()->idleInterval = m_idleTime;
     if (!m_fakeScreenFileName.isEmpty())
         compositor->d_func()->fakeScreenConfiguration = m_fakeScreenFileName;
     QObject::connect(compositor, &Compositor::screenConfigurationAcquired, [this] {
