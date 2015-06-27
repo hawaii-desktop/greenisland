@@ -67,7 +67,6 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorIsSet(false)
     , lastKeyboardFocus(Q_NULLPTR)
     , recorderManager(Q_NULLPTR)
-    , nestedConnection(Q_NULLPTR)
     , fullscreenShell(Q_NULLPTR)
     , q_ptr(self)
 {
@@ -84,8 +83,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     ApplicationManager::instance();
 
     // Wayland client connections
-    if (Compositor::s_nested)
-        nestedConnection = new WlClientConnection(self);
+    nestedConnection = new WlClientConnection(self);
     clientData.connection = new WlClientConnection(self);
     clientData.client = Q_NULLPTR;
     clientData.compositor = Q_NULLPTR;
@@ -223,6 +221,9 @@ void CompositorPrivate::ungrabCursor()
 void CompositorPrivate::_q_createNestedConnection()
 {
     Q_Q(Compositor);
+
+    if (!nested)
+        return;
 
     Q_ASSERT(nestedConnection);
 

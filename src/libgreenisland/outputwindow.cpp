@@ -84,23 +84,24 @@ void OutputWindow::loadScene()
             << "Loading scene on output"
             << m_output->name() << m_output->geometry();
 
+    QString shell = Compositor::instance()->shell();
+
     // Load QML and setup window
-    if (Compositor::s_fixedShell.isEmpty())
-        qFatal("No plugin specified, cannot continue!");
+    if (shell.isEmpty())
+        qFatal("No shell specified, cannot continue!");
 
     // Load main file or bail out
     qCDebug(GREENISLAND_COMPOSITOR)
-            << "Loading" << Compositor::s_fixedShell
-            << "shell for output"
+            << "Loading" << shell << "shell for output"
             << m_output->name() << m_output->geometry();
 
     m_perfTimer.start();
 
     QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                          QString("greenisland/shells/%1/Compositor.qml").arg(Compositor::s_fixedShell));
+                                          QString("greenisland/shells/%1/Compositor.qml").arg(shell));
     if (!QFile(path).exists(path))
         qFatal("Shell \"%s\" is not valid, cannot continue!",
-               qPrintable(Compositor::s_fixedShell));
+               qPrintable(shell));
 
     // Engine
     QQmlEngine *engine = Compositor::instance()->engine();

@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "compositor.h"
+#include "compositor_p.h"
 #include "homeapplication.h"
 #include "logging.h"
 #include "utilities.h"
@@ -46,11 +47,6 @@ HomeApplication::HomeApplication()
 
 HomeApplication::~HomeApplication()
 {
-}
-
-QString HomeApplication::shellName() const
-{
-    return GreenIsland::Compositor::s_fixedShell;
 }
 
 QString HomeApplication::fakeScreenData() const
@@ -93,10 +89,6 @@ bool HomeApplication::run(bool nested, const QString &shell)
         return false;
     }
 
-    // Set nested mode and shell
-    GreenIsland::Compositor::s_nested = nested;
-    GreenIsland::Compositor::s_fixedShell = shell;
-
     // Check whether XDG_RUNTIME_DIR is ok or not
     GreenIsland::verifyXdgRuntimeDir();
 
@@ -134,8 +126,10 @@ bool HomeApplication::run(bool nested, const QString &shell)
 
     // Create the compositor
     Compositor *compositor = Compositor::instance();
+    compositor->d_func()->nested = nested;
+    compositor->d_func()->shell = shell;
     if (!m_fakeScreenFileName.isEmpty())
-        compositor->setFakeScreenConfiguration(m_fakeScreenFileName);
+        compositor->d_func()->fakeScreenConfiguration = m_fakeScreenFileName;
     QObject::connect(compositor, &Compositor::screenConfigurationAcquired, [this] {
 #if HAVE_SYSTEMD
         // Notify systemd when the screen configuration is ready

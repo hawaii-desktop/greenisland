@@ -37,6 +37,7 @@ namespace GreenIsland {
 class CompositorSettings;
 class ClientWindow;
 class CompositorPrivate;
+class HomeApplication;
 class Output;
 class ScreenManager;
 class ShellWindow;
@@ -74,10 +75,10 @@ public:
 
     static Compositor *instance();
 
-    void setFakeScreenConfiguration(const QString &fileName);
-
     bool isRunning() const;
-
+    bool isNested() const;
+    QString shell() const;
+    QString fakeScreenConfiguration() const;
     QQmlEngine *engine() const;
 
     State state() const;
@@ -109,9 +110,6 @@ public:
     Q_INVOKABLE void resetMouseCursor();
 
     Q_INVOKABLE void abortSession();
-
-    static bool s_nested;
-    static QString s_fixedShell;
 
 Q_SIGNALS:
     void newSurfaceCreated(QWaylandSurface *surface);
@@ -159,6 +157,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_createInternalConnection())
 
     friend class ClientWindow;
+    friend class HomeApplication;
     friend class ScreenManager;
     friend class ShellWindow;
     friend class OutputWindow;

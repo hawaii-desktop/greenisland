@@ -63,9 +63,6 @@ namespace GreenIsland {
 class CompositorSingleton : public Compositor {};
 Q_GLOBAL_STATIC(CompositorSingleton, s_compositor)
 
-bool Compositor::s_nested = false;
-QString Compositor::s_fixedShell;
-
 Compositor::Compositor(QObject *parent)
     : QObject(parent)
     , QWaylandQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension)
@@ -109,16 +106,28 @@ Compositor *Compositor::instance()
     return s_compositor();
 }
 
-void Compositor::setFakeScreenConfiguration(const QString &fileName)
-{
-    Q_D(Compositor);
-    d->fakeScreenConfiguration = fileName;
-}
-
 bool Compositor::isRunning() const
 {
     Q_D(const Compositor);
     return d->running;
+}
+
+bool Compositor::isNested() const
+{
+    Q_D(const Compositor);
+    return d->nested;
+}
+
+QString Compositor::shell() const
+{
+    Q_D(const Compositor);
+    return d->shell;
+}
+
+QString Compositor::fakeScreenConfiguration() const
+{
+    Q_D(const Compositor);
+    return d->fakeScreenConfiguration;
 }
 
 QQmlEngine *Compositor::engine() const
@@ -255,7 +264,7 @@ void Compositor::run()
     // Connect to the main compositor if we are nested into another compositor and
     // queue internal connection creation; we need to create an internal connection
     // in any case to be able to create the shm pool used by cursor themes
-    if (Compositor::s_nested) {
+    if (d->nested) {
         // Queue nested connection initialization, internal connection
         // will be initialized once the connection to the main compositor
         // is established

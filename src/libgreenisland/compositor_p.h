@@ -94,7 +94,7 @@ public:
     bool running;
 
     // Compositor
-    QString socketName;
+    QString shell;
     Compositor::State state;
     QTimer *idleTimer;
     int idleInhibit;
@@ -116,6 +116,7 @@ public:
     GreenIslandRecorderManager *recorderManager;
 
     // Nested mode
+    bool nested;
     WlClientConnection *nestedConnection;
     FullScreenShellClient *fullscreenShell;
 

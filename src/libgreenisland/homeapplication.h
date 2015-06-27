@@ -41,8 +41,6 @@ public:
     HomeApplication();
     virtual ~HomeApplication();
 
-    QString shellName() const;
-
     QString fakeScreenData() const;
     void setFakeScreenData(const QString &fileName);
 
