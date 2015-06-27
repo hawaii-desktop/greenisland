@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
 
     // Wayland socket
-    QCommandLineOption socketOption(QStringList() << QStringLiteral("s") << QStringLiteral("socket"),
+    QCommandLineOption socketOption(QStringLiteral("wayland-socket-name"),
                                     TR("Wayland socket"), TR("name"));
     parser.addOption(socketOption);
 
@@ -147,7 +147,6 @@ int main(int argc, char *argv[])
     }
 
     // Home application parameters
-    homeApp.setSocket(socket);
     homeApp.setNotifyLoginManager(notify);
     homeApp.setFakeScreenData(fakeScreenData);
 

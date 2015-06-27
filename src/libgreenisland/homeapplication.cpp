@@ -53,22 +53,6 @@ QString HomeApplication::shellName() const
     return GreenIsland::Compositor::s_fixedShell;
 }
 
-QString HomeApplication::socket() const
-{
-    return m_socket;
-}
-
-void HomeApplication::setSocket(const QString &socket)
-{
-    m_socket = socket;
-
-    // Set environment so the shell can pick it up and reuse it
-    // to start applications, this is needed when the compositor
-    // is embedded into a full screen shell; in such cases the
-    // default Wayland socket will be the one from full screen shell
-    setenv("GREENISLAND_SOCKET", qPrintable(socket), 1);
-}
-
 QString HomeApplication::fakeScreenData() const
 {
     return m_fakeScreenFileName;

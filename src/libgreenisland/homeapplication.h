@@ -43,9 +43,6 @@ public:
 
     QString shellName() const;
 
-    QString socket() const;
-    void setSocket(const QString &socket);
-
     QString fakeScreenData() const;
     void setFakeScreenData(const QString &fileName);
 
