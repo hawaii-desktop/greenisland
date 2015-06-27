@@ -33,6 +33,10 @@
 
 #include "config.h"
 
+#if HAVE_SYSTEMD
+#  include <systemd/sd-daemon.h>
+#endif
+
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
 
 int main(int argc, char *argv[])
@@ -70,10 +74,12 @@ int main(int argc, char *argv[])
     idleTimeOption.setDefaultValue("300");
     parser.addOption(idleTimeOption);
 
-    // Login manager notifications
-    QCommandLineOption notifyOption(QStringLiteral("notify"),
-                                    TR("Notify login manager about startup"));
+#if HAVE_SYSTEMD
+    // systemd notifications
+    QCommandLineOption notifyOption(QStringLiteral("systemd"),
+                                    TR("Notify systemd about startup"));
     parser.addOption(notifyOption);
+#endif
 
     // Nested mode
     QCommandLineOption nestedOption(QStringList() << QStringLiteral("n") << QStringLiteral("nested"),
@@ -99,7 +105,11 @@ int main(int argc, char *argv[])
     // Arguments
     bool nested = parser.isSet(nestedOption);
     QString socket = parser.value(socketOption);
+#if HAVE_SYSTEMD
     bool notify = parser.isSet(notifyOption);
+#else
+    bool notify = false;
+#endif
     QString fakeScreenData = parser.value(fakeScreenOption);
     int idleInterval = parser.value(idleTimeOption).toInt();
 
@@ -109,19 +119,30 @@ int main(int argc, char *argv[])
         if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
             qCritical("Nested mode only make sense when running on Wayland.\n"
                       "Please pass the \"-platform wayland\" argument.");
+#if HAVE_SYSTEMD
+            if (notify)
+                sd_notifyf(0, "STATUS=Nested mode requested, but no wayland QPA");
+#endif
             return 1;
         }
 
         if (socket.isEmpty()) {
             qCritical("Nested mode requires you to specify a socket name for Green Island.\n"
                       "Please specify it with the \"--socket\" argument.");
+#if HAVE_SYSTEMD
+            if (notify)
+                sd_notifyf(0, "STATUS=Nested mode without a socket name specified");
+#endif
             return 1;
         }
 
         if (!fakeScreenData.isEmpty()) {
             qCritical("Fake screen configuration cannot be used "
                       "when Green Island is nested");
-            return 1;
+#if HAVE_SYSTEMD
+            if (notify)
+                sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
+#endif
         }
     }
 
