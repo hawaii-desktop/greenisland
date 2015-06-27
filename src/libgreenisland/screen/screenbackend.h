@@ -41,7 +41,7 @@ class ScreenBackend : public QObject
     Q_OBJECT
 public:
     ScreenBackend(Compositor *compositor, QObject *parent = 0);
-    ~ScreenBackend();
+    virtual ~ScreenBackend();
 
     Compositor *compositor() const;
     QList<Output *> outputs() const;
