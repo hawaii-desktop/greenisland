@@ -143,6 +143,7 @@ int main(int argc, char *argv[])
             if (notify)
                 sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
 #endif
+            return 1;
         }
     }
 
