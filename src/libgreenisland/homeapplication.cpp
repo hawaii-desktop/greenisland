@@ -92,38 +92,6 @@ bool HomeApplication::run(bool nested, const QString &shell)
     // Check whether XDG_RUNTIME_DIR is ok or not
     GreenIsland::verifyXdgRuntimeDir();
 
-    // If a socket is passed it means that we are nesting into
-    // another compositor, let's do some checks
-    if (!m_socket.isEmpty()) {
-        // We need wayland QPA plugin
-        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-            qCWarning(GREENISLAND_COMPOSITOR)
-                    << "By passing the \"--socket\" argument you are requesting to nest"
-                    << "this compositor into another, but you forgot to pass "
-                    << "also \"-platform wayland\"!";
-#if HAVE_SYSTEMD
-            if (m_notify)
-                sd_notifyf(0, "STATUS=Nesting requested, but no wayland QPA");
-#endif
-            return false;
-        }
-    }
-
-    // Screen configuration
-    if (!m_fakeScreenFileName.isEmpty()) {
-        // Need the native backend
-        if (QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
-            qCWarning(GREENISLAND_COMPOSITOR)
-                    << "Fake screen configuration is not allowed when Green Island"
-                    << "is nested into another compositor";
-#if HAVE_SYSTEMD
-            if (m_notify)
-                sd_notifyf(0, "STATUS=Fake screen configuration not allowed when nested");
-#endif
-            return false;
-        }
-    }
-
     // Create the compositor
     Compositor *compositor = Compositor::instance();
     compositor->d_func()->nested = nested;
