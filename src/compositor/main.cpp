@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     app.setApplicationName("Green Island");
     app.setApplicationVersion(GREENISLAND_VERSION_STRING);
+    app.setOrganizationName(QStringLiteral("Hawaii"));
+    app.setOrganizationDomain(QStringLiteral("hawaiios.org"));
     app.setQuitOnLastWindowClosed(false);
 
     // Home application
