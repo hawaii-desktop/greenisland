@@ -124,9 +124,6 @@ void CompositorLauncher::start()
         // Starts the compositor as soon as Weston is started
         connect(m_weston, &CompositorProcess::started,
                 m_compositor, &CompositorProcess::start);
-    } else {
-        //m_socketName = QStringLiteral("hawaii");
-        //m_compositor->setSocketName(m_socketName);
     }
 
     // Summary
@@ -319,9 +316,6 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
             break;
         default:
             env.insert(QStringLiteral("QT_QPA_EGLFS_INTEGRATION"), QStringLiteral("eglfs_kms"));
-            env.insert(QStringLiteral("QT_QPA_EGLFS_KMS_CONFIG"),
-                       QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                              QStringLiteral("hawaii/compositor/eglfs/eglfs_kms.json")));
             break;
         }
 #endif
