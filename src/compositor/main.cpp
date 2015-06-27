@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 
         if (socket.isEmpty()) {
             qCritical("Nested mode requires you to specify a socket name for Green Island.\n"
-                      "Please specify it with the \"--socket\" argument.");
+                      "Please specify it with the \"--wayland-socket-name\" argument.");
 #if HAVE_SYSTEMD
             if (notify)
                 sd_notifyf(0, "STATUS=Nested mode without a socket name specified");
