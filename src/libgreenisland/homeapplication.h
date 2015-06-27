@@ -55,7 +55,7 @@ public:
     bool notifyLoginManager() const;
     void setNotifyLoginManager(bool notify);
 
-    bool run(const QString &shell);
+    bool run(bool nested, const QString &shell);
 
 protected:
     QString m_socket;

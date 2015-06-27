@@ -110,6 +110,7 @@ public:
 
     Q_INVOKABLE void abortSession();
 
+    static bool s_nested;
     static QString s_fixedShell;
 
 Q_SIGNALS:

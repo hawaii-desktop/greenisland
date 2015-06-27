@@ -75,6 +75,11 @@ int main(int argc, char *argv[])
                                     TR("Notify login manager about startup"));
     parser.addOption(notifyOption);
 
+    // Nested mode
+    QCommandLineOption nestedOption(QStringList() << QStringLiteral("n") << QStringLiteral("nested"),
+                                    TR("Nest into a compositor that supports _wl_fullscreen_shell"));
+    parser.addOption(nestedOption);
+
     // Fake screen configuration
     QCommandLineOption fakeScreenOption(QStringLiteral("fake-screen"),
                                         TR("Use fake screen configuration"),
@@ -91,18 +96,46 @@ int main(int argc, char *argv[])
     // Parse command line
     parser.process(app);
 
+    // Arguments
+    bool nested = parser.isSet(nestedOption);
+    QString socket = parser.value(socketOption);
+    bool notify = parser.isSet(notifyOption);
+    QString fakeScreenData = parser.value(fakeScreenOption);
+    int idleInterval = parser.value(idleTimeOption).toInt();
+
+    // Nested mode requires running from Wayland and a socket name
+    // and fake screen data cannot be used
+    if (nested) {
+        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+            qCritical("Nested mode only make sense when running on Wayland.\n"
+                      "Please pass the \"-platform wayland\" argument.");
+            return 1;
+        }
+
+        if (socket.isEmpty()) {
+            qCritical("Nested mode requires you to specify a socket name for Green Island.\n"
+                      "Please specify it with the \"--socket\" argument.");
+            return 1;
+        }
+
+        if (!fakeScreenData.isEmpty()) {
+            qCritical("Fake screen configuration cannot be used "
+                      "when Green Island is nested");
+            return 1;
+        }
+    }
+
     // Home application parameters
-    homeApp.setSocket(parser.value(socketOption));
-    homeApp.setNotifyLoginManager(parser.isSet(notifyOption));
-    homeApp.setFakeScreenData(parser.value(fakeScreenOption));
+    homeApp.setSocket(socket);
+    homeApp.setNotifyLoginManager(notify);
+    homeApp.setFakeScreenData(fakeScreenData);
 
     // Idle timer
-    int idleInterval = parser.value(idleTimeOption).toInt();
     if (idleInterval >= 5)
         homeApp.setIdleTime(idleInterval * 1000);
 
     // Create the compositor and run
-    if (!homeApp.run(parser.value(shellOption)))
+    if (!homeApp.run(nested, parser.value(shellOption)))
         return 1;
 
     return app.exec();

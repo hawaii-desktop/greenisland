@@ -116,7 +116,6 @@ public:
     GreenIslandRecorderManager *recorderManager;
 
     // Nested mode
-    bool nested;
     WlClientConnection *nestedConnection;
     FullScreenShellClient *fullscreenShell;
 

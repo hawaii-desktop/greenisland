@@ -101,7 +101,7 @@ void HomeApplication::setNotifyLoginManager(bool notify)
 #endif
 }
 
-bool HomeApplication::run(const QString &shell)
+bool HomeApplication::run(bool nested, const QString &shell)
 {
     // If a compositor is already running we cannot continue
     if (Compositor::instance()->isRunning()) {
@@ -109,7 +109,8 @@ bool HomeApplication::run(const QString &shell)
         return false;
     }
 
-    // Set plugin
+    // Set nested mode and shell
+    GreenIsland::Compositor::s_nested = nested;
     GreenIsland::Compositor::s_fixedShell = shell;
 
     // Check whether XDG_RUNTIME_DIR is ok or not

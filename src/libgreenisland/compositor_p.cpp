@@ -74,9 +74,6 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     // Create a QML engine shared among all the output windows to save memory
     engine = new QQmlEngine;
 
-    // Are we nested into another compositor?
-    nested = QGuiApplication::platformName().startsWith(QStringLiteral("wayland"));
-
     idleTimer->setInterval(5 * 60000);
 
     settings = new CompositorSettings(self);
@@ -87,7 +84,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     ApplicationManager::instance();
 
     // Wayland client connections
-    if (nested)
+    if (Compositor::s_nested)
         nestedConnection = new WlClientConnection(self);
     clientData.connection = new WlClientConnection(self);
     clientData.client = Q_NULLPTR;
@@ -227,7 +224,7 @@ void CompositorPrivate::_q_createNestedConnection()
 {
     Q_Q(Compositor);
 
-    Q_ASSERT(nested);
+    Q_ASSERT(nestedConnection);
 
     QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
     if (!native)
