@@ -63,6 +63,10 @@
 
 Q_LOGGING_CATEGORY(COMPOSITOR, "greenisland.launcher")
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 5, 0)
+#define qCInfo qCDebug
+#endif
+
 CompositorLauncher::CompositorLauncher(const QString &program, const QStringList &arguments,
                                        QObject *parent)
     : QObject(parent)
