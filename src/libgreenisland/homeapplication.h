@@ -44,18 +44,18 @@ public:
     QString fakeScreenData() const;
     void setFakeScreenData(const QString &fileName);
 
-    int idleTime() const;
-    void setIdleTime(int time);
+    int idleInterval() const;
+    void setIdleInterval(int time);
 
-    bool notifyLoginManager() const;
-    void setNotifyLoginManager(bool notify);
+    bool isNotificationEnabled() const;
+    void setNotificationEnabled(bool notify);
 
     bool run(bool nested, const QString &shell);
 
 protected:
     QString m_socket;
     QString m_fakeScreenFileName;
-    int m_idleTime;
+    int m_idleInterval;
     bool m_notify;
 
     virtual void compositorLaunched();

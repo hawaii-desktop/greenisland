@@ -40,7 +40,7 @@
 namespace GreenIsland {
 
 HomeApplication::HomeApplication()
-    : m_idleTime(0)
+    : m_idleInterval(0)
     , m_notify(false)
 {
 }
@@ -59,22 +59,22 @@ void HomeApplication::setFakeScreenData(const QString &fileName)
     m_fakeScreenFileName = fileName;
 }
 
-int HomeApplication::idleTime() const
+int HomeApplication::idleInterval() const
 {
-    return m_idleTime;
+    return m_idleInterval;
 }
 
-void HomeApplication::setIdleTime(int time)
+void HomeApplication::setIdleInterval(int time)
 {
-    m_idleTime = time;
+    m_idleInterval = time;
 }
 
-bool HomeApplication::notifyLoginManager() const
+bool HomeApplication::isNotificationEnabled() const
 {
     return m_notify;
 }
 
-void HomeApplication::setNotifyLoginManager(bool notify)
+void HomeApplication::setNotificationEnabled(bool notify)
 {
 #if HAVE_SYSTEMD
     m_notify = notify;
@@ -96,8 +96,8 @@ bool HomeApplication::run(bool nested, const QString &shell)
     Compositor *compositor = Compositor::instance();
     compositor->d_func()->nested = nested;
     compositor->d_func()->shell = shell;
-    if (m_idleTime > 0)
-        compositor->d_func()->idleInterval = m_idleTime;
+    if (m_idleInterval > 0)
+        compositor->d_func()->idleInterval = m_idleInterval;
     if (!m_fakeScreenFileName.isEmpty())
         compositor->d_func()->fakeScreenConfiguration = m_fakeScreenFileName;
     QObject::connect(compositor, &Compositor::screenConfigurationAcquired, [this] {

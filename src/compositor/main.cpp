@@ -147,12 +147,12 @@ int main(int argc, char *argv[])
     }
 
     // Home application parameters
-    homeApp.setNotifyLoginManager(notify);
+    homeApp.setNotificationEnabled(notify);
     homeApp.setFakeScreenData(fakeScreenData);
 
     // Idle timer
     if (idleInterval >= 5)
-        homeApp.setIdleTime(idleInterval * 1000);
+        homeApp.setIdleInterval(idleInterval * 1000);
 
     // Create the compositor and run
     if (!homeApp.run(nested, parser.value(shellOption)))
