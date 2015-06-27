@@ -272,7 +272,7 @@ QStringList CompositorLauncher::compositorArgs() const
                  << QStringLiteral("-plugin") << QStringLiteral("EvdevKeyboard");
         break;
     case NestedMode:
-        args << QStringLiteral("--socket=%1").arg(m_compositor->socketName());
+        args << QStringLiteral("--wayland-socket-name=%1").arg(m_compositor->socketName());
         break;
     default:
         break;
