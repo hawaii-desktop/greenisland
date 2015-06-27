@@ -56,6 +56,7 @@
 #include <QtCore/QLoggingCategory>
 
 #include "config.h"
+#include "cmakedirs.h"
 #include "compositorlauncher.h"
 
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
@@ -90,7 +91,7 @@ int main(int argc, char *argv[])
     parser.process(app);
 
     // Assume greenisland by default
-    QString program = QStringLiteral("greenisland");
+    QString program = QStringLiteral(INSTALL_BINDIR "/greenisland");
     QStringList arguments;
     if (parser.isSet(exeOption)) {
         arguments = parser.value(exeOption).split(QLatin1Char(' '),
