@@ -273,6 +273,9 @@ QStringList CompositorLauncher::compositorArgs() const
              << m_compositor->socketName()
              << QStringLiteral("--nested");
         break;
+    case WaylandMode:
+        args << QStringLiteral("--wayland-socket-name")
+             << QStringLiteral("greenisland-") + m_seat;
     default:
         break;
     }
@@ -337,6 +340,9 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
         break;
     case X11Mode:
         env.insert(QStringLiteral("QT_XCB_GL_INTEGRATION"), QStringLiteral("xcb_egl"));
+        break;
+    case WaylandMode:
+        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("wayland"));
         break;
     default:
         break;
