@@ -2,7 +2,8 @@ include_directories(${CMAKE_BINARY_DIR}/headers)
 
 set(SOURCES
     main.cpp
-    processcontroller.cpp
+    compositorlauncher.cpp
+    compositorprocess.cpp
 )
 
 add_executable(greenisland-launcher ${SOURCES})
