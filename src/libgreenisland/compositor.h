@@ -90,9 +90,6 @@ public:
     int idleInhibit() const;
     void setIdleInhibit(int value);
 
-    void incrementIdleInhibit();
-    void decrementIdleInhibit();
-
     CompositorSettings *settings() const;
 
     void run();
@@ -110,6 +107,10 @@ public:
     Q_INVOKABLE void resetMouseCursor();
 
     Q_INVOKABLE void abortSession();
+
+public Q_SLOTS:
+    void incrementIdleInhibit();
+    void decrementIdleInhibit();
 
 Q_SIGNALS:
     void newSurfaceCreated(QWaylandSurface *surface);
