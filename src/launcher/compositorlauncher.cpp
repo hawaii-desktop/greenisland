@@ -115,7 +115,7 @@ void CompositorLauncher::start()
     if (m_mode == NestedMode) {
         // Weston
         m_weston = new CompositorProcess(this);
-        m_weston->setSocketName(QStringLiteral("hawaii-master-") + m_seat);
+        m_weston->setSocketName(QStringLiteral("greenisland-master-") + m_seat);
         m_weston->setProgram(QStringLiteral("weston"));
         m_weston->setArguments(QStringList()
                                << QStringLiteral("--shell=fullscreen-shell.so")
@@ -123,7 +123,7 @@ void CompositorLauncher::start()
 
         // Compositor
         m_compositor = new CompositorProcess(this);
-        m_compositor->setSocketName(QStringLiteral("hawaii-slave-") + m_seat);
+        m_compositor->setSocketName(QStringLiteral("greenisland-slave-") + m_seat);
         m_compositor->setProgram(m_program);
         m_compositor->setArguments(compositorArgs());
         m_compositor->setEnvironment(compositorEnv());
