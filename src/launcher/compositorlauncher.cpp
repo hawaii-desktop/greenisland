@@ -59,6 +59,9 @@
 #include "cmakedirs.h"
 #include "compositorlauncher.h"
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 Q_LOGGING_CATEGORY(COMPOSITOR, "greenisland.launcher")
@@ -431,6 +434,17 @@ void CompositorLauncher::setupEnvironment()
 
 void CompositorLauncher::spawnCompositor()
 {
+    // Open vt as stdin
+    const QString vtNr = QString::fromLatin1(qgetenv("XDG_VTNR"));
+    if (!vtNr.isEmpty()) {
+        QString ttyString = QString("/dev/tty%1").arg(vtNr);
+        int fd = ::open(qPrintable(ttyString), O_RDWR | O_NOCTTY);
+        if (fd > 0) {
+            ::dup2(fd, STDIN_FILENO);
+            ::close(fd);
+        }
+    }
+
     // This is the child process, setup the arguments
     QStringList args = compositorArgs();
     char **const argv = new char *[args.count() + 2];
