@@ -144,6 +144,7 @@ to learn how to enable them.
   * **greenisland.protocols.xdgshell.trace:** xdg_shell trace
   * **greenisland.protocols.wlshell:** wl_shell
   * **greenisland.protocols.wlshell.trace:** wl_shell trace
+  * **greenisland.protocols.wlsubcompositor.trace:** wl_subcompositor and wl_subsurface trace
   * **greenisland.protocols.gtkshell:** gtk_shell
   * **greenisland.protocols.gtkshell.trace:** gtk_shell trace
   * **greenisland.protocols.greenisland.recorder:** greenisland_recorder

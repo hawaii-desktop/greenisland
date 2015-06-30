@@ -30,6 +30,8 @@
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
+#include <typeinfo>
+
 #include "abstractplugin.h"
 #include "applicationmanager_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
@@ -54,6 +56,8 @@
 #include "protocols/greenisland/greenislandscreenshooter.h"
 #include "protocols/gtk-shell/gtkshell.h"
 #include "protocols/wl-shell/wlshell.h"
+#include "protocols/wayland/wlsubcompositor.h"
+#include "protocols/wayland/wlsubsurface.h"
 #include "protocols/xdg-shell/xdgshell.h"
 
 #include <wayland-client-protocol.h>
@@ -258,6 +262,7 @@ void Compositor::run()
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal(this));
     addGlobalInterface(new GtkShellGlobal());
+    addGlobalInterface(new WlSubCompositorGlobal());
 
     // Add global interfaces from plugins
     Q_FOREACH (AbstractPlugin *plugin, d->plugins)
@@ -315,6 +320,19 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
     }
 
     return static_cast<QWaylandSurfaceItem *>(surface->views().first());
+}
+
+QWaylandSurfaceItem *Compositor::subSurfaceForOutput(QWaylandSurface *surface, Output *output) const
+{
+    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+        if (typeid(*interface) != typeid(WlSubSurface))
+            continue;
+        WlSubSurface *subSurfaceInterface = static_cast<WlSubSurface *>(interface);
+        if (subSurfaceInterface)
+            return subSurfaceInterface->viewForOutput(output);
+    }
+
+    return Q_NULLPTR;
 }
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)

@@ -56,6 +56,10 @@ Item {
             // A window was unmapped
             WindowManagement.windowDestroyed(id);
         }
+        onSurfaceMapped: {
+            // A surface was mapped
+            WindowManagement.surfaceMapped(surface);
+        }
     }
 
     /*
