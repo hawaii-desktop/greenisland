@@ -83,7 +83,7 @@ else()
 endif()
 
 # Wayland
-set(REQUIRED_WAYLAND_VERSION 1.2.0)
+set(REQUIRED_WAYLAND_VERSION 1.6.0)
 find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Cursor)
 set_package_properties(Wayland PROPERTIES
     TYPE REQUIRED
