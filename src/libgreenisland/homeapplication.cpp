@@ -37,16 +37,38 @@
 #  include <systemd/sd-daemon.h>
 #endif
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <linux/kd.h>
+
+#ifndef KDSKBMUTE
+#define KDSKBMUTE 0x4B51
+#endif
+
+#ifdef K_OFF
+#define KBD_OFF_MODE K_OFF
+#else
+#define KBD_OFF_MODE K_RAW
+#endif
+
 namespace GreenIsland {
 
 HomeApplication::HomeApplication()
     : m_idleInterval(0)
     , m_notify(false)
+    , m_tty(-1)
+    , m_oldKbdMode(-1)
 {
+    // Setup tty execept when running inside another
+    // Wayland compositor or X11
+    if (qEnvironmentVariableIsEmpty("WAYLAND_DISPLAY") && qEnvironmentVariableIsEmpty("DISPLAY"))
+        setupTty();
 }
 
 HomeApplication::~HomeApplication()
 {
+    restoreTty();
 }
 
 QString HomeApplication::fakeScreenData() const
@@ -117,6 +139,44 @@ bool HomeApplication::run(bool nested, const QString &shell)
 
 void HomeApplication::compositorLaunched()
 {
+}
+
+void HomeApplication::setupTty()
+{
+    const QString vtNr = QString::fromUtf8(qgetenv("XDG_VTNR"));
+    const QString ttyString = QString("/dev/tty%1").arg(vtNr);
+
+    m_tty = ::open(ttyString.toUtf8().constData(), O_RDWR | O_CLOEXEC | O_NONBLOCK);
+    if (m_tty < 0) {
+        qCWarning(GREENISLAND_COMPOSITOR, "Failed to open /dev/tty0: %s",
+                  ::strerror(errno));
+        return;
+    }
+
+    // Save current keyboard mode
+    ioctl(m_tty, KDGKBMODE, &m_oldKbdMode);
+
+    // Disable the tty keyboard
+    ioctl(m_tty, KDSKBMUTE, 1);
+    ioctl(m_tty, KDSKBMODE, KBD_OFF_MODE);
+
+    // Graphics mode
+    if (ioctl(m_tty, KDSETMODE, KD_GRAPHICS) < 0) {
+        qCWarning(GREENISLAND_COMPOSITOR, "Failed to set tty /dev/tty0 in graphics mode: %s",
+                  ::strerror(errno));
+        ::close(m_tty);
+        m_tty = -1;
+        return;
+    }
+}
+
+void HomeApplication::restoreTty()
+{
+    if (m_tty == -1 || m_oldKbdMode == -1)
+        return;
+
+    ioctl(m_tty, KDSKBMUTE, 0);
+    ioctl(m_tty, KDSKBMODE, m_oldKbdMode);
 }
 
 } // namespace GreenIsland

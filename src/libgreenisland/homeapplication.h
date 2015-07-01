@@ -57,8 +57,14 @@ protected:
     QString m_fakeScreenFileName;
     int m_idleInterval;
     bool m_notify;
+    int m_tty;
+    int m_oldKbdMode;
 
     virtual void compositorLaunched();
+
+private:
+    void setupTty();
+    void restoreTty();
 };
 
 } // namespace GreenIsland
