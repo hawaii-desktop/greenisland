@@ -126,9 +126,9 @@ target_link_libraries(GreenIsland
         Qt5::Gui
         Qt5::Quick
         Qt5::Compositor
-    PRIVATE
         Wayland::Client
         Wayland::Server
+    PRIVATE
         Wayland::Cursor
         ${EGL_TARGET}
 )
