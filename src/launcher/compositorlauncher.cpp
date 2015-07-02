@@ -295,13 +295,6 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
 {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 
-    // Standard environment
-    env.insert(QStringLiteral("QT_QPA_PLATFORMTHEME"), QStringLiteral("Hawaii"));
-    env.insert(QStringLiteral("QT_QUICK_CONTROLS_STYLE"), QStringLiteral("Wind"));
-    env.insert(QStringLiteral("XCURSOR_THEME"), QStringLiteral("hawaii"));
-    env.insert(QStringLiteral("XCURSOR_SIZE"), QStringLiteral("16"));
-    env.insert(QStringLiteral("QSG_RENDER_LOOP"), QStringLiteral("windows"));
-
     // Specific environment
     switch (m_mode) {
     case NestedMode:
