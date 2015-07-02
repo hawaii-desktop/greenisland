@@ -52,6 +52,8 @@
 #define KBD_OFF_MODE K_RAW
 #endif
 
+extern char **environ;
+
 namespace GreenIsland {
 
 HomeApplication::HomeApplication()
@@ -60,6 +62,14 @@ HomeApplication::HomeApplication()
     , m_tty(-1)
     , m_oldKbdMode(-1)
 {
+    qCDebug(GREENISLAND_COMPOSITOR) << "Environment variables:";
+    for (char **current = environ; *current; current++) {
+        if (::strncmp(*current, "QT", 2) == 0 &&
+                ::strncmp(*current, "QML", 3) == 0 &&
+                ::strncmp(*current, "XDG", 3) == 0)
+            qCDebug(GREENISLAND_COMPOSITOR, "\t%s", *current);
+    }
+
     // Setup tty execept when running inside another
     // Wayland compositor or X11
     if (qEnvironmentVariableIsEmpty("WAYLAND_DISPLAY") && qEnvironmentVariableIsEmpty("DISPLAY"))
@@ -144,12 +154,12 @@ void HomeApplication::compositorLaunched()
 void HomeApplication::setupTty()
 {
     const QString vtNr = QString::fromUtf8(qgetenv("XDG_VTNR"));
-    const QString ttyString = QString("/dev/tty%1").arg(vtNr);
+    m_ttyString = QString("/dev/tty%1").arg(vtNr);
 
-    m_tty = ::open(ttyString.toUtf8().constData(), O_RDWR | O_CLOEXEC | O_NONBLOCK);
+    m_tty = ::open(m_ttyString.toUtf8().constData(), O_RDWR | O_CLOEXEC | O_NONBLOCK);
     if (m_tty < 0) {
-        qCWarning(GREENISLAND_COMPOSITOR, "Failed to open /dev/tty0: %s",
-                  ::strerror(errno));
+        qCWarning(GREENISLAND_COMPOSITOR, "Failed to open %s: %s",
+                  qPrintable(m_ttyString), ::strerror(errno));
         return;
     }
 
@@ -162,8 +172,8 @@ void HomeApplication::setupTty()
 
     // Graphics mode
     if (ioctl(m_tty, KDSETMODE, KD_GRAPHICS) < 0) {
-        qCWarning(GREENISLAND_COMPOSITOR, "Failed to set tty /dev/tty0 in graphics mode: %s",
-                  ::strerror(errno));
+        qCWarning(GREENISLAND_COMPOSITOR, "Failed to set %s in graphics mode: %s",
+                  qPrintable(m_ttyString), ::strerror(errno));
         ::close(m_tty);
         m_tty = -1;
         return;
@@ -177,6 +187,13 @@ void HomeApplication::restoreTty()
 
     ioctl(m_tty, KDSKBMUTE, 0);
     ioctl(m_tty, KDSKBMODE, m_oldKbdMode);
+
+    if (ioctl(m_tty, KDSETMODE, KD_TEXT) < 0)
+        qCWarning(GREENISLAND_COMPOSITOR, "Failed to set %s in text mode: %s",
+                  qPrintable(m_ttyString), ::strerror(errno));
+
+    ::close(m_tty);
+    m_tty = -1;
 }
 
 } // namespace GreenIsland

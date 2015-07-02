@@ -57,6 +57,7 @@ protected:
     QString m_fakeScreenFileName;
     int m_idleInterval;
     bool m_notify;
+    QString m_ttyString;
     int m_tty;
     int m_oldKbdMode;
 

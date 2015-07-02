@@ -141,16 +141,15 @@ void CompositorLauncher::start()
         m_weston->start();
     else
         spawnCompositor();
-
-    // Set environment so that applications will inherit it
-    setupEnvironment();
 }
 
 void CompositorLauncher::stop()
 {
+    if (m_mode != NestedMode)
+        return;
+
     m_compositor->stop();
-    if (m_mode == NestedMode)
-        m_weston->stop();
+    m_weston->stop();
 }
 
 void CompositorLauncher::detectMode()
@@ -271,9 +270,11 @@ QStringList CompositorLauncher::compositorArgs() const
     case HwComposerMode:
         if (m_hasLibInputPlugin)
             args << QStringLiteral("-plugin") << QStringLiteral("libinput");
+        /*
         else
             args << QStringLiteral("-plugin") << QStringLiteral("EvdevMouse")
                  << QStringLiteral("-plugin") << QStringLiteral("EvdevKeyboard");
+        */
         break;
     case NestedMode:
         args << QStringLiteral("--wayland-socket-name")
@@ -334,7 +335,6 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
 
         if (m_hasLibInputPlugin)
             env.insert(QStringLiteral("QT_QPA_EGLFS_DISABLE_INPUT"), QStringLiteral("1"));
-        env.insert(QStringLiteral("QT_QPA_ENABLE_TERMINAL_KEYBOARD"), QStringLiteral("0"));
         break;
     case HwComposerMode:
         env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("hwcomposer"));
@@ -343,7 +343,6 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
         //env.insert(QStringLiteral("QT_QPA_EGLFS_DEPTH"), QStringLiteral("32"));
         if (m_hasLibInputPlugin)
             env.insert(QStringLiteral("QT_QPA_EGLFS_DISABLE_INPUT"), QStringLiteral("1"));
-        env.insert(QStringLiteral("QT_QPA_ENABLE_TERMINAL_KEYBOARD"), QStringLiteral("0"));
         break;
     case X11Mode:
         env.insert(QStringLiteral("QT_XCB_GL_INTEGRATION"), QStringLiteral("xcb_egl"));
@@ -394,19 +393,6 @@ void CompositorLauncher::printSummary()
     if (m_mode == NestedMode) {
         qCInfo(COMPOSITOR) << "Weston socket:" << m_weston->socketName();
         qCInfo(COMPOSITOR) << "Compositor socket:" << m_compositor->socketName();
-    } else {
-        qCInfo(COMPOSITOR) << "Environment variables:";
-        QProcessEnvironment env = compositorEnv();
-        QStringList sortedKeys = env.keys();
-        qSort(sortedKeys);
-        Q_FOREACH (const QString &key, sortedKeys) {
-            if (key.startsWith(QStringLiteral("QT_")) ||
-                    key.startsWith(QStringLiteral("QML2_")) ||
-                    key.startsWith(QStringLiteral("XDG_")))
-                qCInfo(COMPOSITOR, "\t%s=%s",
-                       qPrintable(key),
-                       qPrintable(env.value(key)));
-        }
     }
     if (m_mode == X11Mode)
         qCInfo(COMPOSITOR) << "X11 display:" << qgetenv("DISPLAY");
@@ -414,6 +400,7 @@ void CompositorLauncher::printSummary()
 
 void CompositorLauncher::setupEnvironment()
 {
+    return;
     // Make clients run on Wayland
     if (m_hardware == BroadcomHardware) {
         qputenv("QT_QPA_PLATFORM", QByteArray("wayland-brcm"));
@@ -434,24 +421,11 @@ void CompositorLauncher::setupEnvironment()
 
 void CompositorLauncher::spawnCompositor()
 {
-    // Open vt as stdin
-    const QString vtNr = QString::fromLatin1(qgetenv("XDG_VTNR"));
-    if (!vtNr.isEmpty()) {
-        QString ttyString = QString("/dev/tty%1").arg(vtNr);
-        int fd = ::open(qPrintable(ttyString), O_RDWR | O_NOCTTY);
-        if (fd > 0) {
-            ::dup2(fd, STDIN_FILENO);
-            ::close(fd);
-        }
-    }
-
-    // This is the child process, setup the arguments
+    // Setup the arguments
     QStringList args = compositorArgs();
-    char **const argv = new char *[args.count() + 2];
+    args.prepend(m_program);
+    char **const argv = new char *[args.count() + 1];
     char **p = argv;
-
-    *p = strdup(qPrintable(m_program));
-    ++p;
 
     Q_FOREACH (const QString &arg, args) {
         *p = new char[arg.length() + 1];
@@ -461,7 +435,7 @@ void CompositorLauncher::spawnCompositor()
 
     *p = 0;
 
-    // And the environment
+    // Setup the environment
     QProcessEnvironment env = compositorEnv();
     char **const envp = new char *[env.keys().count() + 1];
     char **e = envp;
@@ -476,11 +450,10 @@ void CompositorLauncher::spawnCompositor()
     *e = 0;
 
     // Execute
-    qCInfo(COMPOSITOR, "Running: %s %s", qPrintable(m_program),
-           qPrintable(args.join(' ')));
-    if (::execvpe(argv[0], argv, envp) == -1) {
+    qCInfo(COMPOSITOR, "Running: %s", qPrintable(args.join(' ')));
+    if (::execve(argv[0], argv, envp) == -1) {
         qCCritical(COMPOSITOR, "Failed to execute %s: %s",
-                   argv[0], strerror(errno));
+                   argv[0], ::strerror(errno));
 
         p = argv;
         while (*p != 0)
@@ -493,6 +466,8 @@ void CompositorLauncher::spawnCompositor()
         delete [] envp;
 
         ::exit(EXIT_FAILURE);
+    } else {
+        ::exit(0);
     }
 }
 
