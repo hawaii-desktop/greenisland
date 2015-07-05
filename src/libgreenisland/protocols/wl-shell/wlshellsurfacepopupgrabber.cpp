@@ -85,12 +85,12 @@ void WlShellSurfacePopupGrabber::addPopup(WlShellSurface *popup)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
-    if (m_popupSurfaces.contains(popup))
-        return;
-
     if (m_popupSurfaces.isEmpty()) {
         m_client = popup->resource()->client();
-        m_initialUp = !m_inputDevice->pointerDevice()->buttonPressed();
+
+        if (m_inputDevice->pointerDevice()->buttonPressed())
+            m_initialUp = false;
+
         m_popupSurfaces.append(popup);
         m_inputDevice->pointerDevice()->startGrab(this);
     } else {
@@ -139,7 +139,7 @@ void WlShellSurfacePopupGrabber::button(uint32_t time, Qt::MouseButton button, u
                m_pointer->currentGrab() == this) {
         m_pointer->endGrab();
 
-        for (WlShellSurface *popup: m_popupSurfaces)
+        Q_FOREACH (WlShellSurface *popup, m_popupSurfaces)
             popup->send_popup_done();
         m_popupSurfaces.clear();
     }

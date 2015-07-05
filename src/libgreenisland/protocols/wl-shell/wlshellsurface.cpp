@@ -64,7 +64,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
     connect(m_surface, &QWaylandSurface::configure, this, [this](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
-    }, Qt::QueuedConnection);
+    });
     connect(m_surface, &QWaylandSurface::mapped, this, [this]() {
         // Popup behavior
         if (m_surface->windowType() == QWaylandSurface::Popup) {
@@ -75,15 +75,7 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
                 m_popupGrabber->m_client = Q_NULLPTR;
             }
         }
-    }, Qt::QueuedConnection);
-    connect(m_surface, &QWaylandSurface::unmapped, this, [this]() {
-        // Popup behavior
-        if (m_surface->windowType() == QWaylandSurface::Popup) {
-            send_popup_done();
-            m_popupGrabber->removePopup(this);
-            m_popupGrabber->m_client = Q_NULLPTR;
-        }
-    }, Qt::QueuedConnection);
+    });
 }
 
 WlShellSurface::~WlShellSurface()
@@ -210,7 +202,6 @@ void WlShellSurface::shell_surface_destroy_resource(Resource *resource)
 
     // Close popup grabber in case it is still going
     if (m_popupGrabber) {
-        send_popup_done();
         m_popupGrabber->removePopup(this);
         m_popupGrabber->m_client = Q_NULLPTR;
     }
