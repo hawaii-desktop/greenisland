@@ -64,6 +64,8 @@ public:
 protected:
     bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
 
+    void subsurface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
+
     void subsurface_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void subsurface_set_position(Resource *resource, int32_t x, int32_t y) Q_DECL_OVERRIDE;
     void subsurface_place_above(Resource *resource,

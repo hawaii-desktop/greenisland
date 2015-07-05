@@ -65,12 +65,19 @@ WlSubCompositor::~WlSubCompositor()
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
-void WlSubCompositor::subcompositor_destroy(Resource *resource)
+void WlSubCompositor::subcompositor_destroy_resource(Resource *resource)
 {
     qCDebug(WLSUBCOMPOSITOR_TRACE) << Q_FUNC_INFO;
 
     Q_UNUSED(resource)
     delete this;
+}
+
+void WlSubCompositor::subcompositor_destroy(Resource *resource)
+{
+    qCDebug(WLSUBCOMPOSITOR_TRACE) << Q_FUNC_INFO;
+
+    wl_resource_destroy(resource->handle);
 }
 
 void WlSubCompositor::subcompositor_get_subsurface(Resource *resource, uint32_t id,

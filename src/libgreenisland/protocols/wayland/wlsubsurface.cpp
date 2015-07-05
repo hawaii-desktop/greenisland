@@ -93,6 +93,8 @@ WlSubSurface::~WlSubSurface()
 {
     qCDebug(WLSUBCOMPOSITOR_TRACE) << Q_FUNC_INFO;
 
+    m_subCompositor->m_subSurfaces.removeOne(this);
+
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 
     QList<Output *> outputs = m_views.keys();
@@ -119,6 +121,14 @@ bool WlSubSurface::runOperation(QWaylandSurfaceOp *op)
 {
     Q_UNUSED(op)
     return false;
+}
+
+void WlSubSurface::subsurface_destroy_resource(Resource *resource)
+{
+    qCDebug(WLSUBCOMPOSITOR_TRACE) << Q_FUNC_INFO;
+
+    Q_UNUSED(resource)
+    delete this;
 }
 
 void WlSubSurface::subsurface_destroy(Resource *resource)

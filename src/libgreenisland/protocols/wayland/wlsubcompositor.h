@@ -59,6 +59,8 @@ public:
     }
 
 protected:
+    void subcompositor_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
+
     void subcompositor_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void subcompositor_get_subsurface(Resource *resource, uint32_t id,
                                       wl_resource *surfaceResource,
