@@ -122,8 +122,9 @@ void CompositorLauncher::start()
                                << QStringLiteral("--socket=%1").arg(m_weston->socketName()));
 
         // Compositor
+        m_socketName = QStringLiteral("greenisland-slave-") + m_seat;
         m_compositor = new CompositorProcess(this);
-        m_compositor->setSocketName(QStringLiteral("greenisland-slave-") + m_seat);
+        m_compositor->setSocketName(m_socketName);
         m_compositor->setProgram(m_program);
         m_compositor->setArguments(compositorArgs());
         m_compositor->setEnvironment(compositorEnv());
@@ -131,6 +132,9 @@ void CompositorLauncher::start()
         // Starts the compositor as soon as Weston is started
         connect(m_weston, &CompositorProcess::started,
                 m_compositor, &CompositorProcess::start);
+    } else {
+        // Compositor socket name
+        m_socketName = QStringLiteral("greenisland-") + m_seat;
     }
 
     // Summary
@@ -283,13 +287,10 @@ QStringList CompositorLauncher::compositorArgs() const
         break;
     }
 
-    // Always set a socket name so it has a known value
-    if (m_mode == NestedMode)
-        args << QStringLiteral("--wayland-socket-name")
-             << m_compositor->socketName();
-    else
-        args << QStringLiteral("--wayland-socket-name")
-             << QStringLiteral("greenisland-") + m_seat;
+    // Always set a socket name so it has a known value and
+    // application will have the correct WAYLAND_DISPLAY set
+    args << QStringLiteral("--wayland-socket-name")
+         << m_socketName;
 
     return args;
 }
@@ -406,13 +407,6 @@ void CompositorLauncher::setupEnvironment()
         qputenv("QT_QPA_PLATFORM", QByteArray("wayland"));
     }
     qputenv("GDK_BACKEND", QByteArray("wayland"));
-
-    // Set WAYLAND_DISPLAY only when nested, otherwise we don't need to do
-    // it because applications can detect the socket themselves
-    if (m_mode == NestedMode)
-        qputenv("WAYLAND_DISPLAY", m_compositor->socketName().toLatin1());
-    else
-        qunsetenv("WAYLAND_DISPLAY");
 }
 
 void CompositorLauncher::spawnCompositor()

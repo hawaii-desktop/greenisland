@@ -97,6 +97,7 @@ private:
     Mode m_mode;
     Hardware m_hardware;
     QString m_seat;
+    QString m_socketName;
     bool m_hasLibInputPlugin;
     CompositorProcess *m_weston;
     CompositorProcess *m_compositor;
