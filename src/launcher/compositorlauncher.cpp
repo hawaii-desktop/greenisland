@@ -277,16 +277,19 @@ QStringList CompositorLauncher::compositorArgs() const
         */
         break;
     case NestedMode:
-        args << QStringLiteral("--wayland-socket-name")
-             << m_compositor->socketName()
-             << QStringLiteral("--nested");
+        args << QStringLiteral("--nested");
         break;
-    case WaylandMode:
-        args << QStringLiteral("--wayland-socket-name")
-             << QStringLiteral("greenisland-") + m_seat;
     default:
         break;
     }
+
+    // Always set a socket name so it has a known value
+    if (m_mode == NestedMode)
+        args << QStringLiteral("--wayland-socket-name")
+             << m_compositor->socketName();
+    else
+        args << QStringLiteral("--wayland-socket-name")
+             << QStringLiteral("greenisland-") + m_seat;
 
     return args;
 }
