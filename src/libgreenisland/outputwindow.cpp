@@ -25,6 +25,8 @@
  ***************************************************************************/
 
 #include <QtCore/QStandardPaths>
+#include <QtCore/QDir>
+#include <QtCore/QSettings>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlEngine>
 
@@ -97,9 +99,29 @@ void OutputWindow::loadScene()
 
     m_perfTimer.start();
 
-    QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                          QString("greenisland/shells/%1/Compositor.qml").arg(shell));
-    if (!QFile(path).exists(path))
+    // Pick the first shell directory we find
+    QString mainScriptFileName;
+    QStringList dirs =
+            QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                      QStringLiteral("greenisland/shells/") + shell,
+                                      QStandardPaths::LocateDirectory);
+    Q_FOREACH (const QString &pathName, dirs) {
+        QDir dir(pathName);
+        QFileInfo info(dir, QStringLiteral("metadata.desktop"));
+        if (info.exists()) {
+            // Retrieve the QML file name
+            QSettings shell(info.absoluteFilePath(), QSettings::IniFormat);
+            shell.setIniCodec("UTF-8");
+            shell.beginGroup(QStringLiteral("Shell"));
+            mainScriptFileName = dir.absoluteFilePath(
+                        shell.value(QStringLiteral("MainScript"),
+                                    QStringLiteral("Compositor.qml")).toString());
+            break;
+        }
+    }
+
+    // Bail out if the QML file was not found
+    if (mainScriptFileName.isEmpty())
         qFatal("Shell \"%s\" is not valid, cannot continue!",
                qPrintable(shell));
 
@@ -114,7 +136,7 @@ void OutputWindow::loadScene()
     }
 
     // Component
-    m_component = new QQmlComponent(engine, QUrl::fromLocalFile(path));
+    m_component = new QQmlComponent(engine, QUrl::fromLocalFile(mainScriptFileName));
     if (m_component->isLoading())
         connect(m_component, &QQmlComponent::statusChanged,
                 this, &OutputWindow::statusChanged);
