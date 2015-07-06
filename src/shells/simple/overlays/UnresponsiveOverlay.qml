@@ -29,40 +29,13 @@ import QtQuick.Controls 1.0
 import QtQuick.Layouts 1.0
 import QtGraphicalEffects 1.0
 
-Colorize {
-    property alias window: root.source
-
+Rectangle {
     id: root
-    hue: 0.0
-    saturation: 0.5
-    lightness: -0.5
-    z: 1
 
-    Behavior on opacity {
-        NumberAnimation {
-            easing.type: Easing.Linear
-            duration: 250
-        }
-    }
-
-    // Automatically ping the surface
-    Timer {
-        running: window.unresponsive
-        interval: 10000
-        onTriggered: window.pingSurface()
-    }
-
-    // Block input on the surface
-    MouseArea {
-        anchors.fill: parent
-        enabled: window.unresponsive
-        cursorShape: Qt.BusyCursor
-        z: 1
-    }
+    color: Qt.rgba(0,0,0,0.3)
 
     ColumnLayout {
         anchors.fill: parent
-        enabled: window.unresponsive
         z: 2
 
         Item {
@@ -101,7 +74,7 @@ Colorize {
 
             Button {
                 text: qsTr("Force Quit")
-                onClicked: window.child.surface.client.kill()
+                onClicked: window.kill()
             }
 
             Layout.alignment: Qt.AlignHCenter
