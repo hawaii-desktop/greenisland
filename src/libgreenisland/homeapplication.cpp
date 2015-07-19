@@ -64,8 +64,9 @@ HomeApplication::HomeApplication()
 {
     qCDebug(GREENISLAND_COMPOSITOR) << "Environment variables:";
     for (char **current = environ; *current; current++) {
-        if (::strncmp(*current, "QT", 2) == 0 &&
-                ::strncmp(*current, "QML", 3) == 0 &&
+        if (::strncmp(*current, "QT", 2) == 0 ||
+                ::strncmp(*current, "QML", 3) == 0 ||
+                ::strncmp(*current, "QSG", 3) == 0 ||
                 ::strncmp(*current, "XDG", 3) == 0)
             qCDebug(GREENISLAND_COMPOSITOR, "\t%s", *current);
     }
