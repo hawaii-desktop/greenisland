@@ -1,5 +1,5 @@
 #=============================================================================
-# Copyright 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+# Copyright 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -41,3 +41,101 @@ macro(greenisland_install_shell shell srcpath)
             PATTERN Messages.sh EXCLUDE
             PATTERN dummydata EXCLUDE)
 endmacro()
+
+
+include(CMakeParseArguments)
+
+#
+#   greenisland_add_client_protocol(<source_files_var>
+#                                   PROTOCOL <xmlfile>
+#                                   BASENAME <basename>
+#                                   [PREFIX <prefix>])
+#
+# Generate C++ wrapper to Wayland client protocol files from ``<xmlfile>``
+# XML definition for the ``<basename>`` interface and append those files
+# to ``<source_files_var>``.  Pass the ``<prefix>`` argument if the interface
+# names don't start with ``qt_`` or ``wl_``.
+#
+# WaylandScanner is required and will be searched for.
+#
+function(greenisland_add_client_protocol out_var)
+    # Parse arguments
+    set(oneValueArgs PROTOCOL BASENAME PREFIX)
+    cmake_parse_arguments(ARGS "" "${oneValueArgs}" "" ${ARGN})
+
+    if(ARGS_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "Unknown keywords given to greenisland_add_client_protocol(): \"${ARGS_UNPARSED_ARGUMENTS}\"")
+    endif()
+
+    set(_prefix "${ARGS_PREFIX}")
+
+    find_package(WaylandScanner REQUIRED QUIET)
+    ecm_add_wayland_client_protocol(${out_var}
+                                    PROTOCOL ${ARGS_PROTOCOL}
+                                    BASENAME ${ARGS_BASENAME})
+
+    get_filename_component(_infile ${ARGS_PROTOCOL} ABSOLUTE)
+    set(_cheader "${CMAKE_CURRENT_BINARY_DIR}/wayland-${ARGS_BASENAME}-client-protocol.h")
+    set(_header "${CMAKE_CURRENT_BINARY_DIR}/qwayland-${ARGS_BASENAME}.h")
+    set(_code "${CMAKE_CURRENT_BINARY_DIR}/qwayland-${ARGS_BASENAME}.cpp")
+
+    set_source_files_properties(${_header} ${_code} GENERATED)
+
+    add_custom_command(OUTPUT "${_header}"
+        COMMAND ${GreenIsland_WAYLAND_SCANNER_EXECUTABLE} client-header ${_infile} "" ${_prefix} > ${_header}
+        DEPENDS ${_infile} ${_cheader} VERBATIM)
+
+    add_custom_command(OUTPUT "${_code}"
+        COMMAND ${GreenIsland_WAYLAND_SCANNER_EXECUTABLE} client-code ${_infile} "" ${_prefix} > ${_code}
+        DEPENDS ${_infile} ${_header} VERBATIM)
+
+    list(APPEND ${out_var} "${_code}")
+    set(${out_var} ${${out_var}} PARENT_SCOPE)
+endfunction()
+
+#
+#   greenisland_add_server_protocol(<source_files_var>
+#                                   PROTOCOL <xmlfile>
+#                                   BASENAME <basename>
+#                                   [PREFIX <prefix>])
+#
+# Generate C++ wrapper to Wayland server protocol files from ``<xmlfile>``
+# XML definition for the ``<basename>`` interface and append those files
+# to ``<source_files_var>``.  Pass the ``<prefix>`` argument if the interface
+# names don't start with ``qt_`` or ``wl_``.
+#
+# WaylandScanner is required and will be searched for.
+#
+function(greenisland_add_server_protocol out_var)
+    # Parse arguments
+    set(oneValueArgs PROTOCOL BASENAME PREFIX)
+    cmake_parse_arguments(ARGS "" "${oneValueArgs}" "" ${ARGN})
+
+    if(ARGS_UNPARSED_ARGUMENTS)
+        message(FATAL_ERROR "Unknown keywords given to greenisland_add_server_protocol(): \"${ARGS_UNPARSED_ARGUMENTS}\"")
+    endif()
+
+    set(_prefix "${ARGS_PREFIX}")
+
+    find_package(WaylandScanner REQUIRED QUIET)
+    ecm_add_wayland_server_protocol(${out_var}
+                                    PROTOCOL ${ARGS_PROTOCOL}
+                                    BASENAME ${ARGS_BASENAME})
+
+    get_filename_component(_infile ${ARGS_PROTOCOL} ABSOLUTE)
+    set(_header "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-${ARGS_BASENAME}.h")
+    set(_code "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-${ARGS_BASENAME}.cpp")
+
+    set_source_files_properties(${_header} ${_code} GENERATED)
+
+    add_custom_command(OUTPUT "${_header}"
+        COMMAND ${GreenIsland_WAYLAND_SCANNER_EXECUTABLE} server-header ${_infile} "" ${_prefix} > ${_header}
+        DEPENDS ${_infile} VERBATIM)
+
+    add_custom_command(OUTPUT "${_code}"
+        COMMAND ${GreenIsland_WAYLAND_SCANNER_EXECUTABLE} server-code ${_infile} "" ${_prefix} > ${_code}
+        DEPENDS ${_infile} ${_header} VERBATIM)
+
+    list(APPEND ${out_var} "${_code}")
+    set(${out_var} ${${out_var}} PARENT_SCOPE)
+endfunction()
