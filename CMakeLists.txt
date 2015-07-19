@@ -95,9 +95,6 @@ add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
 add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
 add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for changing cursors")
 
-# Wayland and QtWayland scanner
-find_package(QtWaylandScanner REQUIRED)
-
 # systemd
 pkg_check_modules(systemd libsystemd-daemon)
 if(systemd_FOUND)

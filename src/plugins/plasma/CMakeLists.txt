@@ -1,3 +1,6 @@
+include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandConfigExtrasLocal.cmake)
+include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandMacros.cmake)
+
 include_directories(
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src/libgreenisland
@@ -13,12 +16,12 @@ set(SOURCES
     plasmasurface.cpp
 )
 
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-shell.xml
     BASENAME plasma-shell
     PREFIX org_kde_plasma_
 )
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-effects.xml
     BASENAME plasma-effects
     PREFIX org_kde_plasma_

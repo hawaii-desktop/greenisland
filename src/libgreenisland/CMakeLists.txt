@@ -21,6 +21,9 @@ endif()
 
 add_definitions(-Wno-deprecated-declarations)
 
+include(GreenIslandConfigExtrasLocal.cmake)
+include(GreenIslandMacros.cmake)
+
 set(SOURCES
     abstractplugin.cpp
     applicationmanager.cpp
@@ -79,38 +82,38 @@ if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     set(SOURCES ${SOURCES} bufferattacher.cpp)
 endif()
 
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland.xml
     BASENAME greenisland
     PREFIX greenisland_
 )
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
     BASENAME greenisland-recorder
     PREFIX greenisland_
 )
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-screenshooter.xml
     BASENAME greenisland-screenshooter
     PREFIX greenisland_
 )
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
     BASENAME xdg-shell
     PREFIX xdg_
 )
-ecm_add_qtwayland_server_protocol(SOURCES
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk-shell.xml
     BASENAME gtk
     PREFIX gtk_
 )
 
-ecm_add_qtwayland_client_protocol(SOURCES
+greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland.xml
     BASENAME wayland
     PREFIX wl_
 )
-ecm_add_qtwayland_client_protocol(SOURCES
+greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
     BASENAME fullscreen-shell
     PREFIX _wl_
