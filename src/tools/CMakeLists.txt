@@ -1,1 +1,2 @@
 add_subdirectory(screencaster)
+add_subdirectory(waylandscanner)
