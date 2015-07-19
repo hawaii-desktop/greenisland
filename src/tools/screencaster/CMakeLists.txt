@@ -1,3 +1,6 @@
+include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandConfigExtrasLocal.cmake)
+include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandMacros.cmake)
+
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
@@ -8,7 +11,7 @@ set(SOURCES
     screencaster.cpp
 )
 
-ecm_add_qtwayland_client_protocol(SOURCES
+greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
     BASENAME greenisland-recorder
     PREFIX greenisland_
