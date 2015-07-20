@@ -65,7 +65,7 @@ HomeApplication::HomeApplication()
 {
     // Diagnostic output
     std::wcout << systemInformation().toStdWString();
-    std::wcout << glInfo().toStdWString();
+    //std::wcout << glInfo().toStdWString();
 
     // Environment variables
     qCDebug(GREENISLAND_COMPOSITOR) << "Environment variables:";
