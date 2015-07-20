@@ -29,6 +29,9 @@
 
 #include <QtCore/QString>
 
+#include <iostream>
+#include <string>
+
 namespace GreenIsland {
 
 QString systemInformation();

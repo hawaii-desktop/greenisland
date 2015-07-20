@@ -30,6 +30,7 @@
 #include "compositor.h"
 #include "compositor_p.h"
 #include "homeapplication.h"
+#include "gldebug.h"
 #include "logging.h"
 #include "utilities.h"
 
@@ -62,6 +63,11 @@ HomeApplication::HomeApplication()
     , m_tty(-1)
     , m_oldKbdMode(-1)
 {
+    // Diagnostic output
+    std::wcout << systemInformation().toStdWString();
+    std::wcout << glInfo().toStdWString();
+
+    // Environment variables
     qCDebug(GREENISLAND_COMPOSITOR) << "Environment variables:";
     for (char **current = environ; *current; current++) {
         if (::strncmp(*current, "QT", 2) == 0 ||
