@@ -137,6 +137,9 @@ QString openGlContext()
         str << " \nFound " << extensionList.size() << " extensions:\n";
         Q_FOREACH (const QByteArray &e, extensionList)
             str << "  " << e << '\n';
+
+        context.doneCurrent();
+        window.destroy();
     } else {
         str << "Unable to create an Open GL context.\n";
     }
