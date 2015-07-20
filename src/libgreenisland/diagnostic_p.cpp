@@ -170,7 +170,7 @@ QString environment()
                 ::strncmp(*current, "QML", 3) == 0 ||
                 ::strncmp(*current, "QSG", 3) == 0 ||
                 ::strncmp(*current, "XDG", 3) == 0)
-            str << '\t' << *current << '\n';
+            str << "  " << *current << '\n';
     }
 
     return result;
