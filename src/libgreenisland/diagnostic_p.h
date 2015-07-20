@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GLDEBUG_H
-#define GLDEBUG_H
+#ifndef GREENISLAND_DIAGNOSTIC_P_H
+#define GREENISLAND_DIAGNOSTIC_P_H
 
 #include <QtCore/QString>
 
@@ -34,10 +34,14 @@
 
 namespace GreenIsland {
 
+namespace DiagnosticOutput {
+
 QString systemInformation();
-QString glInfo();
+QString openGlContext();
 QString environment();
 
-}
+} // namespace DiagnosticOutput
 
-#endif // GLDEBUG_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_DIAGNOSTIC_P_H

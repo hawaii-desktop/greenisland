@@ -29,8 +29,8 @@
 #include "config.h"
 #include "compositor.h"
 #include "compositor_p.h"
+#include "diagnostic_p.h"
 #include "homeapplication.h"
-#include "gldebug.h"
 #include "logging.h"
 #include "utilities.h"
 
@@ -62,9 +62,11 @@ HomeApplication::HomeApplication()
     , m_oldKbdMode(-1)
 {
     // Diagnostic output
-    std::wcout << systemInformation().toStdWString();
-    //std::wcout << glInfo().toStdWString();
-    std::wcout << environment().toStdWString();
+    std::wstring output;
+    output += DiagnosticOutput::systemInformation().toStdWString();
+    //output += DiagnosticOutput::openGlContext().toStdWString();
+    output += DiagnosticOutput::environment().toStdWString();
+    std::wcout << output;
 
     // Setup tty execept when running inside another
     // Wayland compositor or X11

@@ -25,19 +25,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QSet>
 #include <QtCore/QSysInfo>
+#include <QtCore/QTextStream>
 #include <QtCore/private/qsimd_p.h>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QWindow>
+#include <QtGui/qpa/qplatformnativeinterface.h>
 
-#include <qpa/qplatformnativeinterface.h>
-
-#include "gldebug.h"
-#include "logging.h"
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
+#include "diagnostic_p.h"
 
 #define DUMP_CPU_FEATURE(feature, name)  \
     if (qCpuHasFeature(feature)) str << " " name;
@@ -45,6 +42,8 @@
 extern char **environ;
 
 namespace GreenIsland {
+
+namespace DiagnosticOutput {
 
 QString systemInformation()
 {
@@ -98,7 +97,7 @@ QTextStream &operator<<(QTextStream &str, const QSurfaceFormat &format)
 }
 #endif
 
-QString glInfo()
+QString openGlContext()
 {
     QString result;
     QTextStream str(&result);
@@ -153,10 +152,12 @@ QString environment()
                 ::strncmp(*current, "QML", 3) == 0 ||
                 ::strncmp(*current, "QSG", 3) == 0 ||
                 ::strncmp(*current, "XDG", 3) == 0)
-            str << '\t' << *current;
+            str << '\t' << *current << '\n';
     }
 
     return result;
 }
 
-}
+} // namespace DiagnosticOutput
+
+} // namespace GreenIsland

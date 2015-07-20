@@ -28,7 +28,7 @@ set(SOURCES
     compositor.cpp
     compositor_p.cpp
     compositorsettings.cpp
-    gldebug.cpp
+    diagnostic_p.cpp
     homeapplication.cpp
     keybinding.cpp
     keybindings.cpp

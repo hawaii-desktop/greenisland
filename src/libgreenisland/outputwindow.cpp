@@ -32,7 +32,6 @@
 
 #include "compositor.h"
 #include "compositor_p.h"
-#include "gldebug.h"
 #include "logging.h"
 #include "keybinding.h"
 #include "keybindings.h"
