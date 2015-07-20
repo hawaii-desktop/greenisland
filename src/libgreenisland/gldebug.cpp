@@ -42,6 +42,8 @@
 #define DUMP_CPU_FEATURE(feature, name)  \
     if (qCpuHasFeature(feature)) str << " " name;
 
+extern char **environ;
+
 namespace GreenIsland {
 
 QString systemInformation()
@@ -71,7 +73,6 @@ QString systemInformation()
     str << '\n';
     return result;
 }
-
 
 #ifndef QT_NO_OPENGL
 QTextStream &operator<<(QTextStream &str, const QSurfaceFormat &format)
@@ -135,6 +136,24 @@ QString glInfo()
             str << "  " << e << '\n';
     } else {
         str << "Unable to create an Open GL context.\n";
+    }
+
+    return result;
+}
+
+QString environment()
+{
+    QString result;
+    QTextStream str(&result);
+
+    // Environment variables
+    str << "Environment variables:\n";
+    for (char **current = environ; *current; current++) {
+        if (::strncmp(*current, "QT", 2) == 0 ||
+                ::strncmp(*current, "QML", 3) == 0 ||
+                ::strncmp(*current, "QSG", 3) == 0 ||
+                ::strncmp(*current, "XDG", 3) == 0)
+            str << '\t' << *current;
     }
 
     return result;

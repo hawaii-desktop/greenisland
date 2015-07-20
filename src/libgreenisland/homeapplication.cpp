@@ -53,8 +53,6 @@
 #define KBD_OFF_MODE K_RAW
 #endif
 
-extern char **environ;
-
 namespace GreenIsland {
 
 HomeApplication::HomeApplication()
@@ -66,16 +64,7 @@ HomeApplication::HomeApplication()
     // Diagnostic output
     std::wcout << systemInformation().toStdWString();
     //std::wcout << glInfo().toStdWString();
-
-    // Environment variables
-    qCDebug(GREENISLAND_COMPOSITOR) << "Environment variables:";
-    for (char **current = environ; *current; current++) {
-        if (::strncmp(*current, "QT", 2) == 0 ||
-                ::strncmp(*current, "QML", 3) == 0 ||
-                ::strncmp(*current, "QSG", 3) == 0 ||
-                ::strncmp(*current, "XDG", 3) == 0)
-            qCDebug(GREENISLAND_COMPOSITOR, "\t%s", *current);
-    }
+    std::wcout << environment().toStdWString();
 
     // Setup tty execept when running inside another
     // Wayland compositor or X11

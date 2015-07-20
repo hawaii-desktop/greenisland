@@ -36,6 +36,7 @@ namespace GreenIsland {
 
 QString systemInformation();
 QString glInfo();
+QString environment();
 
 }
 
