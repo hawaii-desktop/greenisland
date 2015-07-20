@@ -31,6 +31,7 @@ class QWindow;
 
 namespace GreenIsland {
 
+QString systemInformation();
 void printGraphicsInformation(QWindow *window);
 
 }

@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QSysInfo>
+#include <QtCore/private/qsimd_p.h>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QWindow>
@@ -35,6 +37,9 @@
 
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+
+#define DUMP_CPU_FEATURE(feature, name)  \
+    if (qCpuHasFeature(feature)) str << " " name;
 
 namespace GreenIsland {
 
@@ -54,6 +59,34 @@ static QString wordWrap(const QString &str, int wrapAt = 55)
     }
 
     return tmpStr;
+}
+
+QString systemInformation()
+{
+    QString result;
+    QTextStream str(&result);
+
+    str << "OS: " << QSysInfo::prettyProductName();
+    str << " ["
+        << QSysInfo::kernelType()
+        << " version " << QSysInfo::kernelVersion()
+        << "]\n";
+    str << "Architecture: " << QSysInfo::currentCpuArchitecture() << "; ";
+    str << "features:";
+    DUMP_CPU_FEATURE(SSE2, "SSE2");
+    DUMP_CPU_FEATURE(SSE3, "SSE3");
+    DUMP_CPU_FEATURE(SSSE3, "SSSE3");
+    DUMP_CPU_FEATURE(SSE4_1, "SSE4.1");
+    DUMP_CPU_FEATURE(SSE4_2, "SSE4.2");
+    DUMP_CPU_FEATURE(AVX, "AVX");
+    DUMP_CPU_FEATURE(AVX2, "AVX2");
+    DUMP_CPU_FEATURE(RTM, "RTM");
+    DUMP_CPU_FEATURE(HLE, "HLE");
+    DUMP_CPU_FEATURE(ARM_NEON, "Neon");
+    DUMP_CPU_FEATURE(DSP, "DSP");
+    DUMP_CPU_FEATURE(DSPR2, "DSPR2");
+    str << '\n';
+    return result;
 }
 
 void printGraphicsInformation(QWindow *window)
