@@ -33,8 +33,12 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QWindow>
 #include <QtGui/qpa/qplatformnativeinterface.h>
+#include <QtCompositor/QtCompositorVersion>
 
 #include "diagnostic_p.h"
+#include "greenisland_version.h"
+
+#include <wayland-version.h>
 
 #define DUMP_CPU_FEATURE(feature, name)  \
     if (qCpuHasFeature(feature)) str << " " name;
@@ -136,6 +140,20 @@ QString openGlContext()
     } else {
         str << "Unable to create an Open GL context.\n";
     }
+
+    return result;
+}
+
+QString framework()
+{
+    QString result;
+    QTextStream str(&result);
+
+    str << "Wayland version: " << WAYLAND_VERSION
+        << "\nQt version: " << QT_VERSION_STR
+        << "\nQtCompositor version: " << QTCOMPOSITOR_VERSION_STR
+        << "\nGreen Island version: " << GREENISLAND_VERSION_STRING
+        << '\n';
 
     return result;
 }

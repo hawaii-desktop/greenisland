@@ -38,6 +38,7 @@ namespace DiagnosticOutput {
 
 QString systemInformation();
 QString openGlContext();
+QString framework();
 QString environment();
 
 } // namespace DiagnosticOutput

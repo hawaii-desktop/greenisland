@@ -65,6 +65,7 @@ HomeApplication::HomeApplication()
     std::wstring output;
     output += DiagnosticOutput::systemInformation().toStdWString();
     //output += DiagnosticOutput::openGlContext().toStdWString();
+    output += DiagnosticOutput::framework().toStdWString();
     output += DiagnosticOutput::environment().toStdWString();
     std::wcout << output;
 
