@@ -27,12 +27,12 @@
 #ifndef GLDEBUG_H
 #define GLDEBUG_H
 
-class QWindow;
+#include <QtCore/QString>
 
 namespace GreenIsland {
 
 QString systemInformation();
-void printGraphicsInformation(QWindow *window);
+QString glInfo();
 
 }
 

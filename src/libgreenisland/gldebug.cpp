@@ -2,6 +2,7 @@
  * This file is part of Green Island.
  *
  * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 The Qt Company Ltd.
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -43,24 +44,6 @@
 
 namespace GreenIsland {
 
-static QString wordWrap(const QString &str, int wrapAt = 55)
-{
-    QString tmpStr = str;
-    int curLen = wrapAt;
-
-    while (curLen < str.length()) {
-        int spacePos = tmpStr.indexOf(' ', curLen);
-        if (spacePos == -1)
-            spacePos = tmpStr.indexOf(' ', curLen);
-        if (spacePos != -1) {
-            tmpStr.replace(spacePos, 1, "\n\t");
-            curLen = spacePos + wrapAt + 1;
-        }
-    }
-
-    return tmpStr;
-}
-
 QString systemInformation()
 {
     QString result;
@@ -89,58 +72,72 @@ QString systemInformation()
     return result;
 }
 
-void printGraphicsInformation(QWindow *window)
+
+#ifndef QT_NO_OPENGL
+QTextStream &operator<<(QTextStream &str, const QSurfaceFormat &format)
 {
-    if (!window)
-        return;
+    str << "Version: " << format.majorVersion() << '.'
+        << format.minorVersion() << " Profile: " << format.profile()
+        << " Swap behavior: " << format.swapBehavior()
+        << " Buffer size (RGB";
+    if (format.hasAlpha())
+        str << 'A';
+    str << "): " << format.redBufferSize() << ',' << format.greenBufferSize()
+        << ',' << format.blueBufferSize();
+    if (format.hasAlpha())
+        str << ',' << format.alphaBufferSize();
+    if (const int dbs = format.depthBufferSize())
+        str << " Depth buffer: " << dbs;
+    if (const int sbs = format.stencilBufferSize())
+        str << " Stencil buffer: " << sbs;
+    const int samples = format.samples();
+    if (samples > 0)
+        str << " Samples: " << samples;
+    return str;
+}
+#endif
 
-    static bool alreadyShown = false;
+QString glInfo()
+{
+    QString result;
+    QTextStream str(&result);
 
-    if (alreadyShown)
-        return;
-
-    alreadyShown = true;
-
-    const char *str;
-
-    QPlatformNativeInterface *nativeInterface = QGuiApplication::platformNativeInterface();
-    if (nativeInterface) {
-        EGLDisplay display = nativeInterface->nativeResourceForWindow("EglDisplay", window);
-        if (display) {
-            str = eglQueryString(display, EGL_VERSION);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL version:" << str;
-
-            str = eglQueryString(display, EGL_VENDOR);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL vendor:" << str;
-
-            str = eglQueryString(display, EGL_CLIENT_APIS);
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL client APIs:" << str;
-
-            str = eglQueryString(display, EGL_EXTENSIONS);
-            QStringList extensions = QString(str).split(QLatin1Char(' '));
-            qCDebug(GREENISLAND_COMPOSITOR) << "EGL extensions:"
-                                            << qPrintable(wordWrap(extensions.join(" ")));
+    QOpenGLContext context;
+    if (context.create()) {
+#  ifdef QT_OPENGL_DYNAMIC
+        str << "Dynamic GL ";
+#  endif
+        switch (context.openGLModuleType()) {
+        case QOpenGLContext::LibGL:
+            str << "LibGL";
+            break;
+        case QOpenGLContext::LibGLES:
+            str << "LibGLES";
+            break;
         }
+
+        QWindow window;
+        window.setSurfaceType(QSurface::OpenGLSurface);
+        window.create();
+        context.makeCurrent(&window);
+        QOpenGLFunctions functions(&context);
+
+        str << " Vendor: " << reinterpret_cast<const char *>(functions.glGetString(GL_VENDOR))
+            << "\nRenderer: " << reinterpret_cast<const char *>(functions.glGetString(GL_RENDERER))
+            << "\nVersion: " << reinterpret_cast<const char *>(functions.glGetString(GL_VERSION))
+            << "\nGLSL version: " << reinterpret_cast<const char *>(functions.glGetString(GL_SHADING_LANGUAGE_VERSION))
+            << "\nFormat: " << context.format();
+
+        QList<QByteArray> extensionList = context.extensions().toList();
+        std::sort(extensionList.begin(), extensionList.end());
+        str << " \nFound " << extensionList.size() << " extensions:\n";
+        Q_FOREACH (const QByteArray &e, extensionList)
+            str << "  " << e << '\n';
+    } else {
+        str << "Unable to create an Open GL context.\n";
     }
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-    str = (char *)glGetString(GL_VERSION);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL version:" << str;
-
-    str = (char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GLSL version:" << str;
-
-    str = (char *)glGetString(GL_VENDOR);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL vendor:" << str;
-
-    str = (char *)glGetString(GL_RENDERER);
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL renderer:" << str;
-
-    str = (char *)glGetString(GL_EXTENSIONS);
-    QStringList extensions = QString(str).split(QLatin1Char(' '));
-    qCDebug(GREENISLAND_COMPOSITOR) << "GL extensions:"
-                                    << qPrintable(wordWrap(extensions.join(" ")));
-#endif
+    return result;
 }
 
 }

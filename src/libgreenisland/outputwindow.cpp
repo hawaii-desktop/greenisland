@@ -59,11 +59,6 @@ OutputWindow::OutputWindow(Output *output)
     // Setup window
     setColor(Qt::black);
 
-    // Print GL information
-    connect(this, SIGNAL(sceneGraphInitialized()),
-            this, SLOT(printInfo()),
-            Qt::DirectConnection);
-
     // Read content after rendering
     connect(this, &QQuickWindow::afterRendering,
             this, &OutputWindow::readContent,
@@ -315,11 +310,6 @@ void OutputWindow::hideOutput()
 
     // Hide
     hide();
-}
-
-void OutputWindow::printInfo()
-{
-    GreenIsland::printGraphicsInformation(this);
 }
 
 void OutputWindow::readContent()

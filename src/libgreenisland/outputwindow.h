@@ -78,7 +78,6 @@ private:
     void hideOutput();
 
 private Q_SLOTS:
-    void printInfo();
     void readContent();
     void statusChanged(QQmlComponent::Status status);
     void continueLoading();
