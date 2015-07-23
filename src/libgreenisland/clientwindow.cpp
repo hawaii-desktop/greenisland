@@ -314,7 +314,7 @@ void ClientWindow::activate()
 
     // Application has focus
     Q_EMIT ApplicationManager::instance()->applicationFocused(m_appId);
-    Q_FOREACH (const QString &appId, ApplicationManager::instance()->d_func()->apps) {
+    Q_FOREACH (const QString &appId, ApplicationManager::instance()->d_func()->surfaces.keys()) {
         if (appId == m_appId)
             continue;
         Q_EMIT ApplicationManager::instance()->applicationUnfocused(appId);

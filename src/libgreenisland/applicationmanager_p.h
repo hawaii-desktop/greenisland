@@ -54,9 +54,7 @@ public:
     void registerSurface(QWaylandSurface *surface, const QString &appId);
     void unregisterSurface(QWaylandSurface *surface, const QString &appId);
 
-    QSet<QString> apps;
-    QHash<QWaylandSurface *, QString> appSurfaces;
-    QHash<QString, QSet<pid_t> > appPids;
+    QHash<QString, QList<QWaylandSurface *> > surfaces;
     QHash<QWaylandSurface *, pid_t> surfacePids;
 
 protected:

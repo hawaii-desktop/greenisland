@@ -59,19 +59,14 @@ void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const 
     if (!surface->client())
         return;
 
-    pid_t pid = (pid_t)surface->client()->processId();
+    // Register
+    if (surfaces.contains(appId))
+        surfaces[appId].append(surface);
+    else
+        surfaces.insert(appId, QList<QWaylandSurface *>() << surface);
+    surfacePids[surface] = surface->client()->processId();
 
-    if (appPids.contains(appId) && appPids[appId].contains(pid))
-        return;
-    if (appSurfaces.contains(surface))
-        return;
-
-    apps.insert(appId);
-    appSurfaces[surface] = appId;
-    appPids[appId].insert(pid);
-    surfacePids[surface] = pid;
-
-    Q_EMIT q->applicationAdded(appId, pid);
+    Q_EMIT q->applicationAdded(appId, surface->client()->processId());
 }
 
 void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, const QString &appId)
@@ -82,26 +77,14 @@ void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, cons
     // deleted along with the surface
     pid_t pid = surfacePids[surface];
 
-    if (appSurfaces.remove(surface) > 0) {
-        // We might have more surfaces with the same pid
-        bool found = false;
-        Q_FOREACH (QWaylandSurface *s, appSurfaces.keys()) {
-            if (surfacePids[s] == pid) {
-                found = true;
-                break;
-            }
-        }
-
-        // If any of the remaining surfaces have this pid then we can remove
-        if (!found)
-            appPids.remove(appId);
-
-        // Remove surface from surface pids hash
-        surfacePids.remove(surface);
+    // Remove the surface
+    surfacePids.remove(surface);
+    if (surfaces.contains(appId)) {
+        surfaces[appId].removeOne(surface);
 
         // Deregister the application when it has no surfaces associated at all
-        if (appSurfaces.count(surface) == 0) {
-            apps.remove(appId);
+        if (surfaces[appId].size() == 0) {
+            surfaces.remove(appId);
             Q_EMIT q->applicationRemoved(appId, pid);
         }
     }
@@ -135,21 +118,18 @@ ApplicationManager *ApplicationManager::instance()
 bool ApplicationManager::isRegistered(const QString &appId) const
 {
     Q_D(const ApplicationManager);
-    return d->apps.contains(appId);
+    return d->surfaces.contains(appId);
 }
 
 void ApplicationManager::quit(const QString &appId)
 {
     Q_D(ApplicationManager);
 
-    Q_FOREACH (QWaylandClient *client, Compositor::instance()->handle()->clients()) {
-        Q_FOREACH (pid_t pid, d->appPids[appId]) {
-            if (pid == QCoreApplication::applicationPid())
-                continue;
-            if (client->processId() == pid)
-                client->close();
-        }
-    }
+    if (!d->surfaces.contains(appId))
+        return;
+
+    Q_FOREACH (QWaylandSurface *surface, d->surfaces[appId])
+        Compositor::instance()->destroyClientForSurface(surface);
 }
 
 }
