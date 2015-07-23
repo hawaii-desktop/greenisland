@@ -28,7 +28,9 @@
 #include <QtCore/QPluginLoader>
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
+#include <QtGui/QScreen>
 #include <QtGui/qpa/qplatformnativeinterface.h>
+#include <QtGui/qpa/qplatformscreen.h>
 #include <QtQml/QQmlEngine>
 #include <QtCompositor/private/qwlcompositor_p.h>
 
@@ -197,8 +199,17 @@ void CompositorPrivate::loadPlugins()
 
 void CompositorPrivate::dpms(bool on)
 {
-    // TODO
-    Q_UNUSED(on);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    // TODO: Handle more states
+#if 0
+    Q_FOREACH (QScreen *screen, QGuiApplication::screens())
+        screen->handle()->setPowerState(on
+                                      ? QPlatformScreen::PowerStateOn
+                                      : QPlatformScreen::PowerStateOff);
+#endif
+#else
+    Q_UNUSED(on)
+#endif
 }
 
 void CompositorPrivate::grabCursor(WlCursorTheme::CursorShape shape)
