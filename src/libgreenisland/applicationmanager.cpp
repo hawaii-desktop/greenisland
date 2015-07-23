@@ -28,9 +28,11 @@
 #include <QtCore/QTimer>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
+#include <QtCompositor/private/qwlcompositor_p.h>
 
 #include "applicationmanager.h"
 #include "applicationmanager_p.h"
+#include "compositor.h"
 
 namespace GreenIsland {
 
@@ -140,14 +142,13 @@ void ApplicationManager::quit(const QString &appId)
 {
     Q_D(ApplicationManager);
 
-    Q_FOREACH (pid_t pid, d->appPids[appId]) {
-        if (pid == QCoreApplication::applicationPid())
-            continue;
-
-        ::kill(pid, SIGTERM);
-        QTimer::singleShot(5000, [pid] {
-            ::kill(pid, SIGTERM);
-        });
+    Q_FOREACH (QWaylandClient *client, Compositor::instance()->handle()->clients()) {
+        Q_FOREACH (pid_t pid, d->appPids[appId]) {
+            if (pid == QCoreApplication::applicationPid())
+                continue;
+            if (client->processId() == pid)
+                client->close();
+        }
     }
 }
 
