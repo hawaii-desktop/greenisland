@@ -64,12 +64,8 @@ public:
     enum State {
         //! Compositor is active.
         Active,
-        //! Shell unlock called on activity.
-        Idle,
-        //! No rendering, no frame events.
-        Offscreen,
-        //! Same as CompositorOffscreen, but also set DPMS
-        Sleeping
+        //! Compositor is idle.
+        Idle
     };
 
     virtual ~Compositor();

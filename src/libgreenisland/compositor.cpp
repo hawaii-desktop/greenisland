@@ -151,47 +151,28 @@ void Compositor::setState(Compositor::State state)
 {
     Q_D(Compositor);
 
-    if (state == Compositor::Active && d->state == state) {
+    if (state == d->state)
+        return;
+
+    switch (state) {
+    case Compositor::Active:
+        d->dpms(true);
+        Q_EMIT wake();
         d->idleInhibit = 0;
         d->idleTimer->start();
-        return;
+        break;
+    case Compositor::Idle:
+        d->idleInhibit = 0;
+        d->idleTimer->stop();
+        d->dpms(false);
+        Q_EMIT idle();
+        break;
+    default:
+        break;
     }
 
-    if (d->state != state) {
-        switch (state) {
-        case Compositor::Active:
-            switch (d->state) {
-            case Compositor::Sleeping:
-                d->dpms(true);
-            default:
-                Q_EMIT wake();
-                d->idleInhibit = 0;
-                d->idleTimer->start();
-            }
-            break;
-        case Compositor::Idle:
-            d->idleInhibit = 0;
-            d->idleTimer->stop();
-            Q_EMIT idle();
-            break;
-        case Compositor::Offscreen:
-            switch (d->state) {
-            case Compositor::Sleeping:
-                d->dpms(true);
-            default:
-                d->idleInhibit = 0;
-                d->idleTimer->stop();
-            }
-        case Compositor::Sleeping:
-            d->idleInhibit = 0;
-            d->idleTimer->stop();
-            d->dpms(false);
-            break;
-        }
-
-        d->state = state;
-        Q_EMIT stateChanged();
-    }
+    d->state = state;
+    Q_EMIT stateChanged();
 }
 
 int Compositor::idleInterval() const
