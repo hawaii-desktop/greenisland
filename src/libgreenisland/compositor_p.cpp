@@ -205,7 +205,7 @@ void CompositorPrivate::dpms(bool on)
     Q_FOREACH (QScreen *screen, QGuiApplication::screens())
         screen->handle()->setPowerState(on
                                       ? QPlatformScreen::PowerStateOn
-                                      : QPlatformScreen::PowerStateOff);
+                                      : QPlatformScreen::PowerStateStandby);
 #endif
 #else
     Q_UNUSED(on)
