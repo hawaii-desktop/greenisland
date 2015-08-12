@@ -495,7 +495,7 @@ QPointF ClientWindow::calculateInitialPosition() const
         py = 0;
     }
 
-    return targetOutput->mapToGlobal(QPointF(dy, dy));
+    return static_cast<Output *>(targetOutput)->mapToGlobal(QPointF(dy, dy));
 }
 
 void ClientWindow::initialSetup()
