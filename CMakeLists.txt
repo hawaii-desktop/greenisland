@@ -108,17 +108,19 @@ find_package(X11)
 set_package_properties(X11 PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required for X11 EGL device integration and XWayland")
+add_feature_info("Xcomposite" X11_Xcomposite_FOUND "Required for xcomposite-egl and xcomposite-glx")
 
 # Wayland
 if(NOT ENABLE_ONLY_EGLDEVICEINTEGRATION)
     set(REQUIRED_WAYLAND_VERSION 1.6.0)
-    find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Cursor)
+    find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Cursor Egl)
     set_package_properties(Wayland PROPERTIES
         TYPE REQUIRED
         PURPOSE "Required to build Green Island")
     add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
     add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
     add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for changing cursors")
+    add_feature_info("Wayland-Egl" Wayland_Egl_FOUND "Required for hardware integration")
 endif()
 
 # systemd
