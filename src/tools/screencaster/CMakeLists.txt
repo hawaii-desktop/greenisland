@@ -12,7 +12,7 @@ set(SOURCES
 )
 
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-recorder.xml
     BASENAME greenisland-recorder
     PREFIX greenisland_
 )

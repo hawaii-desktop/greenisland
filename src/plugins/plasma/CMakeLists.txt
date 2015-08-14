@@ -17,12 +17,12 @@ set(SOURCES
 )
 
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-shell.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma/plasma-shell.xml
     BASENAME plasma-shell
     PREFIX org_kde_plasma_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma-effects.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/plasma/plasma-effects.xml
     BASENAME plasma-effects
     PREFIX org_kde_plasma_
 )

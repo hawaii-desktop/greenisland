@@ -83,38 +83,38 @@ if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
 endif()
 
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland.xml
     BASENAME greenisland
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-recorder.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-recorder.xml
     BASENAME greenisland-recorder
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland-screenshooter.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screenshooter.xml
     BASENAME greenisland-screenshooter
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/xdg-shell.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/xdg-shell.xml
     BASENAME xdg-shell
     PREFIX xdg_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk-shell.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk/gtk-shell.xml
     BASENAME gtk
     PREFIX gtk_
 )
 
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
     BASENAME wayland
     PREFIX wl_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/fullscreen-shell.xml
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/fullscreen-shell.xml
     BASENAME fullscreen-shell
     PREFIX _wl_
 )
