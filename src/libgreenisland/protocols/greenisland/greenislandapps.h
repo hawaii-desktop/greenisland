@@ -27,13 +27,13 @@
 #ifndef GREENISLANDAPPS_H
 #define GREENISLANDAPPS_H
 
-#include <QtCompositor/QWaylandGlobalInterface>
+#include "globalinterface.h"
 
 #include "qwayland-server-greenisland.h"
 
 namespace GreenIsland {
 
-class GreenIslandApps : public QWaylandGlobalInterface, public QtWaylandServer::greenisland_applications
+class GreenIslandApps : public GlobalInterface, public QtWaylandServer::greenisland_applications
 {
 public:
     GreenIslandApps();

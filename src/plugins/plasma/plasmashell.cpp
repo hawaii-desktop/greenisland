@@ -24,12 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "surface.h"
+#include "surfaceitem.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwloutput_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "compositor.h"
 #include "plasmashell.h"
@@ -56,11 +55,7 @@ const wl_interface *PlasmaShell::interface() const
 
 void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     add(client, id, version);
-#else
-    add(client, id);
-#endif
 }
 
 QList<PlasmaSurface *> PlasmaShell::surfaces() const
@@ -71,7 +66,7 @@ QList<PlasmaSurface *> PlasmaShell::surfaces() const
 void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
                        wl_resource *surfaceResource)
 {
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     if (!surface) {
         qCWarning(PLASMA_SHELL_PROTOCOL) << "Unable to retrieve surface from resource!";
         return;
@@ -79,7 +74,7 @@ void PlasmaShell::shell_get_surface(Resource *resource, uint32_t id,
 
     PlasmaSurface *plasmaSurface = new PlasmaSurface(this, surface, resource->client(), id);
     m_surfaces.append(plasmaSurface);
-    connect(surface, &QWaylandSurface::surfaceDestroyed, [=] {
+    connect(surface, &Surface::surfaceDestroyed, [=] {
       m_surfaces.removeOne(plasmaSurface);
       plasmaSurface->deleteLater();
     });

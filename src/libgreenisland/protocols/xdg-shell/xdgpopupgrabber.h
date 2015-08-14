@@ -27,16 +27,16 @@
 #ifndef XDGPOPUPGRABBER_H
 #define XDGPOPUPGRABBER_H
 
-#include <QtCompositor/private/qwlpointer_p.h>
+#include "wayland_wrapper/qwlpointer_p.h"
 
 namespace GreenIsland {
 
 class XdgPopup;
 
-class XdgPopupGrabber : public QtWayland::PointerGrabber
+class XdgPopupGrabber : public GreenIsland::PointerGrabber
 {
 public:
-    explicit XdgPopupGrabber(QtWayland::InputDevice *inputDevice);
+    explicit XdgPopupGrabber(GreenIsland::WlInputDevice *inputDevice);
 
     uint32_t serial() const;
 
@@ -48,7 +48,7 @@ public:
     void button(uint32_t time, Qt::MouseButton button, uint32_t state) Q_DECL_OVERRIDE;
 
 private:
-    QtWayland::InputDevice *m_inputDevice;
+    GreenIsland::WlInputDevice *m_inputDevice;
     wl_client *m_client;
     QList<XdgPopup *> m_popupSurfaces;
     bool m_initialUp;

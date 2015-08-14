@@ -36,6 +36,6 @@ void AbstractPlugin::addGlobalInterfaces()
 {
 }
 
-}
+} // namespace GreenIsland
 
 #include "moc_abstractplugin.cpp"

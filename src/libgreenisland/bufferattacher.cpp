@@ -49,7 +49,7 @@
 namespace GreenIsland {
 
 BufferAttacher::BufferAttacher()
-    : QWaylandBufferAttacher()
+    : AbstractBufferAttacher()
     , shmTexture(Q_NULLPTR)
 {
 }
@@ -59,7 +59,7 @@ BufferAttacher::~BufferAttacher()
     delete shmTexture;
 }
 
-void BufferAttacher::attach(const QWaylandBufferRef &ref)
+void BufferAttacher::attach(const BufferRef &ref)
 {
     if (bufferRef) {
         if (bufferRef.isShm()) {

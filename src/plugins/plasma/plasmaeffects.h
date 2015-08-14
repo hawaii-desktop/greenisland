@@ -28,7 +28,8 @@
 #define PLASMAEFFECTS_H
 
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-plasma-effects.h"
 
@@ -38,7 +39,7 @@ namespace GreenIsland {
 
 class PlasmaShell;
 
-class PlasmaEffects : public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_effects
+class PlasmaEffects : public GlobalInterface, public QtWaylandServer::org_kde_plasma_effects
 {
 public:
     PlasmaEffects(PlasmaShell *shell);

@@ -28,7 +28,8 @@
 #define GTKSHELL_H
 
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-gtk.h"
 
@@ -37,7 +38,7 @@ Q_DECLARE_LOGGING_CATEGORY(GTKSHELL_TRACE)
 
 namespace GreenIsland {
 
-class GtkShellGlobal : public QObject, public QWaylandGlobalInterface
+class GtkShellGlobal : public QObject, public GlobalInterface
 {
 public:
     explicit GtkShellGlobal(QObject *parent = 0);

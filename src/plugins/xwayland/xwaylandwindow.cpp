@@ -49,8 +49,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandSurfaceView>
+#include "abstractcompositor.h"
+#include "surfaceview.h"
 
 #include <GreenIsland/ClientWindow>
 #include <GreenIsland/WindowView>
@@ -128,12 +128,12 @@ XWaylandWindow::~XWaylandWindow()
     m_wm->removeWindow(m_window);
 }
 
-void XWaylandWindow::setSurface(QWaylandSurface *surface)
+void XWaylandWindow::setSurface(Surface *surface)
 {
     // A XWaylandWindow may have different surfaces assigned
     // during its life, disconnect everything before assigning it
     if (m_surface) {
-        disconnect(m_surface.data(), &QWaylandSurface::surfaceDestroyed,
+        disconnect(m_surface.data(), &Surface::surfaceDestroyed,
                    this, &XWaylandWindow::surfaceDestroyed);
         if (m_surfaceInterface) {
             m_surface.data()->removeInterface(m_surfaceInterface);
@@ -156,7 +156,7 @@ void XWaylandWindow::setSurface(QWaylandSurface *surface)
 
     // Connect the new surface and create the interface
     m_surface = surface;
-    connect(m_surface.data(), &QWaylandSurface::surfaceDestroyed,
+    connect(m_surface.data(), &Surface::surfaceDestroyed,
             this, &XWaylandWindow::surfaceDestroyed);
     if (m_surfaceInterface)
         m_surfaceInterface->deleteLater();
@@ -325,7 +325,7 @@ void XWaylandWindow::requestResize(const QSize &size)
         return;
 
     m_surface->requestSize(size);
-    Q_FOREACH (QWaylandSurfaceView *surfView, m_surface->views()) {
+    Q_FOREACH (SurfaceView *surfView, m_surface->views()) {
         WindowView *view = static_cast<WindowView *>(surfView);
         if (view) {
             view->setResizeSurfaceToItem(true);
@@ -366,7 +366,7 @@ void XWaylandWindow::repaint()
 {
     if (!m_surface || !m_surface->compositor())
         return;
-    m_surface->compositor()->sendFrameCallbacks(QList<QWaylandSurface *>() << m_surface);
+    m_surface->compositor()->sendFrameCallbacks(QList<Surface *>() << m_surface);
 }
 
 XWaylandWindow::operator xcb_window_t() const

@@ -24,10 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlregion_p.h>
+#include <GreenIsland/Region>
+
+#include "abstractoutput.h"
+#include "surface.h"
 
 #include "plasmaeffects.h"
 #include "plasmashell.h"
@@ -49,11 +49,7 @@ const wl_interface *PlasmaEffects::interface() const
 
 void PlasmaEffects::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     add(client, id, version);
-#else
-    add(client, id);
-#endif
 }
 
 void PlasmaEffects::effects_slide(Resource *resource,
@@ -64,13 +60,13 @@ void PlasmaEffects::effects_slide(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QWaylandOutput *output = QWaylandOutput::fromResource(outputResource);
+    AbstractOutput *output = AbstractOutput::fromResource(outputResource);
     if (!output) {
         qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get output from resource";
         return;
     }
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     if (!surface) {
         qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
@@ -112,13 +108,13 @@ void PlasmaEffects::effects_set_blur_behind_region(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     if (!surface) {
         qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
     }
 
-    QtWayland::Region *r = QtWayland::Region::fromResource(regionResource);
+    Region *r = Region::fromResource(regionResource);
     r->region();
 
     // TODO: Set blur behind region on views
@@ -138,13 +134,13 @@ void PlasmaEffects::effects_set_contrast_region(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     if (!surface) {
         qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get surface from resource";
         return;
     }
 
-    QtWayland::Region *r = QtWayland::Region::fromResource(regionResource);
+    Region *r = Region::fromResource(regionResource);
     r->region();
 
     // TODO: Set contrast on views

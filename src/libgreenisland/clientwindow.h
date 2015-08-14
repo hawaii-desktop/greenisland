@@ -34,13 +34,13 @@
 #include <QtCore/QRectF>
 #include <QtCore/QSizeF>
 
-#include <QtCompositor/QWaylandSurfaceOp>
+#include "surfaceinterface.h"
 
 #include <greenisland/greenisland_export.h>
 
-class QWaylandOutput;
-class QWaylandSurface;
-class QWaylandSurfaceItem;
+class AbstractOutput;
+class Surface;
+class SurfaceItem;
 
 namespace GreenIsland {
 
@@ -57,13 +57,13 @@ class GREENISLAND_EXPORT ClientWindow : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(uint id READ id CONSTANT)
-    Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
+    Q_PROPERTY(Surface *surface READ surface CONSTANT)
     Q_PROPERTY(Type type READ type NOTIFY typeChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
     Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
     Q_PROPERTY(ClientWindow *parentWindow READ parentWindow NOTIFY parentWindowChanged)
-    Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(AbstractOutput *output READ output NOTIFY outputChanged)
     Q_PROPERTY(qreal x READ x WRITE setX NOTIFY positionChanged)
     Q_PROPERTY(qreal y READ y WRITE setY NOTIFY positionChanged)
     Q_PROPERTY(QPointF position READ position WRITE setPosition NOTIFY positionChanged)
@@ -83,16 +83,16 @@ public:
     };
 
     enum CustomSurfaceOperation {
-        Move = QWaylandSurfaceOp::UserType + 1,
+        Move = SurfaceOperation::UserType + 1,
         StopMove
     };
 
-    ClientWindow(QWaylandSurface *surface, QObject *parent = 0);
+    ClientWindow(Surface *surface, QObject *parent = 0);
     ~ClientWindow();
 
     uint id() const;
 
-    QWaylandSurface *surface() const;
+    Surface *surface() const;
 
     Type type() const;
     QString title() const;
@@ -101,7 +101,7 @@ public:
 
     ClientWindow *parentWindow() const;
 
-    QWaylandOutput *output() const;
+    AbstractOutput *output() const;
 
     Q_INVOKABLE WindowView *viewForOutput(Output *output);
     Q_INVOKABLE WindowView *parentViewForOutput(Output *output);
@@ -178,7 +178,7 @@ private:
     bool m_fullScreen;
     bool m_initialSetup;
     Compositor *m_compositor;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     QPointer<ClientWindow> m_parentWindow;
     QHash<Output *, WindowView *> m_views;
 
@@ -212,8 +212,8 @@ private Q_SLOTS:
     void surfaceUnmapped();
     void surfaceAppIdChanged();
     void surfaceSizeChanged();
-    void setType(QWaylandSurface::WindowType windowType);
-    void parentSurfaceChanged(QWaylandSurface *newParent, QWaylandSurface *oldParent);
+    void setType(Surface::WindowType windowType);
+    void parentSurfaceChanged(Surface *newParent, Surface *oldParent);
 
     void outputAvailableGeometryChanged();
 };

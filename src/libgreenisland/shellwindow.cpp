@@ -32,7 +32,7 @@ namespace GreenIsland {
 
 uint ShellWindow::m_id = 0;
 
-ShellWindow::ShellWindow(QWaylandSurface *surface, QObject *parent)
+ShellWindow::ShellWindow(Surface *surface, QObject *parent)
     : QObject(parent)
     , m_role(UnknownRole)
     , m_flags(0)
@@ -45,13 +45,13 @@ ShellWindow::ShellWindow(QWaylandSurface *surface, QObject *parent)
     m_id++;
 
     // Create view
-    m_view = new QWaylandSurfaceItem(static_cast<QWaylandQuickSurface *>(surface));
+    m_view = new SurfaceItem(static_cast<QuickSurface *>(surface));
 
     // Connect to surface signals
-    connect(surface, &QWaylandSurface::mapped, [=] {
+    connect(surface, &Surface::mapped, [=] {
         registerWindow();
     });
-    connect(surface, &QWaylandSurface::unmapped, [=] {
+    connect(surface, &Surface::unmapped, [=] {
         unregisterWindow(false);
     });
 }
@@ -67,17 +67,17 @@ uint ShellWindow::id() const
     return m_id;
 }
 
-QWaylandSurface *ShellWindow::surface() const
+Surface *ShellWindow::surface() const
 {
     return m_surface;
 }
 
-QWaylandSurfaceItem *ShellWindow::view() const
+SurfaceItem *ShellWindow::view() const
 {
     return m_view;
 }
 
-QWaylandOutput *ShellWindow::output() const
+AbstractOutput *ShellWindow::output() const
 {
     return m_surface->mainOutput();
 }

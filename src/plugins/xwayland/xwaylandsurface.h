@@ -27,7 +27,7 @@
 #ifndef XWAYLANDSURFACE_H
 #define XWAYLANDSURFACE_H
 
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surfaceinterface.h"
 
 #include "xwaylandwindow.h"
 
@@ -35,7 +35,7 @@ namespace GreenIsland {
 
 class ClientWindow;
 
-class XWaylandSurface : public QObject, public QWaylandSurfaceInterface
+class XWaylandSurface : public QObject, public SurfaceInterface
 {
 public:
     XWaylandSurface(XWaylandWindow *window);
@@ -47,10 +47,10 @@ public:
 
     void setAppId(const QString &id);
     void setTitle(const QString &title);
-    void setType(const QWaylandSurface::WindowType &type);
+    void setType(const Surface::WindowType &type);
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
 private:
     ClientWindow *m_window;

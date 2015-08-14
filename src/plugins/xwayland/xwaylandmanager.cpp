@@ -51,7 +51,8 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QtMath>
-#include <QtCompositor/QWaylandSurface>
+
+#include "surface.h"
 
 #include <GreenIsland/ClientWindow>
 
@@ -748,7 +749,7 @@ void XWaylandManager::handleState(XWaylandWindow *window, xcb_client_message_eve
             if (window->clientWindow())
                 window->clientWindow()->setFullScreen(true);
         } else if (window->m_surfaceInterface) {
-            window->m_surfaceInterface->setType(QWaylandSurface::Toplevel);
+            window->m_surfaceInterface->setType(Surface::Toplevel);
         }
     } else {
         if (property == Xcb::resources()->atoms->net_wm_state_maximized_horz &&
@@ -765,7 +766,7 @@ void XWaylandManager::handleState(XWaylandWindow *window, xcb_client_message_eve
                 if (window->clientWindow())
                     window->clientWindow()->maximize();
             } else if (window->m_surfaceInterface) {
-                window->m_surfaceInterface->setType(QWaylandSurface::Toplevel);
+                window->m_surfaceInterface->setType(Surface::Toplevel);
             }
         }
     }
@@ -782,7 +783,7 @@ void XWaylandManager::handleSurfaceId(XWaylandWindow *window, xcb_client_message
     wl_resource *resource = wl_client_get_object(m_server->client(), id);
     if (resource) {
         window->setSurfaceId(0);
-        window->setSurface(QWaylandSurface::fromResource(resource));
+        window->setSurface(Surface::fromResource(resource));
     } else {
         window->setSurfaceId(id);
         m_unpairedWindows.append(window);

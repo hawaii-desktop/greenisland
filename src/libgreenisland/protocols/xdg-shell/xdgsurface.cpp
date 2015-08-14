@@ -25,14 +25,15 @@
  ***************************************************************************/
 
 #include <QtQuick/QQuickItem>
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+
+#include "abstractcompositor.h"
+#include "wayland_wrapper/qwlcompositor_p.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwlpointer_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "clientwindow.h"
+#include "inputdevice.h"
 #include "output.h"
 #include "windowview.h"
 #include "xdgsurface.h"
@@ -41,10 +42,10 @@
 
 namespace GreenIsland {
 
-XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
+XdgSurface::XdgSurface(XdgShell *shell, Surface *surface,
                        wl_client *client, uint32_t id, uint32_t version)
     : QObject(shell)
-    , QWaylandSurfaceInterface(surface)
+    , SurfaceInterface(surface)
     , QtWaylandServer::xdg_surface(client, id, version)
     , m_shell(shell)
     , m_surface(surface)
@@ -59,7 +60,7 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     // This is a toplevel window by default
     m_surface->handle()->setTransientParent(Q_NULLPTR);
     m_surface->handle()->setTransientOffset(0, 0);
-    setSurfaceType(QWaylandSurface::Toplevel);
+    setSurfaceType(Surface::Toplevel);
 
     // Create client window
     m_window = new ClientWindow(surface, this);
@@ -75,7 +76,7 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface,
     }, Qt::QueuedConnection);
 
     // Surface events
-    connect(m_surface, &QWaylandSurface::configure, this, [this](bool hasBuffer) {
+    connect(m_surface, &Surface::configure, this, [this](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     }, Qt::QueuedConnection);
@@ -99,7 +100,7 @@ uint32_t XdgSurface::nextSerial() const
     return wl_display_next_serial(m_surface->handle()->compositor()->display()->handle());
 }
 
-QWaylandSurface::WindowType XdgSurface::type() const
+Surface::WindowType XdgSurface::type() const
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
@@ -113,7 +114,7 @@ XdgSurface::State XdgSurface::state() const
     return m_state;
 }
 
-QWaylandSurface *XdgSurface::surface() const
+Surface *XdgSurface::surface() const
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
@@ -224,24 +225,24 @@ void XdgSurface::requestConfigure(const XdgSurface::Changes &changes)
     wl_array_release(&states);
 }
 
-bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
+bool XdgSurface::runOperation(SurfaceOperation *op)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
     qCDebug(XDGSHELL_TRACE) << "Run operation" << op->type();
 
     switch (op->type()) {
-    case QWaylandSurfaceOp::Resize: {
+    case SurfaceOperation::Resize: {
         Changes changes;
         changes.active = m_window->isActive();
         changes.resizing = true;
-        changes.size = QSizeF(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
+        changes.size = QSizeF(static_cast<SurfaceResizeOperation *>(op)->size());
         requestConfigure(changes);
         return true;
     }
-    case QWaylandSurfaceOp::Ping:
+    case SurfaceOperation::Ping:
         m_shell->pingSurface(this);
         return true;
-    case QWaylandSurfaceOp::Close:
+    case SurfaceOperation::Close:
         send_close();
         return true;
     case ClientWindow::Move:
@@ -249,8 +250,8 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
         return true;
     case ClientWindow::StopMove:
         if (m_moveGrabber) {
-            QWaylandInputDevice *device = m_surface->compositor()->defaultInputDevice();
-            QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+            InputDevice *device = m_surface->compositor()->defaultInputDevice();
+            GreenIsland::WlPointer *pointer = device->handle()->pointerDevice();
             pointer->sendButton(0, Qt::LeftButton, 0);
         }
         return true;
@@ -285,14 +286,14 @@ void XdgSurface::surface_set_parent(Resource *resource, wl_resource *parentResou
     // Assign transient parent
     if (parentResource) {
         // Set surface type
-        setSurfaceType(QWaylandSurface::Transient);
+        setSurfaceType(Surface::Transient);
 
-        QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
+        Surface *parent = Surface::fromResource(parentResource);
         m_surface->handle()->setTransientParent(parent->handle());
     } else {
         // Some applications such as gnome-cloks send a set_parent(nil), in
         // this case we assume it's a toplevel window
-        setSurfaceType(QWaylandSurface::Toplevel);
+        setSurfaceType(Surface::Toplevel);
         m_surface->handle()->setTransientParent(Q_NULLPTR);
     }
 }
@@ -332,7 +333,7 @@ void XdgSurface::surface_move(Resource *resource, wl_resource *seat, uint32_t se
     Q_UNUSED(resource)
     Q_UNUSED(serial)
 
-    moveWindow(QtWayland::InputDevice::fromSeatResource(seat)->handle());
+    moveWindow(GreenIsland::WlInputDevice::fromSeatResource(seat)->handle());
 }
 
 void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t serial, uint32_t edges)
@@ -367,8 +368,8 @@ void XdgSurface::surface_resize(Resource *resource, wl_resource *seat, uint32_t 
 
     m_resizeGrabber = new XdgSurfaceResizeGrabber(this);
 
-    QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
-    QtWayland::Pointer *pointer = device->pointerDevice();
+    GreenIsland::WlInputDevice *device = GreenIsland::WlInputDevice::fromSeatResource(seat);
+    GreenIsland::WlPointer *pointer = device->pointerDevice();
 
     m_resizeGrabber->m_pt = pointer->position();
     m_resizeGrabber->m_resizeEdges = static_cast<resize_edge>(edges);
@@ -439,7 +440,7 @@ void XdgSurface::surface_set_maximized(Resource *resource)
     Q_UNUSED(resource)
 
     // Only top level windows can be maximized
-    if (m_surface->windowType() != QWaylandSurface::Toplevel)
+    if (m_surface->windowType() != Surface::Toplevel)
         return;
 
     // Ignore if already maximized
@@ -489,7 +490,7 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
     Q_UNUSED(resource)
 
     // Only top level windows can be full screen
-    if (m_surface->windowType() != QWaylandSurface::Toplevel)
+    if (m_surface->windowType() != Surface::Toplevel)
         return;
 
     // Ignore if already full screen
@@ -497,9 +498,9 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
         return;
 
     // Determine output (either specified output or main output)
-    QWaylandOutput *output = m_window->output();
+    AbstractOutput *output = m_window->output();
     if (outputResource)
-        output = QWaylandOutput::fromResource(outputResource);
+        output = AbstractOutput::fromResource(outputResource);
 
     // Ask for a resize on the output and set pending state,
     // we'll complete the operation as soon as we receive the ACK
@@ -543,7 +544,7 @@ void XdgSurface::surface_set_minimized(Resource *resource)
     m_window->minimize();
 }
 
-void XdgSurface::moveWindow(QWaylandInputDevice *device)
+void XdgSurface::moveWindow(InputDevice *device)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
@@ -556,7 +557,7 @@ void XdgSurface::moveWindow(QWaylandInputDevice *device)
     if (m_state == FullScreen)
         return;
 
-    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+    GreenIsland::WlPointer *pointer = device->handle()->pointerDevice();
 
     m_moveGrabber = new XdgSurfaceMoveGrabber(this, pointer->position() - m_window->position());
     pointer->startGrab(m_moveGrabber);

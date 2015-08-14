@@ -29,9 +29,11 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+
+#include "globalinterface.h"
+#include "surface.h"
+
+#include "qwayland-server-wayland.h"
 
 Q_DECLARE_LOGGING_CATEGORY(WLSUBCOMPOSITOR_TRACE)
 
@@ -39,7 +41,7 @@ namespace GreenIsland {
 
 class WlSubSurface;
 
-class WlSubCompositorGlobal : public QObject, public QWaylandGlobalInterface
+class WlSubCompositorGlobal : public QObject, public GlobalInterface
 {
 public:
     explicit WlSubCompositorGlobal(QObject *parent = 0);
@@ -69,8 +71,8 @@ protected:
 private:
     QList<WlSubSurface *> m_subSurfaces;
 
-    WlSubSurface *toSubSurface(QWaylandSurface *surface);
-    QWaylandSurface *mainSurface(QWaylandSurface *surface);
+    WlSubSurface *toSubSurface(Surface *surface);
+    Surface *mainSurface(Surface *surface);
 
     friend class WlSubSurface;
 };

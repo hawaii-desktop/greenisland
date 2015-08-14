@@ -27,8 +27,7 @@
 #ifndef GREENISLAND_OUTPUT_H
 #define GREENISLAND_OUTPUT_H
 
-#include <QtCompositor/QWaylandQuickOutput>
-#include <QtCompositor/QtCompositorVersion>
+#include "quickoutput.h"
 
 #include <greenisland/greenisland_export.h>
 
@@ -40,7 +39,7 @@ class OutputPrivate;
 class OutputWindow;
 class NativeScreenBackend;
 
-class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
+class GREENISLAND_EXPORT Output : public QuickOutput
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)

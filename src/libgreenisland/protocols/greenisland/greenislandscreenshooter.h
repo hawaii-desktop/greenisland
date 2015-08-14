@@ -28,7 +28,8 @@
 #define GREENISLANDSCREENSHOOTER_H
 
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-greenisland-screenshooter.h"
 
@@ -36,7 +37,7 @@ Q_DECLARE_LOGGING_CATEGORY(SCREENSHOOTER_PROTOCOL)
 
 namespace GreenIsland {
 
-class GreenIslandScreenshooterGlobal : public QObject, public QWaylandGlobalInterface
+class GreenIslandScreenshooterGlobal : public QObject, public GlobalInterface
 {
 public:
     explicit GreenIslandScreenshooterGlobal(QObject *parent = 0);

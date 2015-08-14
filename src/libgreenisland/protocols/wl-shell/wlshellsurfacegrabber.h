@@ -27,13 +27,13 @@
 #ifndef WLSHELLSURFACEGRABBER_H
 #define WLSHELLSURFACEGRABBER_H
 
-#include <QtCompositor/private/qwlpointer_p.h>
+#include "wayland_wrapper/qwlpointer_p.h"
 
 #include "wlshellsurface.h"
 
 namespace GreenIsland {
 
-class WlShellSurfaceGrabber : public QtWayland::PointerGrabber
+class WlShellSurfaceGrabber : public GreenIsland::PointerGrabber
 {
 public:
     explicit WlShellSurfaceGrabber(WlShellSurface *shellSurface);

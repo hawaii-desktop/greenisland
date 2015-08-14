@@ -27,25 +27,25 @@
 #ifndef GTKSURFACE_H
 #define GTKSURFACE_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surface.h"
+#include "surfaceinterface.h"
 
 #include "gtkshell.h"
 
 namespace GreenIsland {
 
-class GtkSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::gtk_surface
+class GtkSurface : public QObject, public SurfaceInterface, public QtWaylandServer::gtk_surface
 {
     Q_OBJECT
 public:
-    GtkSurface(GtkShell *shell, QWaylandSurface *surface,
+    GtkSurface(GtkShell *shell, Surface *surface,
                wl_client *client, uint32_t id, uint32_t version);
     ~GtkSurface();
 
     QString applicationId() { return m_applicationId; }
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 

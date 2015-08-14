@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
+#include "surface.h"
 
 #include "gtkshell.h"
 #include "gtksurface.h"
@@ -83,7 +83,7 @@ void GtkShell::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_resourc
 {
     qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
     new GtkSurface(this, surface, resource->client(), id, resource->version());

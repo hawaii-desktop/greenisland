@@ -24,14 +24,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "abstractcompositor.h"
+#include "wayland_wrapper/qwlcompositor_p.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwlpointer_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "clientwindow.h"
+#include "inputdevice.h"
 #include "output.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacemovegrabber.h"
@@ -41,10 +41,10 @@
 
 namespace GreenIsland {
 
-WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
+WlShellSurface::WlShellSurface(WlShell *shell, Surface *surface,
                                wl_client *client, uint32_t id, uint32_t version)
     : QObject(shell)
-    , QWaylandSurfaceInterface(surface)
+    , SurfaceInterface(surface)
     , QtWaylandServer::wl_shell_surface(client, id, version)
     , m_shell(shell)
     , m_surface(surface)
@@ -61,13 +61,13 @@ WlShellSurface::WlShellSurface(WlShell *shell, QWaylandSurface *surface,
     m_window = new ClientWindow(surface, this);
 
     // Surface events
-    connect(m_surface, &QWaylandSurface::configure, this, [this](bool hasBuffer) {
+    connect(m_surface, &Surface::configure, this, [this](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     });
-    connect(m_surface, &QWaylandSurface::mapped, this, [this]() {
+    connect(m_surface, &Surface::mapped, this, [this]() {
         // Popup behavior
-        if (m_surface->windowType() == QWaylandSurface::Popup) {
+        if (m_surface->windowType() == Surface::Popup) {
             if (m_popupGrabber->serial() == m_popupSerial) {
                 m_popupGrabber->addPopup(this);
             } else {
@@ -94,7 +94,7 @@ WlShellSurface::State WlShellSurface::state() const
     return m_state;
 }
 
-QWaylandSurface *WlShellSurface::surface() const
+Surface *WlShellSurface::surface() const
 {
     return m_surface;
 }
@@ -162,19 +162,19 @@ void WlShellSurface::resetResizeGrab()
         Q_EMIT m_window->resizeFinished();
 }
 
-bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
+bool WlShellSurface::runOperation(SurfaceOperation *op)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
     qCDebug(WLSHELL_TRACE) << "Run operation" << op->type();
 
     switch (op->type()) {
-    case QWaylandSurfaceOp::Ping:
-        ping(static_cast<QWaylandSurfacePingOp *>(op)->serial());
+    case SurfaceOperation::Ping:
+        ping(static_cast<SurfacePingOperation *>(op)->serial());
         return true;
-    case QWaylandSurfaceOp::Resize:
-        requestResize(static_cast<QWaylandSurfaceResizeOp *>(op)->size());
+    case SurfaceOperation::Resize:
+        requestResize(static_cast<SurfaceResizeOperation *>(op)->size());
         return true;
-    case QWaylandSurfaceOp::Close:
+    case SurfaceOperation::Close:
         m_surface->compositor()->handle()->destroySurface(m_surface->handle());
         return true;
     case ClientWindow::Move:
@@ -182,8 +182,8 @@ bool WlShellSurface::runOperation(QWaylandSurfaceOp *op)
         return true;
     case ClientWindow::StopMove:
         if (m_moveGrabber) {
-            QWaylandInputDevice *device = m_surface->compositor()->defaultInputDevice();
-            QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+            InputDevice *device = m_surface->compositor()->defaultInputDevice();
+            GreenIsland::WlPointer *pointer = device->handle()->pointerDevice();
             pointer->sendButton(0, Qt::LeftButton, 0);
         }
         return true;
@@ -229,7 +229,7 @@ void WlShellSurface::shell_surface_move(Resource *resource, wl_resource *seat,
     Q_UNUSED(resource)
     Q_UNUSED(serial)
 
-    moveWindow(QtWayland::InputDevice::fromSeatResource(seat)->handle());
+    moveWindow(GreenIsland::WlInputDevice::fromSeatResource(seat)->handle());
 }
 
 void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
@@ -265,8 +265,8 @@ void WlShellSurface::shell_surface_resize(Resource *resource, wl_resource *seat,
 
     m_resizeGrabber = new WlShellSurfaceResizeGrabber(this);
 
-    QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
-    QtWayland::Pointer *pointer = device->pointerDevice();
+    GreenIsland::WlInputDevice *device = GreenIsland::WlInputDevice::fromSeatResource(seat);
+    GreenIsland::WlPointer *pointer = device->pointerDevice();
 
     m_resizeGrabber->m_pt = pointer->position();
     m_resizeGrabber->m_resizeEdges = static_cast<resize>(edges);
@@ -290,7 +290,7 @@ void WlShellSurface::shell_surface_set_toplevel(Resource *resource)
     m_surface->handle()->setTransientParent(Q_NULLPTR);
     m_surface->handle()->setTransientOffset(0, 0);
 
-    setSurfaceType(QWaylandSurface::Toplevel);
+    setSurfaceType(Surface::Toplevel);
 
     m_surface->setVisibility(QWindow::Windowed);
 
@@ -316,14 +316,14 @@ void WlShellSurface::shell_surface_set_transient(Resource *resource, wl_resource
 
     Q_UNUSED(resource)
 
-    QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parentResource);
+    Surface *parentSurface = Surface::fromResource(parentResource);
     m_surface->handle()->setTransientParent(parentSurface->handle());
     m_surface->handle()->setTransientOffset(x, y);
 
     if (flags & QtWaylandServer::wl_shell_surface::transient_inactive)
         m_surface->handle()->setTransientInactive(true);
 
-    setSurfaceType(QWaylandSurface::Transient);
+    setSurfaceType(Surface::Transient);
 
     m_surface->setVisibility(QWindow::AutomaticVisibility);
 }
@@ -341,8 +341,8 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     if (!m_window)
         return;
 
-    QWaylandOutput *output = outputResource
-            ? QWaylandOutput::fromResource(outputResource)
+    AbstractOutput *output = outputResource
+            ? AbstractOutput::fromResource(outputResource)
             : m_window->output();
 
     // Save global geometry before resizing, it will be restored with the next
@@ -377,15 +377,15 @@ void WlShellSurface::shell_surface_set_popup(Resource *resource, wl_resource *se
     Q_UNUSED(resource)
     Q_UNUSED(flags)
 
-    QtWayland::InputDevice *device = QtWayland::InputDevice::fromSeatResource(seat);
+    GreenIsland::WlInputDevice *device = GreenIsland::WlInputDevice::fromSeatResource(seat);
 
     m_popupGrabber = m_shell->popupGrabberForDevice(device);
     m_popupSerial = serial;
 
-    m_surface->handle()->setTransientParent(QtWayland::Surface::fromResource(parent));
+    m_surface->handle()->setTransientParent(GreenIsland::WlSurface::fromResource(parent));
     m_surface->handle()->setTransientOffset(x, y);
 
-    setSurfaceType(QWaylandSurface::Popup);
+    setSurfaceType(Surface::Popup);
 
     m_surface->setVisibility(QWindow::AutomaticVisibility);
 }
@@ -397,7 +397,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     Q_UNUSED(resource)
 
     // Only top level windows can be maximized
-    if (m_surface->windowType() != QWaylandSurface::Toplevel)
+    if (m_surface->windowType() != Surface::Toplevel)
         return;
 
     // Ignore if already maximized
@@ -408,8 +408,8 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     if (!m_window)
         return;
 
-    QWaylandOutput *output = outputResource
-            ? QWaylandOutput::fromResource(outputResource)
+    AbstractOutput *output = outputResource
+            ? AbstractOutput::fromResource(outputResource)
             : m_window->output();
 
     // Save global geometry before resizing, it will be restored with the next
@@ -456,7 +456,7 @@ void WlShellSurface::ping(uint32_t serial)
     send_ping(serial);
 }
 
-void WlShellSurface::moveWindow(QWaylandInputDevice *device)
+void WlShellSurface::moveWindow(InputDevice *device)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
@@ -473,7 +473,7 @@ void WlShellSurface::moveWindow(QWaylandInputDevice *device)
     if (!m_window)
         return;
 
-    QtWayland::Pointer *pointer = device->handle()->pointerDevice();
+    GreenIsland::WlPointer *pointer = device->handle()->pointerDevice();
 
     m_moveGrabber = new WlShellSurfaceMoveGrabber(this, pointer->position() - m_window->position());
     pointer->startGrab(m_moveGrabber);

@@ -27,30 +27,30 @@
 #ifndef PLASMASURFACE_H
 #define PLASMASURFACE_H
 
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surfaceinterface.h"
 
 #include "plasmashell.h"
 #include "shellwindow.h"
 
 namespace GreenIsland {
 
-class PlasmaSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::org_kde_plasma_surface
+class PlasmaSurface : public QObject, public SurfaceInterface, public QtWaylandServer::org_kde_plasma_surface
 {
     Q_OBJECT
 public:
-    PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
+    PlasmaSurface(PlasmaShell *shell, Surface *surface,
                   wl_client *client, uint32_t id);
     ~PlasmaSurface();
 
     ShellWindow *window() const;
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
 private:
     Compositor *m_compositor;
     PlasmaShell *m_shell;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     ShellWindow *m_window;
     bool m_deleting;
 

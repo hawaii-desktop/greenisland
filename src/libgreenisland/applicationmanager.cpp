@@ -26,9 +26,10 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTimer>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlcompositor_p.h>
+
+#include "clientconnection.h"
+#include "surface.h"
+#include "wayland_wrapper/qwlcompositor_p.h"
 
 #include "applicationmanager.h"
 #include "applicationmanager_p.h"
@@ -47,12 +48,12 @@ ApplicationManagerPrivate::ApplicationManagerPrivate(ApplicationManager *parent)
 {
 }
 
-void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const QString &appId)
+void ApplicationManagerPrivate::registerSurface(Surface *surface, const QString &appId)
 {
     Q_Q(ApplicationManager);
 
     // Only top level windows qualify as applications
-    if (surface->windowType() != QWaylandSurface::Toplevel)
+    if (surface->windowType() != Surface::Toplevel)
         return;
 
     // In case the client goes away quickly
@@ -63,13 +64,13 @@ void ApplicationManagerPrivate::registerSurface(QWaylandSurface *surface, const 
     if (surfaces.contains(appId))
         surfaces[appId].append(surface);
     else
-        surfaces.insert(appId, QList<QWaylandSurface *>() << surface);
+        surfaces.insert(appId, QList<Surface *>() << surface);
     surfacePids[surface] = surface->client()->processId();
 
     Q_EMIT q->applicationAdded(appId, surface->client()->processId());
 }
 
-void ApplicationManagerPrivate::unregisterSurface(QWaylandSurface *surface, const QString &appId)
+void ApplicationManagerPrivate::unregisterSurface(Surface *surface, const QString &appId)
 {
     Q_Q(ApplicationManager);
 
@@ -128,7 +129,7 @@ void ApplicationManager::quit(const QString &appId)
     if (!d->surfaces.contains(appId))
         return;
 
-    Q_FOREACH (QWaylandSurface *surface, d->surfaces[appId])
+    Q_FOREACH (Surface *surface, d->surfaces[appId])
         Compositor::instance()->destroyClientForSurface(surface);
 }
 

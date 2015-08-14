@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include <GreenIsland/ClientWindow>
 
@@ -35,18 +35,18 @@ namespace GreenIsland {
 
 XWaylandSurface::XWaylandSurface(XWaylandWindow *window)
     : QObject(window)
-    , QWaylandSurfaceInterface(window->surface())
+    , SurfaceInterface(window->surface())
 {
     // This is a toplevel window by default
     surface()->handle()->setTransientParent(Q_NULLPTR);
     surface()->handle()->setTransientOffset(0, 0);
-    setSurfaceType(QWaylandSurface::Toplevel);
+    setSurfaceType(Surface::Toplevel);
 
     // Create client window
     m_window = new ClientWindow(surface(), this);
 
     // Surface events
-    connect(surface(), &QWaylandSurface::configure, this, [this](bool hasBuffer) {
+    connect(surface(), &Surface::configure, this, [this](bool hasBuffer) {
         surface()->setMapped(hasBuffer);
     });
 }
@@ -58,21 +58,21 @@ XWaylandSurface::~XWaylandSurface()
 void XWaylandSurface::setAppId(const QString &id)
 {
     qCDebug(XWAYLAND_TRACE) << "Set appId to" << id;
-    QWaylandSurfaceInterface::setSurfaceClassName(id);
+    SurfaceInterface::setSurfaceClassName(id);
 }
 
 void XWaylandSurface::setTitle(const QString &title)
 {
     qCDebug(XWAYLAND_TRACE) << "Set title to" << title;
-    QWaylandSurfaceInterface::setSurfaceTitle(title);
+    SurfaceInterface::setSurfaceTitle(title);
 }
 
-void XWaylandSurface::setType(const QWaylandSurface::WindowType &type)
+void XWaylandSurface::setType(const Surface::WindowType &type)
 {
-    QWaylandSurfaceInterface::setSurfaceType(type);
+    SurfaceInterface::setSurfaceType(type);
 }
 
-bool XWaylandSurface::runOperation(QWaylandSurfaceOp *op)
+bool XWaylandSurface::runOperation(SurfaceOperation *op)
 {
     Q_UNUSED(op)
     return false;

@@ -28,7 +28,7 @@
 #define COMPOSITOR_P_H
 
 #include <QtQml/QQmlListProperty>
-#include <QtCompositor/QWaylandSurface>
+#include "surface.h"
 
 #include "applicationmanager.h"
 #include "compositorsettings.h"
@@ -46,8 +46,6 @@
 // We mean it.
 
 struct wl_compositor;
-
-typedef QList<QWaylandSurface *> QWaylandSurfaceList;
 
 namespace GreenIsland {
 
@@ -102,14 +100,14 @@ public:
     QQmlEngine *engine;
 
     // Cursor
-    QWaylandSurface *cursorSurface;
+    Surface *cursorSurface;
     int cursorHotspotX;
     int cursorHotspotY;
     WlCursorTheme::CursorShape cursorGrabbed;
     bool cursorIsSet;
 
     // Keyboard
-    QWaylandSurface *lastKeyboardFocus;
+    Surface *lastKeyboardFocus;
 
     QString fakeScreenConfiguration;
     CompositorSettings *settings;
@@ -133,7 +131,7 @@ public:
     WlClientData clientData;
 
     // Application management
-    QHash<QString, QWaylandSurfaceList> appSurfaces;
+    QHash<QString, SurfaceList> appSurfaces;
     QList<ClientWindow *> clientWindowsList;
     QList<ShellWindow *> shellWindowsList;
 

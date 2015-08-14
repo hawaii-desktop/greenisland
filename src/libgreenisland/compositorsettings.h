@@ -28,7 +28,7 @@
 #define COMPOSITORSETTINGS_H
 
 #include <QtCore/QObject>
-#include <QtCompositor/QWaylandInputDevice>
+#include "inputdevice.h"
 
 #include <GreenIsland/Compositor>
 

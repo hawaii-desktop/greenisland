@@ -25,8 +25,10 @@
  ***************************************************************************/
 
 #include <QtCore/QTimer>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/private/qwlsurface_p.h>
+
+#include <GreenIsland/ClientConnection>
+
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "compositor.h"
 #include "xwayland.h"
@@ -83,10 +85,10 @@ void XWayland::serverStarted()
     m_manager->start(m_server->wmFd());
 }
 
-void XWayland::surfaceCreated(QWaylandSurface *surface)
+void XWayland::surfaceCreated(Surface *surface)
 {
     // We are only interested in surfaces from Xwayland
-    QWaylandClient *client = surface->client();
+    ClientConnection *client = surface->client();
     if (client && client->client() != m_server->client())
         return;
 

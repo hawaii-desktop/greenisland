@@ -24,8 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-
 #include "wlshell.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"
@@ -82,13 +80,13 @@ void WlShell::shell_get_shell_surface(Resource *resource, uint32_t id,
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
     new WlShellSurface(this, surface, resource->client(), id, resource->version());
 }
 
-WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(QtWayland::InputDevice *device)
+WlShellSurfacePopupGrabber *WlShell::popupGrabberForDevice(GreenIsland::WlInputDevice *device)
 {
     qCDebug(WLSHELL_TRACE) << Q_FUNC_INFO;
 

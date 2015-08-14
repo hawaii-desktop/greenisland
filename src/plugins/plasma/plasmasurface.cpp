@@ -25,8 +25,8 @@
  ***************************************************************************/
 
 #include <QtCore/QDebug>
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/private/qwlsurface_p.h>
+
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "compositor.h"
 #include "compositor_p.h"
@@ -35,14 +35,10 @@
 
 namespace GreenIsland {
 
-PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
+PlasmaSurface::PlasmaSurface(PlasmaShell *shell, Surface *surface,
                              wl_client *client, uint32_t id)
-    : QWaylandSurfaceInterface(surface)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
+    : SurfaceInterface(surface)
     , QtWaylandServer::org_kde_plasma_surface(client, id, 1)
-#else
-    , QtWaylandServer::org_kde_plasma_surface(client, id)
-#endif
     , m_compositor(static_cast<Compositor *>(surface->compositor()))
     , m_shell(shell)
     , m_surface(surface)
@@ -50,7 +46,7 @@ PlasmaSurface::PlasmaSurface(PlasmaShell *shell, QWaylandSurface *surface,
     , m_deleting(false)
 {
     // Surface events
-    connect(m_surface, &QWaylandSurface::configure, [&](bool hasBuffer) {
+    connect(m_surface, &Surface::configure, [&](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     });
@@ -71,10 +67,10 @@ ShellWindow *PlasmaSurface::window() const
     return m_window;
 }
 
-bool PlasmaSurface::runOperation(QWaylandSurfaceOp *op)
+bool PlasmaSurface::runOperation(SurfaceOperation *op)
 {
     switch (op->type()) {
-    case QWaylandSurfaceOp::Close:
+    case SurfaceOperation::Close:
         // TODO: destroy
         return true;
     default:
@@ -177,9 +173,9 @@ void PlasmaSurface::surface_set_output(Resource *resource,
     // Move the surface to another output
     // TODO: Maybe check whether a surface with the same role already exist
     // on the new output
-    QList<QtWayland::Output *> outputs = m_surface->handle()->outputs();
-    m_surface->handle()->addToOutput(QWaylandOutput::fromResource(outputResource)->handle());
-    Q_FOREACH (QtWayland::Output *output, outputs)
+    QList<GreenIsland::WlOutput *> outputs = m_surface->handle()->outputs();
+    m_surface->handle()->addToOutput(AbstractOutput::fromResource(outputResource)->handle());
+    Q_FOREACH (GreenIsland::WlOutput *output, outputs)
         m_surface->handle()->removeFromOutput(output);
     Q_EMIT m_window->outputChanged();
 }

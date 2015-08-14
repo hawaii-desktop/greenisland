@@ -44,23 +44,24 @@
 #define BUFFERATTACHER_H
 
 #include <QtGui/QOpenGLTexture>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandBufferRef>
+
+#include "surface.h"
+#include "bufferref.h"
 
 namespace GreenIsland {
 
-class BufferAttacher : public QWaylandBufferAttacher
+class BufferAttacher : public AbstractBufferAttacher
 {
 public:
     BufferAttacher();
     ~BufferAttacher();
 
-    void attach(const QWaylandBufferRef &ref) Q_DECL_OVERRIDE;
+    void attach(const BufferRef &ref) Q_DECL_OVERRIDE;
 
     QImage image() const;
 
     QOpenGLTexture *shmTexture;
-    QWaylandBufferRef bufferRef;
+    BufferRef bufferRef;
     GLuint texture;
 };
 

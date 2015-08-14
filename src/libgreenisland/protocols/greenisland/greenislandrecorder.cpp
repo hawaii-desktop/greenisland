@@ -31,7 +31,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QMutexLocker>
 #include <QtOpenGL/QGLFunctions>
-#include <QtCompositor/QWaylandQuickOutput>
+#include "quickoutput.h"
 
 #include "greenislandrecorder.h"
 
@@ -77,7 +77,7 @@ public:
  */
 
 GreenIslandRecorderManager::GreenIslandRecorderManager()
-    : QWaylandGlobalInterface()
+    : GlobalInterface()
 {
 }
 
@@ -150,7 +150,7 @@ void GreenIslandRecorderManager::bind(wl_client *client, quint32 version, quint3
 
 void GreenIslandRecorderManager::recorder_manager_create_recorder(Resource *resource, uint32_t id, ::wl_resource *outputResource)
 {
-    QWaylandQuickOutput *output = static_cast<QWaylandQuickOutput *>(QWaylandOutput::fromResource(outputResource));
+    QuickOutput *output = static_cast<QuickOutput *>(AbstractOutput::fromResource(outputResource));
     if (!output) {
         qCWarning(RECORDER_PROTOCOL) << "Couldn't find output from resource";
         return;

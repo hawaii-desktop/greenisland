@@ -24,8 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QtCompositorVersion>
+#include "inputdevice.h"
 
 #include "compositorsettings.h"
 
@@ -40,35 +39,35 @@ public:
 
     void setKeymapLayout(const QString &layout)
     {
-        QWaylandKeymap newKeymap(layout, keymap.variant(), keymap.options(),
+        Keymap newKeymap(layout, keymap.variant(), keymap.options(),
                                  keymap.model(), keymap.rules());
         keymap = newKeymap;
     }
 
     void setKeymapVariant(const QString &variant)
     {
-        QWaylandKeymap newKeymap(keymap.layout(), variant, keymap.options(),
+        Keymap newKeymap(keymap.layout(), variant, keymap.options(),
                                  keymap.model(), keymap.rules());
         keymap = newKeymap;
     }
 
     void setKeymapOptions(const QString &options)
     {
-        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), options,
+        Keymap newKeymap(keymap.layout(), keymap.variant(), options,
                                  keymap.model(), keymap.rules());
         keymap = newKeymap;
     }
 
     void setKeymapModel(const QString &model)
     {
-        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
+        Keymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
                                  model, keymap.rules());
         keymap = newKeymap;
     }
 
     void setKeymapRules(const QString &rules)
     {
-        QWaylandKeymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
+        Keymap newKeymap(keymap.layout(), keymap.variant(), keymap.options(),
                                  keymap.model(), rules);
         keymap = newKeymap;
     }
@@ -77,7 +76,7 @@ public:
     Qt::KeyboardModifier windowActionKey;
     quint32 defaultKeyboardRate = { 40 };
     quint32 defaultKeyboardDelay = { 400 };
-    QWaylandKeymap keymap;
+    Keymap keymap;
 };
 
 CompositorSettings::CompositorSettings(Compositor *compositor)

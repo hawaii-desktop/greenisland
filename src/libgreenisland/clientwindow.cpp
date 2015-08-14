@@ -29,11 +29,12 @@
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTimer>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+
+#include "clientconnection.h"
+#include "surface.h"
+#include "abstractoutput.h"
+#include "wayland_wrapper/qwloutput_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "applicationmanager_p.h"
 #include "clientwindow.h"
@@ -46,7 +47,7 @@
 
 namespace GreenIsland {
 
-ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
+ClientWindow::ClientWindow(Surface *surface, QObject *parent)
     : QObject(parent)
     , m_appId(surface->className())
     , m_pos(QPointF(surface->mainOutput()->availableGeometry().topLeft()))
@@ -82,19 +83,19 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     viewForOutput(static_cast<Output *>(surface->mainOutput()));
 
     // Connect to surface signals
-    connect(m_surface, &QWaylandSurface::mapped,
+    connect(m_surface, &Surface::mapped,
             this, &ClientWindow::surfaceMapped);
-    connect(m_surface, &QWaylandSurface::unmapped,
+    connect(m_surface, &Surface::unmapped,
             this, &ClientWindow::surfaceUnmapped);
-    connect(m_surface, &QWaylandSurface::titleChanged,
+    connect(m_surface, &Surface::titleChanged,
             this, &ClientWindow::titleChanged);
-    connect(m_surface, &QWaylandSurface::classNameChanged,
+    connect(m_surface, &Surface::classNameChanged,
             this, &ClientWindow::surfaceAppIdChanged);
-    connect(m_surface, &QWaylandSurface::sizeChanged,
+    connect(m_surface, &Surface::sizeChanged,
             this, &ClientWindow::surfaceSizeChanged);
-    connect(m_surface, &QWaylandSurface::windowTypeChanged,
+    connect(m_surface, &Surface::windowTypeChanged,
             this, &ClientWindow::setType);
-    connect(m_surface, &QWaylandSurface::parentChanged,
+    connect(m_surface, &Surface::parentChanged,
             this, &ClientWindow::parentSurfaceChanged);
 
     // Determine the app_id here because some applications will
@@ -115,7 +116,7 @@ uint ClientWindow::id() const
     return m_id;
 }
 
-QWaylandSurface *ClientWindow::surface() const
+Surface *ClientWindow::surface() const
 {
     return m_surface;
 }
@@ -145,16 +146,16 @@ ClientWindow *ClientWindow::parentWindow() const
     return m_parentWindow.data();
 }
 
-QWaylandOutput *ClientWindow::output() const
+AbstractOutput *ClientWindow::output() const
 {
     // Find the output that contains the biggest part of this window,
     // that is the main output and it will be used by effects such as
     // present windows to present only windows for the output it is
     // running on (effects run once for each output)
     int maxArea = 0, area = 0;
-    QWaylandOutput *main = m_surface->mainOutput();
+    AbstractOutput *main = m_surface->mainOutput();
 
-    Q_FOREACH (QWaylandOutput *output, m_surface->compositor()->outputs()) {
+    Q_FOREACH (AbstractOutput *output, m_surface->compositor()->outputs()) {
         QRectF intersection = QRectF(output->geometry()).intersected(geometry());
 
         if (intersection.isValid()) {
@@ -398,19 +399,19 @@ void ClientWindow::setFullScreen(bool fs)
 
 void ClientWindow::move()
 {
-    QWaylandSurfaceOp op(Move);
+    SurfaceOperation op(Move);
     m_surface->sendInterfaceOp(op);
 }
 
 void ClientWindow::stopMove()
 {
-    QWaylandSurfaceOp op(StopMove);
+    SurfaceOperation op(StopMove);
     m_surface->sendInterfaceOp(op);
 }
 
 void ClientWindow::close()
 {
-    QWaylandSurfaceOp op(QWaylandSurfaceOp::Close);
+    SurfaceOperation op(SurfaceOperation::Close);
     m_surface->sendInterfaceOp(op);
 }
 
@@ -456,8 +457,8 @@ QPointF ClientWindow::calculateInitialPosition() const
     QPoint pos = QCursor::pos();
 
     // Find the target output (the one where the coordinates are in)
-    QWaylandOutput *targetOutput = m_surface->compositor()->primaryOutput();
-    Q_FOREACH (QWaylandOutput *output, m_surface->compositor()->outputs()) {
+    AbstractOutput *targetOutput = m_surface->compositor()->primaryOutput();
+    Q_FOREACH (AbstractOutput *output, m_surface->compositor()->outputs()) {
         if (output->geometry().contains(pos)) {
             targetOutput = output;
             break;
@@ -500,7 +501,7 @@ void ClientWindow::initialSetup()
 
     // Set initial position
     switch (m_surface->windowType()) {
-    case QWaylandSurface::Popup:
+    case Surface::Popup:
         // Move popups relative to parent window
         if (parentWindow()) {
             m_pos.setX(m_surface->transientOffset().x());
@@ -511,7 +512,7 @@ void ClientWindow::initialSetup()
             m_pos.setY(0);
         }
         break;
-    case QWaylandSurface::Transient:
+    case Surface::Transient:
         // Center transient windows
         if (parentWindow()) {
             m_pos.setX((m_surface->transientParent()->size().width() - m_size.width()) / 2);
@@ -543,7 +544,7 @@ void ClientWindow::maximizeForOutput(Output *output)
 {
     setPosition(QPointF(output->availableGeometry().topLeft()));
 
-    QWaylandSurfaceResizeOp op(output->availableGeometry().size());
+    SurfaceResizeOperation op(output->availableGeometry().size());
     m_surface->sendInterfaceOp(op);
 }
 
@@ -552,7 +553,7 @@ void ClientWindow::determineAppId()
     QString appId, iconName;
 
     // Try Gtk+ application identifier
-    Q_FOREACH (QWaylandSurfaceInterface *interface, m_surface->interfaces()) {
+    Q_FOREACH (SurfaceInterface *interface, m_surface->interfaces()) {
         GtkSurface *gtkSurface = dynamic_cast<GtkSurface *>(interface);
         if (gtkSurface) {
             // Check if we have a desktop entry with that name
@@ -650,14 +651,14 @@ void ClientWindow::surfaceSizeChanged()
     setSize(QSizeF(m_surface->size()));
 }
 
-void ClientWindow::setType(QWaylandSurface::WindowType windowType)
+void ClientWindow::setType(Surface::WindowType windowType)
 {
     // Save type
     switch (windowType) {
-    case QWaylandSurface::Transient:
+    case Surface::Transient:
         m_type = Transient;
         break;
-    case QWaylandSurface::Popup:
+    case Surface::Popup:
         m_type = Popup;
         break;
     default:
@@ -668,8 +669,8 @@ void ClientWindow::setType(QWaylandSurface::WindowType windowType)
     Q_EMIT typeChanged();
 }
 
-void ClientWindow::parentSurfaceChanged(QWaylandSurface *newParent,
-                                        QWaylandSurface *oldParent)
+void ClientWindow::parentSurfaceChanged(Surface *newParent,
+                                        Surface *oldParent)
 {
     Q_UNUSED(oldParent)
 

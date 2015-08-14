@@ -57,7 +57,7 @@ endif()
 
 # Find Qt5
 set(REQUIRED_QT_VERSION 5.3.0)
-find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Gui Qml Quick Compositor)
+find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core Gui Qml Quick)
 
 # EGL
 find_package(BcmHost)
@@ -107,6 +107,13 @@ else()
     endif()
 endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
+
+# xkbcommon
+pkg_check_modules(xkbcommon xkbcommon)
+if(xkbcommon_FOUND)
+    set(HAVE_XKBCOMMON 1)
+endif()
+add_feature_info("xkbcommon" xkbcommon_FOUND "Require for keymap support")
 
 # Subdirectories
 add_subdirectory(data)

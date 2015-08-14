@@ -27,20 +27,20 @@
 #ifndef GREENISLAND_WINDOWVIEW_H
 #define GREENISLAND_WINDOWVIEW_H
 
-#include <QtCompositor/QWaylandSurfaceItem>
+#include "surfaceitem.h"
 
 #include <greenisland/greenisland_export.h>
 
 namespace GreenIsland {
 
-class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
+class GREENISLAND_EXPORT WindowView : public SurfaceItem
 {
     Q_OBJECT
     Q_PROPERTY(QPointF localPosition READ localPosition NOTIFY localPositionChanged)
     Q_PROPERTY(qreal localX READ localX NOTIFY localPositionChanged)
     Q_PROPERTY(qreal localY READ localY NOTIFY localPositionChanged)
 public:
-    WindowView(QWaylandQuickSurface *surface, QQuickItem *parent = 0);
+    WindowView(QuickSurface *surface, QQuickItem *parent = 0);
 
     QPointF localPosition() const;
     void setLocalPosition(const QPointF &pt);
@@ -60,7 +60,7 @@ protected:
 private:
     QPointF m_pos;
 
-    void takeFocus(QWaylandInputDevice *device = 0) Q_DECL_OVERRIDE;
+    void takeFocus(InputDevice *device = 0) Q_DECL_OVERRIDE;
 
     void startMove();
     void stopMove();

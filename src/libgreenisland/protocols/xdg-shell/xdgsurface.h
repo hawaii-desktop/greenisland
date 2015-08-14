@@ -27,13 +27,13 @@
 #ifndef XDGSURFACE_H
 #define XDGSURFACE_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surface.h"
+#include "surfaceinterface.h"
 
 #include "xdgshell.h"
 
 class QQuickItem;
-class QWaylandInputDevice;
+class InputDevice;
 
 namespace GreenIsland {
 
@@ -41,7 +41,7 @@ class ClientWindow;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
 
-class XdgSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::xdg_surface
+class XdgSurface : public QObject, public SurfaceInterface, public QtWaylandServer::xdg_surface
 {
     Q_OBJECT
     Q_ENUMS(State)
@@ -75,17 +75,17 @@ public:
         QSizeF size;
     };
 
-    XdgSurface(XdgShell *shell, QWaylandSurface *surface,
+    XdgSurface(XdgShell *shell, Surface *surface,
                wl_client *client, uint32_t id, uint32_t version);
     ~XdgSurface();
 
     uint32_t nextSerial() const;
 
-    QWaylandSurface::WindowType type() const;
+    Surface::WindowType type() const;
 
     State state() const;
 
-    QWaylandSurface *surface() const;
+    Surface *surface() const;
 
     ClientWindow *window() const;
 
@@ -98,7 +98,7 @@ public:
     void requestConfigure(const Changes &changes);
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -136,7 +136,7 @@ protected:
 
 private:
     XdgShell *m_shell;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     ClientWindow *m_window;
 
     XdgSurfaceMoveGrabber *m_moveGrabber;
@@ -151,7 +151,7 @@ private:
     QMap<uint32_t, Changes> m_pendingChanges;
 
 
-    void moveWindow(QWaylandInputDevice *device);
+    void moveWindow(InputDevice *device);
 };
 
 }

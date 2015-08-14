@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/private/qwaylandsurface_p.h>
+#include "abstractcompositor.h"
+#include "surface_p.h"
 
 #include "clientwindow.h"
 #include "compositor.h"
@@ -37,10 +37,10 @@
 namespace GreenIsland {
 
 WlSubSurface::WlSubSurface(WlSubCompositor *subCompositor,
-                           QWaylandSurface *surface, QWaylandSurface *parentSurface,
+                           Surface *surface, Surface *parentSurface,
                            wl_client *client, uint32_t id, uint32_t version)
     : QObject(subCompositor)
-    , QWaylandSurfaceInterface(surface)
+    , SurfaceInterface(surface)
     , QtWaylandServer::wl_subsurface(client, id, version)
     , m_subCompositor(subCompositor)
     , m_surface(surface)
@@ -64,20 +64,20 @@ WlSubSurface::WlSubSurface(WlSubCompositor *subCompositor,
     // TODO: Perhaps add the parent view to the sub-surfaces list
 
     // Create a view for each output
-    Q_FOREACH (QWaylandOutput *wlOutput, m_surface->compositor()->outputs()) {
+    Q_FOREACH (AbstractOutput *wlOutput, m_surface->compositor()->outputs()) {
         Output *output = static_cast<Output *>(wlOutput);
-        m_views[output] = static_cast<QWaylandSurfaceItem *>(
+        m_views[output] = static_cast<SurfaceItem *>(
                     m_surface->compositor()->createView(surface));
         if (found)
             m_views[output]->setParentItem(found->viewForOutput(output));
     }
 
     // Surface events
-    connect(m_surface, &QWaylandSurface::configure, this, [this](bool hasBuffer) {
+    connect(m_surface, &Surface::configure, this, [this](bool hasBuffer) {
         // Map or unmap the surface
         m_surface->setMapped(hasBuffer);
     }, Qt::QueuedConnection);
-    connect(m_parentSurface, &QWaylandSurface::surfaceDestroyed, this, [this] {
+    connect(m_parentSurface, &Surface::surfaceDestroyed, this, [this] {
         // Destroy all views
         QList<Output *> outputs = m_views.keys();
         Q_FOREACH (Output *output, outputs)
@@ -102,7 +102,7 @@ WlSubSurface::~WlSubSurface()
         m_views.take(output)->deleteLater();
 }
 
-QWaylandSurface *WlSubSurface::parentSurface() const
+Surface *WlSubSurface::parentSurface() const
 {
     return m_parentSurface;
 }
@@ -117,7 +117,7 @@ QPoint WlSubSurface::position() const
     return m_pos;
 }
 
-bool WlSubSurface::runOperation(QWaylandSurfaceOp *op)
+bool WlSubSurface::runOperation(SurfaceOperation *op)
 {
     Q_UNUSED(op)
     return false;
@@ -145,8 +145,8 @@ void WlSubSurface::subsurface_set_position(Resource *resource, int32_t x, int32_
     Q_UNUSED(resource)
     m_pos = QPoint(x, y);
 
-    QList<QWaylandSurfaceItem *> views = m_views.values();
-    Q_FOREACH (QWaylandSurfaceItem *view, views)
+    QList<SurfaceItem *> views = m_views.values();
+    Q_FOREACH (SurfaceItem *view, views)
         view->setPosition(QPointF(m_pos));
 }
 
@@ -157,14 +157,14 @@ void WlSubSurface::subsurface_place_above(Resource *resource,
 
     Q_UNUSED(resource)
 
-    QWaylandSurface *sibling = QWaylandSurface::fromResource(siblingResource);
+    Surface *sibling = Surface::fromResource(siblingResource);
 
     WlSubSurface *subSibling = siblingCheck(sibling, QByteArray("place_above"));
     if (!subSibling)
         return;
 
-    QList<QWaylandSurfaceItem *> views = m_views.values();
-    Q_FOREACH (QWaylandSurfaceItem *view, views)
+    QList<SurfaceItem *> views = m_views.values();
+    Q_FOREACH (SurfaceItem *view, views)
         view->setZ(1);
 }
 
@@ -175,14 +175,14 @@ void WlSubSurface::subsurface_place_below(Resource *resource,
 
     Q_UNUSED(resource)
 
-    QWaylandSurface *sibling = QWaylandSurface::fromResource(siblingResource);
+    Surface *sibling = Surface::fromResource(siblingResource);
 
     WlSubSurface *subSibling = siblingCheck(sibling, QByteArray("place_below"));
     if (!subSibling)
         return;
 
-    QList<QWaylandSurfaceItem *> views = m_views.values();
-    Q_FOREACH (QWaylandSurfaceItem *view, views)
+    QList<SurfaceItem *> views = m_views.values();
+    Q_FOREACH (SurfaceItem *view, views)
         view->setZ(0);
 }
 
@@ -208,7 +208,7 @@ void WlSubSurface::subsurface_set_desync(Resource *resource)
     }
 }
 
-WlSubSurface *WlSubSurface::fromSurface(QWaylandSurface *surface)
+WlSubSurface *WlSubSurface::fromSurface(Surface *surface)
 {
     WlSubSurface *sub = m_subCompositor->toSubSurface(surface);
     if (sub)
@@ -222,7 +222,7 @@ WlSubSurface *WlSubSurface::fromSurface(QWaylandSurface *surface)
     return Q_NULLPTR;
 }
 
-WlSubSurface *WlSubSurface::siblingCheck(QWaylandSurface *surface,
+WlSubSurface *WlSubSurface::siblingCheck(Surface *surface,
                            const QByteArray &request)
 {
     WlSubSurface *sibling = fromSurface(surface);

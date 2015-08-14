@@ -88,8 +88,8 @@ void WlSubCompositor::subcompositor_get_subsurface(Resource *resource, uint32_t 
 
     static const char where[] = "get_subsurface: wl_subsurface@";
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parentResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
+    Surface *parentSurface = Surface::fromResource(parentResource);
 
     if (surface == parentSurface) {
         wl_resource_post_error(resource->handle, error_bad_surface,
@@ -135,7 +135,7 @@ void WlSubCompositor::subcompositor_get_subsurface(Resource *resource, uint32_t 
     m_subSurfaces.append(subSurface);
 }
 
-WlSubSurface *WlSubCompositor::toSubSurface(QWaylandSurface *surface)
+WlSubSurface *WlSubCompositor::toSubSurface(Surface *surface)
 {
     Q_FOREACH (WlSubSurface *sub, m_subSurfaces) {
         if (sub->surface() == surface)
@@ -145,7 +145,7 @@ WlSubSurface *WlSubCompositor::toSubSurface(QWaylandSurface *surface)
     return Q_NULLPTR;
 }
 
-QWaylandSurface *WlSubCompositor::mainSurface(QWaylandSurface *surface)
+Surface *WlSubCompositor::mainSurface(Surface *surface)
 {
     WlSubSurface *sub;
 

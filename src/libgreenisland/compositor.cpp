@@ -26,9 +26,8 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include "clientconnection.h"
+#include "wayland_wrapper/qwlcompositor_p.h"
 
 #include <typeinfo>
 
@@ -69,7 +68,7 @@ Q_GLOBAL_STATIC(CompositorSingleton, s_compositor)
 
 Compositor::Compositor(QObject *parent)
     : QObject(parent)
-    , QWaylandQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension)
+    , AbstractQuickCompositor(0, WindowManagerExtension | TouchExtension | HardwareIntegrationExtension)
     , d_ptr(new CompositorPrivate(this))
 {
     Q_D(Compositor);
@@ -270,16 +269,16 @@ void Compositor::run()
     }
 }
 
-QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
+SurfaceView *Compositor::pickView(const QPointF &globalPosition) const
 {
     Q_D(const Compositor);
 
     // TODO: Views should probably ordered by z-index in order to really
     // pick the first view with that global coordinates
 
-    for (QWaylandOutput *output: m_compositor->outputs()) {
+    for (AbstractOutput *output: m_compositor->outputs()) {
         if (output->geometry().contains(globalPosition.toPoint())) {
-            for (QWaylandSurface *surface: output->surfaces()) {
+            for (Surface *surface: output->surfaces()) {
                 for (ClientWindow *window: d->clientWindowsList) {
                     if (window->surface() != surface)
                         continue;
@@ -293,19 +292,19 @@ QWaylandSurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     return Q_NULLPTR;
 }
 
-QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
+SurfaceItem *Compositor::firstViewOf(Surface *surface)
 {
     if (!surface) {
         qCWarning(GREENISLAND_COMPOSITOR) << "First view of null surface requested!";
         return Q_NULLPTR;
     }
 
-    return static_cast<QWaylandSurfaceItem *>(surface->views().first());
+    return static_cast<SurfaceItem *>(surface->views().first());
 }
 
-QWaylandSurfaceItem *Compositor::subSurfaceForOutput(QWaylandSurface *surface, Output *output) const
+SurfaceItem *Compositor::subSurfaceForOutput(Surface *surface, Output *output) const
 {
-    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+    Q_FOREACH (SurfaceInterface *interface, surface->interfaces()) {
         if (typeid(*interface) != typeid(WlSubSurface))
             continue;
         WlSubSurface *subSurfaceInterface = static_cast<WlSubSurface *>(interface);
@@ -316,7 +315,7 @@ QWaylandSurfaceItem *Compositor::subSurfaceForOutput(QWaylandSurface *surface, O
     return Q_NULLPTR;
 }
 
-void Compositor::surfaceCreated(QWaylandSurface *surface)
+void Compositor::surfaceCreated(Surface *surface)
 {
     Q_D(Compositor);
 
@@ -330,20 +329,20 @@ void Compositor::surfaceCreated(QWaylandSurface *surface)
     Q_EMIT newSurfaceCreated(surface);
 
     // Connect surface signals
-    connect(surface, &QWaylandSurface::mapped, this, [this, surface] {
+    connect(surface, &Surface::mapped, this, [this, surface] {
         Q_EMIT surfaceMapped(surface);
     });
-    connect(surface, &QWaylandSurface::unmapped, this, [this, surface] {
+    connect(surface, &Surface::unmapped, this, [this, surface] {
         Q_EMIT surfaceUnmapped(surface);
     });
-    connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, surface] {
+    connect(surface, &Surface::surfaceDestroyed, this, [this, surface] {
         Q_EMIT surfaceDestroyed(surface);
     });
 }
 
-QWaylandSurfaceView *Compositor::createView(QWaylandSurface *surf)
+SurfaceView *Compositor::createView(Surface *surf)
 {
-    return new WindowView(qobject_cast<QWaylandQuickSurface *>(surf));
+    return new WindowView(qobject_cast<QuickSurface *>(surf));
 }
 
 void Compositor::clearKeyboardFocus()
@@ -385,7 +384,7 @@ void Compositor::abortSession()
     QGuiApplication::quit();
 }
 
-void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY)
+void Compositor::setCursorSurface(Surface *surface, int hotspotX, int hotspotY)
 {
 //#if (defined QT_COMPOSITOR_WAYLAND_GL) && (QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 2))
 #if 0
@@ -404,7 +403,7 @@ void Compositor::setCursorSurface(QWaylandSurface *surface, int hotspotX, int ho
 
     // Update cursor when mapped
     if ((d->cursorSurface != surface) && surface) {
-        connect(surface, &QWaylandSurface::configure, this, [this, d](bool hasBuffer) {
+        connect(surface, &Surface::configure, this, [this, d](bool hasBuffer) {
             if (!d->cursorSurface || !hasBuffer)
                 return;
 

@@ -30,7 +30,8 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-plasma-shell.h"
 
@@ -41,7 +42,7 @@ namespace GreenIsland {
 class Compositor;
 class PlasmaSurface;
 
-class PlasmaShell : public QObject, public QWaylandGlobalInterface, public QtWaylandServer::org_kde_plasma_shell
+class PlasmaShell : public QObject, public GlobalInterface, public QtWaylandServer::org_kde_plasma_shell
 {
     Q_OBJECT
 public:

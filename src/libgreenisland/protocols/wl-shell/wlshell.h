@@ -29,14 +29,16 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+
+#include "globalinterface.h"
+
+#include "qwayland-server-wayland.h"
 
 Q_DECLARE_LOGGING_CATEGORY(WLSHELL_PROTOCOL)
 Q_DECLARE_LOGGING_CATEGORY(WLSHELL_TRACE)
 
-namespace QtWayland {
-class InputDevice;
+namespace GreenIsland {
+class WlInputDevice;
 }
 
 namespace GreenIsland {
@@ -44,7 +46,7 @@ namespace GreenIsland {
 class WlShellSurface;
 class WlShellSurfacePopupGrabber;
 
-class WlShellGlobal : public QObject, public QWaylandGlobalInterface
+class WlShellGlobal : public QObject, public GlobalInterface
 {
 public:
     explicit WlShellGlobal(QObject *parent = 0);
@@ -66,9 +68,9 @@ protected:
                                  wl_resource *surfaceResource) Q_DECL_OVERRIDE;
 
 private:
-    QHash<QtWayland::InputDevice *, WlShellSurfacePopupGrabber *> m_popupGrabbers;
+    QHash<GreenIsland::WlInputDevice *, WlShellSurfacePopupGrabber *> m_popupGrabbers;
 
-    WlShellSurfacePopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
+    WlShellSurfacePopupGrabber *popupGrabberForDevice(GreenIsland::WlInputDevice *device);
 
     friend class WlShellSurface;
 };

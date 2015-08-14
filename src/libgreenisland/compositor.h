@@ -27,8 +27,8 @@
 #ifndef COMPOSITOR_H
 #define COMPOSITOR_H
 
-#include <QtCompositor/QWaylandQuickCompositor>
-#include <QtCompositor/QWaylandSurfaceItem>
+#include "abstractquickcompositor.h"
+#include "surfaceitem.h"
 
 #include <greenisland/greenisland_export.h>
 
@@ -50,7 +50,7 @@ class WlSubSurface;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
 
-class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
+class GREENISLAND_EXPORT Compositor : public QObject, public AbstractQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(CompositorSettings *settings READ settings CONSTANT)
@@ -91,13 +91,13 @@ public:
 
     void run();
 
-    Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
-    Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
-    Q_INVOKABLE QWaylandSurfaceItem *subSurfaceForOutput(QWaylandSurface *surface,
+    Q_INVOKABLE SurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
+    Q_INVOKABLE SurfaceItem *firstViewOf(Surface *surface);
+    Q_INVOKABLE SurfaceItem *subSurfaceForOutput(Surface *surface,
                                                          Output *output) const;
 
-    void surfaceCreated(QWaylandSurface *surface) Q_DECL_OVERRIDE;
-    QWaylandSurfaceView *createView(QWaylandSurface *surf) Q_DECL_OVERRIDE;
+    void surfaceCreated(Surface *surface) Q_DECL_OVERRIDE;
+    SurfaceView *createView(Surface *surf) Q_DECL_OVERRIDE;
 
     Q_INVOKABLE void clearKeyboardFocus();
     Q_INVOKABLE void restoreKeyboardFocus();
@@ -112,10 +112,10 @@ public Q_SLOTS:
     void decrementIdleInhibit();
 
 Q_SIGNALS:
-    void newSurfaceCreated(QWaylandSurface *surface);
-    void surfaceMapped(QWaylandSurface *surface);
-    void surfaceUnmapped(QWaylandSurface *surface);
-    void surfaceDestroyed(QWaylandSurface *surface);
+    void newSurfaceCreated(Surface *surface);
+    void surfaceMapped(Surface *surface);
+    void surfaceUnmapped(Surface *surface);
+    void surfaceDestroyed(Surface *surface);
 
     void windowMapped(ClientWindow *window);
     void windowUnmapped(ClientWindow *window);
@@ -147,7 +147,7 @@ Q_SIGNALS:
 protected:
     Compositor(QObject *parent = 0);
 
-    void setCursorSurface(QWaylandSurface *surface, int hotspotX, int hotspotY) Q_DECL_OVERRIDE;
+    void setCursorSurface(Surface *surface, int hotspotX, int hotspotY) Q_DECL_OVERRIDE;
 
 private:
     Q_DECLARE_PRIVATE(Compositor)

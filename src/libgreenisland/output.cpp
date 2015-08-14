@@ -79,7 +79,7 @@ Output::Output(Compositor *compositor, const QString &name,
 #else
 Output::Output(Compositor *compositor, const QString &name,
                const QString &manufacturer, const QString &model)
-    : QWaylandQuickOutput(compositor, new OutputWindow(this),
+    : QuickOutput(compositor, new OutputWindow(this),
                           manufacturer, model)
 #endif
     , d_ptr(new OutputPrivate(this))

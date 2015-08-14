@@ -29,7 +29,8 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandSurface>
+
+#include "surface.h"
 
 Q_DECLARE_LOGGING_CATEGORY(XWAYLAND)
 Q_DECLARE_LOGGING_CATEGORY(XWAYLAND_TRACE)
@@ -54,7 +55,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void serverStarted();
-    void surfaceCreated(QWaylandSurface *surface);
+    void surfaceCreated(Surface *surface);
 
 private:
     Compositor *m_compositor;

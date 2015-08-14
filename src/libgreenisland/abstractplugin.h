@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef ABSTRACTPLUGIN_H
-#define ABSTRACTPLUGIN_H
+#ifndef GREENISLAND_ABSTRACTPLUGIN_H
+#define GREENISLAND_ABSTRACTPLUGIN_H
 
 #include <GreenIsland/Compositor>
 
@@ -67,8 +67,8 @@ public:
     virtual void addGlobalInterfaces();
 };
 
-}
+} // namespace GreenIsland
 
 Q_DECLARE_INTERFACE(GreenIsland::AbstractPlugin, "org.hawaiios.greenisland.Plugin")
 
-#endif // ABSTRACTPLUGIN_H
+#endif // GREENISLAND_ABSTRACTPLUGIN_H

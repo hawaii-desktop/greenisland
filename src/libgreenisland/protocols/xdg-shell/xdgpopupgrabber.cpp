@@ -58,17 +58,17 @@
  *     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurfaceView>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "surfaceview.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "xdgpopupgrabber.h"
 #include "xdgpopup.h"
 
 namespace GreenIsland {
 
-XdgPopupGrabber::XdgPopupGrabber(QtWayland::InputDevice *inputDevice)
-    : QtWayland::PointerGrabber()
+XdgPopupGrabber::XdgPopupGrabber(GreenIsland::WlInputDevice *inputDevice)
+    : GreenIsland::PointerGrabber()
     , m_inputDevice(inputDevice)
     , m_client(Q_NULLPTR)
     , m_initialUp(false)

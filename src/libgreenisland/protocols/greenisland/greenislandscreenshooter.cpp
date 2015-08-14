@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandQuickOutput>
+#include "quickoutput.h"
 
 #include "greenislandscreenshooter.h"
 
@@ -69,7 +69,7 @@ void GreenIslandScreenshooter::screenshooter_shoot(Resource *resource,
 {
     Q_UNUSED(resource)
 
-    QWaylandQuickOutput *output = static_cast<QWaylandQuickOutput *>(QWaylandOutput::fromResource(outputResource));
+    QuickOutput *output = static_cast<QuickOutput *>(AbstractOutput::fromResource(outputResource));
     if (!output) {
         qCWarning(SCREENSHOOTER_PROTOCOL) << "Couldn't find output from resource";
         send_done(result_bad_output);

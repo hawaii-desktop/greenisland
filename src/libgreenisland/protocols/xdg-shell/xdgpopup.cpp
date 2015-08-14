@@ -24,10 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "abstractcompositor.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwlpointer_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "clientwindow.h"
 #include "xdgpopup.h"
@@ -35,12 +35,12 @@
 
 namespace GreenIsland {
 
-XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
-                   QWaylandSurface *surface, QWaylandInputDevice *device,
+XdgPopup::XdgPopup(XdgShell *shell, Surface *parent,
+                   Surface *surface, InputDevice *device,
                    wl_client *client, uint32_t id, uint32_t version,
                    int32_t x, int32_t y, uint32_t serial)
     : QObject(shell)
-    , QWaylandSurfaceInterface(surface)
+    , SurfaceInterface(surface)
     , QtWaylandServer::xdg_popup(client, id, version)
     , m_shell(shell)
     , m_parentSurface(parent)
@@ -53,22 +53,22 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandSurface *parent,
     // Set surface type
     surface->handle()->setTransientParent(parent->handle());
     surface->handle()->setTransientOffset(x, y);
-    setSurfaceType(QWaylandSurface::Popup);
+    setSurfaceType(Surface::Popup);
 
     // Create popup grabber
     m_grabber = shell->popupGrabberForDevice(device->handle());
 
     // Connect surface signals
-    connect(m_parentSurface, &QWaylandSurface::surfaceDestroyed,
+    connect(m_parentSurface, &Surface::surfaceDestroyed,
             this, &XdgPopup::parentSurfaceGone,
             Qt::QueuedConnection);
-    connect(m_surface, &QWaylandSurface::mapped,
+    connect(m_surface, &Surface::mapped,
             this, &XdgPopup::surfaceMapped,
             Qt::QueuedConnection);
-    connect(m_surface, &QWaylandSurface::unmapped,
+    connect(m_surface, &Surface::unmapped,
             this, &XdgPopup::surfaceUnmapped,
             Qt::QueuedConnection);
-    connect(m_surface, &QWaylandSurface::configure,
+    connect(m_surface, &Surface::configure,
             this, &XdgPopup::surfaceConfigured,
             Qt::QueuedConnection);
 
@@ -100,7 +100,7 @@ void XdgPopup::done()
     send_popup_done();
 }
 
-bool XdgPopup::runOperation(QWaylandSurfaceOp *op)
+bool XdgPopup::runOperation(SurfaceOperation *op)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 

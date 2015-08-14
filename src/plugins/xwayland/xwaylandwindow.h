@@ -29,7 +29,8 @@
 
 #include <QtCore/QRect>
 #include <QtCore/QPointer>
-#include <QtCompositor/QWaylandSurface>
+
+#include "surface.h"
 
 #include <xcb/xcb.h>
 
@@ -80,11 +81,11 @@ public:
         m_surfaceId = id;
     }
 
-    inline QWaylandSurface *surface() const {
+    inline Surface *surface() const {
         return m_surface.data();
     }
 
-    void setSurface(QWaylandSurface *surface);
+    void setSurface(Surface *surface);
 
     ClientWindow *clientWindow() const;
 
@@ -129,7 +130,7 @@ private:
     Xcb::Window m_frameWindow;
     XWaylandWindow *m_transientFor;
     int m_surfaceId;
-    QPointer<QWaylandSurface> m_surface;
+    QPointer<Surface> m_surface;
     XWaylandSurface *m_surfaceInterface;
     WmState m_wmState;
     int m_workspace;

@@ -100,13 +100,13 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
 
     switch (so->orientation()) {
     case Qt::PortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform90);
+        output->setTransform(AbstractOutput::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        output->setTransform(QWaylandOutput::Transform180);
+        output->setTransform(AbstractOutput::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform270);
+        output->setTransform(AbstractOutput::Transform270);
         break;
     default:
         break;

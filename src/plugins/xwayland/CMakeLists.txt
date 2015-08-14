@@ -33,7 +33,6 @@ endif()
 
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
     ${CMAKE_SOURCE_DIR}/src/libgreenisland
     ${CMAKE_BINARY_DIR}/src/libgreenisland
     ${CMAKE_BINARY_DIR}/src/libgreenisland/greenisland
@@ -60,7 +59,6 @@ set_target_properties(xwayland PROPERTIES PREFIX "")
 target_link_libraries(xwayland
                       Qt5::Core
                       Qt5::Gui
-                      Qt5::Compositor
                       GreenIsland::GreenIsland
                       XCB::XCB
                       XCB::XFIXES

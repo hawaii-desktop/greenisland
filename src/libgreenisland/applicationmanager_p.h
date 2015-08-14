@@ -39,7 +39,7 @@
 //
 // We mean it.
 
-class QWaylandSurface;
+class Surface;
 
 namespace GreenIsland {
 
@@ -51,11 +51,11 @@ class ApplicationManagerPrivate
 public:
     ApplicationManagerPrivate(ApplicationManager *parent);
 
-    void registerSurface(QWaylandSurface *surface, const QString &appId);
-    void unregisterSurface(QWaylandSurface *surface, const QString &appId);
+    void registerSurface(Surface *surface, const QString &appId);
+    void unregisterSurface(Surface *surface, const QString &appId);
 
-    QHash<QString, QList<QWaylandSurface *> > surfaces;
-    QHash<QWaylandSurface *, pid_t> surfacePids;
+    QHash<QString, QList<Surface *> > surfaces;
+    QHash<Surface *, pid_t> surfacePids;
 
 protected:
     ApplicationManager *q_ptr;

@@ -27,23 +27,23 @@
 #ifndef XDGPOPUP_H
 #define XDGPOPUP_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surface.h"
+#include "surfaceinterface.h"
 
 #include "xdgshell.h"
 
-class QWaylandInputDevice;
+class InputDevice;
 
 namespace GreenIsland {
 
 class ClientWindow;
 class XdgPopupGrabber;
 
-class XdgPopup : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::xdg_popup
+class XdgPopup : public QObject, public SurfaceInterface, public QtWaylandServer::xdg_popup
 {
 public:
-    XdgPopup(XdgShell *shell, QWaylandSurface *parent,
-             QWaylandSurface *surface, QWaylandInputDevice *device,
+    XdgPopup(XdgShell *shell, Surface *parent,
+             Surface *surface, InputDevice *device,
              wl_client *client, uint32_t id, uint32_t version, int32_t x, int32_t y,
              uint32_t serial);
     ~XdgPopup();
@@ -53,7 +53,7 @@ public:
     void done();
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
     void popup_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -61,8 +61,8 @@ protected:
 
 private:
     XdgShell *m_shell;
-    QWaylandSurface *m_parentSurface;
-    QWaylandSurface *m_surface;
+    Surface *m_parentSurface;
+    Surface *m_surface;
     ClientWindow *m_window;
     uint32_t m_serial;
     XdgPopupGrabber *m_grabber;

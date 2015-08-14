@@ -27,7 +27,7 @@
 #ifndef GREENISLANDWINDOWS_H
 #define GREENISLANDWINDOWS_H
 
-#include <QtCompositor/QWaylandGlobalInterface>
+#include "globalinterface.h"
 
 #include "qwayland-server-greenisland.h"
 
@@ -35,7 +35,7 @@ namespace GreenIsland {
 
 class GreenIslandWindow;
 
-class GreenIslandWindows : public QWaylandGlobalInterface, public QtWaylandServer::greenisland_windows
+class GreenIslandWindows : public GlobalInterface, public QtWaylandServer::greenisland_windows
 {
 public:
     GreenIslandWindows();

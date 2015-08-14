@@ -29,15 +29,16 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-xdg-shell.h"
 
 Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_PROTOCOL)
 Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_TRACE)
 
-namespace QtWayland {
-class InputDevice;
+namespace GreenIsland {
+class WlInputDevice;
 }
 
 namespace GreenIsland {
@@ -47,7 +48,7 @@ class XdgSurface;
 class XdgPopup;
 class XdgPopupGrabber;
 
-class XdgShellGlobal : public QObject, public QWaylandGlobalInterface
+class XdgShellGlobal : public QObject, public GlobalInterface
 {
     Q_OBJECT
 public:
@@ -84,9 +85,9 @@ protected:
 
 private:
     QMap<uint32_t, XdgSurface *> m_pings;
-    QHash<QtWayland::InputDevice *, XdgPopupGrabber *> m_popupGrabbers;
+    QHash<GreenIsland::WlInputDevice *, XdgPopupGrabber *> m_popupGrabbers;
 
-    XdgPopupGrabber *popupGrabberForDevice(QtWayland::InputDevice *device);
+    XdgPopupGrabber *popupGrabberForDevice(GreenIsland::WlInputDevice *device);
 
     friend class XdgPopup;
 };

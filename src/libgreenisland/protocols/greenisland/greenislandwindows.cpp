@@ -24,8 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-
 #include "applicationmanager.h"
 #include "clientwindow.h"
 #include "greenislandwindow.h"
@@ -79,11 +77,7 @@ const wl_interface *GreenIslandWindows::interface() const
 
 void GreenIslandWindows::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     m_boundResource = add(client, id, version);
-#else
-    m_boundResource = add(client, id);
-#endif
 }
 
 void GreenIslandWindows::windows_bind_resource(Resource *resource)

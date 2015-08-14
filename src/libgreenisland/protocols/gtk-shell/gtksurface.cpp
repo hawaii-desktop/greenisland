@@ -31,10 +31,10 @@
 
 namespace GreenIsland {
 
-GtkSurface::GtkSurface(GtkShell *shell, QWaylandSurface *surface,
+GtkSurface::GtkSurface(GtkShell *shell, Surface *surface,
                        wl_client *client, uint32_t id, uint32_t version)
     : QObject(shell)
-    , QWaylandSurfaceInterface(surface)
+    , SurfaceInterface(surface)
     , QtWaylandServer::gtk_surface(client, id, version)
 {
     qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
@@ -47,7 +47,7 @@ GtkSurface::~GtkSurface()
     wl_resource_set_implementation(resource()->handle, Q_NULLPTR, Q_NULLPTR, Q_NULLPTR);
 }
 
-bool GtkSurface::runOperation(QWaylandSurfaceOp *op)
+bool GtkSurface::runOperation(SurfaceOperation *op)
 {
     qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
     qCDebug(GTKSHELL_TRACE) << "Run operation" << op->type();
@@ -89,8 +89,8 @@ void GtkSurface::surface_set_dbus_properties(Resource *resource,
     // interfaces and get the app_id from GtkSurface)
     // TODO: Add the following signals to QtCompositor so that ugly code
     // can be done from ClientWindow:
-    // - QWaylandSurface::interfaceAdded(QWaylandSurfaceInterface *)
-    // - QWaylandSurface::interfaceRemoved(QWaylandSurfaceInterface *)
+    // - Surface::interfaceAdded(SurfaceInterface *)
+    // - Surface::interfaceRemoved(SurfaceInterface *)
     if (surface()) {
         Compositor *compositor = static_cast<Compositor *>(surface()->compositor());
         Q_FOREACH (ClientWindow *clientWindow, compositor->d_func()->clientWindowsList) {

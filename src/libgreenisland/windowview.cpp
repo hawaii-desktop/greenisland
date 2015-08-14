@@ -25,9 +25,10 @@
  ***************************************************************************/
 
 #include <QtGui/QGuiApplication>
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QWaylandQuickSurface>
+
+#include "abstractcompositor.h"
+#include "inputdevice.h"
+#include "quicksurface.h"
 
 #include "clientwindow.h"
 #include "compositor.h"
@@ -36,8 +37,8 @@
 
 namespace GreenIsland {
 
-WindowView::WindowView(QWaylandQuickSurface *surface, QQuickItem *parent)
-    : QWaylandSurfaceItem(surface, parent)
+WindowView::WindowView(QuickSurface *surface, QQuickItem *parent)
+    : SurfaceItem(surface, parent)
     , m_pos(0, 0)
 {
     qRegisterMetaType<WindowView *>("WindowView*");
@@ -70,7 +71,7 @@ qreal WindowView::localY() const
 void WindowView::mousePressEvent(QMouseEvent *event)
 {
     // Must be first to correctly set the pointer focus
-    QWaylandSurfaceItem::mousePressEvent(event);
+    SurfaceItem::mousePressEvent(event);
 
     // Emit a mouse pressed signal, ClientWindow will connect
     // and activate the window
@@ -87,7 +88,7 @@ void WindowView::mouseReleaseEvent(QMouseEvent *event)
     // Stop the move operation nevertheless
     stopMove();
 
-    QWaylandSurfaceItem::mouseReleaseEvent(event);
+    SurfaceItem::mouseReleaseEvent(event);
 }
 
 void WindowView::mouseMoveEvent(QMouseEvent *event)
@@ -97,12 +98,12 @@ void WindowView::mouseMoveEvent(QMouseEvent *event)
     if (!(QGuiApplication::queryKeyboardModifiers() & mod))
         stopMove();
 
-    QWaylandSurfaceItem::mouseMoveEvent(event);
+    SurfaceItem::mouseMoveEvent(event);
 }
 
-void WindowView::takeFocus(QWaylandInputDevice *device)
+void WindowView::takeFocus(InputDevice *device)
 {
-    QWaylandSurfaceItem::takeFocus(device);
+    SurfaceItem::takeFocus(device);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
     forceActiveFocus();
 #endif
@@ -110,13 +111,13 @@ void WindowView::takeFocus(QWaylandInputDevice *device)
 
 void WindowView::startMove()
 {
-    QWaylandSurfaceOp op(ClientWindow::Move);
+    SurfaceOperation op(ClientWindow::Move);
     surface()->sendInterfaceOp(op);
 }
 
 void WindowView::stopMove()
 {
-    QWaylandSurfaceOp op(ClientWindow::StopMove);
+    SurfaceOperation op(ClientWindow::StopMove);
     surface()->sendInterfaceOp(op);
 }
 

@@ -35,7 +35,8 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMultiHash>
 #include <QtCore/QMutex>
-#include <QtCompositor/QWaylandGlobalInterface>
+
+#include "globalinterface.h"
 
 #include "qwayland-server-greenisland-recorder.h"
 
@@ -52,7 +53,7 @@ namespace GreenIsland {
 
 class GreenIslandRecorder;
 
-class GreenIslandRecorderManager : public QWaylandGlobalInterface, public QtWaylandServer::greenisland_recorder_manager
+class GreenIslandRecorderManager : public GlobalInterface, public QtWaylandServer::greenisland_recorder_manager
 {
 public:
     GreenIslandRecorderManager();

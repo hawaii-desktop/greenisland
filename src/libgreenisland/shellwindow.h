@@ -31,9 +31,9 @@
 
 #include <greenisland/greenisland_export.h>
 
-class QWaylandOutput;
-class QWaylandSurface;
-class QWaylandSurfaceItem;
+class AbstractOutput;
+class Surface;
+class SurfaceItem;
 
 namespace GreenIsland {
 
@@ -43,11 +43,11 @@ class GREENISLAND_EXPORT ShellWindow : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(uint id READ id CONSTANT)
-    Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
-    Q_PROPERTY(QWaylandSurfaceItem *view READ view CONSTANT)
+    Q_PROPERTY(Surface *surface READ surface CONSTANT)
+    Q_PROPERTY(SurfaceItem *view READ view CONSTANT)
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(Flags flags READ flags WRITE setFlags NOTIFY flagsChanged)
-    Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(AbstractOutput *output READ output NOTIFY outputChanged)
     Q_ENUMS(Role Flag)
 public:
     enum Role {
@@ -69,15 +69,15 @@ public:
     };
     Q_DECLARE_FLAGS(Flags, Flag)
 
-    ShellWindow(QWaylandSurface *surface, QObject *parent = 0);
+    ShellWindow(Surface *surface, QObject *parent = 0);
     ~ShellWindow();
 
     uint id() const;
 
-    QWaylandSurface *surface() const;
-    QWaylandSurfaceItem *view() const;
+    Surface *surface() const;
+    SurfaceItem *view() const;
 
-    QWaylandOutput *output() const;
+    AbstractOutput *output() const;
 
     Role role() const;
     void setRole(const Role &role);
@@ -96,8 +96,8 @@ private:
     Role m_role;
     Flags m_flags;
     Compositor *m_compositor;
-    QWaylandSurface *m_surface;
-    QWaylandSurfaceItem *m_view;
+    Surface *m_surface;
+    SurfaceItem *m_view;
 
     void registerWindow();
     void unregisterWindow(bool destruction);

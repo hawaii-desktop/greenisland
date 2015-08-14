@@ -2,6 +2,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/src/libgreenisland
+    ${CMAKE_BINARY_DIR}/src/libgreenisland/api
 )
 
 set(SOURCES

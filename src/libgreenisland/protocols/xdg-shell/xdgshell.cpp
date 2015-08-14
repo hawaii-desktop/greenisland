@@ -24,9 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include "surface.h"
+#include "wayland_wrapper/qwlinputdevice_p.h"
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "compositor.h"
 #include "xdgshell.h"
@@ -86,7 +86,7 @@ void XdgShell::pingSurface(XdgSurface *surface)
     send_ping(serial);
 }
 
-XdgPopupGrabber *XdgShell::popupGrabberForDevice(QtWayland::InputDevice *device)
+XdgPopupGrabber *XdgShell::popupGrabberForDevice(GreenIsland::WlInputDevice *device)
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
@@ -111,8 +111,8 @@ void XdgShell::shell_destroy(Resource *resource)
     int xdgSurfaces = 0;
     XdgShellGlobal *xdgShellGlobal = qobject_cast<XdgShellGlobal *>(parent());
     if (xdgShellGlobal) {
-        Q_FOREACH (const QWaylandSurface *surface, xdgShellGlobal->compositor()->surfaces()) {
-            Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+        Q_FOREACH (const Surface *surface, xdgShellGlobal->compositor()->surfaces()) {
+            Q_FOREACH (SurfaceInterface *interface, surface->interfaces()) {
                 XdgSurface *xdgSurface = static_cast<XdgSurface *>(interface);
                 if (xdgSurface)
                     xdgSurfaces++;
@@ -140,12 +140,12 @@ void XdgShell::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resourc
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
     // Fail if get_xdg_surface is called on a xdg_surface
     // TODO: Use the new SurfaceRole API when will become public
-    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+    Q_FOREACH (SurfaceInterface *interface, surface->interfaces()) {
         XdgSurface *surfaceInterface = static_cast<XdgSurface *>(interface);
         if (surfaceInterface) {
             wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
@@ -163,7 +163,7 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
 {
     qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
 
-    QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
+    Surface *parent = Surface::fromResource(parentResource);
     if (!parent) {
         int id = wl_resource_get_id(surfaceResource);
         wl_resource_post_error(resource->handle, QtWaylandServer::xdg_popup::error_invalid_parent,
@@ -171,10 +171,10 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
         return;
     }
 
-    QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
+    Surface *surface = Surface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
-    Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
+    Q_FOREACH (SurfaceInterface *interface, surface->interfaces()) {
         XdgPopup *popupInterface = static_cast<XdgPopup *>(interface);
         if (popupInterface) {
             wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
@@ -184,7 +184,7 @@ void XdgShell::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource 
     }
 
     new XdgPopup(this, parent, surface,
-                 QtWayland::InputDevice::fromSeatResource(seatResource)->handle(),
+                 GreenIsland::WlInputDevice::fromSeatResource(seatResource)->handle(),
                  resource->client(), id, resource->version(),
                  x, y, serial);
 }

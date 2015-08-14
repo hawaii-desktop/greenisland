@@ -178,13 +178,13 @@ void NativeScreenBackend::changeOrientation(QScreen *screen)
     Output *output = m_screenMap[screen];
     switch (screen->primaryOrientation()) {
     case Qt::PortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform90);
+        output->setTransform(AbstractOutput::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        output->setTransform(QWaylandOutput::Transform180);
+        output->setTransform(AbstractOutput::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform270);
+        output->setTransform(AbstractOutput::Transform270);
         break;
     default:
         break;
@@ -199,23 +199,23 @@ void NativeScreenBackend::changeSubpixelAntialiasing(QScreen *screen)
     if (!m_screenMap.contains(screen))
         return;
 
-    QWaylandOutput::Subpixel wlType = QWaylandOutput::SubpixelUnknown;
+    AbstractOutput::Subpixel wlType = AbstractOutput::SubpixelUnknown;
     QPlatformScreen::SubpixelAntialiasingType type = screen->handle()->subpixelAntialiasingTypeHint();
     switch (type) {
     case QPlatformScreen::Subpixel_None:
-        wlType = QWaylandOutput::SubpixelNone;
+        wlType = AbstractOutput::SubpixelNone;
         break;
     case QPlatformScreen::Subpixel_RGB:
-        wlType = QWaylandOutput::SubpixelHorizontalRgb;
+        wlType = AbstractOutput::SubpixelHorizontalRgb;
         break;
     case QPlatformScreen::Subpixel_BGR:
-        wlType = QWaylandOutput::SubpixelHorizontalBgr;
+        wlType = AbstractOutput::SubpixelHorizontalBgr;
         break;
     case QPlatformScreen::Subpixel_VRGB:
-        wlType = QWaylandOutput::SubpixelVerticalRgb;
+        wlType = AbstractOutput::SubpixelVerticalRgb;
         break;
     case QPlatformScreen::Subpixel_VBGR:
-        wlType = QWaylandOutput::SubpixelVerticalBgr;
+        wlType = AbstractOutput::SubpixelVerticalBgr;
         break;
     }
 

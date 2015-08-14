@@ -27,13 +27,13 @@
 #ifndef XDGSURFACEGRABBER_H
 #define XDGSURFACEGRABBER_H
 
-#include <QtCompositor/private/qwlpointer_p.h>
+#include "wayland_wrapper/qwlpointer_p.h"
 
 #include "xdgsurface.h"
 
 namespace GreenIsland {
 
-class XdgSurfaceGrabber : public QtWayland::PointerGrabber
+class XdgSurfaceGrabber : public GreenIsland::PointerGrabber
 {
 public:
     explicit XdgSurfaceGrabber(XdgSurface *shellSurface);

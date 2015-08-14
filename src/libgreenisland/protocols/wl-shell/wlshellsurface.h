@@ -30,12 +30,12 @@
 #include <QtCore/QSet>
 #include <QtCore/QPointer>
 #include <QtQuick/QQuickItem>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include "surface.h"
+#include "surfaceinterface.h"
 
 #include "wlshell.h"
 
-class QWaylandInputDevice;
+class InputDevice;
 
 namespace GreenIsland {
 
@@ -45,7 +45,7 @@ class WlShellSurfaceMoveGrabber;
 class WlShellSurfaceResizeGrabber;
 class WlShellSurfacePopupGrabber;
 
-class WlShellSurface : public QObject, public QWaylandSurfaceInterface, public QtWaylandServer::wl_shell_surface
+class WlShellSurface : public QObject, public SurfaceInterface, public QtWaylandServer::wl_shell_surface
 {
     Q_OBJECT
     Q_ENUMS(State)
@@ -56,13 +56,13 @@ public:
         FullScreen
     };
 
-    WlShellSurface(WlShell *shell, QWaylandSurface *surface,
+    WlShellSurface(WlShell *shell, Surface *surface,
                    wl_client *client, uint32_t id, uint32_t version);
     ~WlShellSurface();
 
     State state() const;
 
-    QWaylandSurface *surface() const;
+    Surface *surface() const;
     ClientWindow *window() const;
 
     void restore();
@@ -72,7 +72,7 @@ public:
     void resetResizeGrab();
 
 protected:
-    bool runOperation(QWaylandSurfaceOp *op) Q_DECL_OVERRIDE;
+    bool runOperation(SurfaceOperation *op) Q_DECL_OVERRIDE;
 
     void shell_surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -101,7 +101,7 @@ protected:
 
 private:
     WlShell *m_shell;
-    QWaylandSurface *m_surface;
+    Surface *m_surface;
     QPointer<ClientWindow> m_window;
 
     WlShellSurfaceMoveGrabber *m_moveGrabber;
@@ -117,7 +117,7 @@ private:
     QRectF m_prevGlobalGeometry;
 
     void ping(uint32_t serial);
-    void moveWindow(QWaylandInputDevice *device);
+    void moveWindow(InputDevice *device);
     void requestResize(const QSize &size);
 
     friend class WlShellSurfaceMoveGrabber;

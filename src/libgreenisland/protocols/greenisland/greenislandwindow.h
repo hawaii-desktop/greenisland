@@ -28,9 +28,10 @@
 #define GREENISLANDWINDOW_H
 
 #include <QtCore/QPointer>
-#include <QtCompositor/QWaylandGlobalInterface>
 
 #include "clientwindow.h"
+#include "globalinterface.h"
+
 #include "qwayland-server-greenisland.h"
 
 namespace GreenIsland {
