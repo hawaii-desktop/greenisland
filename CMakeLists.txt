@@ -113,6 +113,13 @@ else()
 endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
 
+# xkbcommon
+pkg_check_modules(xkbcommon xkbcommon REQUIRED)
+if(xkbcommon_FOUND)
+    set(HAVE_XKBCOMMON 1)
+endif()
+add_feature_info("xkbcommon" xkbcommon_FOUND "Require for keymap support")
+
 # Subdirectories
 add_subdirectory(compositor)
 add_subdirectory(data)
