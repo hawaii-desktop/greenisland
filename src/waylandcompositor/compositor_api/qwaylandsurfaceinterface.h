@@ -43,8 +43,8 @@
 
 #include <QWindow>
 
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 

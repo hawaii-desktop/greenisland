@@ -36,8 +36,8 @@
 #include <QQuickWindow>
 #include <QSGTexture>
 
-#include <QtCompositor/qwaylandquicksurface.h>
-#include <QtCompositor/qwaylandoutput.h>
+#include <GreenIsland/compositor/qwaylandquicksurface.h>
+#include <GreenIsland/compositor/qwaylandoutput.h>
 
 QWaylandTextureBufferAttacher::QWaylandTextureBufferAttacher(QWaylandQuickSurface *surface)
     : m_surface(surface)

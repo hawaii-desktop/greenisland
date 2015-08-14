@@ -36,7 +36,7 @@
 
 #include <QPointF>
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 

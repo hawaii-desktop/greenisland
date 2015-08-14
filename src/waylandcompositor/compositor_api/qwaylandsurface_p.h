@@ -46,10 +46,10 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 #include <private/qobject_p.h>
 
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <wayland_wrapper/qwlsurface_p.h>
 
 QT_BEGIN_NAMESPACE
 

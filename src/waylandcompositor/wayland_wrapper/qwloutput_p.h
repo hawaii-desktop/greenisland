@@ -53,13 +53,13 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 
 #include <QtCore/QRect>
 #include <QtCore/QList>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
-#include <QtCompositor/qwaylandoutput.h>
+#include <qwayland-server-wayland.h>
+#include <GreenIsland/compositor/qwaylandoutput.h>
 
 QT_BEGIN_NAMESPACE
 

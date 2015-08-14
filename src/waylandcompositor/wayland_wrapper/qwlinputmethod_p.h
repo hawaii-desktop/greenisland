@@ -52,7 +52,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/private/qwayland-server-input-method.h>
+#include <qwayland-server-input-method.h>
 
 #include <QObject>
 #include <QScopedPointer>

@@ -34,8 +34,8 @@
 #ifndef QWAYLANDTEXTUREBUFFERATTACHER_H
 #define QWAYLANDTEXTUREBUFFERATTACHER_H
 
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandbufferref.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandbufferref.h>
 
 QT_BEGIN_NAMESPACE
 

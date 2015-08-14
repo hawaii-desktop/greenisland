@@ -52,11 +52,11 @@
 // We mean it.
 //
 
-#include  <private/qwlcompositor_p.h>
+#include  <wayland_wrapper/qwlcompositor_p.h>
 
 #include "wayland-util.h"
 
-#include <QtCompositor/private/qwayland-server-qtkey-extension.h>
+#include <qwayland-server-qtkey-extension.h>
 
 QT_BEGIN_NAMESPACE
 

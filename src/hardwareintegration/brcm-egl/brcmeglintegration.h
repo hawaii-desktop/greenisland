@@ -41,7 +41,7 @@
 #ifndef BRCMEGLINTEGRATION_H
 #define BRCMEGLINTEGRATION_H
 
-#include <QtCompositor/private/qwlclientbufferintegration_p.h>
+#include <waylandcompositor/hardware_integration/qwlclientbufferintegration_p.h>
 #include "qwayland-server-brcm.h"
 
 #include <QtCore/QScopedPointer>

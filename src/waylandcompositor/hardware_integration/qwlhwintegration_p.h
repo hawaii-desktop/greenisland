@@ -52,7 +52,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/private/qwayland-server-hardware-integration.h>
+#include <qwayland-server-hardware-integration.h>
 
 #include <QtCore/QString>
 

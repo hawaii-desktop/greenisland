@@ -52,7 +52,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 #include <QObject>
 #include <QtCore/QList>
 

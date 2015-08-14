@@ -52,14 +52,14 @@
 // We mean it.
 //
 
-#include <private/qwlcompositor_p.h>
+#include <wayland_wrapper/qwlcompositor_p.h>
 
 #include <QtCore/QList>
 #include <QtCore/QMap>
 #include <QtGui/QClipboard>
 #include <QtCore/QMimeData>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -41,7 +41,7 @@
 #ifndef QWAYLANDINPUTPANEL_H
 #define QWAYLANDINPUTPANEL_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 #include <QObject>
 #include <QRect>

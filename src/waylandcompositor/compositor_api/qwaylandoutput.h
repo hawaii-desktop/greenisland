@@ -42,7 +42,7 @@
 #ifndef QWAYLANDOUTPUT_H
 #define QWAYLANDOUTPUT_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 #include <QObject>
 #include <QRect>

@@ -53,15 +53,15 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
-#include <QtCompositor/qwaylandcompositor.h>
+#include <compositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandcompositor.h>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/QSet>
 
-#include <private/qwldisplay_p.h>
+#include <wayland_wrapper/qwldisplay_p.h>
 
 #include <wayland-server.h>
 

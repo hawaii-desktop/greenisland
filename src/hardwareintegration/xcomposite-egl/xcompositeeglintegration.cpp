@@ -42,7 +42,7 @@
 
 #include "wayland-xcomposite-server-protocol.h"
 
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 #include <QtGui/QGuiApplication>
 #include <qpa/qplatformnativeinterface.h>
 #include <qpa/qplatformopenglcontext.h>

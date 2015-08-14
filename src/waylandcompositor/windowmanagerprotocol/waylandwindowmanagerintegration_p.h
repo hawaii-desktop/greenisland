@@ -52,8 +52,8 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
-#include <QtCompositor/private/qwayland-server-windowmanager.h>
+#include <compositor/qwaylandexport.h>
+#include <qwayland-server-windowmanager.h>
 
 #include <QObject>
 #include <QMap>

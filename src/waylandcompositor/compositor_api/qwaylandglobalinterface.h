@@ -34,7 +34,7 @@
 #ifndef QWAYLANDGLOBALINTERFACE_H
 #define QWAYLANDGLOBALINTERFACE_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 struct wl_interface;
 struct wl_client;

@@ -41,7 +41,7 @@
 #ifndef QWAYLANDCOMPOSITOR_H
 #define QWAYLANDCOMPOSITOR_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 #include <QObject>
 #include <QImage>

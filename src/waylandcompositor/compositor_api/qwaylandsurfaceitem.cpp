@@ -40,8 +40,8 @@
 
 #include "qwaylandsurfaceitem.h"
 #include "qwaylandquicksurface.h"
-#include <QtCompositor/qwaylandcompositor.h>
-#include <QtCompositor/qwaylandinput.h>
+#include <GreenIsland/compositor/qwaylandcompositor.h>
+#include <GreenIsland/compositor/qwaylandinput.h>
 
 #include <QtGui/QKeyEvent>
 #include <QtGui/QGuiApplication>

@@ -32,8 +32,8 @@
 **
 ****************************************************************************/
 
-#include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <wayland_wrapper/qwlcompositor_p.h>
+#include <wayland_wrapper/qwlsurface_p.h>
 
 #include "qwaylandclient.h"
 #include "qwaylandquickcompositor.h"

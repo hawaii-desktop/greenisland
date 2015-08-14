@@ -52,12 +52,12 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 
-#include <private/qwlsurfacebuffer_p.h>
-#include <private/qwloutput_p.h>
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandbufferref.h>
+#include <wayland_wrapper/qwlsurfacebuffer_p.h>
+#include <wayland_wrapper/qwloutput_p.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandbufferref.h>
 
 #include <QtCore/QVector>
 #include <QtCore/QRect>
@@ -70,7 +70,7 @@
 
 #include <wayland-util.h>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

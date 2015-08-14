@@ -53,12 +53,12 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 
 #include <QtCore/QPoint>
 #include <QtCore/QObject>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 #include "qwllistener_p.h"
 

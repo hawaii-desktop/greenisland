@@ -52,18 +52,18 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandglobalinterface.h>
-#include <QtCompositor/qwaylandsurfaceinterface.h>
+#include <compositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandglobalinterface.h>
+#include <GreenIsland/compositor/qwaylandsurfaceinterface.h>
 
 #include <wayland-server.h>
 #include <QHash>
 #include <QPoint>
 #include <QSet>
-#include <private/qwlpointer_p.h>
+#include <wayland_wrapper/qwlpointer_p.h>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

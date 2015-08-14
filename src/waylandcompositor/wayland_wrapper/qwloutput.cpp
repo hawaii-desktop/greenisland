@@ -46,8 +46,8 @@
 
 #include <QtGui/QWindow>
 #include <QRect>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandOutput>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandOutput>
 
 QT_BEGIN_NAMESPACE
 

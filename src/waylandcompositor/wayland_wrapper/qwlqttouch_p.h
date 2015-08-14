@@ -52,8 +52,8 @@
 // We mean it.
 //
 
-#include <private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwayland-server-touch-extension.h>
+#include <wayland_wrapper/qwlcompositor_p.h>
+#include <qwayland-server-touch-extension.h>
 #include "wayland-util.h"
 
 QT_BEGIN_NAMESPACE

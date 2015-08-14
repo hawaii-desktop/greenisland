@@ -34,8 +34,8 @@
 #ifndef QQUICKWAYLANDSURFACE_H
 #define QQUICKWAYLANDSURFACE_H
 
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandbufferref.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandbufferref.h>
 
 struct wl_client;
 

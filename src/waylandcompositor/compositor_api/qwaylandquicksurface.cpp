@@ -41,8 +41,8 @@
 #include "qwaylandquickcompositor.h"
 #include "qwaylandsurfaceitem.h"
 #include "qwaylandoutput.h"
-#include <QtCompositor/private/qwaylandsurface_p.h>
-#include <QtCompositor/private/qwaylandtexturebufferattacher_p.h>
+#include <compositor_api/qwaylandsurface_p.h>
+#include <compositor_api/qwaylandtexturebufferattacher_p.h>
 
 QT_BEGIN_NAMESPACE
 

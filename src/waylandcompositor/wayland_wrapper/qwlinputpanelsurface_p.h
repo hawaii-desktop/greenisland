@@ -53,7 +53,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/private/qwayland-server-input-method.h>
+#include <qwayland-server-input-method.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -40,7 +40,7 @@
 
 #include "qwlinputpanel_p.h"
 
-#include <QtCompositor/qwaylandinputpanel.h>
+#include <GreenIsland/compositor/qwaylandinputpanel.h>
 
 #include "qwlcompositor_p.h"
 #include "qwlinputdevice_p.h"

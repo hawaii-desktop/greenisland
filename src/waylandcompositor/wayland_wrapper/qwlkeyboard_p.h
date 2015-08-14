@@ -53,11 +53,11 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
-#include <QtCompositor/qwaylandinput.h>
+#include <compositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandinput.h>
 
 #include <QObject>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 #include <QtCore/QVector>
 

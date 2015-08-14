@@ -54,10 +54,10 @@
 
 #include <wayland-server.h>
 
-#include <QtCompositor/private/qwayland-server-surface-extension.h>
-#include <private/qwlsurface_p.h>
-#include <QtCompositor/qwaylandsurface.h>
-#include <QtCompositor/qwaylandsurfaceinterface.h>
+#include <qwayland-server-surface-extension.h>
+#include <wayland_wrapper/qwlsurface_p.h>
+#include <GreenIsland/compositor/qwaylandsurface.h>
+#include <GreenIsland/compositor/qwaylandsurfaceinterface.h>
 
 #include <QtCore/QVariant>
 #include <QtCore/QLinkedList>

@@ -41,7 +41,7 @@
 #ifndef XCOMPOSITEHANDLER_H
 #define XCOMPOSITEHANDLER_H
 
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include <wayland_wrapper/qwlcompositor_p.h>
 
 #include "xlibinclude.h"
 

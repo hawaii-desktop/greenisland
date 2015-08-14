@@ -41,15 +41,15 @@
 #ifndef QWAYLANDSURFACEITEM_H
 #define QWAYLANDSURFACEITEM_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 #include <QtQuick/QQuickItem>
 #include <QtQuick/qsgtexture.h>
 
 #include <QtQuick/qsgtextureprovider.h>
 
-#include <QtCompositor/qwaylandsurfaceview.h>
-#include <QtCompositor/qwaylandquicksurface.h>
+#include <GreenIsland/compositor/qwaylandsurfaceview.h>
+#include <GreenIsland/compositor/qwaylandquicksurface.h>
 
 Q_DECLARE_METATYPE(QWaylandQuickSurface*)
 

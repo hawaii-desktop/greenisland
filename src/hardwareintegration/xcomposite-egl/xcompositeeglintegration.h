@@ -41,7 +41,7 @@
 #ifndef XCOMPOSITEEGLINTEGRATION_H
 #define XCOMPOSITEEGLINTEGRATION_H
 
-#include <QtCompositor/private/qwlclientbufferintegration_p.h>
+#include <waylandcompositor/hardware_integration/qwlclientbufferintegration_p.h>
 
 #include "xlibinclude.h"
 

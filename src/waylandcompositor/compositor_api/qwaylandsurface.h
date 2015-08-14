@@ -42,7 +42,7 @@
 #ifndef QWAYLANDSURFACE_H
 #define QWAYLANDSURFACE_H
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 #include <QtCore/QScopedPointer>
 #include <QtGui/QImage>

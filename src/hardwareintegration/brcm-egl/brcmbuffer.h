@@ -41,8 +41,8 @@
 #ifndef BRCMBUFFER_H
 #define BRCMBUFFER_H
 
-#include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
+#include <qwayland-server-wayland.h>
 
 #include <QtCore/QSize>
 #include <QtCore/QVector>

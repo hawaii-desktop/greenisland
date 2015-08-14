@@ -45,7 +45,7 @@
 #include <QtCore/QPoint>
 #include <QtCore/QString>
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 

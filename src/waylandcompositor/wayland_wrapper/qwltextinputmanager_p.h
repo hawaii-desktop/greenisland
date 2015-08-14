@@ -52,7 +52,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/private/qwayland-server-text.h>
+#include <qwayland-server-text.h>
 
 QT_BEGIN_NAMESPACE
 

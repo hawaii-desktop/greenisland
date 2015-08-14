@@ -34,7 +34,7 @@
 #ifndef QWAYLANDQUICKCOMPOSITOR_H
 #define QWAYLANDQUICKCOMPOSITOR_H
 
-#include <QtCompositor/qwaylandcompositor.h>
+#include <GreenIsland/compositor/qwaylandcompositor.h>
 
 QT_BEGIN_NAMESPACE
 

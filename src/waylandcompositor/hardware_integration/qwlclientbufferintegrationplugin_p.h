@@ -45,7 +45,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 
 #include <QtCore/qplugin.h>
 #include <QtCore/qfactoryinterface.h>

@@ -40,7 +40,7 @@
 #include <QtGui/qopengl.h>
 #endif
 
-#include <QtCompositor/qwaylandexport.h>
+#include <GreenIsland/compositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 

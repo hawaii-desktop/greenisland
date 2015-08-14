@@ -52,9 +52,9 @@
 // We mean it.
 //
 
-#include <private/qwlsurface_p.h>
+#include <wayland_wrapper/qwlsurface_p.h>
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <qwayland-server-wayland.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QLinkedList>

@@ -53,7 +53,7 @@
 //
 
 #include <wayland-server.h>
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 

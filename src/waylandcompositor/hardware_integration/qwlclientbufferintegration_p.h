@@ -52,7 +52,7 @@
 // We mean it.
 //
 
-#include <QtCompositor/qwaylandexport.h>
+#include <compositor/qwaylandexport.h>
 #include <QtCore/QSize>
 #include <QtGui/qopengl.h>
 #include <QtGui/QOpenGLContext>
