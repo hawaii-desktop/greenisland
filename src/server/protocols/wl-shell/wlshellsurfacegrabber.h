@@ -27,7 +27,7 @@
 #ifndef WLSHELLSURFACEGRABBER_H
 #define WLSHELLSURFACEGRABBER_H
 
-#include <QtCompositor/private/qwlpointer_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>
 
 #include "wlshellsurface.h"
 

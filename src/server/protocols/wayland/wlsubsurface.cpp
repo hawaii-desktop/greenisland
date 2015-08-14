@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 #include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/private/qwaylandsurface_p.h>
+#include <waylandcompositor/compositor_api/qwaylandsurface_p.h>
 
 #include "clientwindow.h"
 #include "compositor.h"

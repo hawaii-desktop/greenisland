@@ -59,8 +59,8 @@
  ***************************************************************************/
 
 #include <QtCompositor/QWaylandSurfaceView>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "xdgpopupgrabber.h"
 #include "xdgpopup.h"

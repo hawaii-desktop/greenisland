@@ -27,7 +27,7 @@
 #ifndef WLSHELLSURFACERESIZEGRABBER_H
 #define WLSHELLSURFACERESIZEGRABBER_H
 
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <waylandcompositor/qwayland-server-wayland.h>
 
 #include "wlshellsurfacegrabber.h"
 #include "client/wlcursortheme.h"

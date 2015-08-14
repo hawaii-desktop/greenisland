@@ -30,7 +30,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QLoggingCategory>
 #include <QtCompositor/QWaylandGlobalInterface>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include "qwayland-server-wayland.h"
 
 Q_DECLARE_LOGGING_CATEGORY(WLSHELL_PROTOCOL)
 Q_DECLARE_LOGGING_CATEGORY(WLSHELL_TRACE)

@@ -32,8 +32,8 @@
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwloutput_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "applicationmanager_p.h"
 #include "clientwindow.h"

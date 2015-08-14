@@ -1,8 +1,11 @@
 include_directories(
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/waylandcompositor
+    ${CMAKE_BINARY_DIR}/src
+    ${CMAKE_BINARY_DIR}/src/waylandcompositor
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
 )
 
 if(systemd_FOUND)
@@ -73,6 +76,11 @@ if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
 endif()
 
 greenisland_add_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
+    BASENAME wayland
+    PREFIX wl_
+)
+greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland.xml
     BASENAME greenisland
     PREFIX greenisland_
@@ -118,9 +126,9 @@ target_link_libraries(GreenIslandServer
         Qt5::Core
         Qt5::Gui
         Qt5::Quick
-        Qt5::Compositor
         Wayland::Client
         Wayland::Server
+	GreenIslandCompositor
     PRIVATE
         Wayland::Cursor
         ${EGL_TARGET}
@@ -203,7 +211,7 @@ install(
 include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME GreenIslandServer
                       LIB_NAME GreenIslandServer
-                      DEPS "core gui quick compositor"
+                      DEPS "core gui quick GreenIslandCompositor"
                       FILENAME_VAR PRI_FILENAME
                       INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}")
 install(FILES ${PRI_FILENAME}
@@ -212,7 +220,7 @@ install(FILES ${PRI_FILENAME}
 include(ECMGeneratePkgConfigFile)
 ecm_generate_pkgconfig_file(BASE_NAME GreenIslandServer
                             LIB_NAME GreenIslandServer
-                            DEPS "Qt5Core Qt5Gui Qt5Quick Qt5Compositor"
+                            DEPS "Qt5Core Qt5Gui Qt5Quick GreenIslandCompositor"
                             FILENAME_VAR PKGCONFIG_FILENAME
                             INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}"
                             INSTALL)

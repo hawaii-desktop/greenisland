@@ -25,9 +25,9 @@
  ***************************************************************************/
 
 #include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "clientwindow.h"
 #include "xdgpopup.h"

@@ -26,7 +26,7 @@
 
 #include <QtCore/QDebug>
 #include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "compositor.h"
 #include "compositor_p.h"

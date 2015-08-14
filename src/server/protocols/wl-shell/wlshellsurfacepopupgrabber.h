@@ -27,7 +27,7 @@
 #ifndef WLSHELLSURFACEPOPUPGRABBER_H
 #define WLSHELLSURFACEPOPUPGRABBER_H
 
-#include <QtCompositor/private/qwlpointer_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>
 
 namespace GreenIsland {
 

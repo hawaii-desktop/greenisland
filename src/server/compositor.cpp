@@ -28,7 +28,7 @@
 #include <QtGui/QGuiApplication>
 #include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/QWaylandClient>
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 
 #include <typeinfo>
 

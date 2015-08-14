@@ -31,7 +31,7 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCompositor/QWaylandGlobalInterface>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwayland-server-wayland.h>
+#include <waylandcompositor/qwayland-server-wayland.h>
 
 Q_DECLARE_LOGGING_CATEGORY(WLSUBCOMPOSITOR_TRACE)
 

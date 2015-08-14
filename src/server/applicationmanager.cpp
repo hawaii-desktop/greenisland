@@ -28,7 +28,7 @@
 #include <QtCore/QTimer>
 #include <QtCompositor/QWaylandClient>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 
 #include "applicationmanager.h"
 #include "applicationmanager_p.h"

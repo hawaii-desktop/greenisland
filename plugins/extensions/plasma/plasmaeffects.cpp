@@ -27,7 +27,7 @@
 #include <QtCompositor/QtCompositorVersion>
 #include <QtCompositor/QWaylandOutput>
 #include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/private/qwlregion_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlregion_p.h>
 
 #include "plasmaeffects.h"
 #include "plasmashell.h"

@@ -32,7 +32,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/qpa/qplatformscreen.h>
 #include <QtQml/QQmlEngine>
-#include <QtCompositor/private/qwlcompositor_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 
 #include "abstractplugin.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL

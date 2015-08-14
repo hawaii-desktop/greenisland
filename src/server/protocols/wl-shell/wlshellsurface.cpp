@@ -26,10 +26,10 @@
 
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/private/qwlcompositor_p.h>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwlpointer_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "clientwindow.h"
 #include "output.h"

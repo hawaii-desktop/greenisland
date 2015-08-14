@@ -2,9 +2,12 @@ include(${CMAKE_SOURCE_DIR}/src/GreenIslandConfigExtrasLocal.cmake)
 include(${CMAKE_SOURCE_DIR}/src/GreenIslandMacros.cmake)
 
 include_directories(
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/waylandcompositor
+    ${CMAKE_BINARY_DIR}/src
+    ${CMAKE_BINARY_DIR}/src/waylandcompositor
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
-    ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
 )
 
 set(SOURCES
@@ -27,7 +30,6 @@ greenisland_add_server_protocol(SOURCES
 
 add_library(plasma MODULE ${SOURCES})
 target_link_libraries(plasma
-                      Qt5::Compositor
                       GreenIsland::Server
                       Wayland::Server)
 

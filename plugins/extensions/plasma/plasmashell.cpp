@@ -27,9 +27,9 @@
 #include <QtCompositor/QWaylandSurface>
 #include <QtCompositor/QWaylandSurfaceItem>
 #include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/private/qwlinputdevice_p.h>
-#include <QtCompositor/private/qwloutput_p.h>
-#include <QtCompositor/private/qwlsurface_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
+#include <waylandcompositor/wayland_wrapper/qwloutput_p.h>
+#include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "compositor.h"
 #include "plasmashell.h"
