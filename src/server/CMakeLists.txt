@@ -57,8 +57,6 @@ set(SOURCES
     protocols/wl-shell/wlshellsurfacepopupgrabber.cpp
     protocols/wl-shell/wlshellsurfacemovegrabber.cpp
     protocols/wl-shell/wlshellsurfaceresizegrabber.cpp
-    protocols/wayland/wlsubcompositor.cpp
-    protocols/wayland/wlsubsurface.cpp
     protocols/xdg-shell/xdgshell.cpp
     protocols/xdg-shell/xdgsurface.cpp
     protocols/xdg-shell/xdgsurfacegrabber.cpp

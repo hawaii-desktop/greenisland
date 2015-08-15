@@ -243,7 +243,6 @@ void Compositor::run()
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal(this));
     addGlobalInterface(new GtkShellGlobal());
-    addGlobalInterface(new WlSubCompositorGlobal());
 
     // Add global interfaces from plugins
     Q_FOREACH (AbstractPlugin *plugin, d->plugins)
@@ -303,6 +302,7 @@ QWaylandSurfaceItem *Compositor::firstViewOf(QWaylandSurface *surface)
     return static_cast<QWaylandSurfaceItem *>(surface->views().first());
 }
 
+#if 0
 QWaylandSurfaceItem *Compositor::subSurfaceForOutput(QWaylandSurface *surface, Output *output) const
 {
     Q_FOREACH (QWaylandSurfaceInterface *interface, surface->interfaces()) {
@@ -315,6 +315,7 @@ QWaylandSurfaceItem *Compositor::subSurfaceForOutput(QWaylandSurface *surface, O
 
     return Q_NULLPTR;
 }
+#endif
 
 void Compositor::surfaceCreated(QWaylandSurface *surface)
 {

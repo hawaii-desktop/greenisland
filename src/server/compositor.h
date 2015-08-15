@@ -93,8 +93,10 @@ public:
 
     Q_INVOKABLE QWaylandSurfaceView *pickView(const QPointF &globalPosition) const Q_DECL_OVERRIDE;
     Q_INVOKABLE QWaylandSurfaceItem *firstViewOf(QWaylandSurface *surface);
+#if 0
     Q_INVOKABLE QWaylandSurfaceItem *subSurfaceForOutput(QWaylandSurface *surface,
                                                          Output *output) const;
+#endif
 
     void surfaceCreated(QWaylandSurface *surface) Q_DECL_OVERRIDE;
     QWaylandSurfaceView *createView(QWaylandSurface *surf) Q_DECL_OVERRIDE;
@@ -166,7 +168,9 @@ private:
     friend class WlCursorThemePrivate;
     friend class WlShellSurfaceMoveGrabber;
     friend class WlShellSurfaceResizeGrabber;
+#if 0
     friend class WlSubSurface;
+#endif
     friend class XdgSurfaceMoveGrabber;
     friend class XdgSurfaceResizeGrabber;
 };
