@@ -52,7 +52,6 @@
 #include "wayland_wrapper/qwlsurface_p.h"
 #include "wayland_wrapper/qwlinputdevice_p.h"
 #include "wayland_wrapper/qwlinputpanel_p.h"
-#include "wayland_wrapper/qwlshellsurface_p.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
@@ -92,7 +91,6 @@ void QWaylandCompositor::addGlobalInterface(QWaylandGlobalInterface *interface)
 
 void QWaylandCompositor::addDefaultShell()
 {
-    addGlobalInterface(new QtWayland::Shell);
 }
 
 struct wl_display *QWaylandCompositor::waylandDisplay() const

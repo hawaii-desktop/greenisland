@@ -51,7 +51,6 @@
 #include "qwldatadevice_p.h"
 #include "qwlextendedsurface_p.h"
 #include "qwlsubsurface_p.h"
-#include "qwlshellsurface_p.h"
 #include "qwlqttouch_p.h"
 #include "qwlqtkey_p.h"
 #include "qwlinputdevice_p.h"

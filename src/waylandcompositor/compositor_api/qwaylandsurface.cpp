@@ -46,7 +46,6 @@
 #include "wayland_wrapper/qwlsurface_p.h"
 #include "wayland_wrapper/qwlextendedsurface_p.h"
 #include "wayland_wrapper/qwlcompositor_p.h"
-#include "wayland_wrapper/qwlshellsurface_p.h"
 #include "wayland_wrapper/qwlinputdevice_p.h"
 #include "wayland_wrapper/qwldatadevice_p.h"
 #include "wayland_wrapper/qwldatadevicemanager_p.h"

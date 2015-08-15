@@ -31,7 +31,6 @@ set(SOURCES
     wayland_wrapper/qwlqtkey.cpp
     wayland_wrapper/qwlqttouch.cpp
     wayland_wrapper/qwlregion.cpp
-    wayland_wrapper/qwlshellsurface.cpp
     wayland_wrapper/qwlsubsurface.cpp
     wayland_wrapper/qwlsurfacebuffer.cpp
     wayland_wrapper/qwlsurface.cpp
