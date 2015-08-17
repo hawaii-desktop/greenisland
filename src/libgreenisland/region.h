@@ -35,18 +35,18 @@ struct wl_client;
 struct wl_resource;
 
 namespace GreenIsland {
-class WlCompositor;
-}
-
-namespace GreenIsland {
 
 class RegionPrivate;
+
+class WlCompositor;
 
 class GREENISLAND_EXPORT Region
 {
     Q_DISABLE_COPY(Region)
     Q_DECLARE_PRIVATE(Region)
 public:
+    ~Region();
+
     QRegion region() const;
 
     static Region *fromResource(wl_resource *resource);
@@ -56,7 +56,7 @@ private:
 
     RegionPrivate *const d_ptr;
 
-    friend class GreenIsland::WlCompositor;
+    friend class WlCompositor;
 };
 
 } // namespace GreenIsland

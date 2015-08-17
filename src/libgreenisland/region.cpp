@@ -51,13 +51,14 @@ RegionPrivate *RegionPrivate::fromResource(wl_resource *resource)
 
 void RegionPrivate::region_destroy_resource(Resource *)
 {
-    delete q_ptr;
     delete this;
 }
 
-void RegionPrivate::region_destroy(Resource *resource)
+void RegionPrivate::region_destroy(Resource *)
 {
-    wl_resource_destroy(resource->handle);
+    // Delete the public object, this will destroy the resource triggering
+    // region_destroy_resource() which will delete the private object
+    delete q_ptr;
 }
 
 void RegionPrivate::region_add(Resource *resource,
@@ -83,6 +84,11 @@ void RegionPrivate::region_subtract(Resource *resource,
 Region::Region(wl_client *client, quint32 id)
     : d_ptr(new RegionPrivate(client, id, this))
 {
+}
+
+Region::~Region()
+{
+    wl_resource_destroy(d_ptr->resource()->handle);
 }
 
 QRegion Region::region() const

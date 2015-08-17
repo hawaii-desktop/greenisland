@@ -62,7 +62,7 @@ protected:
 private:
     void region_destroy_resource(Resource *) Q_DECL_OVERRIDE;
 
-    void region_destroy(Resource *resource) Q_DECL_OVERRIDE;
+    void region_destroy(Resource *) Q_DECL_OVERRIDE;
     void region_add(Resource *resource,
                     int32_t x, int32_t y,
                     int32_t w, int32_t h) Q_DECL_OVERRIDE;
