@@ -40,21 +40,23 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef BUFFERATTACHER_H
-#define BUFFERATTACHER_H
+#ifndef GREENISLAND_BUFFERATTACHER_P_H
+#define GREENISLAND_BUFFERATTACHER_P_H
 
 #include <QtGui/QOpenGLTexture>
 
 #include "surface.h"
 #include "bufferref.h"
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
+
 namespace GreenIsland {
 
-class BufferAttacher : public AbstractBufferAttacher
+class CursorBufferAttacher : public AbstractBufferAttacher
 {
 public:
-    BufferAttacher();
-    ~BufferAttacher();
+    CursorBufferAttacher();
+    ~CursorBufferAttacher();
 
     void attach(const BufferRef &ref) Q_DECL_OVERRIDE;
 
@@ -65,6 +67,8 @@ public:
     GLuint texture;
 };
 
-}
+} // namespace GreenIsland
 
-#endif // BUFFERATTACHER_H
+#endif // QT_COMPOSITOR_WAYLAND_GL
+
+#endif // GREENISLAND_CURSORBUFFERATTACHER_P_H

@@ -24,6 +24,10 @@ endif()
 
 add_definitions(-Wno-deprecated-declarations)
 
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
+endif()
+
 include(GreenIslandConfigExtrasLocal.cmake)
 include(GreenIslandMacros.cmake)
 
@@ -39,6 +43,7 @@ set(SOURCES
     compositor.cpp
     compositor_p.cpp
     compositorsettings.cpp
+    cursorbufferattacher_p.cpp
     diagnostic_p.cpp
     drag.cpp
     homeapplication.cpp
@@ -130,11 +135,6 @@ set(SOURCES
     wayland_wrapper/qwltextinputmanager.cpp
     wayland_wrapper/qwltouch.cpp
 )
-
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
-    set(SOURCES ${SOURCES} bufferattacher.cpp)
-endif()
 
 # Wayland server-side protocols
 greenisland_add_server_protocol(SOURCES

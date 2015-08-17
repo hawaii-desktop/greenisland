@@ -42,24 +42,25 @@
 
 #include <QtGui/QImage>
 #include <QtGui/QOpenGLFunctions>
-#include <QDebug>
 
-#include "bufferattacher.h"
+#include "cursorbufferattacher_p.h"
+
+#ifdef QT_COMPOSITOR_WAYLAND_GL
 
 namespace GreenIsland {
 
-BufferAttacher::BufferAttacher()
+CursorBufferAttacher::CursorBufferAttacher()
     : AbstractBufferAttacher()
     , shmTexture(Q_NULLPTR)
 {
 }
 
-BufferAttacher::~BufferAttacher()
+CursorBufferAttacher::~CursorBufferAttacher()
 {
     delete shmTexture;
 }
 
-void BufferAttacher::attach(const BufferRef &ref)
+void CursorBufferAttacher::attach(const BufferRef &ref)
 {
     if (bufferRef) {
         if (bufferRef.isShm()) {
@@ -83,11 +84,13 @@ void BufferAttacher::attach(const BufferRef &ref)
     }
 }
 
-QImage BufferAttacher::image() const
+QImage CursorBufferAttacher::image() const
 {
     if (!bufferRef || !bufferRef.isShm())
         return QImage();
     return bufferRef.image();
 }
 
-}
+} // namespace GreenIsland
+
+#endif // QT_COMPOSITOR_WAYLAND_GL

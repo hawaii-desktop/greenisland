@@ -33,14 +33,12 @@
 
 #include "abstractplugin.h"
 #include "applicationmanager_p.h"
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-#  include "bufferattacher.h"
-#endif
 #include "cmakedirs.h"
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
 #include "config.h"
+#include "cursorbufferattacher_p.h"
 #include "logging.h"
 #include "output.h"
 #include "windowview.h"
@@ -407,7 +405,7 @@ void Compositor::setCursorSurface(Surface *surface, int hotspotX, int hotspotY)
             if (!d->cursorSurface || !hasBuffer)
                 return;
 
-            QImage image = static_cast<BufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
+            QImage image = static_cast<CursorBufferAttacher *>(d->cursorSurface->bufferAttacher())->image();
             if (image.isNull())
                 return;
 
@@ -428,7 +426,7 @@ void Compositor::setCursorSurface(Surface *surface, int hotspotX, int hotspotY)
 
     // Buffer attacher
     if (d->cursorSurface && !d->cursorSurface->bufferAttacher())
-        d->cursorSurface->setBufferAttacher(new BufferAttacher());
+        d->cursorSurface->setBufferAttacher(new CursorBufferAttacher());
 #else
     Q_UNUSED(surface)
     Q_UNUSED(hotspotX)

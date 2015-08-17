@@ -35,12 +35,10 @@
 #include "wayland_wrapper/qwlcompositor_p.h"
 
 #include "abstractplugin.h"
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-#  include "bufferattacher.h"
-#endif
 #include "compositor.h"
 #include "compositor_p.h"
 #include "clientwindow.h"
+#include "cursorbufferattacher_p.h"
 #include "logging.h"
 #include "keybindings.h"
 #include "shellwindow.h"
