@@ -39,6 +39,8 @@ Q_LOGGING_CATEGORY(WLCURSORTHEME, "greenisland.wlcursortheme")
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
  * WlCursorThemePrivate
  */
@@ -298,4 +300,6 @@ void WlCursorTheme::changeCursor(CursorShape shape)
         d->seat->pointer()->setCursor(image);
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland

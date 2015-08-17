@@ -66,7 +66,7 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     , cursorSurface(Q_NULLPTR)
     , cursorHotspotX(0)
     , cursorHotspotY(0)
-    , cursorGrabbed(WlCursorTheme::BlankCursor)
+    , cursorGrabbed(Client::WlCursorTheme::BlankCursor)
     , cursorIsSet(false)
     , lastKeyboardFocus(Q_NULLPTR)
     , recorderManager(Q_NULLPTR)
@@ -84,8 +84,8 @@ CompositorPrivate::CompositorPrivate(Compositor *self)
     ApplicationManager::instance();
 
     // Wayland client connections
-    nestedConnection = new WlClientConnection(self);
-    clientData.connection = new WlClientConnection(self);
+    nestedConnection = new Client::WlClientConnection(self);
+    clientData.connection = new Client::WlClientConnection(self);
     clientData.client = Q_NULLPTR;
     clientData.compositor = Q_NULLPTR;
     clientData.seat = Q_NULLPTR;
@@ -204,15 +204,15 @@ void CompositorPrivate::dpms(bool on)
 #if 0
     Q_FOREACH (QScreen *screen, QGuiApplication::screens())
         screen->handle()->setPowerState(on
-                                      ? QPlatformScreen::PowerStateOn
-                                      : QPlatformScreen::PowerStateStandby);
+                                        ? QPlatformScreen::PowerStateOn
+                                        : QPlatformScreen::PowerStateStandby);
 #endif
 #else
     Q_UNUSED(on)
 #endif
 }
 
-void CompositorPrivate::grabCursor(WlCursorTheme::CursorShape shape)
+void CompositorPrivate::grabCursor(Client::WlCursorTheme::CursorShape shape)
 {
     if (clientData.cursorTheme && cursorGrabbed != shape) {
         cursorGrabbed = shape;
@@ -223,7 +223,7 @@ void CompositorPrivate::grabCursor(WlCursorTheme::CursorShape shape)
 void CompositorPrivate::ungrabCursor()
 {
     if (clientData.cursorTheme) {
-        cursorGrabbed = WlCursorTheme::BlankCursor;
+        cursorGrabbed = Client::WlCursorTheme::BlankCursor;
         clientData.cursorTheme->changeCursor(cursorGrabbed);
     }
 }
@@ -248,12 +248,12 @@ void CompositorPrivate::_q_createNestedConnection()
 
     nestedConnection->setDisplay(display);
 
-    q->connect(nestedConnection, &WlClientConnection::connected, q, [this, q, display] {
-        WlRegistry *registry = new WlRegistry(nestedConnection);
+    q->connect(nestedConnection, &Client::WlClientConnection::connected, q, [this, q, display] {
+        Client::WlRegistry *registry = new Client::WlRegistry(nestedConnection);
         registry->create(nestedConnection->display());
 
-        q->connect(registry, &WlRegistry::fullscreenShellAnnounced, q,
-                [this, registry](quint32 name, quint32 version) {
+        q->connect(registry, &Client::WlRegistry::fullscreenShellAnnounced, q,
+                   [this, registry](quint32 name, quint32 version) {
             // Create fullscreen shell client
             fullscreenShell = new FullScreenShellClient(registry->registry(), name, version);
 
@@ -263,7 +263,7 @@ void CompositorPrivate::_q_createNestedConnection()
                                       Qt::QueuedConnection,
                                       Q_ARG(QString, fakeScreenConfiguration));
         });
-        q->connect(registry, &WlRegistry::fullscreenShellRemoved, q, [this](quint32) {
+        q->connect(registry, &Client::WlRegistry::fullscreenShellRemoved, q, [this](quint32) {
             // Delete fullscreen shell client
             delete fullscreenShell;
             fullscreenShell = Q_NULLPTR;
@@ -296,16 +296,16 @@ void CompositorPrivate::_q_createInternalConnection()
     // requires a wl_shm which is only available to Wayland clients
     clientData.client = wl_client_create(q->handle()->wl_display(), sockets[0]);
     clientData.connection->setSocketFd(sockets[1]);
-    q->connect(clientData.connection, &WlClientConnection::connected, q, [this, q] {
-        WlRegistry *registry = new WlRegistry(clientData.connection);
+    q->connect(clientData.connection, &Client::WlClientConnection::connected, q, [this, q] {
+        Client::WlRegistry *registry = new Client::WlRegistry(clientData.connection);
         registry->create(clientData.connection->display());
 
-        q->connect(registry, &WlRegistry::compositorAnnounced, q,
+        q->connect(registry, &Client::WlRegistry::compositorAnnounced, q,
                    [this, registry, q](quint32, quint32) {
             // Bind to the compositor
             clientData.compositor = registry->bindCompositor();
         });
-        q->connect(registry, &WlRegistry::compositorRemoved, q,
+        q->connect(registry, &Client::WlRegistry::compositorRemoved, q,
                    [this, registry](quint32) {
             // Delete compositor
             if (clientData.compositor) {
@@ -314,25 +314,25 @@ void CompositorPrivate::_q_createInternalConnection()
             }
         });
 
-        q->connect(registry, &WlRegistry::seatAnnounced, q,
+        q->connect(registry, &Client::WlRegistry::seatAnnounced, q,
                    [this, registry, q](quint32 name, quint32 version) {
             // Bind to the seat
-            clientData.seat = new WlSeat(registry, clientData.compositor,
-                                         name, version);
+            clientData.seat = new Client::WlSeat(registry, clientData.compositor,
+                                                 name, version);
         });
-        q->connect(registry, &WlRegistry::seatRemoved, q,
+        q->connect(registry, &Client::WlRegistry::seatRemoved, q,
                    [this, registry](quint32) {
             // Delete seat
             delete clientData.seat;
             clientData.seat = Q_NULLPTR;
         });
 
-        q->connect(registry, &WlRegistry::shmAnnounced, q,
+        q->connect(registry, &Client::WlRegistry::shmAnnounced, q,
                    [this, registry, q](quint32, quint32) {
             // Create a shared memory pool
             clientData.shmPool = registry->createShmPool(clientData.connection);
         });
-        q->connect(registry, &WlRegistry::shmRemoved, q,
+        q->connect(registry, &Client::WlRegistry::shmRemoved, q,
                    [this, registry](quint32) {
             // Delete shared memory pool
             if (clientData.shmPool)
@@ -340,11 +340,11 @@ void CompositorPrivate::_q_createInternalConnection()
             clientData.shmPool = Q_NULLPTR;
         });
 
-        q->connect(registry, &WlRegistry::interfacesAnnounced, q, [this] {
+        q->connect(registry, &Client::WlRegistry::interfacesAnnounced, q, [this] {
             // All interfaces were announced, create the cursor theme
-            clientData.cursorTheme = new WlCursorTheme(clientData.shmPool, clientData.seat);
+            clientData.cursorTheme = new Client::WlCursorTheme(clientData.shmPool, clientData.seat);
         });
-        q->connect(registry, &WlRegistry::interfacesRemoved, q, [this] {
+        q->connect(registry, &Client::WlRegistry::interfacesRemoved, q, [this] {
             // All interfaces are gone so shmpool and seat are not valid anymore,
             // delete the cursor theme
             delete clientData.cursorTheme;

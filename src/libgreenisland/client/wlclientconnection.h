@@ -24,14 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLCLIENTCONNECTION_H
-#define WLCLIENTCONNECTION_H
+#ifndef GREENISLAND_CLIENT_WLCLIENTCONNECTION_H
+#define GREENISLAND_CLIENT_WLCLIENTCONNECTION_H
 
 #include <QtCore/QObject>
 
 struct wl_display;
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlClientConnectionPrivate;
 
@@ -67,6 +69,8 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_initConnection())
 };
 
-}
+} // namespace Client
 
-#endif // WLCLIENTCONNECTION_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLCLIENTCONNECTION_H

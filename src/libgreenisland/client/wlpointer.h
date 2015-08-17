@@ -24,14 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLPOINTER_H
-#define WLPOINTER_H
+#ifndef GREENISLAND_CLIENT_WLPOINTER_H
+#define GREENISLAND_CLIENT_WLPOINTER_H
 
 #include "qwayland-wayland.h"
 
 struct wl_cursor_image;
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlSeat;
 
@@ -53,6 +55,8 @@ private:
     quint32 m_enterSerial;
 };
 
-}
+} // namespace Client
 
-#endif // WLPOINTER_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLPOINTER_H

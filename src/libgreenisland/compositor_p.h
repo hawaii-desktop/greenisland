@@ -49,12 +49,15 @@ struct wl_compositor;
 
 namespace GreenIsland {
 
-class AbstractPlugin;
-class Compositor;
-class ClientWindow;
+namespace Client {
 class WlClientConnection;
 class WlSeat;
 class WlShmPool;
+}
+
+class AbstractPlugin;
+class Compositor;
+class ClientWindow;
 class ShellWindow;
 class FullScreenShellClient;
 class GreenIslandRecorderManager;
@@ -72,7 +75,7 @@ public:
 
     void dpms(bool on);
 
-    void grabCursor(WlCursorTheme::CursorShape shape);
+    void grabCursor(Client::WlCursorTheme::CursorShape shape);
     void ungrabCursor();
 
     void addWindow(ClientWindow *window);
@@ -103,7 +106,7 @@ public:
     Surface *cursorSurface;
     int cursorHotspotX;
     int cursorHotspotY;
-    WlCursorTheme::CursorShape cursorGrabbed;
+    Client::WlCursorTheme::CursorShape cursorGrabbed;
     bool cursorIsSet;
 
     // Keyboard
@@ -116,17 +119,17 @@ public:
 
     // Nested mode
     bool nested;
-    WlClientConnection *nestedConnection;
+    Client::WlClientConnection *nestedConnection;
     FullScreenShellClient *fullscreenShell;
 
     // Client
     struct WlClientData {
         wl_client *client;
-        WlClientConnection *connection;
+        Client::WlClientConnection *connection;
         wl_compositor *compositor;
-        WlSeat *seat;
-        WlShmPool *shmPool;
-        WlCursorTheme *cursorTheme;
+        Client::WlSeat *seat;
+        Client::WlShmPool *shmPool;
+        Client::WlCursorTheme *cursorTheme;
     };
     WlClientData clientData;
 

@@ -29,6 +29,8 @@
 
 namespace GreenIsland {
 
+namespace Client {
+
 WlSeat::WlSeat(WlRegistry *registry, wl_compositor *compositor,
                quint32 name, quint32 version)
     : QtWayland::wl_seat(registry->registry(), name, version)
@@ -54,4 +56,6 @@ void WlSeat::seat_capabilities(uint32_t capabilities)
     }
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland

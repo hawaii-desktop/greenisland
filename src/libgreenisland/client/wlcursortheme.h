@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLCURSORTHEME_H
-#define WLCURSORTHEME_H
+#ifndef GREENISLAND_CLIENT_WLCURSORTHEME_H
+#define GREENISLAND_CLIENT_WLCURSORTHEME_H
 
 #include <QtCore/QLoggingCategory>
 #include <QtGui/QCursor>
@@ -35,6 +35,8 @@ Q_DECLARE_LOGGING_CATEGORY(WLCURSORTHEME)
 struct wl_cursor_image;
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlCursorThemePrivate;
 class WlSeat;
@@ -87,6 +89,8 @@ private:
     WlCursorThemePrivate *const d;
 };
 
-}
+} // namespace Client
 
-#endif // WLCURSORTHEME_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLCURSORTHEME_H

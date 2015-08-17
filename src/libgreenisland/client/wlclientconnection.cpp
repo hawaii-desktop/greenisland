@@ -34,6 +34,8 @@
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
  * WlClientConnectionPrivate
  */
@@ -181,6 +183,8 @@ void WlClientConnection::flush()
     wl_display_flush(d->display);
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_wlclientconnection.cpp"

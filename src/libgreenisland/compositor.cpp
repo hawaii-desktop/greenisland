@@ -368,7 +368,7 @@ void Compositor::unsetMouseCursor()
     Q_D(Compositor);
 
     if (d->clientData.cursorTheme)
-        d->clientData.cursorTheme->changeCursor(WlCursorTheme::BlankCursor);
+        d->clientData.cursorTheme->changeCursor(Client::WlCursorTheme::BlankCursor);
 }
 
 void Compositor::resetMouseCursor()
@@ -376,7 +376,7 @@ void Compositor::resetMouseCursor()
     Q_D(Compositor);
 
     if (d->clientData.cursorTheme)
-        d->clientData.cursorTheme->changeCursor(WlCursorTheme::ArrowCursor);
+        d->clientData.cursorTheme->changeCursor(Client::WlCursorTheme::ArrowCursor);
 }
 
 void Compositor::abortSession()

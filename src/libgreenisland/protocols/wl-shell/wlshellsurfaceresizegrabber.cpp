@@ -41,38 +41,38 @@ WlShellSurfaceResizeGrabber::WlShellSurfaceResizeGrabber(WlShellSurface *shellSu
 
     // Change cursor
     if (m_resizeEdges != QtWaylandServer::wl_shell_surface::resize_none) {
-        WlCursorTheme::CursorShape shape = WlCursorTheme::BlankCursor;
+        Client::WlCursorTheme::CursorShape shape = Client::WlCursorTheme::BlankCursor;
 
         switch (m_resizeEdges) {
         case QtWaylandServer::wl_shell_surface::resize_top:
-            shape = WlCursorTheme::ResizeNorthCursor;
+            shape = Client::WlCursorTheme::ResizeNorthCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_top_left:
-            shape = WlCursorTheme::ResizeNorthWestCursor;
+            shape = Client::WlCursorTheme::ResizeNorthWestCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_top_right:
-            shape = WlCursorTheme::ResizeNorthEastCursor;
+            shape = Client::WlCursorTheme::ResizeNorthEastCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_bottom:
-            shape = WlCursorTheme::ResizeSouthCursor;
+            shape = Client::WlCursorTheme::ResizeSouthCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_bottom_left:
-            shape = WlCursorTheme::ResizeSouthWestCursor;
+            shape = Client::WlCursorTheme::ResizeSouthWestCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_bottom_right:
-            shape = WlCursorTheme::ResizeSouthEastCursor;
+            shape = Client::WlCursorTheme::ResizeSouthEastCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_left:
-            shape = WlCursorTheme::ResizeWestCursor;
+            shape = Client::WlCursorTheme::ResizeWestCursor;
             break;
         case QtWaylandServer::wl_shell_surface::resize_right:
-            shape = WlCursorTheme::ResizeEastCursor;
+            shape = Client::WlCursorTheme::ResizeEastCursor;
             break;
         default:
             break;
         }
 
-        if (shape != WlCursorTheme::BlankCursor) {
+        if (shape != Client::WlCursorTheme::BlankCursor) {
             Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
             Q_ASSERT(compositor);
             compositor->d_func()->grabCursor(shape);

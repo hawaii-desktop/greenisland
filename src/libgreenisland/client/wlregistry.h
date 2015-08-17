@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLREGISTRY_H
-#define WLREGISTRY_H
+#ifndef GREENISLAND_CLIENT_WLREGISTRY_H
+#define GREENISLAND_CLIENT_WLREGISTRY_H
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
@@ -38,6 +38,8 @@ struct wl_registry;
 struct wl_seat;
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlRegistryPrivate;
 class WlShmPool;
@@ -92,6 +94,8 @@ private:
     WlRegistryPrivate *const d_ptr;
 };
 
-}
+} // namespace Client
 
-#endif // WLREGISTRY_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLREGISTRY_H

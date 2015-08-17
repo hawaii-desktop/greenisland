@@ -24,14 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLSEAT_H
-#define WLSEAT_H
+#ifndef GREENISLAND_CLIENT_WLSEAT_H
+#define GREENISLAND_CLIENT_WLSEAT_H
 
 #include "wlregistry.h"
 
 #include "qwayland-wayland.h"
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlPointer;
 
@@ -56,6 +58,8 @@ private:
     WlPointer *m_pointer;
 };
 
-}
+} // namespace Client
 
-#endif // WLSEAT_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLSEAT_H

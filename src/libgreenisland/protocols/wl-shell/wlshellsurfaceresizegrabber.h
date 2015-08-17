@@ -49,7 +49,7 @@ private:
     QtWaylandServer::wl_shell_surface::resize m_resizeEdges;
     int32_t m_width;
     int32_t m_height;
-    WlCursorTheme::CursorShape m_lastShape;
+    Client::WlCursorTheme::CursorShape m_lastShape;
 
     friend class WlShellSurface;
 };

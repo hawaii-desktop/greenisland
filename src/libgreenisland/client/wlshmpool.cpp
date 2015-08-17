@@ -37,6 +37,8 @@ Q_LOGGING_CATEGORY(WLSHMPOOL, "greenisland.wlshmpool")
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
  * WlShmPoolPrivate
  */
@@ -183,6 +185,8 @@ wl_shm *WlShmPool::shm() const
     return d->shm;
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_wlshmpool.cpp"

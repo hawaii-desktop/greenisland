@@ -44,7 +44,7 @@ XdgSurfaceMoveGrabber::XdgSurfaceMoveGrabber(XdgSurface *shellSurface, const QPo
     // Change cursor
     Compositor *compositor = static_cast<Compositor *>(m_shellSurface->surface()->compositor());
     Q_ASSERT(compositor);
-    compositor->d_func()->grabCursor(WlCursorTheme::ClosedHandCursor);
+    compositor->d_func()->grabCursor(Client::WlCursorTheme::ClosedHandCursor);
 }
 
 XdgSurfaceMoveGrabber::~XdgSurfaceMoveGrabber()

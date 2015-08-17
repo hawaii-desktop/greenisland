@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLSHMPOOL_H
-#define WLSHMPOOL_H
+#ifndef GREENISLAND_CLIENT_WLSHMPOOL_H
+#define GREENISLAND_CLIENT_WLSHMPOOL_H
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
@@ -35,6 +35,8 @@ Q_DECLARE_LOGGING_CATEGORY(WLSHMPOOL)
 struct wl_shm;
 
 namespace GreenIsland {
+
+namespace Client {
 
 class WlRegistry;
 class WlShmPoolPrivate;
@@ -61,6 +63,8 @@ private:
     friend class WlRegistry;
 };
 
-}
+} // namespace Client
 
-#endif // WLSHMPOOL_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_CLIENT_WLSHMPOOL_H

@@ -31,6 +31,8 @@
 
 namespace GreenIsland {
 
+namespace Client {
+
 WlPointer::WlPointer(WlSeat *seat)
     : QtWayland::wl_pointer()
     , m_seat(seat)
@@ -86,4 +88,6 @@ void WlPointer::pointer_enter(uint32_t serial, wl_surface *surface,
     m_enterSerial = serial;
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland

@@ -35,6 +35,8 @@ Q_LOGGING_CATEGORY(WLREGISTRY, "greenisland.wlregistry")
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
  * WlRegistryPrivate
  */
@@ -286,6 +288,8 @@ WlShmPool *WlRegistry::createShmPool(QObject *parent)
     return new WlShmPool(d->bind<wl_shm>(Shm), parent);
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_wlregistry.cpp"
