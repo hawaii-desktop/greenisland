@@ -99,8 +99,6 @@ ApplicationManager::ApplicationManager()
     : QObject()
     , d_ptr(new ApplicationManagerPrivate(this))
 {
-    qRegisterMetaType<ApplicationManager *>("ApplicationManager*");
-
     s_applicationManager = this;
 }
 

@@ -58,10 +58,6 @@ public:
 AbstractQuickCompositor::AbstractQuickCompositor(const char *socketName, ExtensionFlags extensions)
                        : AbstractCompositor(socketName, new AbstractQuickCompositorPrivate(this, extensions))
 {
-    qmlRegisterUncreatableType<SurfaceItem>("QtCompositor", 1, 0, "WaylandSurfaceItem", QObject::tr("Cannot create instance of WaylandSurfaceItem"));
-    qmlRegisterUncreatableType<QuickSurface>("QtCompositor", 1, 0, "WaylandQuickSurface", QObject::tr("Cannot create instance of WaylandQuickSurface"));
-    qmlRegisterUncreatableType<ClientConnection>("QtCompositor", 1, 0, "WaylandClient", QObject::tr("Cannot create instance of WaylandClient"));
-    qmlRegisterUncreatableType<AbstractOutput>("QtCompositor", 1, 0, "WaylandOutput", QObject::tr("Cannot create instance of WaylandOutput"));
 }
 
 SurfaceView *AbstractQuickCompositor::createView(Surface *surf)

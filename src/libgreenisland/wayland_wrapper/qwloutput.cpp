@@ -112,8 +112,6 @@ WlOutput::WlOutput(WlCompositor *compositor, QWindow *window)
 {
     m_mode.size = window ? window->size() : QSize();
     m_mode.refreshRate = 60;
-
-    qRegisterMetaType<AbstractOutput::Mode>("WaylandOutput::Mode");
 }
 
 void WlOutput::output_bind_resource(Resource *resource)

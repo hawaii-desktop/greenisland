@@ -39,8 +39,6 @@ ShellWindow::ShellWindow(Surface *surface, QObject *parent)
     , m_compositor(static_cast<Compositor *>(surface->compositor()))
     , m_surface(surface)
 {
-    qRegisterMetaType<ShellWindow *>("ShellWindow*");
-
     // Identifier
     m_id++;
 

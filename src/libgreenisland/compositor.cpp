@@ -43,6 +43,9 @@
 #include "output.h"
 #include "windowview.h"
 #include "shellwindow.h"
+#include "surface.h"
+#include "surfacebuffer.h"
+#include "surfaceview.h"
 
 #include "client/wlclientconnection.h"
 #include "client/wlcursortheme.h"
@@ -70,6 +73,21 @@ Compositor::Compositor(QObject *parent)
     , d_ptr(new CompositorPrivate(this))
 {
     Q_D(Compositor);
+
+    // Register metatypes
+    qRegisterMetaType<ApplicationManager *>("ApplicationManager*");
+    qRegisterMetaType<ClientConnection*>("ClientConnection*");
+    qRegisterMetaType<ClientWindow *>("ClientWindow*");
+    qRegisterMetaType<CompositorSettings *>("CompositorSettings*");
+    qRegisterMetaType<Output *>("Output*");
+    qRegisterMetaType<Output::Mode>("Output::Mode");
+    qRegisterMetaType<Output::Transform>("Output::Transform");
+    qRegisterMetaType<ShellWindow *>("ShellWindow*");
+    qRegisterMetaType<Surface*>("Surface*");
+    qRegisterMetaType<SurfaceBuffer*>("SurfaceBuffer*");
+    qRegisterMetaType<SurfaceView*>("SurfaceView*");
+    qRegisterMetaType<SurfaceItem*>("SurfaceItem*");
+    qRegisterMetaType<WindowView *>("WindowView*");
 
     // Load plugins
     d->loadPlugins();
@@ -240,7 +258,7 @@ void Compositor::run()
     addGlobalInterface(new WlShellGlobal());
     addGlobalInterface(new XdgShellGlobal(this));
     addGlobalInterface(new GtkShellGlobal());
-    addGlobalInterface(new WlSubCompositorGlobal());
+    //addGlobalInterface(new WlSubCompositorGlobal());
 
     // Add global interfaces from plugins
     Q_FOREACH (AbstractPlugin *plugin, d->plugins)

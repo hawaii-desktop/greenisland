@@ -28,6 +28,7 @@
 #include <QtQml/QQmlComponent>
 
 #include <GreenIsland/ApplicationManager>
+#include <GreenIsland/ClientConnection>
 #include <GreenIsland/ClientWindow>
 #include <GreenIsland/Compositor>
 #include <GreenIsland/CompositorSettings>
@@ -63,6 +64,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<Compositor>(uri, 1, 0, "Compositor", compositorProvider);
     qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManager",
                                                    QStringLiteral("You can't create ApplicationManager objects"));
+    qmlRegisterUncreatableType<ClientConnection>(uri, 1, 0, "ClientConnection",
+                                                 QStringLiteral("You can't create ClientConnection objects"));
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
                                              QStringLiteral("You can't create ClientWindow objects"));
     qmlRegisterUncreatableType<CompositorSettings>(uri, 1, 0, "CompositorSettings",

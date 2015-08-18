@@ -84,8 +84,6 @@ Output::Output(Compositor *compositor, const QString &name,
 #endif
     , d_ptr(new OutputPrivate(this))
 {
-    qRegisterMetaType<Output *>("Output*");
-
     Q_D(Output);
     d->compositor = compositor;
     d->name = name;

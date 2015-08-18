@@ -41,7 +41,6 @@ WindowView::WindowView(QuickSurface *surface, QQuickItem *parent)
     : SurfaceItem(surface, parent)
     , m_pos(0, 0)
 {
-    qRegisterMetaType<WindowView *>("WindowView*");
 }
 
 QPointF WindowView::localPosition() const

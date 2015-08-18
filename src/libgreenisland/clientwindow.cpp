@@ -61,8 +61,6 @@ ClientWindow::ClientWindow(Surface *surface, QObject *parent)
     , m_surface(surface)
     , m_parentWindow(Q_NULLPTR)
 {
-    qRegisterMetaType<ClientWindow *>("ClientWindow*");
-
     // Identifier
     static uint id = 0;
     m_id = id++;

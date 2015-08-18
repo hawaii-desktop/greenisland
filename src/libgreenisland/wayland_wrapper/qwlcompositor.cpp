@@ -218,10 +218,6 @@ void WlCompositor::init()
     QAbstractEventDispatcher *dispatcher = QGuiApplicationPrivate::eventDispatcher;
     connect(dispatcher, SIGNAL(aboutToBlock()), this, SLOT(processWaylandEvents()));
 
-    qRegisterMetaType<SurfaceBuffer*>("SurfaceBuffer*");
-    qRegisterMetaType<ClientConnection*>("WaylandClient*");
-    qRegisterMetaType<Surface*>("WaylandSurface*");
-    qRegisterMetaType<SurfaceView*>("WaylandSurfaceView*");
     //initialize distancefieldglyphcache here
 
     initializeHardwareIntegration();
