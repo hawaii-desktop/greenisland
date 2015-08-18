@@ -81,7 +81,7 @@ class QtTouchExtension;
 class QtKeyExtensionGlobal;
 class WlTextInputManager;
 class HardwareIntegration;
-class ClientBufferIntegration;
+class ClientBufferIntegrationInterface;
 class ServerBufferIntegration;
 class QtWindowManager;
 
@@ -118,7 +118,7 @@ public:
     AbstractOutput *primaryOutput() const;
     void setPrimaryOutput(AbstractOutput *output);
 
-    ClientBufferIntegration *clientBufferIntegration() const;
+    ClientBufferIntegrationInterface *clientBufferIntegration() const;
     ServerBufferIntegration *serverBufferIntegration() const;
     void initializeHardwareIntegration();
     void initializeExtensions();
@@ -210,7 +210,7 @@ protected:
 
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     QScopedPointer<HardwareIntegration> m_hw_integration;
-    QScopedPointer<ClientBufferIntegration> m_client_buffer_integration;
+    QScopedPointer<ClientBufferIntegrationInterface> m_client_buffer_integration;
     QScopedPointer<ServerBufferIntegration> m_server_buffer_integration;
 #endif
 

@@ -89,13 +89,12 @@
 
 #if defined (QT_COMPOSITOR_WAYLAND_GL)
 #include "hardware_integration/qwlhwintegration_p.h"
-#include "hardware_integration/qwlclientbufferintegration_p.h"
 #include "hardware_integration/qwlserverbufferintegration_p.h"
 #endif
 #include "protocols/qt/qttouchextension.h"
 #include "protocols/qt/qtwindowmanager.h"
 
-#include "hardware_integration/qwlclientbufferintegrationfactory_p.h"
+#include "plugins/clientbufferintegrationfactory_p.h"
 #include "hardware_integration/qwlserverbufferintegrationfactory_p.h"
 
 #include "xkbhelper_p.h"
@@ -395,7 +394,7 @@ void WlCompositor::subcompositor_get_subsurface(wl_subcompositor::Resource *reso
     s->setRoleHandler(ss);
 }
 
-ClientBufferIntegration * WlCompositor::clientBufferIntegration() const
+ClientBufferIntegrationInterface * WlCompositor::clientBufferIntegration() const
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     return m_client_buffer_integration.data();
@@ -540,25 +539,13 @@ void WlCompositor::bindGlobal(wl_client *client, void *data, uint32_t version, u
 void WlCompositor::loadClientBufferIntegration()
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
-    QStringList keys = ClientBufferIntegrationFactory::keys();
-    QString targetKey;
-    QByteArray clientBufferIntegration = qgetenv("QT_WAYLAND_HARDWARE_INTEGRATION");
-    if (clientBufferIntegration.isEmpty())
-        clientBufferIntegration = qgetenv("QT_WAYLAND_CLIENT_BUFFER_INTEGRATION");
-    if (keys.contains(QString::fromLocal8Bit(clientBufferIntegration.constData()))) {
-        targetKey = QString::fromLocal8Bit(clientBufferIntegration.constData());
-    } else if (keys.contains(QString::fromLatin1("wayland-egl"))) {
-        targetKey = QString::fromLatin1("wayland-egl");
-    } else if (!keys.isEmpty()) {
-        targetKey = keys.first();
-    }
-
-    if (!targetKey.isEmpty()) {
-        m_client_buffer_integration.reset(ClientBufferIntegrationFactory::create(targetKey, QStringList()));
+    ClientBufferIntegrationInterface *integration = ClientBufferIntegrationFactory::loadPlugin();
+    if (integration) {
+        m_client_buffer_integration.reset(integration);
         if (m_client_buffer_integration) {
             m_client_buffer_integration->setCompositor(m_qt_compositor);
             if (m_hw_integration)
-                m_hw_integration->setClientBufferIntegration(targetKey);
+                m_hw_integration->setClientBufferIntegration(m_client_buffer_integration->name());
         }
     }
     //BUG: if there is no client buffer integration, bad things will happen when opengl is used

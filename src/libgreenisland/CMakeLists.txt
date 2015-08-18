@@ -76,6 +76,8 @@ set(SOURCES
     client/wlregistry.cpp
     client/wlseat.cpp
     client/wlshmpool.cpp
+    plugins/clientbufferintegrationfactory_p.cpp
+    plugins/clientbufferintegrationinterface.cpp
     screen/screenbackend.cpp
     screen/screenconfiguration.cpp
     screen/fakescreenbackend.cpp
@@ -107,9 +109,6 @@ set(SOURCES
     protocols/xdg-shell/xdgpopup.cpp
     protocols/xdg-shell/xdgpopupgrabber.cpp
 
-    hardware_integration/qwlclientbufferintegration.cpp
-    hardware_integration/qwlclientbufferintegrationfactory.cpp
-    hardware_integration/qwlclientbufferintegrationplugin.cpp
     hardware_integration/qwlhwintegration.cpp
     hardware_integration/qwlserverbufferintegration.cpp
     hardware_integration/qwlserverbufferintegrationfactory.cpp
@@ -314,6 +313,20 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
   REQUIRED_HEADERS GreenIsland_HEADERS
 )
 install(FILES ${GreenIsland_CamelCase_HEADERS}
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
+        COMPONENT Devel)
+
+ecm_generate_headers(plugins_CAMELCASE_HEADERS
+  HEADER_NAMES
+    ClientBufferIntegrationInterface
+  PREFIX
+    GreenIsland
+  REQUIRED_HEADERS
+    plugins_HEADERS
+  RELATIVE
+    plugins
+)
+install(FILES ${plugins_CAMELCASE_HEADERS} ${plugins_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
         COMPONENT Devel)
 
