@@ -1,5 +1,6 @@
 add_subdirectory(declarative)
 add_subdirectory(compositor)
+add_subdirectory(hardwareintegration)
 add_subdirectory(launcher)
 add_subdirectory(libgreenisland)
 add_subdirectory(plugins)
