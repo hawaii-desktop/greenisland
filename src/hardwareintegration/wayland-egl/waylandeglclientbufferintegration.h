@@ -57,31 +57,35 @@
 #ifndef WAYLANDEGLCLIENTBUFFERINTEGRATION_H
 #define WAYLANDEGLCLIENTBUFFERINTEGRATION_H
 
-#include <QtCore/QScopedPointer>
-
-#include "hardware_integration/qwlclientbufferintegration_p.h"
+#include <GreenIsland/ClientBufferIntegrationInterface>
 
 class WaylandEglClientBufferIntegrationPrivate;
 
-class WaylandEglClientBufferIntegration : public GreenIsland::ClientBufferIntegration
+class GREENISLAND_EXPORT WaylandEglClientBufferIntegration : public QObject, public GreenIsland::ClientBufferIntegrationInterface
 {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.hawaiios.GreenIsland.ClientBufferIntegrationInterface")
+    Q_INTERFACES(GreenIsland::ClientBufferIntegrationInterface)
     Q_DECLARE_PRIVATE(WaylandEglClientBufferIntegration)
 public:
     WaylandEglClientBufferIntegration();
+    ~WaylandEglClientBufferIntegration();
+
+    QString name() const Q_DECL_OVERRIDE;
 
     void initializeHardware(GreenIsland::Display *waylandDisplay) Q_DECL_OVERRIDE;
 
-    void bindTextureToBuffer(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
-    bool isYInverted(struct ::wl_resource *) const Q_DECL_OVERRIDE;
+    void bindTextureToBuffer(wl_resource *buffer) Q_DECL_OVERRIDE;
+    bool isYInverted(wl_resource *) const Q_DECL_OVERRIDE;
 
-    void *lockNativeBuffer(struct ::wl_resource *buffer) const Q_DECL_OVERRIDE;
+    void *lockNativeBuffer(wl_resource *buffer) const Q_DECL_OVERRIDE;
     void unlockNativeBuffer(void *native_buffer) const Q_DECL_OVERRIDE;
 
-    QSize bufferSize(struct ::wl_resource *buffer) const Q_DECL_OVERRIDE;
+    QSize bufferSize(wl_resource *buffer) const Q_DECL_OVERRIDE;
 
 private:
     Q_DISABLE_COPY(WaylandEglClientBufferIntegration)
-    QScopedPointer<WaylandEglClientBufferIntegrationPrivate> d_ptr;
+    WaylandEglClientBufferIntegrationPrivate *const d_ptr;
 };
 
 #endif // WAYLANDEGLCLIENTBUFFERINTEGRATION_H

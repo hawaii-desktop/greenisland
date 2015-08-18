@@ -67,8 +67,10 @@
 
 #include "waylandeglclientbufferintegration.h"
 
+extern "C" {
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
+}
 
 /* Needed for compatibility with Mesa older than 10.0. */
 typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYWAYLANDBUFFERWL_compat) (EGLDisplay dpy, struct wl_resource *buffer, EGLint attribute, EGLint *value);
@@ -116,9 +118,19 @@ public:
 };
 
 WaylandEglClientBufferIntegration::WaylandEglClientBufferIntegration()
-    : GreenIsland::ClientBufferIntegration()
+    : GreenIsland::ClientBufferIntegrationInterface()
     , d_ptr(new WaylandEglClientBufferIntegrationPrivate)
 {
+}
+
+WaylandEglClientBufferIntegration::~WaylandEglClientBufferIntegration()
+{
+    delete d_ptr;
+}
+
+QString WaylandEglClientBufferIntegration::name() const
+{
+    return QStringLiteral("wayland-egl");
 }
 
 void WaylandEglClientBufferIntegration::initializeHardware(GreenIsland::Display *waylandDisplay)
@@ -186,7 +198,7 @@ void WaylandEglClientBufferIntegration::initializeHardware(GreenIsland::Display 
     d->valid = true;
 }
 
-void WaylandEglClientBufferIntegration::bindTextureToBuffer(struct ::wl_resource *buffer)
+void WaylandEglClientBufferIntegration::bindTextureToBuffer(wl_resource *buffer)
 {
     Q_D(WaylandEglClientBufferIntegration);
     if (!d->valid) {
@@ -208,7 +220,7 @@ void WaylandEglClientBufferIntegration::bindTextureToBuffer(struct ::wl_resource
     d->egl_destroy_image(d->egl_display, image);
 }
 
-bool WaylandEglClientBufferIntegration::isYInverted(struct ::wl_resource *buffer) const
+bool WaylandEglClientBufferIntegration::isYInverted(wl_resource *buffer) const
 {
 #if defined(EGL_WAYLAND_Y_INVERTED_WL)
     Q_D(const WaylandEglClientBufferIntegration);
@@ -225,11 +237,10 @@ bool WaylandEglClientBufferIntegration::isYInverted(struct ::wl_resource *buffer
     return false;
 #endif
 
-    return GreenIsland::ClientBufferIntegration::isYInverted(buffer);
+    return GreenIsland::ClientBufferIntegrationInterface::isYInverted(buffer);
 }
 
-
-void *WaylandEglClientBufferIntegration::lockNativeBuffer(struct ::wl_resource *buffer) const
+void *WaylandEglClientBufferIntegration::lockNativeBuffer(wl_resource *buffer) const
 {
     Q_D(const WaylandEglClientBufferIntegration);
 
@@ -247,7 +258,7 @@ void WaylandEglClientBufferIntegration::unlockNativeBuffer(void *native_buffer) 
     d->egl_destroy_image(d->egl_display, image);
 }
 
-QSize WaylandEglClientBufferIntegration::bufferSize(struct ::wl_resource *buffer) const
+QSize WaylandEglClientBufferIntegration::bufferSize(wl_resource *buffer) const
 {
     Q_D(const WaylandEglClientBufferIntegration);
 
