@@ -89,13 +89,11 @@
 
 #if defined (QT_COMPOSITOR_WAYLAND_GL)
 #include "hardware_integration/qwlhwintegration_p.h"
-#include "hardware_integration/qwlserverbufferintegration_p.h"
+#include "plugins/clientbufferintegrationfactory_p.h"
+#include "plugins/serverbufferintegrationfactory_p.h"
 #endif
 #include "protocols/qt/qttouchextension.h"
 #include "protocols/qt/qtwindowmanager.h"
-
-#include "plugins/clientbufferintegrationfactory_p.h"
-#include "hardware_integration/qwlserverbufferintegrationfactory_p.h"
 
 #include "xkbhelper_p.h"
 
@@ -403,7 +401,7 @@ ClientBufferIntegrationInterface * WlCompositor::clientBufferIntegration() const
 #endif
 }
 
-ServerBufferIntegration * WlCompositor::serverBufferIntegration() const
+ServerBufferIntegrationInterface *WlCompositor::serverBufferIntegration() const
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     return m_server_buffer_integration.data();
@@ -555,16 +553,11 @@ void WlCompositor::loadClientBufferIntegration()
 void WlCompositor::loadServerBufferIntegration()
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
-    QStringList keys = ServerBufferIntegrationFactory::keys();
-    QString targetKey;
-    QByteArray serverBufferIntegration = qgetenv("QT_WAYLAND_SERVER_BUFFER_INTEGRATION");
-    if (keys.contains(QString::fromLocal8Bit(serverBufferIntegration.constData()))) {
-        targetKey = QString::fromLocal8Bit(serverBufferIntegration.constData());
-    }
-    if (!targetKey.isEmpty()) {
-        m_server_buffer_integration.reset(ServerBufferIntegrationFactory::create(targetKey, QStringList()));
+    ServerBufferIntegrationInterface *integration = ServerBufferIntegrationFactory::loadPlugin();
+    if (integration) {
+        m_server_buffer_integration.reset(integration);
         if (m_hw_integration)
-            m_hw_integration->setServerBufferIntegration(targetKey);
+            m_hw_integration->setServerBufferIntegration(m_server_buffer_integration->name());
     }
 #endif
 }

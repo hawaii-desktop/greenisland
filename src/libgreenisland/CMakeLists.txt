@@ -78,6 +78,8 @@ set(SOURCES
     client/wlshmpool.cpp
     plugins/clientbufferintegrationfactory_p.cpp
     plugins/clientbufferintegrationinterface.cpp
+    plugins/serverbufferintegrationfactory_p.cpp
+    plugins/serverbufferintegrationinterface.cpp
     screen/screenbackend.cpp
     screen/screenconfiguration.cpp
     screen/fakescreenbackend.cpp
@@ -110,9 +112,6 @@ set(SOURCES
     protocols/xdg-shell/xdgpopupgrabber.cpp
 
     hardware_integration/qwlhwintegration.cpp
-    hardware_integration/qwlserverbufferintegration.cpp
-    hardware_integration/qwlserverbufferintegrationfactory.cpp
-    hardware_integration/qwlserverbufferintegrationplugin.cpp
     wayland_wrapper/qwlcompositor.cpp
     wayland_wrapper/qwldatadevice.cpp
     wayland_wrapper/qwldatadevicemanager.cpp
@@ -319,6 +318,7 @@ install(FILES ${GreenIsland_CamelCase_HEADERS}
 ecm_generate_headers(plugins_CAMELCASE_HEADERS
   HEADER_NAMES
     ClientBufferIntegrationInterface
+    ServerBufferIntegrationInterface
   PREFIX
     GreenIsland
   REQUIRED_HEADERS

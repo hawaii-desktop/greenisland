@@ -82,7 +82,7 @@ class QtKeyExtensionGlobal;
 class WlTextInputManager;
 class HardwareIntegration;
 class ClientBufferIntegrationInterface;
-class ServerBufferIntegration;
+class ServerBufferIntegrationInterface;
 class QtWindowManager;
 
 class GREENISLAND_EXPORT WlCompositor : public QObject, public QtWaylandServer::wl_compositor, public QtWaylandServer::wl_subcompositor
@@ -119,7 +119,7 @@ public:
     void setPrimaryOutput(AbstractOutput *output);
 
     ClientBufferIntegrationInterface *clientBufferIntegration() const;
-    ServerBufferIntegration *serverBufferIntegration() const;
+    ServerBufferIntegrationInterface *serverBufferIntegration() const;
     void initializeHardwareIntegration();
     void initializeExtensions();
     void initializeDefaultInputDevice();
@@ -211,7 +211,7 @@ protected:
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     QScopedPointer<HardwareIntegration> m_hw_integration;
     QScopedPointer<ClientBufferIntegrationInterface> m_client_buffer_integration;
-    QScopedPointer<ServerBufferIntegration> m_server_buffer_integration;
+    QScopedPointer<ServerBufferIntegrationInterface> m_server_buffer_integration;
 #endif
 
     //extensions
