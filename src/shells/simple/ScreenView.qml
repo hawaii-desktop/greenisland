@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Controls 1.0
 
 Item {
     readonly property string name: _greenisland_output.name
@@ -67,5 +68,9 @@ Item {
         sourceSize.width: width
         sourceSize.height: height
         fillMode: Image.Tile
+    }
+
+    TextField {
+        anchors.centerIn: parent
     }
 }
