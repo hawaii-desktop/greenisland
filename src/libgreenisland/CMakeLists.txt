@@ -108,8 +108,6 @@ set(SOURCES
     protocols/xdg-shell/xdgsurfaceresizegrabber.cpp
     protocols/xdg-shell/xdgpopup.cpp
     protocols/xdg-shell/xdgpopupgrabber.cpp
-
-    hardware_integration/qwlhwintegration.cpp
     wayland_wrapper/qwlcompositor.cpp
     wayland_wrapper/qwldatadevice.cpp
     wayland_wrapper/qwldatadevicemanager.cpp
