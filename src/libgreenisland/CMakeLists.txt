@@ -35,7 +35,6 @@ set(SOURCES
     abstractplugin.cpp
     abstractcompositor.cpp
     abstractquickcompositor.cpp
-    abstractoutput.cpp
     applicationmanager.cpp
     bufferref.cpp
     clientconnection.cpp
@@ -57,7 +56,6 @@ set(SOURCES
     mimehelper_p.cpp
     output.cpp
     outputwindow.cpp
-    quickoutput.cpp
     quicksurface.cpp
     region.cpp
     shellwindow.cpp
@@ -124,7 +122,6 @@ set(SOURCES
     wayland_wrapper/qwlinputmethod.cpp
     wayland_wrapper/qwlinputpanelsurface.cpp
     wayland_wrapper/qwlkeyboard.cpp
-    wayland_wrapper/qwloutput.cpp
     wayland_wrapper/qwlpointer.cpp
     wayland_wrapper/qwlqtkey.cpp
     wayland_wrapper/qwlsubsurface.cpp
@@ -279,7 +276,6 @@ ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
     AbstractPlugin
     AbstractCompositor
     AbstractQuickCompositor
-    AbstractOutput
     ApplicationManager
     BufferRef
     Compositor
@@ -296,7 +292,6 @@ ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
     Listener
     Output
     OutputWindow
-    QuickOutput
     QuickSurface
     Region
     ShellWindow

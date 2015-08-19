@@ -162,7 +162,7 @@ void OutputWindow::unloadScene()
 
 void OutputWindow::keyPressEvent(QKeyEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     // Key bindings
     KeyBindings *keyBindingsManager = KeyBindings::instance();
@@ -180,7 +180,7 @@ void OutputWindow::keyPressEvent(QKeyEvent *event)
 
 void OutputWindow::keyReleaseEvent(QKeyEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     // Key bindings
     KeyBindings *keyBindingsManager = KeyBindings::instance();
@@ -198,21 +198,21 @@ void OutputWindow::keyReleaseEvent(QKeyEvent *event)
 
 void OutputWindow::mousePressEvent(QMouseEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     QQuickWindow::mousePressEvent(event);
 }
 
 void OutputWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     QQuickWindow::mouseReleaseEvent(event);
 }
 
 void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     if (m_output) {
         const QPoint pt = event->localPos().toPoint();
@@ -232,7 +232,7 @@ void OutputWindow::mouseMoveEvent(QMouseEvent *event)
 
 void OutputWindow::wheelEvent(QWheelEvent *event)
 {
-    m_output->compositor()->setState(Compositor::Active);
+    Compositor::instance()->setState(Compositor::Active);
 
     QQuickWindow::wheelEvent(event);
 }
@@ -278,7 +278,7 @@ void OutputWindow::handleMotion(quint64 time, const QPoint &pt)
 
 void OutputWindow::showOutput()
 {
-    FullScreenShellClient *fsh = m_output->compositor()->d_func()->fullscreenShell;
+    FullScreenShellClient *fsh = Compositor::instance()->d_func()->fullscreenShell;
 
     // Disable decorations for fullscreen shell
     if (fsh)
@@ -299,7 +299,7 @@ void OutputWindow::showOutput()
 void OutputWindow::hideOutput()
 {
     // Hide output from fullscreen shell
-    FullScreenShellClient *fsh = m_output->compositor()->d_func()->fullscreenShell;
+    FullScreenShellClient *fsh = Compositor::instance()->d_func()->fullscreenShell;
     if (fsh) {
         qCDebug(GREENISLAND_COMPOSITOR)
                 << "Hiding output on full screen shell for output"
@@ -314,10 +314,10 @@ void OutputWindow::hideOutput()
 void OutputWindow::readContent()
 {
     // Send frame callbacks for windows rendered on this output
-    m_output->compositor()->sendFrameCallbacks(m_output->compositor()->surfaces());
+    Compositor::instance()->sendFrameCallbacks(output()->surfaces());
 
     // Record a frame after rendering
-    m_output->compositor()->d_ptr->recorderManager->recordFrame(this);
+    Compositor::instance()->d_ptr->recorderManager->recordFrame(this);
 }
 
 void OutputWindow::statusChanged(QQmlComponent::Status status)

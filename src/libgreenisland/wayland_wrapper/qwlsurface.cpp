@@ -38,7 +38,8 @@
 **
 ****************************************************************************/
 
-#include "abstractoutput.h"
+#include "output.h"
+#include "output_p.h"
 #include "region.h"
 #include "surface/surface.h"
 #include "surface/surfacebuffer.h"
@@ -307,24 +308,24 @@ WlCompositor *WlSurface::compositor() const
     return m_compositor;
 }
 
-WlOutput *WlSurface::mainOutput() const
+Output *WlSurface::mainOutput() const
 {
     if (!m_mainOutput)
-        return m_compositor->primaryOutput()->handle();
+        return m_compositor->primaryOutput();
     return m_mainOutput;
 }
 
-void WlSurface::setMainOutput(WlOutput *output)
+void WlSurface::setMainOutput(Output *output)
 {
     m_mainOutput = output;
 }
 
-QList<WlOutput *> WlSurface::outputs() const
+QList<Output *> WlSurface::outputs() const
 {
     return m_outputs;
 }
 
-void WlSurface::addToOutput(WlOutput *output)
+void WlSurface::addToOutput(Output *output)
 {
     if (!output)
         return;
@@ -337,18 +338,18 @@ void WlSurface::addToOutput(WlOutput *output)
 
     m_outputs.append(output);
 
-    SurfaceEnterEvent event(output->waylandOutput());
+    SurfaceEnterEvent event(output);
     QCoreApplication::sendEvent(waylandSurface(), &event);
 
     // Send surface enter event
     Q_FOREACH (Resource *resource, resourceMap().values()) {
-        QList<WlOutput::Resource *> outputs = output->resourceMap().values();
+        QList<OutputPrivate::Resource *> outputs = output->d_func()->resourceMap().values();
         for (int i = 0; i < outputs.size(); i++)
             send_enter(resource->handle, outputs.at(i)->handle);
     }
 }
 
-void WlSurface::removeFromOutput(WlOutput *output)
+void WlSurface::removeFromOutput(Output *output)
 {
     if (!output)
         return;
@@ -356,14 +357,14 @@ void WlSurface::removeFromOutput(WlOutput *output)
     m_outputs.removeOne(output);
 
     if (m_outputs.size() == 0)
-        m_mainOutput = m_compositor->primaryOutput()->handle();
+        m_mainOutput = m_compositor->primaryOutput();
 
-    SurfaceLeaveEvent event(output->waylandOutput());
+    SurfaceLeaveEvent event(output);
     QCoreApplication::sendEvent(waylandSurface(), &event);
 
     // Send surface leave event
     Q_FOREACH (Resource *resource, resourceMap().values()) {
-        QList<WlOutput::Resource *> outputs = output->resourceMap().values();
+        QList<OutputPrivate::Resource *> outputs = output->d_func()->resourceMap().values();
         for (int i = 0; i < outputs.size(); i++)
             send_leave(resource->handle, outputs.at(i)->handle);
     }

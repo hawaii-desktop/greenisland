@@ -30,6 +30,7 @@
 
 #include "fullscreenshellclient.h"
 #include "output.h"
+#include "outputwindow.h"
 
 Q_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL, "greenisland.protocols.fullscreenshell.client")
 

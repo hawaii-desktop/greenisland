@@ -24,13 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include "compositor.h"
+#include "output.h"
 #include "surface.h"
 #include "surfaceitem.h"
 #include "wayland_wrapper/qwlinputdevice_p.h"
-#include "wayland_wrapper/qwloutput_p.h"
 #include "wayland_wrapper/qwlsurface_p.h"
 
-#include "compositor.h"
 #include "plasmashell.h"
 #include "plasmasurface.h"
 

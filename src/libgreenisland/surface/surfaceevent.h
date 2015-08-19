@@ -33,17 +33,17 @@
 
 namespace GreenIsland {
 
-class AbstractOutput;
+class Output;
 
 class SurfaceEnterEventPrivate;
 
 class GREENISLAND_EXPORT SurfaceEnterEvent : public QEvent
 {
 public:
-    SurfaceEnterEvent(AbstractOutput *output);
+    SurfaceEnterEvent(Output *output);
     ~SurfaceEnterEvent();
 
-    AbstractOutput *output() const;
+    Output *output() const;
 
     static const QEvent::Type WaylandSurfaceEnter;
 
@@ -56,10 +56,10 @@ class SurfaceLeaveEventPrivate;
 class GREENISLAND_EXPORT SurfaceLeaveEvent : public QEvent
 {
 public:
-    SurfaceLeaveEvent(AbstractOutput *output);
+    SurfaceLeaveEvent(Output *output);
     ~SurfaceLeaveEvent();
 
-    AbstractOutput *output() const;
+    Output *output() const;
 
     static const QEvent::Type WaylandSurfaceLeave;
 

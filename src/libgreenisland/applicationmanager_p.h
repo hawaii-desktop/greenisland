@@ -39,11 +39,10 @@
 //
 // We mean it.
 
-class Surface;
-
 namespace GreenIsland {
 
 class ApplicationManager;
+class Surface;
 
 class ApplicationManagerPrivate
 {

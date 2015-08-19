@@ -44,9 +44,9 @@
 #include <greenisland/greenisland_export.h>
 
 #include "bufferref.h"
+#include "output.h"
 #include "surface/surfacebuffer.h"
 #include "surface/surface.h"
-#include "wayland_wrapper/qwloutput_p.h"
 
 #include <QtCore/QVector>
 #include <QtCore/QRect>
@@ -123,13 +123,13 @@ public:
 
     WlCompositor *compositor() const;
 
-    WlOutput *mainOutput() const;
-    void setMainOutput(WlOutput *output);
+    Output *mainOutput() const;
+    void setMainOutput(Output *output);
 
-    QList<WlOutput *> outputs() const;
+    QList<Output *> outputs() const;
 
-    void addToOutput(WlOutput *output);
-    void removeFromOutput(WlOutput *output);
+    void addToOutput(Output *output);
+    void removeFromOutput(Output *output);
 
     QString className() const { return m_className; }
     void setClassName(const QString &className);
@@ -182,8 +182,8 @@ protected:
 
     WlCompositor *m_compositor;
     Surface *m_waylandSurface;
-    WlOutput *m_mainOutput;
-    QList<WlOutput *> m_outputs;
+    Output *m_mainOutput;
+    QList<Output *> m_outputs;
 
     QRegion m_damage;
     SurfaceBuffer *m_buffer;

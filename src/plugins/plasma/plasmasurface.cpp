@@ -173,9 +173,9 @@ void PlasmaSurface::surface_set_output(Resource *resource,
     // Move the surface to another output
     // TODO: Maybe check whether a surface with the same role already exist
     // on the new output
-    QList<GreenIsland::WlOutput *> outputs = m_surface->handle()->outputs();
-    m_surface->handle()->addToOutput(AbstractOutput::fromResource(outputResource)->handle());
-    Q_FOREACH (GreenIsland::WlOutput *output, outputs)
+    QList<Output *> outputs = m_surface->handle()->outputs();
+    m_surface->handle()->addToOutput(Output::fromResource(outputResource));
+    Q_FOREACH (Output *output, outputs)
         m_surface->handle()->removeFromOutput(output);
     Q_EMIT m_window->outputChanged();
 }

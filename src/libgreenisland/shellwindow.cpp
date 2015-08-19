@@ -26,6 +26,7 @@
 
 #include "compositor.h"
 #include "compositor_p.h"
+#include "output.h"
 #include "shellwindow.h"
 
 namespace GreenIsland {
@@ -75,7 +76,7 @@ SurfaceItem *ShellWindow::view() const
     return m_view;
 }
 
-AbstractOutput *ShellWindow::output() const
+Output *ShellWindow::output() const
 {
     return m_surface->mainOutput();
 }

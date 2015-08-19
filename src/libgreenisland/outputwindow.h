@@ -48,6 +48,7 @@ public:
 
     Output *output() const;
 
+public Q_SLOTS:
     void loadScene();
     void unloadScene();
 

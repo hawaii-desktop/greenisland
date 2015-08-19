@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "abstractoutput.h"
+#include "output.h"
 #include "surfaceevent.h"
 #include "surfaceevent_p.h"
 
@@ -37,7 +37,7 @@ const QEvent::Type SurfaceLeaveEvent::WaylandSurfaceLeave = (QEvent::Type)QEvent
  * SurfaceEnterEventPrivate
  */
 
-SurfaceEnterEventPrivate::SurfaceEnterEventPrivate(AbstractOutput *_output)
+SurfaceEnterEventPrivate::SurfaceEnterEventPrivate(Output *_output)
     : output(_output)
 {
 }
@@ -46,7 +46,7 @@ SurfaceEnterEventPrivate::SurfaceEnterEventPrivate(AbstractOutput *_output)
  * SurfaceEnterEvent
  */
 
-SurfaceEnterEvent::SurfaceEnterEvent(AbstractOutput *output)
+SurfaceEnterEvent::SurfaceEnterEvent(Output *output)
     : QEvent(WaylandSurfaceEnter)
     , d(new SurfaceEnterEventPrivate(output))
 {
@@ -57,7 +57,7 @@ SurfaceEnterEvent::~SurfaceEnterEvent()
     delete d;
 }
 
-AbstractOutput *SurfaceEnterEvent::output() const
+Output *SurfaceEnterEvent::output() const
 {
     return d->output;
 }
@@ -66,7 +66,7 @@ AbstractOutput *SurfaceEnterEvent::output() const
  * SurfaceLeaveEventPrivate
  */
 
-SurfaceLeaveEventPrivate::SurfaceLeaveEventPrivate(AbstractOutput *_output)
+SurfaceLeaveEventPrivate::SurfaceLeaveEventPrivate(Output *_output)
     : output(_output)
 {
 }
@@ -75,7 +75,7 @@ SurfaceLeaveEventPrivate::SurfaceLeaveEventPrivate(AbstractOutput *_output)
  * SurfaceLeaveEvent
  */
 
-SurfaceLeaveEvent::SurfaceLeaveEvent(AbstractOutput *output)
+SurfaceLeaveEvent::SurfaceLeaveEvent(Output *output)
     : QEvent(WaylandSurfaceLeave)
     , d(new SurfaceLeaveEventPrivate(output))
 {
@@ -86,7 +86,7 @@ SurfaceLeaveEvent::~SurfaceLeaveEvent()
     delete d;
 }
 
-AbstractOutput *SurfaceLeaveEvent::output() const
+Output *SurfaceLeaveEvent::output() const
 {
     return d->output;
 }

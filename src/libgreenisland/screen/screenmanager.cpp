@@ -91,7 +91,7 @@ void ScreenManager::outputAdded(Output *output)
     Q_EMIT m_compositor->outputAdded(output);
 
     // Load scene
-    QMetaObject::invokeMethod(output, "loadScene", Qt::QueuedConnection);
+    QMetaObject::invokeMethod(output->window(), "loadScene", Qt::QueuedConnection);
 }
 
 void ScreenManager::outputRemoved(Output *output)

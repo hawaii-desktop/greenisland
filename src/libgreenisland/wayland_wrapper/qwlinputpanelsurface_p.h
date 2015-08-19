@@ -47,7 +47,7 @@
 
 namespace GreenIsland {
 
-class WlOutput;
+class Output;
 class WlSurface;
 
 class WlInputPanelSurface : public QtWaylandServer::wl_input_panel_surface
@@ -63,7 +63,7 @@ public:
 
     Type type() const;
 
-    WlOutput *output() const;
+    Output *output() const;
     wl_input_panel_surface::position position() const;
 
 protected:
@@ -75,7 +75,7 @@ private:
 
     Type m_type;
 
-    WlOutput *m_output;
+    Output *m_output;
     wl_input_panel_surface::position m_position;
 };
 

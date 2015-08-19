@@ -498,9 +498,9 @@ void XdgSurface::surface_set_fullscreen(Resource *resource, wl_resource *outputR
         return;
 
     // Determine output (either specified output or main output)
-    AbstractOutput *output = m_window->output();
+    Output *output = m_window->output();
     if (outputResource)
-        output = AbstractOutput::fromResource(outputResource);
+        output = Output::fromResource(outputResource);
 
     // Ask for a resize on the output and set pending state,
     // we'll complete the operation as soon as we receive the ACK

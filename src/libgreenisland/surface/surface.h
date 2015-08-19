@@ -60,10 +60,10 @@ class ClientConnection;
 class SurfacePrivate;
 class AbstractCompositor;
 class BufferRef;
+class Output;
 class SurfaceView;
 class SurfaceInterface;
 class SurfaceOperation;
-class AbstractOutput;
 
 class WlSurface;
 class SurfacePrivate;
@@ -161,10 +161,10 @@ public:
 
     AbstractCompositor *compositor() const;
 
-    AbstractOutput *mainOutput() const;
-    void setMainOutput(AbstractOutput *mainOutput);
+    Output *mainOutput() const;
+    void setMainOutput(Output *mainOutput);
 
-    QList<AbstractOutput *> outputs() const;
+    QList<Output *> outputs() const;
 
     QString className() const;
 

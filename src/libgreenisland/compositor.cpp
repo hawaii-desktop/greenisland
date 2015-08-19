@@ -80,7 +80,8 @@ Compositor::Compositor(QObject *parent)
     qRegisterMetaType<ClientWindow *>("ClientWindow*");
     qRegisterMetaType<CompositorSettings *>("CompositorSettings*");
     qRegisterMetaType<Output *>("Output*");
-    qRegisterMetaType<Output::Mode>("Output::Mode");
+    qRegisterMetaType<Output::ModeFlags>("Output::Mode");
+    qRegisterMetaType<Output::Subpixel>("Output::Subpixel");
     qRegisterMetaType<Output::Transform>("Output::Transform");
     qRegisterMetaType<ShellWindow *>("ShellWindow*");
     qRegisterMetaType<Surface*>("Surface*");
@@ -292,10 +293,10 @@ SurfaceView *Compositor::pickView(const QPointF &globalPosition) const
     // TODO: Views should probably ordered by z-index in order to really
     // pick the first view with that global coordinates
 
-    for (AbstractOutput *output: m_compositor->outputs()) {
+    Q_FOREACH (Output *output, m_compositor->outputs()) {
         if (output->geometry().contains(globalPosition.toPoint())) {
-            for (Surface *surface: output->surfaces()) {
-                for (ClientWindow *window: d->clientWindowsList) {
+            Q_FOREACH (Surface *surface, output->surfaces()) {
+                Q_FOREACH (ClientWindow *window, d->clientWindowsList) {
                     if (window->surface() != surface)
                         continue;
                     if (window->geometry().contains(globalPosition))

@@ -31,13 +31,12 @@
 
 #include <greenisland/greenisland_export.h>
 
-class AbstractOutput;
-class Surface;
-class SurfaceItem;
-
 namespace GreenIsland {
 
 class Compositor;
+class Output;
+class Surface;
+class SurfaceItem;
 
 class GREENISLAND_EXPORT ShellWindow : public QObject
 {
@@ -47,7 +46,7 @@ class GREENISLAND_EXPORT ShellWindow : public QObject
     Q_PROPERTY(SurfaceItem *view READ view CONSTANT)
     Q_PROPERTY(Role role READ role WRITE setRole NOTIFY roleChanged)
     Q_PROPERTY(Flags flags READ flags WRITE setFlags NOTIFY flagsChanged)
-    Q_PROPERTY(AbstractOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(Output *output READ output NOTIFY outputChanged)
     Q_ENUMS(Role Flag)
 public:
     enum Role {
@@ -77,7 +76,7 @@ public:
     Surface *surface() const;
     SurfaceItem *view() const;
 
-    AbstractOutput *output() const;
+    Output *output() const;
 
     Role role() const;
     void setRole(const Role &role);

@@ -67,6 +67,8 @@ class ClientConnection;
 class ClientConnectionPrivate;
 class InputDevice;
 class InputPanel;
+class Output;
+class OutputWindow;
 class GlobalInterface;
 class Surface;
 class SurfaceBuffer;
@@ -74,7 +76,6 @@ class SurfaceBuffer;
 class WlSurface;
 class WlInputDevice;
 class WlDataDeviceManager;
-class OutputGlobal;
 class WlSurfaceExtensionGlobal;
 class SubSurfaceExtensionGlobal;
 class QtTouchExtension;
@@ -109,14 +110,14 @@ public:
 
     uint currentTimeMsecs() const;
 
-    QList<AbstractOutput *> outputs() const;
-    AbstractOutput *output(QWindow *window) const;
+    QList<Output *> outputs() const;
+    Output *output(OutputWindow *window) const;
 
-    void addOutput(AbstractOutput *output);
-    void removeOutput(AbstractOutput *output);
+    void addOutput(Output *output);
+    void removeOutput(Output *output);
 
-    AbstractOutput *primaryOutput() const;
-    void setPrimaryOutput(AbstractOutput *output);
+    Output *primaryOutput() const;
+    void setPrimaryOutput(Output *output);
 
     ClientBufferIntegrationInterface *clientBufferIntegration() const;
     ServerBufferIntegrationInterface *serverBufferIntegration() const;
@@ -190,7 +191,7 @@ protected:
     QList<InputDevice *> m_inputDevices;
 
     /* Output */
-    QList<AbstractOutput *> m_outputs;
+    QList<Output *> m_outputs;
 
     WlDataDeviceManager *m_data_device_manager;
 

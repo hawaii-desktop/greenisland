@@ -26,7 +26,7 @@
 
 #include <GreenIsland/Region>
 
-#include "abstractoutput.h"
+#include "output.h"
 #include "surface.h"
 
 #include "plasmaeffects.h"
@@ -60,7 +60,7 @@ void PlasmaEffects::effects_slide(Resource *resource,
 {
     Q_UNUSED(resource);
 
-    AbstractOutput *output = AbstractOutput::fromResource(outputResource);
+    Output *output = Output::fromResource(outputResource);
     if (!output) {
         qCWarning(PLASMA_EFFECTS_PROTOCOL) << "Couldn't get output from resource";
         return;

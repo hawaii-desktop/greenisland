@@ -41,11 +41,11 @@
 
 #include "inputdevice.h"
 #include "inputpanel.h"
+#include "output.h"
 #include "region.h"
 
 #include "qwlcompositor_p.h"
 #include "qwldisplay_p.h"
-#include "qwloutput_p.h"
 #include "qwlsurface_p.h"
 #include "clientconnection.h"
 #include "abstractcompositor.h"
@@ -60,7 +60,6 @@
 #include "globalinterface.h"
 #include "surfaceview.h"
 #include "shmformathelper_p.h"
-#include "abstractoutput.h"
 #include "qwlkeyboard_p.h"
 
 #include <QWindow>
@@ -254,14 +253,14 @@ uint WlCompositor::currentTimeMsecs() const
     return m_timer.elapsed();
 }
 
-QList<AbstractOutput *> WlCompositor::outputs() const
+QList<Output *> WlCompositor::outputs() const
 {
     return m_outputs;
 }
 
-AbstractOutput *WlCompositor::output(QWindow *window) const
+Output *WlCompositor::output(OutputWindow *window) const
 {
-    Q_FOREACH (AbstractOutput *output, m_outputs) {
+    Q_FOREACH (Output *output, m_outputs) {
         if (output->window() == window)
             return output;
     }
@@ -269,34 +268,28 @@ AbstractOutput *WlCompositor::output(QWindow *window) const
     return Q_NULLPTR;
 }
 
-void WlCompositor::addOutput(AbstractOutput *output)
+void WlCompositor::addOutput(Output *output)
 {
-    Q_ASSERT(output->handle());
-
     if (m_outputs.contains(output))
         return;
 
     m_outputs.append(output);
 }
 
-void WlCompositor::removeOutput(AbstractOutput *output)
+void WlCompositor::removeOutput(Output *output)
 {
-    Q_ASSERT(output->handle());
-
     m_outputs.removeOne(output);
 }
 
-AbstractOutput *WlCompositor::primaryOutput() const
+Output *WlCompositor::primaryOutput() const
 {
     if (m_outputs.size() == 0)
         return Q_NULLPTR;
     return m_outputs.at(0);
 }
 
-void WlCompositor::setPrimaryOutput(AbstractOutput *output)
+void WlCompositor::setPrimaryOutput(Output *output)
 {
-    Q_ASSERT(output->handle());
-
     int i = m_outputs.indexOf(output);
     if (i <= 0)
         return;
@@ -343,7 +336,7 @@ void WlCompositor::compositor_create_surface(wl_compositor::Resource *resource, 
 {
     Surface *surface = new Surface(resource->client(), id, resource->version(), m_qt_compositor);
     m_surfaces << surface->handle();
-    surface->handle()->addToOutput(primaryOutput()->handle());
+    surface->handle()->addToOutput(primaryOutput());
     //BUG: This may not be an on-screen window surface though
     m_qt_compositor->surfaceCreated(surface);
 }

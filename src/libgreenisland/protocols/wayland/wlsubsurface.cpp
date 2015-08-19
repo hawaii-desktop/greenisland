@@ -64,8 +64,7 @@ WlSubSurface::WlSubSurface(WlSubCompositor *subCompositor,
     // TODO: Perhaps add the parent view to the sub-surfaces list
 
     // Create a view for each output
-    Q_FOREACH (AbstractOutput *wlOutput, m_surface->compositor()->outputs()) {
-        Output *output = static_cast<Output *>(wlOutput);
+    Q_FOREACH (Output *output, m_surface->compositor()->outputs()) {
         m_views[output] = static_cast<SurfaceItem *>(
                     m_surface->compositor()->createView(surface));
         if (found)

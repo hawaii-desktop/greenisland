@@ -38,22 +38,22 @@
 
 namespace GreenIsland {
 
-class AbstractOutput;
+class Output;
 
 class SurfaceEnterEventPrivate
 {
 public:
-    SurfaceEnterEventPrivate(AbstractOutput *_output);
+    SurfaceEnterEventPrivate(Output *_output);
 
-    AbstractOutput *output;
+    Output *output;
 };
 
 class SurfaceLeaveEventPrivate
 {
 public:
-    SurfaceLeaveEventPrivate(AbstractOutput *_output);
+    SurfaceLeaveEventPrivate(Output *_output);
 
-    AbstractOutput *output;
+    Output *output;
 };
 
 } // namespace GreenIsland

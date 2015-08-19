@@ -40,8 +40,9 @@
 #include "quicksurface.h"
 #include "abstractquickcompositor.h"
 #include "surfaceitem.h"
-#include "abstractoutput.h"
 #include "bufferref.h"
+#include "output_p.h"
+#include "outputwindow.h"
 #include "surface_p.h"
 #include "surfaceevent.h"
 
@@ -78,7 +79,7 @@ public:
         delete texture;
         texture = 0;
 
-        QQuickWindow *window = static_cast<QQuickWindow *>(surface->mainOutput()->window());
+        OutputWindow *window = surface->mainOutput()->window();
         if (nextBuffer) {
             if (bufferRef.isShm()) {
                 texture = window->createTextureFromImage(bufferRef.image());
@@ -143,8 +144,8 @@ public:
     {
         SurfacePrivate::surface_commit(resource);
 
-        Q_FOREACH (GreenIsland::WlOutput *output, outputs())
-            output->waylandOutput()->update();
+        Q_FOREACH (Output *output, outputs())
+            output->d_func()->update();
     }
 
     BufferAttacher *buffer;

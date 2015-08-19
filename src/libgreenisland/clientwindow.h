@@ -36,10 +36,6 @@
 
 #include <GreenIsland/SurfaceInterface>
 
-class AbstractOutput;
-class Surface;
-class SurfaceItem;
-
 namespace GreenIsland {
 
 class Compositor;
@@ -49,6 +45,8 @@ class WlShellSurface;
 class XdgPopup;
 class XdgSurface;
 class ScreenManager;
+class Surface;
+class SurfaceItem;
 class WindowView;
 
 class GREENISLAND_EXPORT ClientWindow : public QObject
@@ -61,7 +59,7 @@ class GREENISLAND_EXPORT ClientWindow : public QObject
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
     Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
     Q_PROPERTY(ClientWindow *parentWindow READ parentWindow NOTIFY parentWindowChanged)
-    Q_PROPERTY(AbstractOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(Output *output READ output NOTIFY outputChanged)
     Q_PROPERTY(qreal x READ x WRITE setX NOTIFY positionChanged)
     Q_PROPERTY(qreal y READ y WRITE setY NOTIFY positionChanged)
     Q_PROPERTY(QPointF position READ position WRITE setPosition NOTIFY positionChanged)
@@ -99,7 +97,7 @@ public:
 
     ClientWindow *parentWindow() const;
 
-    AbstractOutput *output() const;
+    Output *output() const;
 
     Q_INVOKABLE WindowView *viewForOutput(Output *output);
     Q_INVOKABLE WindowView *parentViewForOutput(Output *output);

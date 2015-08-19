@@ -30,18 +30,16 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTimer>
 
-#include "clientconnection.h"
-#include "surface.h"
-#include "abstractoutput.h"
-#include "wayland_wrapper/qwloutput_p.h"
-#include "wayland_wrapper/qwlsurface_p.h"
-
 #include "applicationmanager_p.h"
+#include "clientconnection.h"
 #include "clientwindow.h"
 #include "compositor.h"
 #include "compositor_p.h"
 #include "output.h"
 #include "windowview.h"
+#include "surface.h"
+
+#include "wayland_wrapper/qwlsurface_p.h"
 
 #include "protocols/gtk-shell/gtksurface.h"
 
@@ -144,16 +142,16 @@ ClientWindow *ClientWindow::parentWindow() const
     return m_parentWindow.data();
 }
 
-AbstractOutput *ClientWindow::output() const
+Output *ClientWindow::output() const
 {
     // Find the output that contains the biggest part of this window,
     // that is the main output and it will be used by effects such as
     // present windows to present only windows for the output it is
     // running on (effects run once for each output)
     int maxArea = 0, area = 0;
-    AbstractOutput *main = m_surface->mainOutput();
+    Output *main = m_surface->mainOutput();
 
-    Q_FOREACH (AbstractOutput *output, m_surface->compositor()->outputs()) {
+    Q_FOREACH (Output *output, m_surface->compositor()->outputs()) {
         QRectF intersection = QRectF(output->geometry()).intersected(geometry());
 
         if (intersection.isValid()) {
@@ -239,8 +237,8 @@ void ClientWindow::setPosition(const QPointF &pos)
     Output *newOutput = static_cast<Output *>(output());
     if (newOutput != oldOutput) {
         m_surface->setMainOutput(newOutput);
-        m_surface->handle()->removeFromOutput(oldOutput->handle());
-        m_surface->handle()->addToOutput(newOutput->handle());
+        m_surface->handle()->removeFromOutput(oldOutput);
+        m_surface->handle()->addToOutput(newOutput);
     }
 
     // ClientWindow position is in compositor space, but the view
@@ -455,8 +453,8 @@ QPointF ClientWindow::calculateInitialPosition() const
     QPoint pos = QCursor::pos();
 
     // Find the target output (the one where the coordinates are in)
-    AbstractOutput *targetOutput = m_surface->compositor()->primaryOutput();
-    Q_FOREACH (AbstractOutput *output, m_surface->compositor()->outputs()) {
+    Output *targetOutput = m_surface->compositor()->primaryOutput();
+    Q_FOREACH (Output *output, m_surface->compositor()->outputs()) {
         if (output->geometry().contains(pos)) {
             targetOutput = output;
             break;

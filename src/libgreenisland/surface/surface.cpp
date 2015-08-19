@@ -218,34 +218,29 @@ AbstractCompositor *Surface::compositor() const
     return d->compositor()->waylandCompositor();
 }
 
-AbstractOutput *Surface::mainOutput() const
+Output *Surface::mainOutput() const
 {
     Q_D(const Surface);
 
     // Returns the output that contains the most if not all
     // the surface (window managers will take care of setting
     // this, defaults to the first output)
-    return d->mainOutput()->waylandOutput();
+    return d->mainOutput();
 }
 
-void Surface::setMainOutput(AbstractOutput *mainOutput)
+void Surface::setMainOutput(Output *mainOutput)
 {
     Q_D(Surface);
 
     if (mainOutput)
-        d->setMainOutput(mainOutput->handle());
+        d->setMainOutput(mainOutput);
 }
 
-QList<AbstractOutput *> Surface::outputs() const
+QList<Output *> Surface::outputs() const
 {
     Q_D(const Surface);
 
-    QList<AbstractOutput *> list;
-    const QList<GreenIsland::WlOutput *> outputs = d->outputs();
-    list.reserve(outputs.count());
-    Q_FOREACH (GreenIsland::WlOutput *output, outputs)
-        list.append(output->waylandOutput());
-    return list;
+    return d->outputs();
 }
 
 QWindow::Visibility Surface::visibility() const

@@ -30,6 +30,8 @@
 #include <QtGui/qpa/qplatformscreen.h>
 
 #include "nativescreenbackend.h"
+#include "output_p.h"
+#include "outputwindow.h"
 
 Q_LOGGING_CATEGORY(NATIVE_BACKEND, "greenisland.screenbackend.native")
 
@@ -62,27 +64,13 @@ void NativeScreenBackend::screenAdded(QScreen *screen)
 {
     qCDebug(NATIVE_BACKEND) << "Screen added" << screen->name() << screen->availableGeometry();
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
-    QWaylandOutputMode *mode =
-            new QWaylandOutputMode(QStringLiteral("defaultMode"),
-                                   screen->availableGeometry().size(),
-                                   screen->refreshRate() * 1000);
-
-    Output *output = new Output(compositor(),
-                                screen->name(),
-                                QStringLiteral("Green Island"),
-                                screen->name(),
-                                QWaylandOutputModeList() << mode);
-#else
-    Output *output = new Output(compositor(),
-                                screen->name(),
-                                QStringLiteral("Green Island"),
-                                screen->name());
-#endif
+    Output::ModeFlags flags = Output::ModeFlags(Output::PreferredMode);
+    Output *output = new Output(screen->name(), QString(), screen->name());
+    output->addMode(screen->availableGeometry().size(),
+                    flags, screen->refreshRate() * 1000);
     output->window()->setScreen(screen);
     output->window()->setFlags(Qt::FramelessWindowHint);
-    output->setPrimary(qGuiApp->primaryScreen() == screen);
+    output->d_func()->setPrimary(qGuiApp->primaryScreen() == screen);
     m_screenMap.insert(screen, output);
     changeGeometry(screen);
     changePhysicalSize(screen);
@@ -132,11 +120,11 @@ void NativeScreenBackend::screenRemoved(QScreen *screen)
         Q_FOREACH (Output *o, m_outputs) {
             if (o == primaryOutput)
                 continue;
-            o->setPrimary(false);
+            o->d_func()->setPrimary(false);
         }
 
         // Set new primary
-        primaryOutput->setPrimary(true);
+        primaryOutput->d_func()->setPrimary(true);
         Q_EMIT primaryOutputChanged(primaryOutput);
     }
 
@@ -153,12 +141,12 @@ void NativeScreenBackend::changeGeometry(QScreen *screen)
     output->setPosition(screen->availableGeometry().topLeft());
     output->window()->setPosition(output->position());
 
-//#if QTCOMPOSITOR_VERSION < QT_VERSION_CHECK(5, 6, 0)
-#if 1
+    Output::ModeFlags flags = Output::ModeFlags(Output::PreferredMode);
     int refreshRate = screen->refreshRate() * 1000;
-    output->setMode({ screen->availableGeometry().size(),
-                      refreshRate });
-#endif
+    output->addMode(screen->availableGeometry().size(),
+                    flags, refreshRate);
+    output->setCurrentMode(screen->availableGeometry().size(),
+                           refreshRate);
 }
 
 void NativeScreenBackend::changePhysicalSize(QScreen *screen)
@@ -178,13 +166,13 @@ void NativeScreenBackend::changeOrientation(QScreen *screen)
     Output *output = m_screenMap[screen];
     switch (screen->primaryOrientation()) {
     case Qt::PortraitOrientation:
-        output->setTransform(AbstractOutput::Transform90);
+        output->setTransform(Output::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        output->setTransform(AbstractOutput::Transform180);
+        output->setTransform(Output::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        output->setTransform(AbstractOutput::Transform270);
+        output->setTransform(Output::Transform270);
         break;
     default:
         break;
@@ -199,23 +187,23 @@ void NativeScreenBackend::changeSubpixelAntialiasing(QScreen *screen)
     if (!m_screenMap.contains(screen))
         return;
 
-    AbstractOutput::Subpixel wlType = AbstractOutput::SubpixelUnknown;
+    Output::Subpixel wlType = Output::SubpixelUnknown;
     QPlatformScreen::SubpixelAntialiasingType type = screen->handle()->subpixelAntialiasingTypeHint();
     switch (type) {
     case QPlatformScreen::Subpixel_None:
-        wlType = AbstractOutput::SubpixelNone;
+        wlType = Output::SubpixelNone;
         break;
     case QPlatformScreen::Subpixel_RGB:
-        wlType = AbstractOutput::SubpixelHorizontalRgb;
+        wlType = Output::SubpixelHorizontalRgb;
         break;
     case QPlatformScreen::Subpixel_BGR:
-        wlType = AbstractOutput::SubpixelHorizontalBgr;
+        wlType = Output::SubpixelHorizontalBgr;
         break;
     case QPlatformScreen::Subpixel_VRGB:
-        wlType = AbstractOutput::SubpixelVerticalRgb;
+        wlType = Output::SubpixelVerticalRgb;
         break;
     case QPlatformScreen::Subpixel_VBGR:
-        wlType = AbstractOutput::SubpixelVerticalBgr;
+        wlType = Output::SubpixelVerticalBgr;
         break;
     }
 

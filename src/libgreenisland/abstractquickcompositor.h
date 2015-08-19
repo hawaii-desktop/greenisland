@@ -44,9 +44,6 @@ public:
     AbstractQuickCompositor(const char *socketName = 0, AbstractCompositor::ExtensionFlags extensions = DefaultExtensions);
 
     SurfaceView *createView(Surface *surf) Q_DECL_OVERRIDE;
-    AbstractOutput *createOutput(QWindow *window,
-                                 const QString &manufacturer,
-                                 const QString &model) Q_DECL_OVERRIDE;
 };
 
 } // namespace GreenIsland

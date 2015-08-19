@@ -25,6 +25,7 @@
  ***************************************************************************/
 
 #include "logging.h"
+#include "outputwindow.h"
 #include "screenbackend.h"
 
 Q_LOGGING_CATEGORY(SCREEN_BACKEND, "greenisland.screenbackend")

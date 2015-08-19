@@ -39,11 +39,10 @@
 **
 ****************************************************************************/
 
+#include "output.h"
+
 #include "qwlinputpanelsurface_p.h"
-
-#include "qwloutput_p.h"
 #include "qwlsurface_p.h"
-
 
 namespace GreenIsland {
 
@@ -62,7 +61,7 @@ WlInputPanelSurface::Type WlInputPanelSurface::type() const
     return m_type;
 }
 
-WlOutput *WlInputPanelSurface::output() const
+Output *WlInputPanelSurface::output() const
 {
     return m_output;
 }
@@ -80,8 +79,7 @@ void WlInputPanelSurface::input_panel_surface_set_overlay_panel(Resource *)
 void WlInputPanelSurface::input_panel_surface_set_toplevel(Resource *, wl_resource *output_resource, uint32_t position)
 {
     m_type = Toplevel;
-    WlOutputResource *output = static_cast<WlOutputResource *>(WlOutput::Resource::fromResource(output_resource));
-    m_output = static_cast<WlOutput *>(output->output_object);
+    m_output = Output::fromResource(output_resource);
     m_position = static_cast<wl_input_panel_surface::position>(position);
 }
 

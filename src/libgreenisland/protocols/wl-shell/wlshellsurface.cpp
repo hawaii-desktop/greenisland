@@ -341,8 +341,8 @@ void WlShellSurface::shell_surface_set_fullscreen(Resource *resource, uint32_t m
     if (!m_window)
         return;
 
-    AbstractOutput *output = outputResource
-            ? AbstractOutput::fromResource(outputResource)
+    Output *output = outputResource
+            ? Output::fromResource(outputResource)
             : m_window->output();
 
     // Save global geometry before resizing, it will be restored with the next
@@ -408,8 +408,8 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
     if (!m_window)
         return;
 
-    AbstractOutput *output = outputResource
-            ? AbstractOutput::fromResource(outputResource)
+    Output *output = outputResource
+            ? Output::fromResource(outputResource)
             : m_window->output();
 
     // Save global geometry before resizing, it will be restored with the next
@@ -421,7 +421,7 @@ void WlShellSurface::shell_surface_set_maximized(Resource *resource, wl_resource
         m_prevGlobalGeometry = output->availableGeometry();
 
     // Maximize for this output
-    m_window->maximize(static_cast<Output *>(output));
+    m_window->maximize(output);
 
     m_surface->setVisibility(QWindow::Maximized);
 

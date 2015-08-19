@@ -31,8 +31,8 @@
 #include "clientconnection.h"
 #include "abstractquickcompositor.h"
 #include "quicksurface.h"
+#include "output.h"
 #include "surfaceitem.h"
-#include "quickoutput.h"
 
 namespace GreenIsland {
 
@@ -47,7 +47,7 @@ public:
     void compositor_create_surface(wl_compositor::Resource *resource, uint32_t id) Q_DECL_OVERRIDE
     {
         QuickSurface *surface = new QuickSurface(resource->client(), id, wl_resource_get_version(resource->handle), static_cast<AbstractQuickCompositor *>(m_qt_compositor));
-        surface->handle()->addToOutput(primaryOutput()->handle());
+        surface->handle()->addToOutput(primaryOutput());
         m_surfaces << surface->handle();
         //BUG: This may not be an on-screen window surface though
         m_qt_compositor->surfaceCreated(surface);
@@ -63,17 +63,6 @@ AbstractQuickCompositor::AbstractQuickCompositor(const char *socketName, Extensi
 SurfaceView *AbstractQuickCompositor::createView(Surface *surf)
 {
     return new SurfaceItem(static_cast<QuickSurface *>(surf));
-}
-
-AbstractOutput *AbstractQuickCompositor::createOutput(QWindow *window,
-                                                      const QString &manufacturer,
-                                                      const QString &model)
-{
-    QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window);
-    if (!quickWindow)
-        qFatal("%s: couldn't cast QWindow to QQuickWindow. All output windows must "
-               "be QQuickWindow derivates when using AbstractQuickCompositor", Q_FUNC_INFO);
-    return new QuickOutput(this, quickWindow, manufacturer, model);
 }
 
 }

@@ -24,7 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "quickoutput.h"
+#include "output.h"
+#include "outputwindow.h"
 
 #include "greenislandscreenshooter.h"
 
@@ -69,14 +70,14 @@ void GreenIslandScreenshooter::screenshooter_shoot(Resource *resource,
 {
     Q_UNUSED(resource)
 
-    QuickOutput *output = static_cast<QuickOutput *>(AbstractOutput::fromResource(outputResource));
+    Output *output = Output::fromResource(outputResource);
     if (!output) {
         qCWarning(SCREENSHOOTER_PROTOCOL) << "Couldn't find output from resource";
         send_done(result_bad_output);
         return;
     }
 
-    QQuickWindow *window = output->quickWindow();
+    OutputWindow *window = output->window();
     if (!window) {
         qCWarning(SCREENSHOOTER_PROTOCOL) << "Output doesn't have a window thus it cannot be captured";
         send_done(result_bad_output);

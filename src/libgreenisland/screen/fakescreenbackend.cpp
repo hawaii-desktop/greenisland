@@ -24,7 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QFile>
+
 #include "fakescreenbackend.h"
+#include "output_p.h"
 #include "screenconfiguration.h"
 
 Q_LOGGING_CATEGORY(FAKE_BACKEND, "greenisland.screenbackend.fake")
@@ -76,37 +79,21 @@ void FakeScreenBackend::screenAdded(ScreenOutput *so)
         return;
     }
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
-    QWaylandOutputMode *mode =
-            new QWaylandOutputMode(QStringLiteral("defaultMode"),
-                                   so->mode().size,
-                                   so->mode().refreshRate);
-
-    Output *output = new Output(compositor(),
-                                so->name(),
-                                QStringLiteral("Green Island"),
-                                so->name(),
-                                QWaylandOutputModeList() << mode);
-#else
-    Output *output = new Output(compositor(),
-                                so->name(),
-                                QStringLiteral("Green Island"),
-                                so->name());
-    output->setMode({ so->mode().size, so->mode().refreshRate });
-#endif
-    output->setPrimary(so->isPrimary());
+    Output::ModeFlags flags = Output::ModeFlags(Output::CurrentMode | Output::PreferredMode);
+    Output *output = new Output(so->name(), QString(), so->name());
+    output->addMode(so->mode().size, flags, so->mode().refreshRate);
+    output->d_func()->setPrimary(so->isPrimary());
     output->setPosition(so->position());
 
     switch (so->orientation()) {
     case Qt::PortraitOrientation:
-        output->setTransform(AbstractOutput::Transform90);
+        output->setTransform(Output::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        output->setTransform(AbstractOutput::Transform180);
+        output->setTransform(Output::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        output->setTransform(AbstractOutput::Transform270);
+        output->setTransform(Output::Transform270);
         break;
     default:
         break;

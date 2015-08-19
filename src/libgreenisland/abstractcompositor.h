@@ -74,12 +74,13 @@ class QUrl;
 
 namespace GreenIsland {
 
-class AbstractOutput;
 class ClientConnection;
 class Drag;
 class GlobalInterface;
 class InputDevice;
 class InputPanel;
+class Output;
+class OutputWindow;
 class Surface;
 class SurfaceView;
 
@@ -117,11 +118,11 @@ public:
     QList<Surface *> surfacesForClient(ClientConnection* client) const;
     QList<Surface *> surfaces() const;
 
-    QList<AbstractOutput *> outputs() const;
-    AbstractOutput *output(QWindow *window);
+    QList<Output *> outputs() const;
+    Output *output(OutputWindow *window);
 
-    AbstractOutput *primaryOutput() const;
-    void setPrimaryOutput(AbstractOutput *output);
+    Output *primaryOutput() const;
+    void setPrimaryOutput(Output *output);
 
     virtual void surfaceCreated(Surface *surface) = 0;
     virtual void surfaceAboutToBeDestroyed(Surface *surface);
@@ -167,10 +168,6 @@ public:
 protected:
     AbstractCompositor(const char *socketName, WlCompositor *dptr);
     virtual void retainedSelectionReceived(QMimeData *mimeData);
-
-    virtual AbstractOutput *createOutput(QWindow *window,
-                                         const QString &manufacturer,
-                                         const QString &model);
 
     friend class WlCompositor;
     WlCompositor *m_compositor;

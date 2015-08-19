@@ -63,11 +63,11 @@
 #include <QtGui/QScreen>
 
 #include "abstractcompositor.h"
-#include "abstractoutput.h"
 #include "clientconnection.h"
 #include "globalinterface.h"
 #include "inputdevice.h"
 #include "inputpanel.h"
+#include "output.h"
 #include "surfaceview.h"
 
 #include "wayland_wrapper/qwlcompositor_p.h"
@@ -158,22 +158,22 @@ QList<Surface *> AbstractCompositor::surfaces() const
     return surfs;
 }
 
-QList<AbstractOutput *> AbstractCompositor::outputs() const
+QList<Output *> AbstractCompositor::outputs() const
 {
     return m_compositor->outputs();
 }
 
-AbstractOutput *AbstractCompositor::output(QWindow *window)
+Output *AbstractCompositor::output(OutputWindow *window)
 {
     return m_compositor->output(window);
 }
 
-AbstractOutput *AbstractCompositor::primaryOutput() const
+Output *AbstractCompositor::primaryOutput() const
 {
     return m_compositor->primaryOutput();
 }
 
-void AbstractCompositor::setPrimaryOutput(AbstractOutput *output)
+void AbstractCompositor::setPrimaryOutput(Output *output)
 {
     m_compositor->setPrimaryOutput(output);
 }
@@ -190,7 +190,7 @@ void AbstractCompositor::surfaceAboutToBeDestroyed(Surface *surface)
 
 SurfaceView *AbstractCompositor::pickView(const QPointF &globalPosition) const
 {
-    Q_FOREACH (AbstractOutput *output, outputs()) {
+    Q_FOREACH (Output *output, outputs()) {
         // Skip coordinates not in output
         if (!QRectF(output->geometry()).contains(globalPosition))
             continue;
@@ -309,13 +309,6 @@ SurfaceView *AbstractCompositor::createView(Surface *surface)
 InputDevice *AbstractCompositor::inputDeviceFor(QInputEvent *inputEvent)
 {
     return m_compositor->inputDeviceFor(inputEvent);
-}
-
-AbstractOutput *AbstractCompositor::createOutput(QWindow *window,
-                                                 const QString &manufacturer,
-                                                 const QString &model)
-{
-    return new AbstractOutput(this, window, manufacturer, model);
 }
 
 } // namespace GreenIsland
