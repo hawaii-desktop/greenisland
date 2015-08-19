@@ -27,10 +27,8 @@
 #ifndef COMPOSITOR_H
 #define COMPOSITOR_H
 
-#include "abstractquickcompositor.h"
-#include "surfaceitem.h"
-
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/AbstractQuickCompositor>
+#include <GreenIsland/SurfaceItem>
 
 namespace GreenIsland {
 

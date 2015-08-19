@@ -43,10 +43,10 @@
 
 #include <greenisland/greenisland_export.h>
 
-#include "surfacebuffer.h"
-#include "wayland_wrapper/qwloutput_p.h"
-#include "surface.h"
 #include "bufferref.h"
+#include "surface/surfacebuffer.h"
+#include "surface/surface.h"
+#include "wayland_wrapper/qwloutput_p.h"
 
 #include <QtCore/QVector>
 #include <QtCore/QRect>

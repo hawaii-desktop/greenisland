@@ -34,7 +34,7 @@
 #ifndef QQUICKWAYLANDSURFACE_H
 #define QQUICKWAYLANDSURFACE_H
 
-#include "surface.h"
+#include <GreenIsland/Surface>
 
 struct wl_client;
 

@@ -13,7 +13,7 @@ include_directories(
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${CMAKE_CURRENT_SOURCE_DIR}/screen
-    ${CMAKE_CURRENT_SOURCE_DIR}/api
+    ${CMAKE_CURRENT_SOURCE_DIR}/surface
     ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper
     ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration
 )
@@ -61,12 +61,6 @@ set(SOURCES
     quicksurface.cpp
     region.cpp
     shellwindow.cpp
-    surface.cpp
-    surfacebuffer.cpp
-    surfaceevent.cpp
-    surfaceinterface.cpp
-    surfaceitem.cpp
-    surfaceview.cpp
     utilities.cpp
     windowview.cpp
     xkbhelper_p.cpp
@@ -85,6 +79,12 @@ set(SOURCES
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/screenmanager.cpp
+    surface/surface.cpp
+    surface/surfacebuffer.cpp
+    surface/surfaceevent.cpp
+    surface/surfaceinterface.cpp
+    surface/surfaceitem.cpp
+    surface/surfaceview.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/greenisland/greenislandapps.cpp
     protocols/greenisland/greenislandwindow.cpp
@@ -274,7 +274,7 @@ set_target_properties(GreenIsland PROPERTIES VERSION   ${PROJECT_VERSION}
                                              EXPORT_NAME GreenIsland
 )
 
-ecm_generate_headers(GreenIsland_CamelCase_HEADERS
+ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
   HEADER_NAMES
     AbstractPlugin
     AbstractCompositor
@@ -300,31 +300,42 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
     QuickSurface
     Region
     ShellWindow
-    Surface
-    SurfaceBuffer
-    SurfaceEvent
-    SurfaceInterface
-    SurfaceItem
-    SurfaceView
     WindowView
   PREFIX
     GreenIsland
-  REQUIRED_HEADERS GreenIsland_HEADERS
+  REQUIRED_HEADERS
+    GreenIsland_HEADERS
 )
 
-ecm_generate_headers(plugins_CAMELCASE_HEADERS
+ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
   HEADER_NAMES
     ClientBufferIntegrationInterface
     ServerBufferIntegrationInterface
   PREFIX
     GreenIsland
   REQUIRED_HEADERS
-    plugins_HEADERS
+    GreenIsland_HEADERS
   RELATIVE
     plugins
 )
 
-install(FILES ${GreenIsland_CamelCase_HEADERS} ${plugins_CAMELCASE_HEADERS}
+ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
+  HEADER_NAMES
+    Surface
+    SurfaceBuffer
+    SurfaceEvent
+    SurfaceInterface
+    SurfaceItem
+    SurfaceView
+  PREFIX
+    GreenIsland
+  REQUIRED_HEADERS
+    GreenIsland_HEADERS
+  RELATIVE
+    surface
+)
+
+install(FILES ${GreenIsland_CAMELCASE_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
         COMPONENT Devel)
 
@@ -332,7 +343,6 @@ install(
     FILES
       ${CMAKE_CURRENT_BINARY_DIR}/greenisland/greenisland_export.h
       ${GreenIsland_HEADERS}
-      ${plugins_HEADERS}
     DESTINATION
       ${GREENISLAND_INCLUDEDIR}/greenisland
     COMPONENT

@@ -34,9 +34,7 @@
 #include <QtCore/QRectF>
 #include <QtCore/QSizeF>
 
-#include "surfaceinterface.h"
-
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/SurfaceInterface>
 
 class AbstractOutput;
 class Surface;

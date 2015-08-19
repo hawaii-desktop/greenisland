@@ -40,16 +40,16 @@
 
 #include "abstractoutput.h"
 #include "region.h"
-#include "surface.h"
-#include "surfaceview.h"
+#include "surface/surface.h"
+#include "surface/surfacebuffer.h"
+#include "surface/surfaceevent.h"
+#include "surface/surfaceview.h"
 
 #include "qwlsurface_p.h"
 #include "qwlcompositor_p.h"
 #include "qwlinputdevice_p.h"
 #include "qwlextendedsurface_p.h"
 #include "qwlsubsurface_p.h"
-#include "surfacebuffer.h"
-#include "surfaceevent.h"
 
 #include <QtCore/QDebug>
 #include <QTouchEvent>
