@@ -87,7 +87,7 @@
 #include <wayland-server.h>
 
 #if defined (QT_COMPOSITOR_WAYLAND_GL)
-#include "hardware_integration/qwlhwintegration_p.h"
+#include "protocols/qt/qthardwareintegration.h"
 #include "plugins/clientbufferintegrationfactory_p.h"
 #include "plugins/serverbufferintegrationfactory_p.h"
 #endif
@@ -407,7 +407,7 @@ void WlCompositor::initializeHardwareIntegration()
 {
 #ifdef QT_COMPOSITOR_WAYLAND_GL
     if (m_extensions & AbstractCompositor::HardwareIntegrationExtension)
-        m_hw_integration.reset(new HardwareIntegration(this));
+        m_hw_integration.reset(new QtHardwareIntegration(m_display->handle()));
 
     loadClientBufferIntegration();
     loadServerBufferIntegration();

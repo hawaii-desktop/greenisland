@@ -63,6 +63,8 @@ class QWindowSystemEventHandler;
 namespace GreenIsland {
 
 class AbstractCompositor;
+class ClientBufferIntegrationInterface;
+class ServerBufferIntegrationInterface;
 class ClientConnection;
 class ClientConnectionPrivate;
 class InputDevice;
@@ -78,12 +80,10 @@ class WlInputDevice;
 class WlDataDeviceManager;
 class WlSurfaceExtensionGlobal;
 class SubSurfaceExtensionGlobal;
+class WlTextInputManager;
+class QtHardwareIntegration;
 class QtTouchExtension;
 class QtKeyExtensionGlobal;
-class WlTextInputManager;
-class HardwareIntegration;
-class ClientBufferIntegrationInterface;
-class ServerBufferIntegrationInterface;
 class QtWindowManager;
 
 class GREENISLAND_EXPORT WlCompositor : public QObject, public QtWaylandServer::wl_compositor, public QtWaylandServer::wl_subcompositor
@@ -210,7 +210,7 @@ protected:
     QList<ClientConnection *> m_clients;
 
 #ifdef QT_COMPOSITOR_WAYLAND_GL
-    QScopedPointer<HardwareIntegration> m_hw_integration;
+    QScopedPointer<QtHardwareIntegration> m_hw_integration;
     QScopedPointer<ClientBufferIntegrationInterface> m_client_buffer_integration;
     QScopedPointer<ServerBufferIntegrationInterface> m_server_buffer_integration;
 #endif

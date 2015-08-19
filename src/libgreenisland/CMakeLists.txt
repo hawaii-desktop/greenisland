@@ -91,6 +91,7 @@ set(SOURCES
     protocols/greenisland/greenislandscreenshooter.cpp
     protocols/gtk-shell/gtkshell.cpp
     protocols/gtk-shell/gtksurface.cpp
+    protocols/qt/qthardwareintegration.cpp
     protocols/qt/qttouchextension.cpp
     protocols/qt/qtwindowmanager.cpp
     protocols/wayland/wlsubcompositor.cpp
