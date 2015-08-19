@@ -311,9 +311,6 @@ ecm_generate_headers(GreenIsland_CamelCase_HEADERS
     GreenIsland
   REQUIRED_HEADERS GreenIsland_HEADERS
 )
-install(FILES ${GreenIsland_CamelCase_HEADERS}
-        DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
-        COMPONENT Devel)
 
 ecm_generate_headers(plugins_CAMELCASE_HEADERS
   HEADER_NAMES
@@ -326,50 +323,23 @@ ecm_generate_headers(plugins_CAMELCASE_HEADERS
   RELATIVE
     plugins
 )
-install(FILES ${plugins_CAMELCASE_HEADERS} ${plugins_HEADERS}
+
+install(FILES ${GreenIsland_CamelCase_HEADERS} ${plugins_CAMELCASE_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/GreenIsland
         COMPONENT Devel)
-
-install(TARGETS GreenIsland EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(
     FILES
       ${CMAKE_CURRENT_BINARY_DIR}/greenisland/greenisland_export.h
       ${GreenIsland_HEADERS}
-      abstractplugin.h
-      abstractcompositor.h
-      abstractquickcompositor.h
-      abstractoutput.h
-      applicationmanager.h
-      bufferref.h
-      compositor.h
-      clientconnection.h
-      clientwindow.h
-      drag.h
-      globalinterface.h
-      homeapplication.h
-      inputdevice.h
-      inputpanel.h
-      keybinding.h
-      listener.h
-      output.h
-      outputwindow.h
-      quickoutput.h
-      quicksurface.h
-      region.h
-      shellwindow.h
-      surface.h
-      surfacebuffer.h
-      surfaceevent.h
-      surfaceinterface.h
-      surfaceitem.h
-      surfaceview.h
-      windowview.h
+      ${plugins_HEADERS}
     DESTINATION
       ${GREENISLAND_INCLUDEDIR}/greenisland
     COMPONENT
       Devel
 )
+
+install(TARGETS GreenIsland EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 # Create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIsland")
