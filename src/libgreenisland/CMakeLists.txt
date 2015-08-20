@@ -82,6 +82,7 @@ set(SOURCES
     surface/surfaceevent.cpp
     surface/surfaceinterface.cpp
     surface/surfaceitem.cpp
+    surface/surfacerolehandler.cpp
     surface/surfaceview.cpp
     protocols/fullscreen-shell/fullscreenshellclient.cpp
     protocols/greenisland/greenislandapps.cpp
@@ -320,6 +321,7 @@ ecm_generate_headers(GreenIsland_CAMELCASE_HEADERS
     SurfaceEvent
     SurfaceInterface
     SurfaceItem
+    SurfaceRoleHandler
     SurfaceView
   PREFIX
     GreenIsland

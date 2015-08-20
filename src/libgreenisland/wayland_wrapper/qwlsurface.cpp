@@ -114,6 +114,7 @@ static QRegion infiniteRegion() {
 
 WlSurface::WlSurface(struct wl_client *client, uint32_t id, int version, AbstractCompositor *compositor, Surface *surface)
     : QtWaylandServer::wl_surface(client, id, version)
+    , roleHandler(Q_NULLPTR)
     , m_compositor(compositor->handle())
     , m_waylandSurface(surface)
     , m_mainOutput(0)
@@ -131,8 +132,6 @@ WlSurface::WlSurface(struct wl_client *client, uint32_t id, int version, Abstrac
     , m_destroyed(false)
     , m_contentOrientation(Qt::PrimaryOrientation)
     , m_visibility(QWindow::Hidden)
-    , m_role(0)
-    , m_roleHandler(0)
 {
     m_pending.buffer = 0;
     m_pending.newlyAttached = false;
@@ -152,17 +151,6 @@ WlSurface::~WlSurface()
         c->destroy();
     foreach (FrameCallback *c, m_frameCallbacks)
         c->destroy();
-}
-
-bool WlSurface::setRole(const SurfaceRole *role, wl_resource *errorResource, uint32_t errorCode)
-{
-    if (m_role && m_role != role) {
-        wl_resource_post_error(errorResource, errorCode, "Cannot assign role %s to wl_surface@%d, already has role %s\n", role->name,
-                               wl_resource_get_id(resource()->handle), m_role->name);
-        return false;
-    }
-    m_role = role;
-    return true;
 }
 
 void WlSurface::setTransientOffset(qreal x, qreal y)
@@ -522,8 +510,8 @@ void WlSurface::surface_commit(Resource *)
             }
         }
         emit m_waylandSurface->configure(m_bufferRef);
-        if (m_roleHandler)
-            m_roleHandler->configure(m_pending.offset.x(), m_pending.offset.y());
+        if (roleHandler)
+            roleHandler->configure(m_pending.offset.x(), m_pending.offset.y());
     }
 
     m_pending.buffer = 0;

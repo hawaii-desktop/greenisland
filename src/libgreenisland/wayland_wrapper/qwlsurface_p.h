@@ -74,19 +74,13 @@ class SubSurface;
 class FrameCallback;
 
 class SurfaceUnmapLock;
-class SurfaceRole;
-class RoleBase;
+class SurfaceRoleHandler;
 
 class GREENISLAND_EXPORT WlSurface : public QtWaylandServer::wl_surface
 {
 public:
     WlSurface(struct wl_client *client, uint32_t id, int version, AbstractCompositor *compositor, Surface *surface);
     ~WlSurface();
-
-    bool setRole(const SurfaceRole *role, wl_resource *errorResource, uint32_t errorCode);
-    const SurfaceRole *role() const { return m_role; }
-    template<class T>
-    bool setRoleHandler(T *handler);
 
     static WlSurface *fromResource(struct ::wl_resource *resource);
 
@@ -161,6 +155,9 @@ public:
 
     Qt::ScreenOrientation contentOrientation() const;
 
+    QString roleName;
+    SurfaceRoleHandler *roleHandler;
+
 protected:
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -227,9 +224,6 @@ protected:
     QWindow::Visibility m_visibility;
     QVector<SubSurface *> m_subsurfaces;
 
-    const SurfaceRole *m_role;
-    RoleBase *m_roleHandler;
-
     void setBackBuffer(SurfaceBuffer *buffer);
     SurfaceBuffer *createSurfaceBuffer(struct ::wl_resource *buffer);
 
@@ -237,57 +231,6 @@ protected:
     friend class RoleBase;
 };
 
-class SurfaceRole
-{
-public:
-    const char *name;
-};
-
-class RoleBase
-{
-public:
-    virtual ~RoleBase() {
-        if (m_surface) {
-            m_surface->m_roleHandler = 0; m_surface = 0;
-        }
-    }
-
-protected:
-    RoleBase() : m_surface(0) {}
-    static inline RoleBase *roleOf(WlSurface *s) { return s->m_roleHandler; }
-
-    virtual void configure(int dx, int dy) = 0;
-
-private:
-    WlSurface *m_surface;
-    friend class WlSurface;
-};
-
-template<class T>
-class SurfaceRoleHandler : public RoleBase
-{
-public:
-    static T *get(WlSurface *surface) {
-        if (surface->role() == T::role()) {
-            return static_cast<T *>(roleOf(surface));
-        }
-        return 0;
-    }
-};
-
-template<class T>
-bool WlSurface::setRoleHandler(T *handler)
-{
-    RoleBase *base = handler;
-    if (m_role == T::role()) {
-        m_roleHandler = base;
-        base->m_surface = this;
-        return true;
-    }
-    return false;
 }
-
-}
-
 
 #endif //WL_SURFACE_H

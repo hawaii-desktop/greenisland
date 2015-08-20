@@ -41,6 +41,7 @@
 #ifndef WLSUBSURFACE_H
 #define WLSUBSURFACE_H
 
+#include "surfacerolehandler.h"
 #include "wayland_wrapper/qwlsurface_p.h"
 
 #include "qwayland-server-wayland.h"
@@ -48,24 +49,24 @@
 #include <QtCore/QObject>
 #include <QtCore/QLinkedList>
 
+namespace GreenIsland {
 
 class Compositor;
 class Surface;
 
-namespace GreenIsland {
-
-class SubSurface : public QObject, public QtWaylandServer::wl_subsurface, public SurfaceRoleHandler<SubSurface>
+class SubSurface : public QObject, public QtWaylandServer::wl_subsurface, public SurfaceRoleHandler
 {
 public:
     SubSurface(WlSurface *surface, WlSurface *parent, wl_client *client, uint32_t id, int version);
     ~SubSurface();
 
-    static const SurfaceRole *role();
-
     void parentCommit();
+
+    static QString name();
 
 protected:
     void configure(int dx, int dy) Q_DECL_OVERRIDE;
+
     void subsurface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
     void subsurface_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void subsurface_set_position(Resource *resource, int32_t x, int32_t y) Q_DECL_OVERRIDE;

@@ -52,7 +52,10 @@
 
 #include "abstractcompositor.h"
 #include "clientconnection.h"
+#include "logging.h"
 #include "surface_p.h"
+#include "surfacerolehandler.h"
+#include "surfacerolehandler_p.h"
 #include "bufferref.h"
 #include "surfaceinterface.h"
 
@@ -107,6 +110,62 @@ void Surface::removeInterface(SurfaceInterface *iface)
 {
     Q_D(Surface);
     d->interfaces.removeOne(iface);
+}
+
+QString Surface::roleName() const
+{
+    Q_D(const Surface);
+    return d->roleName;
+}
+
+bool Surface::setRoleName(const QString &name, wl_resource *errorResource,
+                          quint32 errorCode)
+{
+    Q_D(Surface);
+
+    if (!d->roleName.isEmpty() && d->roleName != name) {
+        wl_resource_post_error(errorResource, errorCode,
+                               "Cannot assign role \"%s\" to wl_surface@%d, alredy has role \"%s\"",
+                               qPrintable(name),
+                               wl_resource_get_id(d->resource()->handle),
+                               qPrintable(d->roleName));
+        return false;
+    }
+
+    d->roleName = name;
+    Q_EMIT roleNameChanged();
+    return true;
+}
+
+SurfaceRoleHandler *Surface::roleHandler() const
+{
+    Q_D(const Surface);
+    return d->roleHandler;
+}
+
+bool Surface::setRoleHandler(SurfaceRoleHandler *handler)
+{
+    Q_D(Surface);
+
+    // Role handler must match role name
+    if (handler && handler->name() != d->roleName) {
+        qCWarning(GREENISLAND_COMPOSITOR,
+                  "Unable to assign surface role handler \"%s\" to wl_surface@%d: already has role \"%s\"",
+                  qPrintable(handler->name()),
+                  wl_resource_get_id(d->resource()->handle),
+                  qPrintable(d->roleName));
+        return false;
+    }
+
+    // Break association between old role handler and this surface
+    if (d->roleHandler)
+        d->roleHandler->d_func()->surface = Q_NULLPTR;
+
+    d->roleHandler = handler;
+    if (handler)
+        handler->d_func()->surface = this;
+
+    return true;
 }
 
 Surface::Type Surface::type() const

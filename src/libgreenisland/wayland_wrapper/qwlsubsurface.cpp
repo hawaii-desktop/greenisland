@@ -73,12 +73,6 @@ SubSurface::~SubSurface()
     m_parent->removeSubSurface(this);
 }
 
-const SurfaceRole *SubSurface::role()
-{
-    static const SurfaceRole role = { "subsurface" };
-    return &role;
-}
-
 void SubSurface::parentCommit()
 {
     foreach (SurfaceView *view, m_views) {
@@ -90,6 +84,11 @@ void SubSurface::configure(int dx, int dy)
 {
     Q_UNUSED(dx)
     Q_UNUSED(dy)
+}
+
+QString SubSurface::name()
+{
+    return QStringLiteral("wl_subsurface");
 }
 
 void SubSurface::createSubView(SurfaceView *view)

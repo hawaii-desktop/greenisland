@@ -64,6 +64,7 @@ class Output;
 class SurfaceView;
 class SurfaceInterface;
 class SurfaceOperation;
+class SurfaceRoleHandler;
 
 class WlSurface;
 class SurfacePrivate;
@@ -128,6 +129,13 @@ public:
 
     void addInterface(SurfaceInterface *interface);
     void removeInterface(SurfaceInterface *interface);
+
+    QString roleName() const;
+    bool setRoleName(const QString &name, wl_resource *errorResource,
+                     quint32 errorCode);
+
+    SurfaceRoleHandler *roleHandler() const;
+    bool setRoleHandler(SurfaceRoleHandler *handler);
 
     Type type() const;
     bool isYInverted() const;
@@ -225,9 +233,13 @@ Q_SIGNALS:
     void configure(bool hasBuffer);
     void redraw();
 
+    void roleNameChanged();
+
+    friend class AbstractSurfaceRole;
     friend class SurfaceView;
     friend class SurfaceInterface;
-    friend class GreenIsland::WlSurface;
+    friend class SurfaceRoleHandler;
+    friend class WlSurface;
 };
 
 class SurfaceUnmapLockPrivate;

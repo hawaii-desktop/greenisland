@@ -373,16 +373,16 @@ void WlCompositor::subcompositor_get_subsurface(wl_subcompositor::Resource *reso
         wl_resource_post_error(resource->handle, WL_SUBCOMPOSITOR_ERROR_BAD_SURFACE, "%s%d: wl_surface@%d cannot be its own parent", where, id, wl_resource_get_id(surface));
         return;
     }
-    if (SubSurface::get(s)) {
+    if (s->waylandSurface()->roleName() == SubSurface::name()) {
         wl_resource_post_error(resource->handle, WL_SUBCOMPOSITOR_ERROR_BAD_SURFACE, "%s%d: wl_surface@%d is already a sub-surface", where, id, wl_resource_get_id(surface));
         return;
     }
 
-    if (!s->setRole(SubSurface::role(), resource->handle, WL_SUBCOMPOSITOR_ERROR_BAD_SURFACE))
+    if (!s->waylandSurface()->setRoleName(SubSurface::name(), resource->handle, WL_SUBCOMPOSITOR_ERROR_BAD_SURFACE))
         return;
 
     SubSurface *ss = new SubSurface(s, p, resource->client(), id, resource->version());
-    s->setRoleHandler(ss);
+    s->waylandSurface()->setRoleHandler(ss);
 }
 
 ClientBufferIntegrationInterface * WlCompositor::clientBufferIntegration() const
