@@ -52,11 +52,9 @@
 #include <QtCore/QLinkedList>
 #include <QtGui/QWindow>
 
-
-class Surface;
-
 namespace GreenIsland {
 
+class Surface;
 class WlCompositor;
 
 class WlSurfaceExtensionGlobal : public QtWaylandServer::qt_surface_extension

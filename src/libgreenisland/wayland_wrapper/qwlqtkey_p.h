@@ -41,18 +41,18 @@
 #ifndef WLQTKEY_H
 #define WLQTKEY_H
 
-#include  "wayland_wrapper/qwlcompositor_p.h"
+#include "wayland_wrapper/qwlcompositor_p.h"
 
 #include "wayland-util.h"
 
 #include "qwayland-server-qtkey-extension.h"
 
-
-class Compositor;
-class Surface;
 class QKeyEvent;
 
 namespace GreenIsland {
+
+class Compositor;
+class Surface;
 
 class QtKeyExtensionGlobal : public QtWaylandServer::qt_key_extension
 {
