@@ -450,6 +450,11 @@ void ClientWindow::unregisterWindow(bool destruction)
 
 QPointF ClientWindow::calculateInitialPosition() const
 {
+    const int step = 24;
+    static int px = step;
+    static int py = 2 * step;
+    int dx, dy;
+
     // As a heuristic place the new window on the same output
     // as the pointer
     // TODO: Do something clever for touch too
@@ -466,24 +471,31 @@ QPointF ClientWindow::calculateInitialPosition() const
 
     // Target output geometry
     QRect geometry = targetOutput->geometry();
+    QSize size = geometry.size();
 
-    // Valid range within output where the surface will still be onscreen.
-    // If this is negative it means that the surface is bigger than
-    // output in this case we fallback to 0,0 in available geometry space.
-    int rangeX = geometry.x() + (geometry.size().width() - m_surface->size().width());
-    int rangeY = geometry.y() + (geometry.size().height() - m_surface->size().height());
+    // Increment new coordinates by the step
+    px += step;
+    py += 2 * step;
+    if (px > size.width() / 2)
+        px = step;
+    if (py > size.height() / 2)
+        py = step;
+    dx = px;
+    dy = py;
+    if (dx + surface()->size().width() > size.width()) {
+        dx = size.width() - surface()->size().width();
+        if (dx < 0)
+            dx = 0;
+        px = 0;
+    }
+    if (dy + surface()->size().height() > size.height()) {
+        dy = size.height() - surface()->size().height();
+        if (dy < 0)
+            dy = 0;
+        py = 0;
+    }
 
-    int dx = 0, dy = 0;
-    if (rangeX > 0)
-        dx = (qrand() % rangeX) - geometry.x();
-    if (rangeY > 0)
-        dy = (qrand() % rangeY) - geometry.y();
-
-    // Set surface position
-    pos.setX(geometry.x() + dx);
-    pos.setY(geometry.y() + dy);
-
-    return pos;
+    return targetOutput->mapToGlobal(QPointF(dy, dy));
 }
 
 void ClientWindow::initialSetup()
