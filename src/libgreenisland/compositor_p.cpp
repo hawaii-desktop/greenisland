@@ -199,12 +199,10 @@ void CompositorPrivate::dpms(bool on)
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     // TODO: Handle more states
-#if 0
     Q_FOREACH (QScreen *screen, QGuiApplication::screens())
         screen->handle()->setPowerState(on
                                         ? QPlatformScreen::PowerStateOn
                                         : QPlatformScreen::PowerStateStandby);
-#endif
 #else
     Q_UNUSED(on)
 #endif
