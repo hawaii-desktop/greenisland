@@ -1,3 +1,6 @@
 if(ENABLE_EGLDEVICEINTEGRATION_KMS)
     add_subdirectory(kms)
 endif()
+if(ENABLE_EGLDEVICEINTEGRATION_X11)
+    add_subdirectory(x11)
+endif()

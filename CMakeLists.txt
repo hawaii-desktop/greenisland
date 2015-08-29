@@ -25,6 +25,7 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # Options
 option(ENABLE_XWAYLAND "Enables XWayland support" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_KMS "Enables DRM/KMS device integration" ON)
+option(ENABLE_EGLDEVICEINTEGRATION_X11 "Enables X11 device integration" ON)
 
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
