@@ -24,7 +24,39 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_UDEV_H
+#define GREENISLAND_UDEV_H
 
-Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
-Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")
+#include <QtCore/QString>
+
+#include <greenislandplatform/greenisland_platform_export.h>
+
+namespace GreenIsland {
+
+namespace Platform {
+
+class UdevDevice;
+class UdevPrivate;
+
+class Udev
+{
+    Q_DECLARE_PRIVATE(Udev)
+public:
+    Udev();
+    ~Udev();
+
+    bool isValid() const;
+
+    UdevDevice *deviceFromFileName(const QString &fileName) const;
+    UdevDevice *deviceFromSubSystemAndName(const QString &subSystem, const QString &name) const;
+    UdevDevice *deviceFromSysfsPath(const QString &sysfsPath) const;
+
+private:
+    UdevPrivate *const d_ptr;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_UDEV_H

@@ -30,5 +30,6 @@
 #include <QtCore/QLoggingCategory>
 
 Q_DECLARE_LOGGING_CATEGORY(lcLogind)
+Q_DECLARE_LOGGING_CATEGORY(lcUdev)
 
 #endif // GREENISLAND_LOGGING_H

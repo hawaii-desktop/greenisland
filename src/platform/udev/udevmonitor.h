@@ -24,7 +24,43 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_UDEVMONITOR_H
+#define GREENISLAND_UDEVMONITOR_H
 
-Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
-Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")
+#include <QtCore/QObject>
+
+namespace GreenIsland {
+
+namespace Platform {
+
+class Udev;
+class UdevDevice;
+class UdevMonitorPrivate;
+
+class UdevMonitor : public QObject
+{
+    Q_DECLARE_PRIVATE(UdevMonitor)
+public:
+    UdevMonitor(Udev *udev, QObject *parent = 0);
+
+    bool isValid() const;
+
+    void filterSubSystemDevType(const QString &subSystem, const QString &devType);
+    void filterTag(const QString &tag);
+
+Q_SIGNALS:
+    void deviceAdded(UdevDevice *device);
+    void deviceRemoved(UdevDevice *device);
+    void deviceChanged(UdevDevice *device);
+    void deviceOnlined(UdevDevice *device);
+    void deviceOfflined(UdevDevice *device);
+
+private:
+    Q_PRIVATE_SLOT(d_func(), void _q_udevEventHandler())
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_UDEVMONITOR_H

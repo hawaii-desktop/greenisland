@@ -24,7 +24,32 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_UDEVENUMERATE_H
+#define GREENISLAND_UDEVENUMERATE_H
 
-Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
-Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")
+#include "udev/udevdevice.h"
+
+namespace GreenIsland {
+
+namespace Platform {
+
+class UdevEnumeratePrivate;
+
+class UdevEnumerate
+{
+    Q_DECLARE_PRIVATE(UdevEnumerate)
+public:
+    UdevEnumerate(UdevDevice::DeviceTypes types, Udev *udev);
+    ~UdevEnumerate();
+
+    QList<UdevDevice *> scan() const;
+
+private:
+    UdevEnumeratePrivate *const d_ptr;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // UDEVENUMERATE_H

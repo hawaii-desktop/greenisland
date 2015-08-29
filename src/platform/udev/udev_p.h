@@ -24,7 +24,33 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_UDEV_P_H
+#define GREENISLAND_UDEV_P_H
 
-Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
-Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")
+extern "C" {
+#include <libudev.h>
+}
+
+namespace GreenIsland {
+
+namespace Platform {
+
+class Udev;
+
+class UdevPrivate
+{
+public:
+    UdevPrivate();
+    ~UdevPrivate();
+
+    static UdevPrivate *get(Udev *u);
+
+    struct udev *udev;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_UDEV_P_H
+

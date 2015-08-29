@@ -64,6 +64,14 @@ endif()
 set(REQUIRED_QT_VERSION 5.4.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core DBus Gui Qml Quick Compositor)
 
+# udev
+find_package(UDev)
+set_package_properties(UDev PROPERTIES
+    DESCRIPTION "Linux device library"
+    URL "http://www.freedesktop.org/software/systemd/libudev/"
+    TYPE REQUIRED
+    PURPOSE "Required to access devices from the QPA plugin")
+
 # EGL
 find_package(BcmHost)
 if(BCM_HOST_FOUND)
