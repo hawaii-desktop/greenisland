@@ -24,13 +24,47 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_LOGGING_H
-#define GREENISLAND_LOGGING_H
+#ifndef GREENISLAND_LIBINPUTGESTURE_H
+#define GREENISLAND_LIBINPUTGESTURE_H
 
-#include <QtCore/QLoggingCategory>
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
-Q_DECLARE_LOGGING_CATEGORY(lcInput)
-Q_DECLARE_LOGGING_CATEGORY(lcLogind)
-Q_DECLARE_LOGGING_CATEGORY(lcUdev)
+struct libinput_event_gesture;
 
-#endif // GREENISLAND_LOGGING_H
+namespace GreenIsland {
+
+namespace Platform {
+
+class LibInputHandler;
+
+class LibInputGesture
+{
+public:
+    LibInputGesture(LibInputHandler *handler);
+
+    void handlePinchBegin(libinput_event_gesture *event);
+    void handlePinchEnd(libinput_event_gesture *event);
+    void handlePinchUpdate(libinput_event_gesture *event);
+
+    void handleSwipeBegin(libinput_event_gesture *event);
+    void handleSwipeEnd(libinput_event_gesture *event);
+    void handleSwipeUpdate(libinput_event_gesture *event);
+
+private:
+    LibInputHandler *m_handler;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_LIBINPUTGESTURE_H

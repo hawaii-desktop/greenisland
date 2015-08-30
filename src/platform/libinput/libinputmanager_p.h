@@ -24,13 +24,40 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_LOGGING_H
-#define GREENISLAND_LOGGING_H
+#ifndef GREENISLAND_LIBINPUTMANAGER_P_H
+#define GREENISLAND_LIBINPUTMANAGER_P_H
 
-#include <QtCore/QLoggingCategory>
+#include <QtCore/QObject>
 
-Q_DECLARE_LOGGING_CATEGORY(lcInput)
-Q_DECLARE_LOGGING_CATEGORY(lcLogind)
-Q_DECLARE_LOGGING_CATEGORY(lcUdev)
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
-#endif // GREENISLAND_LOGGING_H
+namespace GreenIsland {
+
+namespace Platform {
+
+class LibInputHandler;
+
+class LibInputManager : public QObject
+{
+    Q_OBJECT
+public:
+    explicit LibInputManager(QObject *parent = 0);
+
+private:
+    LibInputHandler *m_handler;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_LIBINPUTMANAGER_P_H

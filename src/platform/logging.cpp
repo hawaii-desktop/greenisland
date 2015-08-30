@@ -26,5 +26,6 @@
 
 #include "logging.h"
 
+Q_LOGGING_CATEGORY(lcInput, "greenisland.qpa.input")
 Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
 Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")

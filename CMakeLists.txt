@@ -72,6 +72,12 @@ set_package_properties(UDev PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required to access devices from the QPA plugin")
 
+# libinput
+find_package(Libinput 0.12)
+set_package_properties(Libinput PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Required for input handling from the QPA plugin")
+
 # EGL
 find_package(BcmHost)
 if(BCM_HOST_FOUND)
