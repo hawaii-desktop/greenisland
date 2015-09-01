@@ -1,1 +1,2 @@
+add_subdirectory(egldeviceintegration)
 add_subdirectory(extensions)
