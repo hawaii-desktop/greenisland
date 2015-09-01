@@ -122,6 +122,7 @@ add_subdirectory(launcher)
 add_subdirectory(plugins)
 add_subdirectory(shells)
 add_subdirectory(src)
+add_subdirectory(tests)
 add_subdirectory(tools)
 
 # Display featute summary
