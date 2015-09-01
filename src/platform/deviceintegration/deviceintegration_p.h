@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,9 +24,42 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_DEVICEINTEGRATION_P_H
+#define GREENISLAND_DEVICEINTEGRATION_P_H
 
-Q_LOGGING_CATEGORY(lcDeviceIntegration, "greenisland.qpa.deviceintegration")
-Q_LOGGING_CATEGORY(lcInput, "greenisland.qpa.input")
-Q_LOGGING_CATEGORY(lcLogind, "greenisland.qpa.logind")
-Q_LOGGING_CATEGORY(lcUdev, "greenisland.qpa.udev")
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
+
+namespace GreenIsland {
+
+namespace Platform {
+
+class EGLDeviceIntegration;
+
+class DeviceIntegration
+{
+public:
+    DeviceIntegration();
+    ~DeviceIntegration();
+
+    inline EGLDeviceIntegration *integration() const {
+        return m_integration;
+    }
+
+private:
+    EGLDeviceIntegration *m_integration;
+};
+
+} // namespace Platform
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_DEVICEINTEGRATION_P_H
