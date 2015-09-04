@@ -29,6 +29,8 @@
 
 #include <QtCore/QObject>
 
+#include <greenislandplatform/greenisland_platform_export.h>
+
 struct udev_device;
 
 namespace GreenIsland {
@@ -40,7 +42,7 @@ class UdevEnumerate;
 class UdevDevicePrivate;
 class UdevMonitorPrivate;
 
-class UdevDevice
+class GREENISLANDPLATFORM_EXPORT UdevDevice
 {
     Q_DECLARE_PRIVATE(UdevDevice)
     Q_ENUMS(DeviceType)

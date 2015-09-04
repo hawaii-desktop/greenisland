@@ -40,7 +40,7 @@ namespace Platform {
 
 class LibInputHandlerPrivate;
 
-struct LibInputKeyEvent
+struct GREENISLANDPLATFORM_EXPORT LibInputKeyEvent
 {
     int key;
     Qt::KeyboardModifiers modifiers;
@@ -52,7 +52,7 @@ struct LibInputKeyEvent
     ushort repeatCount;
 };
 
-struct LibInputMouseEvent
+struct GREENISLANDPLATFORM_EXPORT LibInputMouseEvent
 {
     QPoint pos;
     Qt::MouseButtons buttons;
@@ -61,14 +61,14 @@ struct LibInputMouseEvent
     Qt::Orientation wheelOrientation;
 };
 
-struct LibInputTouchEvent
+struct GREENISLANDPLATFORM_EXPORT LibInputTouchEvent
 {
     QTouchDevice *device;
     QList<QWindowSystemInterface::TouchPoint> touchPoints;
     Qt::KeyboardModifiers modifiers;
 };
 
-class LibInputHandler : public QObject
+class GREENISLANDPLATFORM_EXPORT LibInputHandler : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool suspended READ isSuspended NOTIFY suspendedChanged)

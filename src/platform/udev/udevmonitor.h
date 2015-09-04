@@ -29,6 +29,8 @@
 
 #include <QtCore/QObject>
 
+#include <greenislandplatform/greenisland_platform_export.h>
+
 namespace GreenIsland {
 
 namespace Platform {
@@ -37,7 +39,7 @@ class Udev;
 class UdevDevice;
 class UdevMonitorPrivate;
 
-class UdevMonitor : public QObject
+class GREENISLANDPLATFORM_EXPORT UdevMonitor : public QObject
 {
     Q_DECLARE_PRIVATE(UdevMonitor)
 public:

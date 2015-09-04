@@ -38,7 +38,7 @@ namespace Platform {
 
 class LogindPrivate;
 
-class Logind : public QObject
+class GREENISLANDPLATFORM_EXPORT Logind : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool connected READ isConnected NOTIFY connectedChanged)

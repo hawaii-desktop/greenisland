@@ -38,7 +38,7 @@ namespace Platform {
 class UdevDevice;
 class UdevPrivate;
 
-class Udev
+class GREENISLANDPLATFORM_EXPORT Udev
 {
     Q_DECLARE_PRIVATE(Udev)
 public:

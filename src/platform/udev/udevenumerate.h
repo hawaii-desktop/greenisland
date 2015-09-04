@@ -27,7 +27,7 @@
 #ifndef GREENISLAND_UDEVENUMERATE_H
 #define GREENISLAND_UDEVENUMERATE_H
 
-#include "udev/udevdevice.h"
+#include <GreenIslandPlatform/UdevDevice>
 
 namespace GreenIsland {
 
@@ -35,7 +35,7 @@ namespace Platform {
 
 class UdevEnumeratePrivate;
 
-class UdevEnumerate
+class GREENISLANDPLATFORM_EXPORT UdevEnumerate
 {
     Q_DECLARE_PRIVATE(UdevEnumerate)
 public:
