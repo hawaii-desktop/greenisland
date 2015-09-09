@@ -51,6 +51,7 @@
 #include "deviceintegration/eglfsintegration.h"
 #include "deviceintegration/eglfsoffscreenwindow.h"
 #include "deviceintegration/eglfswindow.h"
+#include "logind/vthandler.h"
 
 static void initResources()
 {
@@ -98,6 +99,11 @@ QPlatformNativeInterface *EglFSIntegration::nativeInterface() const
     return const_cast<EglFSIntegration *>(this);
 }
 
+VtHandler *EglFSIntegration::vtHandler() const
+{
+    return m_vtHandler.data();
+}
+
 void EglFSIntegration::initialize()
 {
     egl_device_integration()->platformInit();
@@ -112,7 +118,7 @@ void EglFSIntegration::initialize()
 
     m_inputContext = QPlatformInputContextFactory::create();
 
-    //vt
+    m_vtHandler.reset(new VtHandler);
 
     m_liHandler = new Platform::LibInputHandler(this);
 

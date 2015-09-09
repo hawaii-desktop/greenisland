@@ -41,6 +41,7 @@ namespace Platform {
 
 class EglFSContext;
 class EglFSWindow;
+class VtHandler;
 
 class GREENISLANDPLATFORM_EXPORT EglFSIntegration : public QPlatformIntegration, public QPlatformNativeInterface
 {
@@ -53,6 +54,7 @@ public:
     QPlatformFontDatabase *fontDatabase() const Q_DECL_OVERRIDE;
     QPlatformServices *services() const Q_DECL_OVERRIDE;
     QPlatformNativeInterface *nativeInterface() const Q_DECL_OVERRIDE;
+    VtHandler *vtHandler() const;
 
     void initialize() Q_DECL_OVERRIDE;
     void destroy() Q_DECL_OVERRIDE;
@@ -84,6 +86,7 @@ private:
     QPlatformInputContext *m_inputContext;
     QScopedPointer<QPlatformFontDatabase> m_fontDatabase;
     QScopedPointer<QPlatformServices> m_services;
+    QScopedPointer<VtHandler> m_vtHandler;
     LibInputHandler *m_liHandler;
 
     EGLNativeDisplayType nativeDisplay() const;
