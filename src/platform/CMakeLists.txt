@@ -91,7 +91,17 @@ else()
     target_link_libraries(GreenIslandPlatform PRIVATE ${OPENGLES_LIBRARIES})
 endif()
 
-ecm_generate_headers(deviceintegration_HEADERS
+set(GREENISLAND_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/GreenIsland")
+
+target_include_directories(GreenIslandPlatform INTERFACE "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>")
+
+set_target_properties(GreenIslandPlatform PROPERTIES
+    VERSION     ${PROJECT_VERSION}
+    SOVERSION   ${PROJECT_SOVERSION}
+    EXPORT_NAME GreenIsland
+)
+
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
   HEADER_NAMES
     EGLDeviceIntegration
     EglFSContext
@@ -108,7 +118,7 @@ ecm_generate_headers(deviceintegration_HEADERS
     deviceintegration
 )
 
-ecm_generate_headers(udev_HEADERS
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
   HEADER_NAMES
     Udev
     UdevDevice
@@ -122,7 +132,7 @@ ecm_generate_headers(udev_HEADERS
     udev
 )
 
-ecm_generate_headers(logind_HEADERS
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
   HEADER_NAMES
     Logind
     VtHandler
@@ -134,7 +144,7 @@ ecm_generate_headers(logind_HEADERS
     logind
 )
 
-ecm_generate_headers(libinput_HEADERS
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
   HEADER_NAMES
     LibInputHandler
   PREFIX
@@ -144,3 +154,19 @@ ecm_generate_headers(libinput_HEADERS
   RELATIVE
     libinput
 )
+
+install(FILES ${GreenIslandPlatform_CAMELCASE_HEADERS}
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/Platform
+        COMPONENT Devel)
+
+install(
+    FILES
+      ${CMAKE_CURRENT_BINARY_DIR}/greenislandplatform/greenisland_platform_export.h
+      ${GreenIslandPlatform_HEADERS}
+    DESTINATION
+      ${GREENISLAND_INCLUDEDIR}/platform
+    COMPONENT
+      Devel
+)
+
+install(TARGETS GreenIslandPlatform EXPORT GreenIslandPlatformTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
