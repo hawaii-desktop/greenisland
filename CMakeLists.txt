@@ -61,7 +61,7 @@ if ("${ECM_VERSION}" VERSION_LESS "1.7.0")
 endif()
 
 # Find Qt5
-set(REQUIRED_QT_VERSION 5.3.0)
+set(REQUIRED_QT_VERSION 5.4.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Gui Qml Quick Compositor)
 
 # EGL
