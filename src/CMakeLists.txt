@@ -1,7 +1,1 @@
-add_subdirectory(declarative)
-add_subdirectory(compositor)
-add_subdirectory(launcher)
-add_subdirectory(libgreenisland)
-add_subdirectory(plugins)
-add_subdirectory(shells)
-add_subdirectory(tools)
+add_subdirectory(server)

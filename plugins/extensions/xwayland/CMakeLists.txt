@@ -34,9 +34,9 @@ endif()
 include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/src/libgreenisland
-    ${CMAKE_BINARY_DIR}/src/libgreenisland
-    ${CMAKE_BINARY_DIR}/src/libgreenisland/greenisland
+    ${CMAKE_SOURCE_DIR}/src/server
+    ${CMAKE_BINARY_DIR}/src/server
+    ${CMAKE_BINARY_DIR}/src/server/greenisland
 )
 
 set(SOURCES

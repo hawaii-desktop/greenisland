@@ -1,12 +1,12 @@
-include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandConfigExtrasLocal.cmake)
-include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandMacros.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandConfigExtrasLocal.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandMacros.cmake)
 
 include_directories(
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/src/libgreenisland
-    ${CMAKE_SOURCE_DIR}/src/libgreenisland/screen
-    ${CMAKE_BINARY_DIR}/src/libgreenisland
-    ${CMAKE_BINARY_DIR}/src/libgreenisland/greenisland
+    ${CMAKE_SOURCE_DIR}/src/server
+    ${CMAKE_SOURCE_DIR}/src/server/screen
+    ${CMAKE_BINARY_DIR}/src/server
+    ${CMAKE_BINARY_DIR}/src/server/greenisland
 )
 
 set(SOURCES

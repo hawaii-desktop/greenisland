@@ -114,9 +114,15 @@ endif()
 add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
 
 # Subdirectories
+add_subdirectory(compositor)
 add_subdirectory(data)
+add_subdirectory(declarative)
 add_subdirectory(headers)
+add_subdirectory(launcher)
+add_subdirectory(plugins)
+add_subdirectory(shells)
 add_subdirectory(src)
+add_subdirectory(tools)
 
 # Display featute summary
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

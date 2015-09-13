@@ -1,5 +1,5 @@
-include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandConfigExtrasLocal.cmake)
-include(${CMAKE_SOURCE_DIR}/src/libgreenisland/GreenIslandMacros.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandConfigExtrasLocal.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandMacros.cmake)
 
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
