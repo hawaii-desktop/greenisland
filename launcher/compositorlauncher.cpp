@@ -174,12 +174,6 @@ void CompositorLauncher::detectMode()
         return;
     }
 
-    // Detect eglfs since Qt 5.5
-    if (qEnvironmentVariableIsSet("QT_QPA_EGLFS_INTEGRATION")) {
-        m_mode = EglFSMode;
-        return;
-    }
-
     // Use eglfs mode if we detected a particular hardware except
     // for drm with Qt < 5.5 because eglfs_kms was not available
     if (m_hardware != UnknownHardware) {
@@ -270,7 +264,6 @@ QStringList CompositorLauncher::compositorArgs() const
 
     // Specific arguments
     switch (m_mode) {
-    case EglFSMode:
     case HwComposerMode:
         if (m_hasLibInputPlugin)
             args << QStringLiteral("-plugin") << QStringLiteral("libinput");
@@ -311,27 +304,7 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
         }
         break;
     case EglFSMode:
-        // General purpose distributions do not have the proper eglfs
-        // integration and may want to build it out of tree, let them
-        // specify a QPA plugin with an environment variable
-        if (qEnvironmentVariableIsSet("HAWAII_QPA_PLATFORM"))
-            env.insert(QStringLiteral("QT_QPA_PLATFORM"), qgetenv("HAWAII_QPA_PLATFORM"));
-        else
-            env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("eglfs"));
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-        switch (m_hardware) {
-        case BroadcomHardware:
-            env.insert(QStringLiteral("QT_QPA_EGLFS_INTEGRATION"), QStringLiteral("eglfs_brcm"));
-            break;
-        default:
-            env.insert(QStringLiteral("QT_QPA_EGLFS_INTEGRATION"), QStringLiteral("eglfs_kms"));
-            break;
-        }
-#endif
-
-        if (m_hasLibInputPlugin)
-            env.insert(QStringLiteral("QT_QPA_EGLFS_DISABLE_INPUT"), QStringLiteral("1"));
+        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("greenisland"));
         break;
     case HwComposerMode:
         env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("hwcomposer"));
