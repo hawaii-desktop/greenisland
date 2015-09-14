@@ -40,26 +40,27 @@ Qt >= 5.5 with at least the following modules is required:
 * [qtdeclarative](http://code.qt.io/cgit/qt/qtdeclarative.git)
 * [qtwayland](http://code.qt.io/cgit/qt/qtwayland.git)
 
-Qt 5.4 is supported but you need a qtwayland branch with backports,
-see below.
-
-You may also need [Weston >= 1.5.0](http://wayland.freedesktop.org) for
-fullscreen shell support.  However if you have Qt >= 5.5 you won't likely need it.
-
 The following modules and their dependencies are required:
 
 * [ECM >= 1.4.0](http://quickgit.kde.org/?p=extra-cmake-modules.git)
+* [udev](http://www.freedesktop.org/software/systemd/libudev/)
+* [libinput >= 0.12](http://www.freedesktop.org/wiki/Software/libinput/)
+
+Optional dependencies:
+
+* [Weston >= 1.5.0](http://wayland.freedesktop.org) to nest Green Island into
+  Weston with the fullscreen shell protocol, useful only if your device is not
+  yet supported by Green Island but works with Weston.
+
+If you enable DRM/KMS device integration you also need:
+
+* [libdrm](https://wiki.freedesktop.org/dri/)
+* [gbm](http://www.mesa3d.org)
 
 ### qtwayland
 
-If you are still on Qt 5.4 then you need a special qtwayland branch
-with backports from qtwayland 5.5:
-
-```sh
-git clone -b output54 https://github.com/maui-packages/qtwayland
-```
-
-and build it yourself.
+Make sure qtwayland is built with the QtCompositor API, please read
+upstream [documentation](http://code.qt.io/cgit/qt/qtwayland.git/tree/README?h=5.5).
 
 ## Build
 
@@ -96,6 +97,24 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
 * **Debug:** debug build
 * **Release:** release build
 * **RelWithDebInfo:** release build with debugging information
+
+### Configuration arguments
+
+* **ENABLE_EGLDEVICEINTEGRATION_KMS**
+
+  Enabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_KMS:BOOL=OFF`
+  to cmake if you don't want to build the DRM/KMS device integration.
+
+  Please note that this way you won't be able to run Green Island
+  on DRM/KMS devices.
+
+* **ENABLE_XWAYLAND**
+
+  Enabled by default. Pass `-DENABLE_XWAYLAND:BOOL=OFF` to cmake if
+  you don't want to build the XWayland plugin.
+
+  If disabled, compatibility with old X11-only applications will
+  not work.
 
 ## Installation
 
