@@ -137,6 +137,10 @@ environment variable.
 List of plugins:
 
 * **plasma:** Wayland protocols for Plasma
+* **xwayland:** XWayland compatibility
+
+xwayland plugin status is currently alpha, not everything
+is guaranteed to work.
 
 ## Logging categories
 
