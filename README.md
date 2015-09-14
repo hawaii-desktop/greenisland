@@ -158,6 +158,12 @@ to learn how to enable them.
   * **greenisland.screenbackend.fake:** Fake screen backend
   * **greenisland.screenconfiguration:** Screen configuration loader
 
+* Platform:
+  * **greenisland.qpa.deviceintegration:** Device integration
+  * **greenisland.qpa.input:** Input management on device integration plugins
+  * **greenisland.qpa.logind:** Logind integration
+  * **greenisland.qpa.udev:** udev integration
+
 * Client-side:
   * **greenisland.wlregistry:** Registry
   * **greenisland.wlshmpool:** Shared memory pool
