@@ -52,6 +52,7 @@
 #include "deviceintegration/eglfsoffscreenwindow.h"
 #include "deviceintegration/eglfswindow.h"
 #include "logind/vthandler.h"
+#include "libinput/libinputmanager_p.h"
 
 static void initResources()
 {
@@ -120,7 +121,7 @@ void EglFSIntegration::initialize()
 
     m_vtHandler.reset(new VtHandler);
 
-    m_liHandler = new Platform::LibInputHandler(this);
+    m_liHandler = new Platform::LibInputManager(this);
 
     if (egl_device_integration()->usesDefaultScreen())
         addScreen(new EglFSScreen(display()));

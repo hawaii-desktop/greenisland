@@ -31,7 +31,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/qpa/qplatformscreen.h>
 
-#include <GreenIslandPlatform/LibInputHandler>
+#include <greenislandplatform/greenisland_platform_export.h>
 
 #include <EGL/egl.h>
 
@@ -41,6 +41,7 @@ namespace Platform {
 
 class EglFSContext;
 class EglFSWindow;
+class LibInputManager;
 class VtHandler;
 
 class GREENISLANDPLATFORM_EXPORT EglFSIntegration : public QPlatformIntegration, public QPlatformNativeInterface
@@ -87,7 +88,7 @@ private:
     QScopedPointer<QPlatformFontDatabase> m_fontDatabase;
     QScopedPointer<QPlatformServices> m_services;
     QScopedPointer<VtHandler> m_vtHandler;
-    LibInputHandler *m_liHandler;
+    LibInputManager *m_liHandler;
 
     EGLNativeDisplayType nativeDisplay() const;
 };
