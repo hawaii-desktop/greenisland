@@ -53,7 +53,7 @@ EglFSCursor::EglFSCursor(QPlatformScreen *screen)
       m_deviceListener(0),
       m_updateRequested(false)
 {
-    QByteArray hideCursorVal = qgetenv("QT_QPA_EGLFS_HIDECURSOR");
+    QByteArray hideCursorVal = qgetenv("GREENISLAND_QPA_HIDECURSOR");
     if (!hideCursorVal.isEmpty())
         m_visible = hideCursorVal.toInt() == 0;
     if (!m_visible)
@@ -154,7 +154,7 @@ void EglFSCursor::createCursorTexture(uint *texture, const QImage &image)
 
 void EglFSCursor::initCursorAtlas()
 {
-    static QByteArray json = qgetenv("QT_QPA_EGLFS_CURSOR");
+    static QByteArray json = qgetenv("GREENISLAND_QPA_CURSOR");
     if (json.isEmpty())
         json = ":/cursor.json";
 
