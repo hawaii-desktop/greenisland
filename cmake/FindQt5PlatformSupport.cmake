@@ -99,6 +99,7 @@ find_package_handle_standard_args(Qt5PlatformSupport
 if(Qt5PlatformSupport_FOUND AND NOT TARGET Qt5PlatformSupport::Qt5PlatformSupport)
     add_library(Qt5PlatformSupport::Qt5PlatformSupport UNKNOWN IMPORTED)
     set_target_properties(Qt5PlatformSupport::Qt5PlatformSupport PROPERTIES
+	IMPORTED_LINK_DEPENDENT_LIBRARIES "${PKG_Qt5PlatformSupport_STATIC_LIBRARIES}"
         IMPORTED_LOCATION "${Qt5PlatformSupport_LIBRARY}"
         INTERFACE_COMPILE_OPTIONS "${Qt5PlatformSupport_DEFINITIONS}"
         INTERFACE_INCLUDE_DIRECTORIES "${Qt5PlatformSupport_INCLUDE_DIR}"
