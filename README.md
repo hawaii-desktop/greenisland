@@ -57,6 +57,10 @@ If you enable DRM/KMS device integration you also need:
 * [libdrm](https://wiki.freedesktop.org/dri/)
 * [gbm](http://www.mesa3d.org)
 
+If you enable Broadcom VideoCore device integration you also need:
+
+* [bcmhost](https://github.com/raspberrypi/firmware)
+
 ### qtwayland
 
 Make sure qtwayland is built with the QtCompositor API, please read
@@ -107,6 +111,16 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
 
   Please note that this way you won't be able to run Green Island
   on DRM/KMS devices.
+
+* **ENABLE_EGLDEVICEINTEGRATION_BRCM**
+
+  Disabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_BRCM:BOOL=ON`
+  to cmake in order to enable the Broadcom VideoCore device integration.
+
+  You will need Broadcom VideoCore proprietary libraries.
+
+  Notable examples of devices powered by a Broadcom GPU are
+  Raspberry Pi and Raspberry Pi 2.
 
 * **ENABLE_XWAYLAND**
 

@@ -1,0 +1,25 @@
+find_package(BcmHost REQUIRED)
+
+include_directories(
+    ${Qt5Core_PRIVATE_INCLUDE_DIRS}
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+    ${CMAKE_BINARY_DIR}/src/platform
+)
+
+add_definitions(-DMESA_EGL_NO_X11_HEADERS)
+
+set(SOURCES
+    eglfsbrcmintegration.cpp
+    main.cpp
+)
+
+add_library(brcm SHARED MODULE ${SOURCES})
+target_link_libraries(brcm
+    GreenIsland::Platform
+    BcmHost::BcmHost
+    BcmHost::EGL
+    BcmHost::GLESv2
+)
+
+install(TARGETS brcm
+        DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland/egldeviceintegration)

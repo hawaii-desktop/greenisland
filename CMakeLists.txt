@@ -26,6 +26,7 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 option(ENABLE_XWAYLAND "Enables XWayland support" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_KMS "Enables DRM/KMS device integration" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_X11 "Enables X11 device integration" ON)
+option(ENABLE_EGLDEVICEINTEGRATION_BRCM "Enables Broadcom device integration" OFF)
 
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
@@ -81,29 +82,23 @@ set_package_properties(Libinput PROPERTIES
     PURPOSE "Required for input handling from the QPA plugin")
 
 # EGL
-find_package(BcmHost)
-if(BCM_HOST_FOUND)
-    set(EGL_IMPLEMENTATION BcmHost)
-    set(EGL_TARGET "${BCM_HOST_LIBRARIES}")
-else()
-    find_package(EGL REQUIRED)
-    set(EGL_IMPLEMENTATION EGL)
-    set(EGL_TARGET EGL::EGL)
+find_package(EGL REQUIRED)
+set(EGL_IMPLEMENTATION EGL)
+set(EGL_TARGET EGL::EGL)
 
-    # GL requirements
-    if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-        find_package(OpenGL)
-        set_package_properties(OpenGL PROPERTIES
-            DESCRIPTION "The OpenGL libraries"
-            URL "http://www.opengl.org"
-            TYPE REQUIRED)
-    else()
-        find_package(OpenGLES)
-        set_package_properties(OpenGLES PROPERTIES
-            DESCRIPTION "The OpenGLES libraries"
-            URL "http://www.khronos.org/opengles"
-            TYPE REQUIRED)
-    endif()
+# GL requirements
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+    find_package(OpenGL)
+    set_package_properties(OpenGL PROPERTIES
+        DESCRIPTION "The OpenGL libraries"
+        URL "http://www.opengl.org"
+        TYPE REQUIRED)
+else()
+    find_package(OpenGLES)
+    set_package_properties(OpenGLES PROPERTIES
+        DESCRIPTION "The OpenGLES libraries"
+        URL "http://www.khronos.org/opengles"
+        TYPE REQUIRED)
 endif()
 
 # Wayland
