@@ -1,4 +1,21 @@
+# udev
+find_package(UDev)
+set_package_properties(UDev PROPERTIES
+    DESCRIPTION "Linux device library"
+    URL "http://www.freedesktop.org/software/systemd/libudev/"
+    TYPE REQUIRED
+    PURPOSE "Required to access devices from the QPA plugin")
+
+# libinput
+find_package(Libinput 0.12)
+set_package_properties(Libinput PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Required for input handling from the QPA plugin")
+
+# gio
 pkg_check_modules(gio gio-2.0 REQUIRED)
+
+# Qt5PlatformSupport
 find_package(Qt5PlatformSupport REQUIRED)
 find_package(Freetype REQUIRED)
 set_package_properties(Freetype PROPERTIES
@@ -13,6 +30,7 @@ set_package_properties(Fontconfig PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required by the QPA plugin")
 
+# pthread
 find_package(Threads)
 set_package_properties(Threads PROPERTIES
     TYPE REQUIRED
@@ -98,7 +116,7 @@ target_include_directories(GreenIslandPlatform INTERFACE "$<INSTALL_INTERFACE:${
 set_target_properties(GreenIslandPlatform PROPERTIES
     VERSION     ${PROJECT_VERSION}
     SOVERSION   ${PROJECT_SOVERSION}
-    EXPORT_NAME GreenIsland
+    EXPORT_NAME Platform
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
@@ -169,4 +187,5 @@ install(
       Devel
 )
 
-install(TARGETS GreenIslandPlatform EXPORT GreenIslandPlatformTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS GreenIslandPlatform
+        EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

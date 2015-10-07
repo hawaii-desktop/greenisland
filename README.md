@@ -148,6 +148,15 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
   If disabled, compatibility with old X11-only applications will
   not work.
 
+* **ENABLE_ONLY_EGLDEVICEINTEGRATION**
+
+  Disabled by default. Pass `-DENABLE_ONLY_EGLDEVICEINTEGRATION:BOOL=ON`
+  to cmake in order to build and install device integration plugins.
+
+  This option is meant for packagers. The best way to package Green Island
+  for multiple devices is to ship device integration plugins with separate
+  packages.
+
 ## Installation
 
 It's really easy, it's just a matter of typing:

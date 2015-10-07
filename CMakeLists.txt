@@ -29,6 +29,7 @@ option(ENABLE_EGLDEVICEINTEGRATION_X11 "Enables X11 device integration" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_BRCM "Enables Broadcom device integration" OFF)
 option(ENABLE_EGLDEVICEINTEGRATION_MALI "Enables Mali device integration" OFF)
 option(ENABLE_EGLDEVICEINTEGRATION_VIV "Enables Vivante device integration" OFF)
+option(ENABLE_ONLY_EGLDEVICEINTEGRATION "Build and install only device integration plugins" OFF)
 
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")
@@ -69,20 +70,6 @@ endif()
 set(REQUIRED_QT_VERSION 5.5.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core DBus Gui Qml Quick Compositor)
 
-# udev
-find_package(UDev)
-set_package_properties(UDev PROPERTIES
-    DESCRIPTION "Linux device library"
-    URL "http://www.freedesktop.org/software/systemd/libudev/"
-    TYPE REQUIRED
-    PURPOSE "Required to access devices from the QPA plugin")
-
-# libinput
-find_package(Libinput 0.12)
-set_package_properties(Libinput PROPERTIES
-    TYPE REQUIRED
-    PURPOSE "Required for input handling from the QPA plugin")
-
 # EGL
 find_package(EGL REQUIRED)
 set(EGL_IMPLEMENTATION EGL)
@@ -104,14 +91,16 @@ else()
 endif()
 
 # Wayland
-set(REQUIRED_WAYLAND_VERSION 1.6.0)
-find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Cursor)
-set_package_properties(Wayland PROPERTIES
-    TYPE REQUIRED
-    PURPOSE "Required to build Green Island")
-add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
-add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
-add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for changing cursors")
+if(NOT ENABLE_ONLY_EGLDEVICEINTEGRATION)
+    set(REQUIRED_WAYLAND_VERSION 1.6.0)
+    find_package(Wayland ${REQUIRED_WAYLAND_VERSION} COMPONENTS Client Server Cursor)
+    set_package_properties(Wayland PROPERTIES
+        TYPE REQUIRED
+        PURPOSE "Required to build Green Island")
+    add_feature_info("Wayland-Client" Wayland_Client_FOUND "Required for protocols")
+    add_feature_info("Wayland-Server" Wayland_Server_FOUND "Required for protocols")
+    add_feature_info("Wayland-Cursor" Wayland_Cursor_FOUND "Required for changing cursors")
+endif()
 
 # systemd
 pkg_check_modules(systemd libsystemd-daemon)
@@ -134,17 +123,21 @@ endif()
 add_feature_info("xkbcommon" xkbcommon_FOUND "Require for keymap support")
 
 # Subdirectories
-add_subdirectory(compositor)
-add_subdirectory(data)
-add_subdirectory(declarative)
-add_subdirectory(headers)
-add_subdirectory(launcher)
-add_subdirectory(plugins)
-add_subdirectory(qpa)
-add_subdirectory(shells)
-add_subdirectory(src)
-add_subdirectory(tests)
-add_subdirectory(tools)
+if(ENABLE_ONLY_EGLDEVICEINTEGRATION)
+    add_subdirectory(plugins)
+else()
+    add_subdirectory(compositor)
+    add_subdirectory(data)
+    add_subdirectory(declarative)
+    add_subdirectory(headers)
+    add_subdirectory(launcher)
+    add_subdirectory(plugins)
+    add_subdirectory(qpa)
+    add_subdirectory(shells)
+    add_subdirectory(src)
+    add_subdirectory(tests)
+    add_subdirectory(tools)
+endif()
 
 # Display featute summary
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
