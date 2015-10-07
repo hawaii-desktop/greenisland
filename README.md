@@ -122,6 +122,13 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
   Notable examples of devices powered by a Broadcom GPU are
   Raspberry Pi and Raspberry Pi 2.
 
+* **ENABLE_EGLDEVICEINTEGRATION_MALI**
+
+  Disabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_MALI:BOOL=ON`
+  to cmake in order to enable Mali device integration.
+
+  You will need Mali proprietary libraries.
+
 * **ENABLE_XWAYLAND**
 
   Enabled by default. Pass `-DENABLE_XWAYLAND:BOOL=OFF` to cmake if
