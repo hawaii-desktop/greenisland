@@ -28,6 +28,7 @@ option(ENABLE_EGLDEVICEINTEGRATION_KMS "Enables DRM/KMS device integration" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_X11 "Enables X11 device integration" ON)
 option(ENABLE_EGLDEVICEINTEGRATION_BRCM "Enables Broadcom device integration" OFF)
 option(ENABLE_EGLDEVICEINTEGRATION_MALI "Enables Mali device integration" OFF)
+option(ENABLE_EGLDEVICEINTEGRATION_VIV "Enables Vivante device integration" OFF)
 
 # Enable QML debugger for debug or release with debug info builds
 if(CMAKE_BUILD_TYPE MATCHES "[Dd][Ee][Bb]")

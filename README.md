@@ -61,6 +61,10 @@ If you enable Broadcom VideoCore device integration you also need:
 
 * [bcmhost](https://github.com/raspberrypi/firmware)
 
+If you enable Vivante device integration you also need:
+
+* [mx6q](https://community.freescale.com/docs/DOC-95560)
+
 ### qtwayland
 
 Make sure qtwayland is built with the QtCompositor API, please read
@@ -128,6 +132,13 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
   to cmake in order to enable Mali device integration.
 
   You will need Mali proprietary libraries.
+
+* **ENABLE_EGLDEVICEINTEGRATION_VIV**
+
+  Disabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_VIV:BOOL=ON`
+  to cmake in order to enable Vivante device integration.
+
+  You will need Freescale proprietary Vivante GPU libraries.
 
 * **ENABLE_XWAYLAND**
 
