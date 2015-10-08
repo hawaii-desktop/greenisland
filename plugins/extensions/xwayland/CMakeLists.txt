@@ -54,8 +54,7 @@ set(SOURCES
     sigwatch.cpp
 )
 
-add_library(xwayland SHARED ${SOURCES})
-set_target_properties(xwayland PROPERTIES PREFIX "")
+add_library(xwayland MODULE ${SOURCES})
 target_link_libraries(xwayland
                       Qt5::Core
                       Qt5::Gui

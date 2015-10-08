@@ -25,8 +25,7 @@ greenisland_add_server_protocol(SOURCES
     PREFIX org_kde_plasma_
 )
 
-add_library(plasma SHARED ${SOURCES})
-set_target_properties(plasma PROPERTIES PREFIX "")
+add_library(plasma MODULE ${SOURCES})
 target_link_libraries(plasma
                       Qt5::Compositor
                       GreenIsland::Server
