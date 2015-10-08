@@ -52,8 +52,8 @@
 #include <QtCompositor/QWaylandCompositor>
 #include <QtCompositor/QWaylandSurfaceView>
 
-#include <GreenIsland/ClientWindow>
-#include <GreenIsland/WindowView>
+#include <GreenIsland/Server/ClientWindow>
+#include <GreenIsland/Server/WindowView>
 
 #include "xcbwrapper.h"
 #include "xcbresources.h"

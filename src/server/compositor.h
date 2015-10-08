@@ -30,7 +30,7 @@
 #include <QtCompositor/QWaylandQuickCompositor>
 #include <QtCompositor/QWaylandSurfaceItem>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
@@ -50,7 +50,7 @@ class WlSubSurface;
 class XdgSurfaceMoveGrabber;
 class XdgSurfaceResizeGrabber;
 
-class GREENISLAND_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
+class GREENISLANDSERVER_EXPORT Compositor : public QObject, public QWaylandQuickCompositor
 {
     Q_OBJECT
     Q_PROPERTY(CompositorSettings *settings READ settings CONSTANT)

@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 class KeyBinding;
 
@@ -37,7 +37,7 @@ namespace GreenIsland {
 
 class KeyBindingsPrivate;
 
-class GREENISLAND_EXPORT KeyBindings : public QObject
+class GREENISLANDSERVER_EXPORT KeyBindings : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KeyBindings)

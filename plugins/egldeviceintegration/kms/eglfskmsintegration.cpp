@@ -32,9 +32,9 @@
 #include <QtGui/qpa/qplatformcursor.h>
 #include <QtGui/QScreen>
 
-#include <GreenIslandPlatform/EglFSCursor>
-#include <GreenIslandPlatform/Udev>
-#include <GreenIslandPlatform/UdevEnumerate>
+#include <GreenIsland/Platform/EglFSCursor>
+#include <GreenIsland/Platform/Udev>
+#include <GreenIsland/Platform/UdevEnumerate>
 
 #include "eglfskmsintegration.h"
 #include "eglfskmsdevice.h"

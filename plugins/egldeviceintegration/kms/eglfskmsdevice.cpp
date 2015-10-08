@@ -28,8 +28,8 @@
 #include <QtCore/private/qcore_unix_p.h>
 #include <QtGui/private/qguiapplication_p.h>
 
-#include <GreenIslandPlatform/EGLDeviceIntegration>
-#include <GreenIslandPlatform/EglFSIntegration>
+#include <GreenIsland/Platform/EGLDeviceIntegration>
+#include <GreenIsland/Platform/EglFSIntegration>
 
 #include "eglfskmsdevice.h"
 #include "eglfskmsscreen.h"

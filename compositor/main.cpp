@@ -29,7 +29,7 @@
 #include <QtCore/QStandardPaths>
 #include <QtGui/QGuiApplication>
 
-#include <greenisland/homeapplication.h>
+#include <GreenIsland/Server/HomeApplication>
 
 #include "config.h"
 

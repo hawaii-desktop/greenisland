@@ -26,8 +26,8 @@
 
 #include <QtTest/QtTest>
 
-#include <GreenIslandPlatform/Udev>
-#include <GreenIslandPlatform/UdevEnumerate>
+#include <GreenIsland/Platform/Udev>
+#include <GreenIsland/Platform/UdevEnumerate>
 
 using namespace GreenIsland::Platform;
 

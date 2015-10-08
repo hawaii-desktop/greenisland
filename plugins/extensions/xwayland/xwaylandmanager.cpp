@@ -53,7 +53,7 @@
 #include <QtCore/QtMath>
 #include <QtCompositor/QWaylandSurface>
 
-#include <GreenIsland/ClientWindow>
+#include <GreenIsland/Server/ClientWindow>
 
 #include "compositor.h"
 #include "xcbcursors.h"

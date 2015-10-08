@@ -26,7 +26,7 @@
 
 #include <QtGui/qpa/qplatformintegrationplugin.h>
 
-#include <GreenIslandPlatform/EglFSIntegration>
+#include <GreenIsland/Platform/EglFSIntegration>
 
 class GreenIslandIntegrationPlugin : public QPlatformIntegrationPlugin
 {

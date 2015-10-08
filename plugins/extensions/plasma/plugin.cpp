@@ -24,15 +24,15 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <greenisland/abstractplugin.h>
-#include <greenisland/compositor.h>
+#include <GreenIsland/Server/AbstractPlugin>
+#include <GreenIsland/Server/Compositor>
 
 #include "plasmaeffects.h"
 #include "plasmashell.h"
 
 namespace GreenIsland {
 
-class GREENISLAND_EXPORT PlasmaPlugin : public AbstractPlugin
+class GREENISLANDSERVER_EXPORT PlasmaPlugin : public AbstractPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.hawaiios.greenisland.Plugin")

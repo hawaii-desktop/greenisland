@@ -27,13 +27,13 @@
 #include <QtQml/QQmlExtensionPlugin>
 #include <QtQml/QQmlComponent>
 
-#include <GreenIsland/ApplicationManager>
-#include <GreenIsland/ClientWindow>
-#include <GreenIsland/Compositor>
-#include <GreenIsland/CompositorSettings>
-#include <GreenIsland/Output>
-#include <GreenIsland/KeyBindings>
-#include <GreenIsland/ShellWindow>
+#include <GreenIsland/Server/ApplicationManager>
+#include <GreenIsland/Server/ClientWindow>
+#include <GreenIsland/Server/Compositor>
+#include <GreenIsland/Server/CompositorSettings>
+#include <GreenIsland/Server/Output>
+#include <GreenIsland/Server/KeyBindings>
+#include <GreenIsland/Server/ShellWindow>
 
 #include "fpscounter.h"
 

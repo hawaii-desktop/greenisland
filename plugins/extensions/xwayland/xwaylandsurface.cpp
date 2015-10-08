@@ -26,7 +26,7 @@
 
 #include <QtCompositor/private/qwlsurface_p.h>
 
-#include <GreenIsland/ClientWindow>
+#include <GreenIsland/Server/ClientWindow>
 
 #include "xwayland.h"
 #include "xwaylandsurface.h"

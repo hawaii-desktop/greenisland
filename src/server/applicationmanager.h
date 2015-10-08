@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
@@ -37,7 +37,7 @@ class ApplicationInfo;
 class ApplicationManagerPrivate;
 class ClientWindow;
 
-class GREENISLAND_EXPORT ApplicationManager : public QObject
+class GREENISLANDSERVER_EXPORT ApplicationManager : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)

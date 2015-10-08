@@ -31,7 +31,7 @@
 #include <QtQml/QQmlComponent>
 #include <QtQuick/QQuickWindow>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 class QQmlContext;
 
@@ -39,7 +39,7 @@ namespace GreenIsland {
 
 class Output;
 
-class GREENISLAND_EXPORT OutputWindow : public QQuickWindow
+class GREENISLANDSERVER_EXPORT OutputWindow : public QQuickWindow
 {
     Q_OBJECT
 public:

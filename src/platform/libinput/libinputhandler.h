@@ -30,7 +30,7 @@
 #include <QtCore/QObject>
 #include <QtGui/qpa/qwindowsysteminterface.h>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 class QTouchDevice;
 

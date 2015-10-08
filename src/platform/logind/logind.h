@@ -30,7 +30,7 @@
 #include <QtCore/QObject>
 #include <QtDBus/QDBusConnection>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 namespace GreenIsland {
 

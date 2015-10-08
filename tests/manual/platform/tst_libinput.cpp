@@ -27,8 +27,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 
-#include <GreenIslandPlatform/LibInputHandler>
-#include <GreenIslandPlatform/Logind>
+#include <GreenIsland/Platform/LibInputHandler>
+#include <GreenIsland/Platform/Logind>
 
 using namespace GreenIsland::Platform;
 

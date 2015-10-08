@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 struct udev_device;
 

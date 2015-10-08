@@ -30,7 +30,7 @@
 #include <QtCompositor/QWaylandQuickOutput>
 #include <QtCompositor/QtCompositorVersion>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
@@ -40,7 +40,7 @@ class OutputPrivate;
 class OutputWindow;
 class NativeScreenBackend;
 
-class GREENISLAND_EXPORT Output : public QWaylandQuickOutput
+class GREENISLANDSERVER_EXPORT Output : public QWaylandQuickOutput
 {
     Q_OBJECT
     Q_PROPERTY(QString name READ name CONSTANT)

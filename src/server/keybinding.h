@@ -29,13 +29,13 @@
 
 #include <QtGui/QKeySequence>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
 class KeyBindingPrivate;
 
-class GREENISLAND_EXPORT KeyBinding
+class GREENISLANDSERVER_EXPORT KeyBinding
 {
 public:
     explicit KeyBinding(const QString &name, const QKeySequence &sequence);

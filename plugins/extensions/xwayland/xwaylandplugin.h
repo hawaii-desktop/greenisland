@@ -27,11 +27,11 @@
 #ifndef XWAYLANDPLUGIN_H
 #define XWAYLANDPLUGIN_H
 
-#include <greenisland/abstractplugin.h>
+#include <GreenIsland/Server/AbstractPlugin>
 
 namespace GreenIsland {
 
-class GREENISLAND_EXPORT XWaylandPlugin : public AbstractPlugin
+class GREENISLANDSERVER_EXPORT XWaylandPlugin : public AbstractPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.greenisland.Plugin")

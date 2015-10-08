@@ -27,7 +27,7 @@
 #ifndef GREENISLAND_UDEVENUMERATE_H
 #define GREENISLAND_UDEVENUMERATE_H
 
-#include <GreenIslandPlatform/UdevDevice>
+#include <GreenIsland/Platform/UdevDevice>
 
 namespace GreenIsland {
 

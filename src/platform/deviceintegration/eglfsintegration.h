@@ -31,7 +31,7 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/qpa/qplatformscreen.h>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 #include <EGL/egl.h>
 

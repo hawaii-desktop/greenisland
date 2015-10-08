@@ -26,7 +26,7 @@
 
 #include <QtTest/QtTest>
 
-#include <GreenIslandPlatform/Logind>
+#include <GreenIsland/Platform/Logind>
 
 #include "fakelogind.h"
 

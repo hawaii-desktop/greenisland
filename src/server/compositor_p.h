@@ -33,7 +33,7 @@
 #include "applicationmanager.h"
 #include "compositorsettings.h"
 #include "keybinding.h"
-#include "screenmanager.h"
+#include "screen/screenmanager.h"
 #include "client/wlcursortheme.h"
 
 //  W A R N I N G

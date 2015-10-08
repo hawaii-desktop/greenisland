@@ -1,7 +1,6 @@
 include_directories(
-    ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/src/libgreenisland
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
 )
 
 set(SOURCES
@@ -10,7 +9,7 @@ set(SOURCES
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
-target_link_libraries(greenislandplugin Qt5::Qml Qt5::Quick GreenIsland)
+target_link_libraries(greenislandplugin Qt5::Qml Qt5::Quick GreenIsland::Server)
 
 install(TARGETS greenislandplugin LIBRARY
     DESTINATION ${QML_INSTALL_DIR}/GreenIsland)

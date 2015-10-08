@@ -30,7 +30,7 @@
 #include <QtCore/QVariant>
 #include <QtPlatformSupport/private/qeglplatformcontext_p.h>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 namespace GreenIsland {
 

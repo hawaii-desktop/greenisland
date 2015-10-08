@@ -1,5 +1,6 @@
 include_directories(
-    ${CMAKE_BINARY_DIR}/src/platform
+    ${CMAKE_BINARY_DIR}/headers
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
 )
 
 add_executable(tst_logind fakelogind.cpp tst_logind.cpp)

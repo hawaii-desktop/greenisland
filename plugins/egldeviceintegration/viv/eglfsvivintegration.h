@@ -27,7 +27,7 @@
 #ifndef GREENISLAND_EGLFSVIVINTEGRATION_H
 #define GREENISLAND_EGLFSVIVINTEGRATION_H
 
-#include <GreenIslandPlatform/EGLDeviceIntegration>
+#include <GreenIsland/Platform/EGLDeviceIntegration>
 
 namespace GreenIsland {
 

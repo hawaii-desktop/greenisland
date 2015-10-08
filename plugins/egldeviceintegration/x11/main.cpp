@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <GreenIslandPlatform/EGLDeviceIntegration>
+#include <GreenIsland/Platform/EGLDeviceIntegration>
 
 #include "eglfsx11integration.h"
 

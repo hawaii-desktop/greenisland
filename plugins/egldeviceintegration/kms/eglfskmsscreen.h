@@ -30,7 +30,7 @@
 #include <QtCore/QList>
 #include <QtCore/QMutex>
 
-#include <GreenIslandPlatform/EglFSScreen>
+#include <GreenIsland/Platform/EglFSScreen>
 
 #include "eglfskmsintegration.h"
 

@@ -30,7 +30,7 @@
 #include <QtCore/QMap>
 #include <QtCore/QVariant>
 
-#include <GreenIslandPlatform/EGLDeviceIntegration>
+#include <GreenIsland/Platform/EGLDeviceIntegration>
 
 namespace GreenIsland {
 

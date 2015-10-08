@@ -36,15 +36,13 @@ set_package_properties(Threads PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required by the vt handler code")
 
-include(GenerateExportHeader)
-include(ECMGenerateHeaders)
-
 include_directories(
+    ${CMAKE_BINARY_DIR}/headers
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${UDEV_INCLUDE_DIR}
     ${gio_INCLUDE_DIR}
-    ${CMAKE_BINARY_DIR}/headers
 )
 
 add_definitions(
@@ -79,7 +77,7 @@ set(SOURCES
 qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 
 add_library(GreenIslandPlatform SHARED ${SOURCES})
-generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME greenislandplatform/greenisland_platform_export.h)
+generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h)
 add_library(GreenIsland::Platform ALIAS GreenIslandPlatform)
 target_link_libraries(GreenIslandPlatform
   PUBLIC
@@ -109,8 +107,6 @@ else()
     target_link_libraries(GreenIslandPlatform PRIVATE ${OPENGLES_LIBRARIES})
 endif()
 
-set(GREENISLAND_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/GreenIsland")
-
 target_include_directories(GreenIslandPlatform INTERFACE "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>")
 
 set_target_properties(GreenIslandPlatform PROPERTIES
@@ -120,57 +116,65 @@ set_target_properties(GreenIslandPlatform PROPERTIES
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
-  HEADER_NAMES
-    EGLDeviceIntegration
-    EglFSContext
-    EglFSCursor
-    EglFSIntegration
-    EglFSOffscreenWindow
-    EglFSScreen
-    EglFSWindow
-  PREFIX
-    GreenIslandPlatform
-  REQUIRED_HEADERS
-    GreenIslandPlatform_HEADERS
-  RELATIVE
-    deviceintegration
+    HEADER_NAMES
+        EGLDeviceIntegration
+        EglFSContext
+        EglFSCursor
+        EglFSIntegration
+        EglFSOffscreenWindow
+        EglFSScreen
+        EglFSWindow
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+        deviceintegration
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
-  HEADER_NAMES
-    Udev
-    UdevDevice
-    UdevEnumerate
-    UdevMonitor
-  PREFIX
-    GreenIslandPlatform
-  REQUIRED_HEADERS
-    GreenIslandPlatform_HEADERS
-  RELATIVE
-    udev
+    HEADER_NAMES
+        Udev
+        UdevDevice
+        UdevEnumerate
+        UdevMonitor
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+        udev
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
-  HEADER_NAMES
-    Logind
-    VtHandler
-  PREFIX
-    GreenIslandPlatform
-  REQUIRED_HEADERS
-    GreenIslandPlatform_HEADERS
-  RELATIVE
-    logind
+    HEADER_NAMES
+        Logind
+        VtHandler
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+        logind
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
-  HEADER_NAMES
-    LibInputHandler
-  PREFIX
-    GreenIslandPlatform
-  REQUIRED_HEADERS
-    GreenIslandPlatform_HEADERS
-  RELATIVE
-    libinput
+    HEADER_NAMES
+        LibInputHandler
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+       libinput
 )
 
 install(FILES ${GreenIslandPlatform_CAMELCASE_HEADERS}
@@ -179,12 +183,12 @@ install(FILES ${GreenIslandPlatform_CAMELCASE_HEADERS}
 
 install(
     FILES
-      ${CMAKE_CURRENT_BINARY_DIR}/greenislandplatform/greenisland_platform_export.h
-      ${GreenIslandPlatform_HEADERS}
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h
+        ${GreenIslandPlatform_HEADERS}
     DESTINATION
-      ${GREENISLAND_INCLUDEDIR}/platform
+        ${GREENISLAND_INCLUDEDIR}/platform
     COMPONENT
-      Devel
+        Devel
 )
 
 install(TARGETS GreenIslandPlatform

@@ -29,7 +29,7 @@
 
 #include <QtGui/qpa/qplatformoffscreensurface.h>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 #include <EGL/egl.h>
 

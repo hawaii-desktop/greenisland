@@ -32,11 +32,10 @@ if(NOT X11_Xcursor_FOUND)
 endif()
 
 include_directories(
+    ${CMAKE_BINARY_DIR}/headers
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Compositor_PRIVATE_INCLUDE_DIRS}
-    ${CMAKE_SOURCE_DIR}/src/server
-    ${CMAKE_BINARY_DIR}/src/server
-    ${CMAKE_BINARY_DIR}/src/server/greenisland
 )
 
 set(SOURCES
@@ -61,7 +60,7 @@ target_link_libraries(xwayland
                       Qt5::Core
                       Qt5::Gui
                       Qt5::Compositor
-                      GreenIsland::GreenIsland
+                      GreenIsland::Server
                       XCB::XCB
                       XCB::XFIXES
                       XCB::CURSOR

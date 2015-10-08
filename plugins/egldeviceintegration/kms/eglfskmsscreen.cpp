@@ -27,8 +27,8 @@
 #include <QtCore/QLoggingCategory>
 #include <QtGui/private/qguiapplication_p.h>
 
-#include <GreenIslandPlatform/EglFSIntegration>
-#include <GreenIslandPlatform/VtHandler>
+#include <GreenIsland/Platform/EglFSIntegration>
+#include <GreenIsland/Platform/VtHandler>
 
 #include "eglfskmsscreen.h"
 #include "eglfskmsdevice.h"

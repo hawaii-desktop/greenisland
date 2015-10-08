@@ -30,13 +30,13 @@
 #include <QtCore/QObject>
 #include <QtCompositor/QWaylandInputDevice>
 
-#include <GreenIsland/Compositor>
+#include <GreenIsland/Server/Compositor>
 
 namespace GreenIsland {
 
 class CompositorSettingsPrivate;
 
-class GREENISLAND_EXPORT CompositorSettings : public QObject
+class GREENISLANDSERVER_EXPORT CompositorSettings : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(Qt::KeyboardModifier windowActionKey READ windowActionKey WRITE setWindowActionKey NOTIFY windowActionKeyChanged)

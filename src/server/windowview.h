@@ -29,11 +29,11 @@
 
 #include <QtCompositor/QWaylandSurfaceItem>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
-class GREENISLAND_EXPORT WindowView : public QWaylandSurfaceItem
+class GREENISLANDSERVER_EXPORT WindowView : public QWaylandSurfaceItem
 {
     Q_OBJECT
     Q_PROPERTY(QPointF localPosition READ localPosition NOTIFY localPositionChanged)

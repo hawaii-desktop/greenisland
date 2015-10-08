@@ -27,14 +27,14 @@
 #ifndef ABSTRACTPLUGIN_H
 #define ABSTRACTPLUGIN_H
 
-#include <GreenIsland/Compositor>
+#include <GreenIsland/Server/Compositor>
 
 namespace GreenIsland {
 
 /*!
  * @brief Abstract plugin class.
  */
-class GREENISLAND_EXPORT AbstractPlugin : public QObject
+class GREENISLANDSERVER_EXPORT AbstractPlugin : public QObject
 {
     Q_OBJECT
 public:

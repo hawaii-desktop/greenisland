@@ -1,6 +1,7 @@
 include_directories(
+    ${CMAKE_BINARY_DIR}/headers
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${CMAKE_BINARY_DIR}/src/platform
 )
 
 add_executable(tst_libinput tst_libinput.cpp)

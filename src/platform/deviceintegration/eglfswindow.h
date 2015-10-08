@@ -30,7 +30,7 @@
 #include <QtGui/qpa/qplatformwindow.h>
 #include <QtPlatformSupport/private/qopenglcompositor_p.h>
 
-#include <greenislandplatform/greenisland_platform_export.h>
+#include <GreenIsland/platform/greenislandplatform_export.h>
 
 #include "eglfsscreen.h"
 

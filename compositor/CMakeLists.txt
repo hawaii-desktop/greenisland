@@ -1,5 +1,6 @@
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
+    ${CMAKE_BINARY_DIR}/headers/GreenIsland
 )
 
 set(SOURCES
@@ -7,10 +8,7 @@ set(SOURCES
 )
 
 add_executable(greenisland ${SOURCES})
-target_link_libraries(greenisland
-    PUBLIC
-        GreenIsland::GreenIsland
-)
+target_link_libraries(greenisland PUBLIC GreenIsland::Server)
 
 if(systemd_FOUND)
     target_link_libraries(greenisland PRIVATE ${systemd_LIBRARIES})

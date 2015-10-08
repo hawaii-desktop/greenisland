@@ -29,13 +29,13 @@
 
 #include <QtCore/QString>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
 class Compositor;
 
-class GREENISLAND_EXPORT HomeApplication
+class GREENISLANDSERVER_EXPORT HomeApplication
 {
 public:
     HomeApplication();

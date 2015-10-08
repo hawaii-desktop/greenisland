@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 
-#include <greenisland/greenisland_export.h>
+#include <GreenIsland/server/greenislandserver_export.h>
 
 class QWaylandOutput;
 class QWaylandSurface;
@@ -39,7 +39,7 @@ namespace GreenIsland {
 
 class Compositor;
 
-class GREENISLAND_EXPORT ShellWindow : public QObject
+class GREENISLANDSERVER_EXPORT ShellWindow : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(uint id READ id CONSTANT)
