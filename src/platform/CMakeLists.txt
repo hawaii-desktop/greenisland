@@ -107,7 +107,12 @@ else()
     target_link_libraries(GreenIslandPlatform PRIVATE ${OPENGLES_LIBRARIES})
 endif()
 
-target_include_directories(GreenIslandPlatform INTERFACE "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>")
+target_include_directories(
+    GreenIslandPlatform
+        INTERFACE
+	    "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
+	    "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
+)
 
 set_target_properties(GreenIslandPlatform PROPERTIES
     VERSION     ${PROJECT_VERSION}

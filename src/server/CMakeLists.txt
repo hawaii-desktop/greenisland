@@ -138,7 +138,12 @@ if(systemd_FOUND)
     target_link_libraries(GreenIslandServer PRIVATE ${systemd_LIBRARIES})
 endif()
 
-target_include_directories(GreenIslandServer INTERFACE "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>")
+target_include_directories(
+    GreenIslandServer
+        INTERFACE
+            "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
+            "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
+)
 
 set_target_properties(GreenIslandServer PROPERTIES
     VERSION   ${PROJECT_VERSION}
