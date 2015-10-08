@@ -160,7 +160,7 @@ void CompositorPrivate::loadPlugins()
     qCDebug(GREENISLAND_COMPOSITOR) << "Lookup paths:" << qPrintable(paths.join(' '));
 
     Q_FOREACH (const QString &path, paths) {
-        const QDir dir(path + QStringLiteral("/greenisland/"),
+        const QDir dir(path + QStringLiteral("/greenisland/extensions/"),
                        QStringLiteral("*.so"),
                        QDir::SortFlags(QDir::QDir::NoSort),
                        QDir::NoDotAndDotDot | QDir::Files);

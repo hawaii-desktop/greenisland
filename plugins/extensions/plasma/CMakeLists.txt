@@ -33,4 +33,4 @@ target_link_libraries(plasma
                       Wayland::Server)
 
 install(TARGETS plasma
-    DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland)
+    DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland/extensions)

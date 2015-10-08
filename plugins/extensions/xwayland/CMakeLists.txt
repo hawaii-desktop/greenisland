@@ -71,4 +71,4 @@ target_link_libraries(xwayland
                       Wayland::Server)
 
 install(TARGETS xwayland
-    DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland)
+    DESTINATION ${PLUGIN_INSTALL_DIR}/greenisland/extensions)
