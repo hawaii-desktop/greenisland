@@ -307,10 +307,13 @@ void LibInputKeyboard::handleKey(libinput_event_keyboard *event)
     Qt::KeyboardModifiers modifiers = Qt::NoModifier;
 
     // Text
-    QByteArray chars;
-    chars.resize(1 + xkb_state_key_get_utf8(d->state, key, Q_NULLPTR, 0));
-    xkb_state_key_get_utf8(d->state, key, chars.data(), chars.size());
-    const QString text = QString::fromUtf8(chars);
+    QVarLengthArray<char, 32> chars(32);
+    const int size = xkb_state_key_get_utf8(d->state, key, chars.data(), chars.size());
+    if (Q_UNLIKELY(size + 1 > chars.size())) { // +1 for NUL
+        chars.resize(size + 1);
+        xkb_state_key_get_utf8(d->state, key, chars.data(), chars.size());
+    }
+    const QString text = QString::fromUtf8(chars.constData(), size);
 
     // Map keysym to Qt key
     const int qtkey = d->keysymToQtKey(keysym, modifiers, text);
