@@ -143,6 +143,8 @@ static const KeyTableEntry keyTable[] = {
     { XKB_KEY_XF86ZoomOut,             Qt::Key_ZoomOut },
 
     { XKB_KEY_XF86Eject,               Qt::Key_Eject },
+
+    { XKB_KEY_XF86Phone,               Qt::Key_ToggleCallHangup },
 };
 
 /*
