@@ -208,3 +208,11 @@ ecm_generate_pri_file(BASE_NAME GreenIslandServer
                       INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}")
 install(FILES ${PRI_FILENAME}
         DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
+
+include(ECMGeneratePkgConfigFile)
+ecm_generate_pkgconfig_file(BASE_NAME GreenIslandServer
+                            LIB_NAME GreenIslandServer
+                            DEPS "Qt5Core Qt5Gui Qt5Quick Qt5Compositor"
+                            FILENAME_VAR PKGCONFIG_FILENAME
+                            INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}"
+                            INSTALL)
