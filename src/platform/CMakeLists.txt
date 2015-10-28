@@ -198,3 +198,12 @@ install(
 
 install(TARGETS GreenIslandPlatform
         EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+
+include(ECMGeneratePriFile)
+ecm_generate_pri_file(BASE_NAME GreenIslandPlatform
+                      LIB_NAME GreenIslandPlatform
+                      DEPS "core dbus gui"
+                      FILENAME_VAR PRI_FILENAME
+                      INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}")
+install(FILES ${PRI_FILENAME}
+        DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
