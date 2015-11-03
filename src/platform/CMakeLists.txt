@@ -74,6 +74,8 @@ set(SOURCES
     libinput/libinputkeyboard.cpp
     libinput/libinputpointer.cpp
     libinput/libinputtouch.cpp
+    platformcompositor/openglcompositorbackingstore.cpp
+    platformcompositor/openglcompositor.cpp
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
@@ -218,6 +220,20 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
        libinput
+)
+
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
+    HEADER_NAMES
+        OpenGLCompositor
+        OpenGLCompositorBackingStore
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+       platformcompositor
 )
 
 install(FILES ${GreenIslandPlatform_CAMELCASE_HEADERS}
