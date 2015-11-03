@@ -23,12 +23,11 @@ find_package(XCB
 )
 set_package_properties(XCB PROPERTIES TYPE REQUIRED)
 
-find_package(X11)
-set_package_properties(X11 PROPERTIES
-                       PURPOSE "Required for cursors support of xwayland"
-                       TYPE OPTIONAL)
+if(NOT X11_FOUND)
+    message(FATAL_ERROR "X11 is required to build XWayland support")
+endif()
 if(NOT X11_Xcursor_FOUND)
-    message(FATAL_ERROR "Xcursor is required by xwayland")
+    message(FATAL_ERROR "Xcursor is required to build XWayland support")
 endif()
 
 include_directories(

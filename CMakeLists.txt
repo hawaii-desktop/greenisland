@@ -103,6 +103,12 @@ else()
     endif()
 endif()
 
+# X11
+find_package(X11)
+set_package_properties(X11 PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Required for X11 EGL device integration and XWayland")
+
 # Wayland
 if(NOT ENABLE_ONLY_EGLDEVICEINTEGRATION)
     set(REQUIRED_WAYLAND_VERSION 1.6.0)

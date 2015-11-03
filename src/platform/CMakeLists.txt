@@ -60,6 +60,8 @@ set(SOURCES
     deviceintegration/eglfsoffscreenwindow.cpp
     deviceintegration/eglfsscreen.cpp
     deviceintegration/eglfswindow.cpp
+    eglconvenience/eglconvenience.cpp
+    eglconvenience/eglstreamconvenience.cpp
     udev/udev.cpp
     udev/udevdevice.cpp
     udev/udevenumerate.cpp
@@ -73,6 +75,21 @@ set(SOURCES
     libinput/libinputpointer.cpp
     libinput/libinputtouch.cpp
 )
+
+if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+    set(SOURCES
+        ${SOURCES}
+        eglconvenience/eglpbuffer.cpp
+        eglconvenience/eglplatformcontext.cpp
+    )
+endif()
+
+if(X11_FOUND)
+    set(SOURCES
+        ${SOURCES}
+        eglconvenience/xlibeglintegration.cpp
+    )
+endif()
 
 qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 
@@ -101,10 +118,14 @@ if(xkbcommon_FOUND)
     target_link_libraries(GreenIslandPlatform PRIVATE ${xkbcommon_LIBRARIES})
 endif()
 
+if(X11_FOUND)
+    target_link_libraries(GreenIslandPlatform PRIVATE ${X11_LIBRARIES})
+endif()
+
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    target_link_libraries(GreenIslandPlatform PRIVATE ${OPENGL_LIBRARIES})
+    target_link_libraries(GreenIslandPlatform PUBLIC ${OPENGL_LIBRARIES})
 else()
-    target_link_libraries(GreenIslandPlatform PRIVATE ${OPENGLES_LIBRARIES})
+    target_link_libraries(GreenIslandPlatform PUBLIC ${OPENGLES_LIBRARIES})
 endif()
 
 target_include_directories(
@@ -137,6 +158,23 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
         deviceintegration
+)
+
+ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
+    HEADER_NAMES
+        EGLConvenience
+        EGLPbuffer
+        EGLPlatformContext
+        EGLStreamConvenience
+        XlibEglIntegration
+    PREFIX
+        Platform
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandPlatform_HEADERS
+    RELATIVE
+        eglconvenience
 )
 
 ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS

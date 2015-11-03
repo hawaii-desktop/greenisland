@@ -1,7 +1,6 @@
-find_package(X11 REQUIRED)
-set_package_properties(X11 PROPERTIES
-    TYPE REQUIRED
-    PURPOSE "Required for X11 EGL device integration")
+if(NOT X11_FOUND)
+    message(FATAL_ERROR "X11 is required to build X11 EGL device integration")
+endif()
 find_package(XCB REQUIRED COMPONENTS XCB)
 find_package(X11_XCB REQUIRED)
 

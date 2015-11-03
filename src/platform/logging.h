@@ -29,6 +29,7 @@
 
 #include <QtCore/QLoggingCategory>
 
+Q_DECLARE_LOGGING_CATEGORY(lcEglConvenience)
 Q_DECLARE_LOGGING_CATEGORY(lcDeviceIntegration)
 Q_DECLARE_LOGGING_CATEGORY(lcInput)
 Q_DECLARE_LOGGING_CATEGORY(lcLogind)
