@@ -25,9 +25,9 @@
  ***************************************************************************/
 
 #include <QtGui/QOffscreenSurface>
-#include <QtPlatformSupport/private/qeglconvenience_p.h>
 
 #include "logging.h"
+#include "eglconvenience/eglconvenience.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfsoffscreenwindow.h"
 
@@ -40,7 +40,7 @@ namespace Platform {
     fallback for a hidden QWindow is not suitable for eglfs since this would be
     treated as an attempt to create multiple top-level, native windows.
 
-    Therefore this class is provided as an alternative to QEGLPbuffer.
+    Therefore this class is provided as an alternative to EGLPbuffer.
 
     This class requires the hooks to implement createNativeOffscreenWindow().
 */
@@ -57,10 +57,10 @@ EglFSOffscreenWindow::EglFSOffscreenWindow(EGLDisplay display, const QSurfaceFor
         qCWarning(lcDeviceIntegration, "EglFSOffscreenWindow: Failed to create native window");
         return;
     }
-    EGLConfig config = q_configFromGLFormat(m_display, m_format);
+    EGLConfig config = EglUtils::configFromGLFormat(m_display, m_format);
     m_surface = eglCreateWindowSurface(m_display, config, m_window, 0);
     if (m_surface != EGL_NO_SURFACE)
-        m_format = q_glFormatFromConfig(m_display, config);
+        m_format = EglUtils::glFormatFromConfig(m_display, config);
 }
 
 EglFSOffscreenWindow::~EglFSOffscreenWindow()

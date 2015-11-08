@@ -25,10 +25,10 @@
  ***************************************************************************/
 
 #include <QtGui/QSurface>
-#include <QtPlatformSupport/private/qeglconvenience_p.h>
-#include <QtPlatformSupport/private/qeglpbuffer_p.h>
 
 #include "logging.h"
+#include "eglconvenience/eglconvenience.h"
+#include "eglconvenience/eglpbuffer.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscontext.h"
 #include "deviceintegration/eglfswindow.h"
@@ -40,7 +40,7 @@ namespace Platform {
 
 EglFSContext::EglFSContext(const QSurfaceFormat &format, QPlatformOpenGLContext *share, EGLDisplay display,
                            EGLConfig *config, const QVariant &nativeHandle)
-    : QEGLPlatformContext(format, share, display, config, nativeHandle),
+    : EGLPlatformContext(format, share, display, config, nativeHandle),
       m_tempWindow(0)
 {
 }
@@ -50,13 +50,13 @@ EGLSurface EglFSContext::eglSurfaceForPlatformSurface(QPlatformSurface *surface)
     if (surface->surface()->surfaceClass() == QSurface::Window)
         return static_cast<EglFSWindow *>(surface)->surface();
     else
-        return static_cast<QEGLPbuffer *>(surface)->pbuffer();
+        return static_cast<EGLPbuffer *>(surface)->pbuffer();
 }
 
 EGLSurface EglFSContext::createTemporaryOffscreenSurface()
 {
     if (egl_device_integration()->supportsPBuffers())
-        return QEGLPlatformContext::createTemporaryOffscreenSurface();
+        return EGLPlatformContext::createTemporaryOffscreenSurface();
 
     if (!m_tempWindow) {
         m_tempWindow = egl_device_integration()->createNativeOffscreenWindow(format());
@@ -65,14 +65,14 @@ EGLSurface EglFSContext::createTemporaryOffscreenSurface()
             return EGL_NO_SURFACE;
         }
     }
-    EGLConfig config = q_configFromGLFormat(eglDisplay(), format());
+    EGLConfig config = EglUtils::configFromGLFormat(eglDisplay(), format());
     return eglCreateWindowSurface(eglDisplay(), config, m_tempWindow, 0);
 }
 
 void EglFSContext::destroyTemporaryOffscreenSurface(EGLSurface surface)
 {
     if (egl_device_integration()->supportsPBuffers()) {
-        QEGLPlatformContext::destroyTemporaryOffscreenSurface(surface);
+        EGLPlatformContext::destroyTemporaryOffscreenSurface(surface);
     } else {
         eglDestroySurface(eglDisplay(), surface);
         egl_device_integration()->destroyNativeWindow(m_tempWindow);
@@ -90,7 +90,7 @@ void EglFSContext::swapBuffers(QPlatformSurface *surface)
     }
 
     egl_device_integration()->waitForVSync(surface);
-    QEGLPlatformContext::swapBuffers(surface);
+    EGLPlatformContext::swapBuffers(surface);
     egl_device_integration()->presentBuffer(surface);
 }
 

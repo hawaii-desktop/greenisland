@@ -30,9 +30,9 @@
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
 #include <QtGui/private/qguiapplication_p.h>
-#include <QtPlatformSupport/private/qeglconvenience_p.h>
 
 #include "logging.h"
+#include "eglconvenience/eglconvenience.h"
 #include "deviceintegration/deviceintegration_p.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscursor.h"
@@ -131,12 +131,12 @@ void EGLDeviceIntegration::screenDestroy()
 
 QSizeF EGLDeviceIntegration::physicalScreenSize() const
 {
-    return q_physicalScreenSizeFromFb(framebuffer, screenSize());
+    return EglUtils::physicalScreenSizeFromFb(framebuffer, screenSize());
 }
 
 QSize EGLDeviceIntegration::screenSize() const
 {
-    return q_screenSizeFromFb(framebuffer);
+    return EglUtils::screenSizeFromFb(framebuffer);
 }
 
 QDpi EGLDeviceIntegration::logicalDpi() const
@@ -160,7 +160,7 @@ Qt::ScreenOrientation EGLDeviceIntegration::orientation() const
 
 int EGLDeviceIntegration::screenDepth() const
 {
-    return q_screenDepthFromFb(framebuffer);
+    return EglUtils::screenDepthFromFb(framebuffer);
 }
 
 QImage::Format EGLDeviceIntegration::screenFormat() const
@@ -170,7 +170,7 @@ QImage::Format EGLDeviceIntegration::screenFormat() const
 
 qreal EGLDeviceIntegration::refreshRate() const
 {
-    return q_refreshRateFromFb(framebuffer);
+    return EglUtils::refreshRateFromFb(framebuffer);
 }
 
 QSurfaceFormat EGLDeviceIntegration::surfaceFormatFor(const QSurfaceFormat &inputFormat) const

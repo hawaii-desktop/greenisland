@@ -30,10 +30,10 @@
 #include <QtGui/qpa/qplatformintegration.h>
 #include <QtGui/private/qguiapplication_p.h>
 #include <QtGui/private/qopenglcontext_p.h>
-#include <QtPlatformSupport/private/qeglconvenience_p.h>
 #include <QtPlatformSupport/private/qopenglcompositorbackingstore_p.h>
 
 #include "logging.h"
+#include "eglconvenience/eglconvenience.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscursor.h"
 #include "deviceintegration/eglfsintegration.h"
@@ -120,7 +120,7 @@ void EglFSWindow::create()
     EGLDisplay display = static_cast<EglFSScreen *>(screen)->display();
     QSurfaceFormat platformFormat = egl_device_integration()->surfaceFormatFor(window()->requestedFormat());
     m_config = EglFSIntegration::chooseConfig(display, platformFormat);
-    m_format = q_glFormatFromConfig(display, m_config, platformFormat);
+    m_format = EglUtils::glFormatFromConfig(display, m_config, platformFormat);
 
     resetSurface();
 

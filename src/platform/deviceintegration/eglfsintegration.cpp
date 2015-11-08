@@ -34,10 +34,6 @@
 #include <QtGui/qpa/qplatforminputcontextfactory_p.h>
 #include <QtGui/qpa/qwindowsysteminterface.h>
 
-#include <QtPlatformSupport/private/qeglconvenience_p.h>
-#include <QtPlatformSupport/private/qeglplatformcontext_p.h>
-#include <QtPlatformSupport/private/qeglpbuffer_p.h>
-
 #include <QtPlatformSupport/private/qgenericunixeventdispatcher_p.h>
 #include <QtPlatformSupport/private/qgenericunixfontdatabase_p.h>
 #include <QtPlatformSupport/private/qgenericunixservices_p.h>
@@ -45,6 +41,9 @@
 
 #include <QtPlatformHeaders/QEGLNativeContext>
 
+#include "eglconvenience/eglconvenience.h"
+#include "eglconvenience/eglplatformcontext.h"
+#include "eglconvenience/eglpbuffer.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscontext.h"
 #include "deviceintegration/eglfscursor.h"
@@ -196,7 +195,7 @@ QPlatformOffscreenSurface *EglFSIntegration::createPlatformOffscreenSurface(QOff
     EGLDisplay dpy = surface->screen() ? static_cast<EglFSScreen *>(surface->screen()->handle())->display() : display();
     QSurfaceFormat fmt = egl_device_integration()->surfaceFormatFor(surface->requestedFormat());
     if (egl_device_integration()->supportsPBuffers())
-        return new QEGLPbuffer(dpy, fmt, surface);
+        return new EGLPbuffer(dpy, fmt, surface);
     else
         return new EglFSOffscreenWindow(dpy, fmt, surface);
     // Never return null. Multiple QWindows are not supported by this plugin.
@@ -363,13 +362,13 @@ void EglFSIntegration::removeScreen(QPlatformScreen *screen)
 
 EGLConfig EglFSIntegration::chooseConfig(EGLDisplay display, const QSurfaceFormat &format)
 {
-    class Chooser : public QEglConfigChooser {
+    class Chooser : public EglConfigChooser {
     public:
         Chooser(EGLDisplay display)
-            : QEglConfigChooser(display) { }
+            : EglConfigChooser(display) { }
         bool filterConfig(EGLConfig config) const Q_DECL_OVERRIDE {
             return egl_device_integration()->filterConfig(display(), config)
-                    && QEglConfigChooser::filterConfig(config);
+                    && EglConfigChooser::filterConfig(config);
         }
     };
 

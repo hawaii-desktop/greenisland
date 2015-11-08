@@ -28,15 +28,14 @@
 #define GREENISLAND_EGLFSCONTEXT_H
 
 #include <QtCore/QVariant>
-#include <QtPlatformSupport/private/qeglplatformcontext_p.h>
 
-#include <GreenIsland/platform/greenislandplatform_export.h>
+#include <GreenIsland/Platform/EGLPlatformContext>
 
 namespace GreenIsland {
 
 namespace Platform {
 
-class GREENISLANDPLATFORM_EXPORT EglFSContext : public QEGLPlatformContext
+class GREENISLANDPLATFORM_EXPORT EglFSContext : public EGLPlatformContext
 {
 public:
     EglFSContext(const QSurfaceFormat &format, QPlatformOpenGLContext *share, EGLDisplay display,
