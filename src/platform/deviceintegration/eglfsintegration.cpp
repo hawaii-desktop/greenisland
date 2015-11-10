@@ -37,7 +37,6 @@
 #include <QtPlatformSupport/private/qgenericunixeventdispatcher_p.h>
 #include <QtPlatformSupport/private/qgenericunixfontdatabase_p.h>
 #include <QtPlatformSupport/private/qgenericunixservices_p.h>
-#include <QtPlatformSupport/private/qopenglcompositorbackingstore_p.h>
 
 #include <QtPlatformHeaders/QEGLNativeContext>
 
@@ -52,6 +51,7 @@
 #include "deviceintegration/eglfswindow.h"
 #include "logind/vthandler.h"
 #include "libinput/libinputmanager_p.h"
+#include "platformcompositor/openglcompositorbackingstore.h"
 
 static void initResources()
 {
@@ -160,7 +160,7 @@ QPlatformWindow *EglFSIntegration::createPlatformWindow(QWindow *window) const
 
 QPlatformBackingStore *EglFSIntegration::createPlatformBackingStore(QWindow *window) const
 {
-    QOpenGLCompositorBackingStore *bs = new QOpenGLCompositorBackingStore(window);
+    OpenGLCompositorBackingStore *bs = new OpenGLCompositorBackingStore(window);
     if (!window->handle())
         window->create();
     static_cast<EglFSWindow *>(window->handle())->setBackingStore(bs);
@@ -171,7 +171,7 @@ QPlatformOpenGLContext *EglFSIntegration::createPlatformOpenGLContext(QOpenGLCon
 {
     // If there is a "root" window into which raster and QOpenGLWidget content is
     // composited, all other contexts must share with its context.
-    QOpenGLContext *compositingContext = QOpenGLCompositor::instance()->context();
+    QOpenGLContext *compositingContext = OpenGLCompositor::instance()->context();
     EGLDisplay dpy = context->screen() ? static_cast<EglFSScreen *>(context->screen()->handle())->display() : display();
     QPlatformOpenGLContext *share = compositingContext ? compositingContext->handle() : context->shareHandle();
     QVariant nativeHandle = context->nativeHandle();

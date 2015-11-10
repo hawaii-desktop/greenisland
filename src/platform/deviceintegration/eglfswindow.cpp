@@ -30,7 +30,6 @@
 #include <QtGui/qpa/qplatformintegration.h>
 #include <QtGui/private/qguiapplication_p.h>
 #include <QtGui/private/qopenglcontext_p.h>
-#include <QtPlatformSupport/private/qopenglcompositorbackingstore_p.h>
 
 #include "logging.h"
 #include "eglconvenience/eglconvenience.h"
@@ -38,6 +37,7 @@
 #include "deviceintegration/eglfscursor.h"
 #include "deviceintegration/eglfsintegration.h"
 #include "deviceintegration/eglfswindow.h"
+#include "platformcompositor/openglcompositorbackingstore.h"
 
 namespace GreenIsland {
 
@@ -97,7 +97,7 @@ void EglFSWindow::create()
     // raster windows will not have their own native window, surface and context. Instead,
     // they will be composited onto the root window's surface.
     EglFSScreen *screen = this->screen();
-    QOpenGLCompositor *compositor = QOpenGLCompositor::instance();
+    OpenGLCompositor *compositor = OpenGLCompositor::instance();
     if (screen->primarySurface() != EGL_NO_SURFACE) {
         if (isRaster() && compositor->targetWindow()) {
             m_format = compositor->targetWindow()->format();
@@ -152,7 +152,7 @@ void EglFSWindow::destroy()
     }
 
     m_flags = 0;
-    QOpenGLCompositor::instance()->removeWindow(this);
+    OpenGLCompositor::instance()->removeWindow(this);
 }
 
 // The virtual functions resetSurface and invalidateSurface may get overridden
@@ -185,8 +185,8 @@ void EglFSWindow::resetSurface()
 
 void EglFSWindow::setVisible(bool visible)
 {
-    QOpenGLCompositor *compositor = QOpenGLCompositor::instance();
-    QList<QOpenGLCompositorWindow *> windows = compositor->windows();
+    OpenGLCompositor *compositor = OpenGLCompositor::instance();
+    QList<OpenGLCompositorWindow *> windows = compositor->windows();
     QWindow *wnd = window();
 
     if (wnd->type() != Qt::Desktop) {
@@ -236,7 +236,7 @@ QRect EglFSWindow::geometry() const
 void EglFSWindow::requestActivateWindow()
 {
     if (window()->type() != Qt::Desktop)
-        QOpenGLCompositor::instance()->moveToTop(this);
+        OpenGLCompositor::instance()->moveToTop(this);
 
     QWindow *wnd = window();
     QWindowSystemInterface::handleWindowActivated(wnd);
@@ -247,15 +247,15 @@ void EglFSWindow::raise()
 {
     QWindow *wnd = window();
     if (wnd->type() != Qt::Desktop) {
-        QOpenGLCompositor::instance()->moveToTop(this);
+        OpenGLCompositor::instance()->moveToTop(this);
         QWindowSystemInterface::handleExposeEvent(wnd, QRect(QPoint(0, 0), wnd->geometry().size()));
     }
 }
 
 void EglFSWindow::lower()
 {
-    QOpenGLCompositor *compositor = QOpenGLCompositor::instance();
-    QList<QOpenGLCompositorWindow *> windows = compositor->windows();
+    OpenGLCompositor *compositor = OpenGLCompositor::instance();
+    QList<OpenGLCompositorWindow *> windows = compositor->windows();
     if (window()->type() != Qt::Desktop && windows.count() > 1) {
         int idx = windows.indexOf(this);
         if (idx > 0) {

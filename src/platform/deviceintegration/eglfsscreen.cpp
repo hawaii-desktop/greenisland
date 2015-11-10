@@ -28,12 +28,12 @@
 #include <QtGui/qwindow.h>
 #include <QtGui/qpa/qwindowsysteminterface.h>
 #include <QtGui/qpa/qplatformcursor.h>
-#include <QtPlatformSupport/private/qopenglcompositor_p.h>
 
 #include "logging.h"
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfsscreen.h"
 #include "deviceintegration/eglfswindow.h"
+#include "platformcompositor/openglcompositor.h"
 
 namespace GreenIsland {
 
@@ -51,7 +51,7 @@ EglFSScreen::EglFSScreen(EGLDisplay dpy)
 EglFSScreen::~EglFSScreen()
 {
     delete m_cursor;
-    QOpenGLCompositor::destroy();
+    OpenGLCompositor::destroy();
 }
 
 QRect EglFSScreen::geometry() const
@@ -106,8 +106,8 @@ void EglFSScreen::setPrimarySurface(EGLSurface surface)
 
 void EglFSScreen::handleCursorMove(const QPoint &pos)
 {
-    const QOpenGLCompositor *compositor = QOpenGLCompositor::instance();
-    const QList<QOpenGLCompositorWindow *> windows = compositor->windows();
+    const OpenGLCompositor *compositor = OpenGLCompositor::instance();
+    const QList<OpenGLCompositorWindow *> windows = compositor->windows();
 
     // Generate enter and leave events like a real windowing system would do.
     if (windows.isEmpty())
@@ -143,8 +143,8 @@ void EglFSScreen::handleCursorMove(const QPoint &pos)
 
 QPixmap EglFSScreen::grabWindow(WId wid, int x, int y, int width, int height) const
 {
-    QOpenGLCompositor *compositor = QOpenGLCompositor::instance();
-    const QList<QOpenGLCompositorWindow *> windows = compositor->windows();
+    OpenGLCompositor *compositor = OpenGLCompositor::instance();
+    const QList<OpenGLCompositorWindow *> windows = compositor->windows();
     Q_ASSERT(!windows.isEmpty());
 
     QImage img;
@@ -174,7 +174,7 @@ QPixmap EglFSScreen::grabWindow(WId wid, int x, int y, int width, int height) co
         return QPixmap::fromImage(img).copy(x, y, width, height);
     }
 
-    foreach (QOpenGLCompositorWindow *w, windows) {
+    foreach (OpenGLCompositorWindow *w, windows) {
         const QWindow *window = w->sourceWindow();
         if (window->winId() == wid) {
             const QRect geom = window->geometry();
