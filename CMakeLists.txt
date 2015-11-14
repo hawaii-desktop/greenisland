@@ -73,6 +73,20 @@ endif()
 set(REQUIRED_QT_VERSION 5.5.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core DBus Gui Qml Quick Compositor)
 
+# OpenGL
+find_package(OpenGL)
+set_package_properties(OpenGL PROPERTIES
+    DESCRIPTION "The OpenGL libraries"
+    URL "http://www.opengl.org"
+    TYPE OPTIONAL)
+
+# OpenGL ES
+find_package(OpenGLES)
+set_package_properties(OpenGLES PROPERTIES
+    DESCRIPTION "The OpenGLES libraries"
+    URL "http://www.khronos.org/opengles"
+    TYPE OPTIONAL)
+
 # EGL
 find_package(EGL REQUIRED)
 set(EGL_IMPLEMENTATION EGL)
@@ -80,17 +94,13 @@ set(EGL_TARGET EGL::EGL)
 
 # GL requirements
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    find_package(OpenGL)
-    set_package_properties(OpenGL PROPERTIES
-        DESCRIPTION "The OpenGL libraries"
-        URL "http://www.opengl.org"
-        TYPE REQUIRED)
+    if(NOT OPENGL_FOUND)
+        message(FATAL_ERROR "OpenGL is required")
+    endif()
 else()
-    find_package(OpenGLES)
-    set_package_properties(OpenGLES PROPERTIES
-        DESCRIPTION "The OpenGLES libraries"
-        URL "http://www.khronos.org/opengles"
-        TYPE REQUIRED)
+    if(NOT OPENGLES_FOUND)
+        message(FATAL_ERROR "OpenGL ES is required")
+    endif()
 endif()
 
 # Wayland
