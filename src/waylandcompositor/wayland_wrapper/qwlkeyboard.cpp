@@ -196,8 +196,10 @@ void Keyboard::setRepeatRate(quint32 rate)
 
     m_repeatRate = rate;
 
-    Q_FOREACH (Resource *resource, resourceMap())
-        send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
+    Q_FOREACH (Resource *resource, resourceMap()) {
+        if (resource->version() >= 4)
+            send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
+    }
 }
 
 quint32 Keyboard::repeatDelay() const
@@ -212,8 +214,10 @@ void Keyboard::setRepeatDelay(quint32 delay)
 
     m_repeatDelay = delay;
 
-    Q_FOREACH (Resource *resource, resourceMap())
-        send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
+    Q_FOREACH (Resource *resource, resourceMap()) {
+        if (resource->version() >= 4)
+            send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
+    }
 }
 
 void Keyboard::focusDestroyed(void *data)
@@ -253,7 +257,8 @@ QtWaylandServer::wl_keyboard::Resource *Keyboard::focusResource() const
 void Keyboard::keyboard_bind_resource(wl_keyboard::Resource *resource)
 {
     // Send repeat information
-    send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
+    if (resource->version() >= 4)
+        send_repeat_info(resource->handle, m_repeatRate, m_repeatDelay);
 
 #ifndef QT_NO_WAYLAND_XKB
     if (m_context) {
