@@ -24,9 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
-#include <QtCompositor/QtCompositorVersion>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurfaceItem>
 #include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
 #include <waylandcompositor/wayland_wrapper/qwloutput_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
@@ -56,11 +55,7 @@ const wl_interface *PlasmaShell::interface() const
 
 void PlasmaShell::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     add(client, id, version);
-#else
-    add(client, id);
-#endif
 }
 
 QList<PlasmaSurface *> PlasmaShell::surfaces() const

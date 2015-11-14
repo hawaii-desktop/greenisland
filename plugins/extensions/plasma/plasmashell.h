@@ -30,7 +30,7 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-plasma-shell.h"
 

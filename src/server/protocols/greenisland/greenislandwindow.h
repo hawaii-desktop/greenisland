@@ -28,7 +28,7 @@
 #define GREENISLANDWINDOW_H
 
 #include <QtCore/QPointer>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "clientwindow.h"
 #include "qwayland-server-greenisland.h"

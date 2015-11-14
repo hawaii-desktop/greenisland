@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 #include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 

@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandCompositor>
+#include <GreenIsland/Compositor/QWaylandCompositor>
 #include <waylandcompositor/compositor_api/qwaylandsurface_p.h>
 
 #include "clientwindow.h"

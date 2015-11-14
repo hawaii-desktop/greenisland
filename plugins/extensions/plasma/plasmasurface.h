@@ -27,7 +27,7 @@
 #ifndef PLASMASURFACE_H
 #define PLASMASURFACE_H
 
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "plasmashell.h"
 #include "shellwindow.h"

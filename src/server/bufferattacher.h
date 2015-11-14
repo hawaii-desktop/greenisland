@@ -44,8 +44,8 @@
 #define BUFFERATTACHER_H
 
 #include <QtGui/QOpenGLTexture>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandBufferRef>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandBufferRef>
 
 namespace GreenIsland {
 

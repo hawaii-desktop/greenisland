@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 
 Q_DECLARE_LOGGING_CATEGORY(XWAYLAND)
 Q_DECLARE_LOGGING_CATEGORY(XWAYLAND_TRACE)

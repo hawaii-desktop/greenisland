@@ -27,8 +27,8 @@
 #ifndef XDGPOPUP_H
 #define XDGPOPUP_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "xdgshell.h"
 

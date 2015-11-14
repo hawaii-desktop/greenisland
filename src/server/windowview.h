@@ -27,7 +27,7 @@
 #ifndef GREENISLAND_WINDOWVIEW_H
 #define GREENISLAND_WINDOWVIEW_H
 
-#include <QtCompositor/QWaylandSurfaceItem>
+#include <GreenIsland/Compositor/QWaylandSurfaceItem>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 

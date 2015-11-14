@@ -58,7 +58,7 @@
  *     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurfaceView>
+#include <GreenIsland/Compositor/QWaylandSurfaceView>
 #include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 

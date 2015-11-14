@@ -33,7 +33,6 @@
 #include <QtGui/QOpenGLFunctions>
 #include <QtGui/QWindow>
 #include <QtGui/qpa/qplatformnativeinterface.h>
-#include <QtCompositor/QtCompositorVersion>
 
 #include "diagnostic_p.h"
 #include "greenisland_version.h"
@@ -154,7 +153,6 @@ QString framework()
 
     str << "Wayland version: " << WAYLAND_VERSION
         << "\nQt version: " << QT_VERSION_STR
-        << "\nQtCompositor version: " << QTCOMPOSITOR_VERSION_STR
         << "\nGreen Island version: " << GREENISLAND_VERSION_STRING
         << '\n';
 

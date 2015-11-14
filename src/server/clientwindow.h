@@ -34,7 +34,7 @@
 #include <QtCore/QRectF>
 #include <QtCore/QSizeF>
 
-#include <QtCompositor/QWaylandSurfaceOp>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 

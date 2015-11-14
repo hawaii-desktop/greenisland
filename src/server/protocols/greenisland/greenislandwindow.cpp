@@ -24,18 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-
 #include "greenislandwindow.h"
 
 namespace GreenIsland {
 
 GreenIslandWindow::GreenIslandWindow(wl_client *client, ClientWindow *window)
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     : QtWaylandServer::greenisland_window(client, 0, 1)
-#else
-    : QtWaylandServer::greenisland_window(client, 0)
-#endif
     , m_window(window)
     , m_state(QtWaylandServer::greenisland_windows::state_inactive)
 {

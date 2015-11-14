@@ -25,8 +25,8 @@
  ***************************************************************************/
 
 #include <QtQuick/QQuickItem>
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandInputDevice>
+#include <GreenIsland/Compositor/QWaylandCompositor>
+#include <GreenIsland/Compositor/QWaylandInput>
 #include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlinputdevice_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>

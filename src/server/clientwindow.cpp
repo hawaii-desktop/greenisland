@@ -29,9 +29,9 @@
 #include <QtCore/QSettings>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QTimer>
-#include <QtCompositor/QWaylandClient>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandOutput>
+#include <GreenIsland/Compositor/QWaylandClient>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandOutput>
 #include <waylandcompositor/wayland_wrapper/qwloutput_p.h>
 #include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 

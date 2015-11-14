@@ -27,8 +27,7 @@
 #ifndef GREENISLAND_OUTPUT_H
 #define GREENISLAND_OUTPUT_H
 
-#include <QtCompositor/QWaylandQuickOutput>
-#include <QtCompositor/QtCompositorVersion>
+#include <GreenIsland/Compositor/QWaylandQuickOutput>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -58,7 +57,6 @@ public:
         BottomRightHotSpot
     };
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 #if 0
     Output(Compositor *compositor, const QString &name,
            const QString &manufacturer, const QString &model,

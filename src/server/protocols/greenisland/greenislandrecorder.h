@@ -28,7 +28,7 @@
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QMultiHash>
 #include <QtCore/QMutex>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-greenisland-recorder.h"
 

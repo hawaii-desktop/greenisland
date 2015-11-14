@@ -27,9 +27,9 @@
 #ifndef WLSUBSURFACE_H
 #define WLSUBSURFACE_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceItem>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurfaceItem>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "wlsubcompositor.h"
 

@@ -30,8 +30,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QPointer>
 #include <QtQuick/QQuickItem>
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "wlshell.h"
 

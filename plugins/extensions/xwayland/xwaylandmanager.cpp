@@ -51,7 +51,7 @@
 
 #include <QtCore/QSocketNotifier>
 #include <QtCore/QtMath>
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 
 #include <GreenIsland/Server/ClientWindow>
 

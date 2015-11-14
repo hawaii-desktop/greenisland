@@ -24,8 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QtCompositorVersion>
+#include <GreenIsland/Compositor/QWaylandInput>
 
 #include "compositorsettings.h"
 
@@ -117,18 +116,11 @@ quint32 CompositorSettings::keyboardRepeatRate() const
 {
     Q_D(const CompositorSettings);
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
     return d->compositor->defaultInputDevice()->keyboardRepeatRate();
-#else
-    return d->defaultKeyboardRate;
-#endif
 }
 
 void CompositorSettings::setKeyboardRepeatRate(quint32 rate)
 {
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
     Q_D(CompositorSettings);
 
     if (keyboardRepeatRate() == rate)
@@ -136,27 +128,17 @@ void CompositorSettings::setKeyboardRepeatRate(quint32 rate)
 
     d->compositor->defaultInputDevice()->setKeyboardRepeatRate(rate);
     Q_EMIT keyboardRepeatRateChanged();
-#else
-    Q_UNUSED(rate)
-#endif
 }
 
 quint32 CompositorSettings::keyboardRepeatDelay() const
 {
     Q_D(const CompositorSettings);
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
     return d->compositor->defaultInputDevice()->keyboardRepeatDelay();
-#else
-    return d->defaultKeyboardDelay;
-#endif
 }
 
 void CompositorSettings::setKeyboardRepeatDelay(quint32 delay)
 {
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
     Q_D(CompositorSettings);
 
     if (keyboardRepeatDelay() == delay)
@@ -164,9 +146,6 @@ void CompositorSettings::setKeyboardRepeatDelay(quint32 delay)
 
     d->compositor->defaultInputDevice()->setKeyboardRepeatDelay(delay);
     Q_EMIT keyboardRepeatDelayChanged();
-#else
-    Q_UNUSED(delay)
-#endif
 }
 
 QString CompositorSettings::keyboardLayout() const

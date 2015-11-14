@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandQuickOutput>
+#include <GreenIsland/Compositor/QWaylandQuickOutput>
 
 #include "greenislandscreenshooter.h"
 

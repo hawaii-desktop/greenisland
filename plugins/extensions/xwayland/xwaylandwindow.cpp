@@ -49,8 +49,8 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandSurfaceView>
+#include <GreenIsland/Compositor/QWaylandCompositor>
+#include <GreenIsland/Compositor/QWaylandSurfaceView>
 
 #include <GreenIsland/Server/ClientWindow>
 #include <GreenIsland/Server/WindowView>

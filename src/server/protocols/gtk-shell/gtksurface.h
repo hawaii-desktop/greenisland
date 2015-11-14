@@ -27,8 +27,8 @@
 #ifndef GTKSURFACE_H
 #define GTKSURFACE_H
 
-#include <QtCompositor/QWaylandSurface>
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "gtkshell.h"
 

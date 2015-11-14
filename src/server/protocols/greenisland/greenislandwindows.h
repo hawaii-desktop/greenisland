@@ -27,7 +27,7 @@
 #ifndef GREENISLANDWINDOWS_H
 #define GREENISLANDWINDOWS_H
 
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-greenisland.h"
 

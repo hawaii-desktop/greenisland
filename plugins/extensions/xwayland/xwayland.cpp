@@ -25,7 +25,7 @@
  ***************************************************************************/
 
 #include <QtCore/QTimer>
-#include <QtCompositor/QWaylandClient>
+#include <GreenIsland/Compositor/QWaylandClient>
 #include <waylandcompositor/wayland_wrapper/qwlsurface_p.h>
 
 #include "compositor.h"

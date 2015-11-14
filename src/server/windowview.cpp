@@ -25,9 +25,9 @@
  ***************************************************************************/
 
 #include <QtGui/QGuiApplication>
-#include <QtCompositor/QWaylandCompositor>
-#include <QtCompositor/QWaylandInputDevice>
-#include <QtCompositor/QWaylandQuickSurface>
+#include <GreenIsland/Compositor/QWaylandCompositor>
+#include <GreenIsland/Compositor/QWaylandInput>
+#include <GreenIsland/Compositor/QWaylandQuickSurface>
 
 #include "clientwindow.h"
 #include "compositor.h"

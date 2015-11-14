@@ -28,7 +28,7 @@
 #define COMPOSITOR_P_H
 
 #include <QtQml/QQmlListProperty>
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 
 #include "applicationmanager.h"
 #include "compositorsettings.h"

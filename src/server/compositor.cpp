@@ -26,8 +26,7 @@
 
 #include <QtCore/QTimer>
 #include <QtGui/QGuiApplication>
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/QWaylandClient>
+#include <GreenIsland/Compositor/QWaylandClient>
 #include <waylandcompositor/wayland_wrapper/qwlcompositor_p.h>
 
 #include <typeinfo>

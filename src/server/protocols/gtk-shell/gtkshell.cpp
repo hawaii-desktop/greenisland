@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 
 #include "gtkshell.h"
 #include "gtksurface.h"

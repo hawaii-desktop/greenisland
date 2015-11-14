@@ -27,8 +27,8 @@
 #ifndef COMPOSITOR_H
 #define COMPOSITOR_H
 
-#include <QtCompositor/QWaylandQuickCompositor>
-#include <QtCompositor/QWaylandSurfaceItem>
+#include <GreenIsland/Compositor/QWaylandQuickCompositor>
+#include <GreenIsland/Compositor/QWaylandSurfaceItem>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 

@@ -27,7 +27,7 @@
 #ifndef XWAYLANDSURFACE_H
 #define XWAYLANDSURFACE_H
 
-#include <QtCompositor/QWaylandSurfaceInterface>
+#include <GreenIsland/Compositor/QWaylandSurfaceInterface>
 
 #include "xwaylandwindow.h"
 

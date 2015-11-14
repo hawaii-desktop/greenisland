@@ -24,7 +24,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QMutexLocker>
 #include <QtOpenGL/QGLFunctions>
-#include <QtCompositor/QWaylandQuickOutput>
+#include <GreenIsland/Compositor/QWaylandQuickOutput>
 
 #include "greenislandrecorder.h"
 

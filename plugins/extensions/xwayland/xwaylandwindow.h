@@ -29,7 +29,7 @@
 
 #include <QtCore/QRect>
 #include <QtCore/QPointer>
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandSurface>
 
 #include <xcb/xcb.h>
 

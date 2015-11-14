@@ -29,7 +29,7 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-xdg-shell.h"
 

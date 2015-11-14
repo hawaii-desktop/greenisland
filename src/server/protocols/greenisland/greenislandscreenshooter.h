@@ -28,7 +28,7 @@
 #define GREENISLANDSCREENSHOOTER_H
 
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-greenisland-screenshooter.h"
 

@@ -24,8 +24,6 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-
 #include "wlshell.h"
 #include "wlshellsurface.h"
 #include "wlshellsurfacepopupgrabber.h"

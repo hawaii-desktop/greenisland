@@ -28,7 +28,7 @@
 #define PLASMAEFFECTS_H
 
 #include <QtCore/QLoggingCategory>
-#include <QtCompositor/QWaylandGlobalInterface>
+#include <GreenIsland/Compositor/QWaylandGlobalInterface>
 
 #include "qwayland-server-plasma-effects.h"
 

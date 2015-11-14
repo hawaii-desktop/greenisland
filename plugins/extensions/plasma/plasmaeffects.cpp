@@ -24,9 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCompositor/QtCompositorVersion>
-#include <QtCompositor/QWaylandOutput>
-#include <QtCompositor/QWaylandSurface>
+#include <GreenIsland/Compositor/QWaylandOutput>
+#include <GreenIsland/Compositor/QWaylandSurface>
 #include <waylandcompositor/wayland_wrapper/qwlregion_p.h>
 
 #include "plasmaeffects.h"
@@ -49,11 +48,7 @@ const wl_interface *PlasmaEffects::interface() const
 
 void PlasmaEffects::bind(wl_client *client, uint32_t version, uint32_t id)
 {
-#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 4, 0)
     add(client, id, version);
-#else
-    add(client, id);
-#endif
 }
 
 void PlasmaEffects::effects_slide(Resource *resource,
