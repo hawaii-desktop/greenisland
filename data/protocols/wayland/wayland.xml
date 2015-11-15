@@ -6,26 +6,26 @@
     Copyright © 2010-2011 Intel Corporation
     Copyright © 2012-2013 Collabora, Ltd.
 
-    Permission to use, copy, modify, distribute, and sell this
-    software and its documentation for any purpose is hereby granted
-    without fee, provided that the above copyright notice appear in
-    all copies and that both that copyright notice and this permission
-    notice appear in supporting documentation, and that the name of
-    the copyright holders not be used in advertising or publicity
-    pertaining to distribution of the software without specific,
-    written prior permission.  The copyright holders make no
-    representations about the suitability of this software for any
-    purpose.  It is provided "as is" without express or implied
-    warranty.
+    Permission is hereby granted, free of charge, to any person
+    obtaining a copy of this software and associated documentation files
+    (the "Software"), to deal in the Software without restriction,
+    including without limitation the rights to use, copy, modify, merge,
+    publish, distribute, sublicense, and/or sell copies of the Software,
+    and to permit persons to whom the Software is furnished to do so,
+    subject to the following conditions:
 
-    THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS
-    SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND
-    FITNESS, IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY
-    SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
-    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
-    AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
-    ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
-    THIS SOFTWARE.
+    The above copyright notice and this permission notice (including the
+    next paragraph) shall be included in all copies or substantial
+    portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+    EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+    NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+    BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+    ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
   </copyright>
 
   <interface name="wl_display" version="1">
@@ -1389,7 +1389,7 @@
       <arg name="id" type="new_id" interface="wl_touch"/>
     </request>
 
-    <!-- Version 2 of additions -->
+    <!-- Version 2 additions -->
 
     <event name="name" since="2">
       <description summary="unique identifier for this seat">
@@ -1560,7 +1560,13 @@
     <!-- Version 3 additions -->
 
     <request name="release" type="destructor" since="3">
-      <description summary="release the pointer object"/>
+      <description summary="release the pointer object">
+        Using this request client can tell the server that it is not going to
+	use the pointer object anymore.
+
+	This request destroys the pointer proxy object, so user must not call
+	wl_pointer_destroy() after using this request.
+      </description>
     </request>
 
   </interface>
@@ -1764,7 +1770,7 @@
     <enum name="subpixel">
       <description summary="subpixel geometry information">
 	This enumeration describes how the physical
-	pixels on an output are layed out.
+	pixels on an output are laid out.
       </description>
       <entry name="unknown" value="0"/>
       <entry name="none" value="1"/>
@@ -2061,8 +2067,10 @@
 	coordinate system. The coordinates are not restricted to the parent
 	surface area. Negative values are allowed.
 
-	The next wl_surface.commit on the parent surface will reset
-	the sub-surface's position to the scheduled coordinates.
+	The scheduled coordinates will take effect whenever the state of the
+	parent surface is applied. When this happens depends on whether the
+	parent surface is in synchronized mode or not. See
+	wl_subsurface.set_sync and wl_subsurface.set_desync for details.
 
 	If more than one set_position request is invoked by the client before
 	the commit of the parent surface, the position of a new request always
@@ -2084,9 +2092,11 @@
 	will cause a protocol error.
 
 	The z-order is double-buffered. Requests are handled in order and
-	applied immediately to a pending state, then committed to the active
-	state on the next commit of the parent surface.
-	See wl_surface.commit and wl_subcompositor.get_subsurface.
+	applied immediately to a pending state. The final pending state is
+	copied to the active state the next time the state of the parent
+	surface is applied. When this happens depends on whether the parent
+	surface is in synchronized mode or not. See wl_subsurface.set_sync and
+	wl_subsurface.set_desync for details.
 
 	A new sub-surface is initially added as the top-most in the stack
 	of its siblings and parent.
@@ -2109,7 +2119,7 @@
     <request name="set_sync">
       <description summary="set sub-surface to synchronized mode">
 	Change the commit behaviour of the sub-surface to synchronized
-	mode, also described as the parent dependant mode.
+	mode, also described as the parent dependent mode.
 
 	In synchronized mode, wl_surface.commit on a sub-surface will
 	accumulate the committed state in a cache, but the state will
