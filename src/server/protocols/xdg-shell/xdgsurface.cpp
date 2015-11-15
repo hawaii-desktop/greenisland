@@ -244,6 +244,8 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
     case QWaylandSurfaceOp::Close:
         send_close();
         return true;
+// This doesn't work very well
+#if 0
     case ClientWindow::Move:
         moveWindow(m_surface->compositor()->defaultInputDevice());
         return true;
@@ -254,6 +256,7 @@ bool XdgSurface::runOperation(QWaylandSurfaceOp *op)
             pointer->sendButton(0, Qt::LeftButton, 0);
         }
         return true;
+#endif
     default:
         break;
     }
