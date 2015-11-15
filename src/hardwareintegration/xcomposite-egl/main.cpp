@@ -31,7 +31,7 @@
 **
 ****************************************************************************/
 
-#include <waylandcompositor/hardware_integration/qwlclientbufferintegrationplugin_p.h>
+#include <QtWaylandCompositor/private/qwlclientbufferintegrationplugin_p.h>
 #include "xcompositeeglintegration.h"
 
 QT_BEGIN_NAMESPACE
