@@ -1,3 +1,6 @@
+if(BcmHost_FOUND)
+    add_subdirectory(brcm-egl)
+endif()
 add_subdirectory(wayland-egl)
 if(X11_FOUND AND X11_Xcomposite_FOUND)
     if(EGL_FOUND OR OPENGL_FOUND)

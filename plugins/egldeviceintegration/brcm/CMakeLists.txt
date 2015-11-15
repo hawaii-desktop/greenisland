@@ -1,5 +1,3 @@
-find_package(BcmHost REQUIRED)
-
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland

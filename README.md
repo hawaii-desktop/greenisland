@@ -118,8 +118,8 @@ The `CMAKE_BUILD_TYPE` parameter allows the following values:
 
 * **ENABLE_EGLDEVICEINTEGRATION_BRCM**
 
-  Disabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_BRCM:BOOL=ON`
-  to cmake in order to enable the Broadcom VideoCore device integration.
+  Enabled by default. Pass `-DENABLE_EGLDEVICEINTEGRATION_BRCM:BOOL=OFF`
+  to cmake in order to disable the Broadcom VideoCore device integration.
 
   You will need Broadcom VideoCore proprietary libraries.
 
