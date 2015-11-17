@@ -37,7 +37,7 @@
 #ifndef QWAYLANDEXTENSION_H
 #define QWAYLANDEXTENSION_H
 
-#include <QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 #include <wayland-server.h>
 
 #include <QtCore/QObject>

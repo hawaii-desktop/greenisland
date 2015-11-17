@@ -53,7 +53,7 @@
 #include <QImage>
 #include <QAtomicInt>
 
-#include <QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
 #include <wayland-server.h>
 

@@ -48,12 +48,12 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 
 #include <QRegion>
 
 #include <wayland-util.h>
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

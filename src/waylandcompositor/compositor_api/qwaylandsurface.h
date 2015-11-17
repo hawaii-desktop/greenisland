@@ -38,9 +38,9 @@
 #ifndef QWAYLANDSURFACE_H
 #define QWAYLANDSURFACE_H
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandextension.h>
-#include <QtWaylandCompositor/qwaylandclient.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandclient.h>
 
 #include <QtCore/QScopedPointer>
 #include <QtGui/QImage>

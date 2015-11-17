@@ -37,18 +37,18 @@
 #ifndef QWAYLANDSHELL_P_H
 #define QWAYLANDSHELL_P_H
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandsurface.h>
-#include <QtWaylandCompositor/private/qwaylandextension_p.h>
-#include <QtWaylandCompositor/QWaylandShellSurface>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
 #include <wayland-server.h>
 #include <QHash>
 #include <QPoint>
 #include <QSet>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 //
 //  W A R N I N G

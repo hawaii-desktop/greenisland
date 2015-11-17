@@ -48,8 +48,8 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
 QT_BEGIN_NAMESPACE
 

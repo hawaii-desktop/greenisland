@@ -48,9 +48,9 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-hardware-integration.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-hardware-integration.h>
 
-#include <QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
 #include <QtCore/QString>
 

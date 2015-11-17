@@ -36,9 +36,9 @@
 
 #include "qwlinputmethod_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandKeyboard>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandKeyboard>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include "qwlinputmethodcontext_p.h"
 #include "qwlinputpanel_p.h"
 #include "qwltextinput_p.h"

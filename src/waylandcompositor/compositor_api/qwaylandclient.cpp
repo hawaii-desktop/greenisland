@@ -37,8 +37,8 @@
 #include "qwaylandclient.h"
 #include <QtCore/private/qobject_p.h>
 
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/private/qwaylandcompositor_p.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 
 
 #include <wayland-server.h>

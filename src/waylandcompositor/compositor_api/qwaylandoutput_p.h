@@ -50,12 +50,12 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/QWaylandOutput>
-#include <QtWaylandCompositor/QWaylandClient>
-#include <QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 #include <QtCore/QRect>
 #include <QtCore/QVector>

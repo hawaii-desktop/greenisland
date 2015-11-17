@@ -37,7 +37,7 @@
 #ifndef QWAYLANDQUICKSHELLSURFACEITEM_P_H
 #define QWAYLANDQUICKSHELLSURFACEITEM_P_H
 
-#include <QtWaylandCompositor/private/qwaylandquickitem_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandquickitem_p.h>
 
 QT_BEGIN_NAMESPACE
 

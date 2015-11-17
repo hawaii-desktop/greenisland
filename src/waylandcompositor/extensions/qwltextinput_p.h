@@ -48,8 +48,8 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/QWaylandExtension>
-#include <QtWaylandCompositor/private/qwayland-server-text.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text.h>
 
 #include <QRect>
 

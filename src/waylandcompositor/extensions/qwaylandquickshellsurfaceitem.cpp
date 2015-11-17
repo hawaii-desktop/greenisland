@@ -37,8 +37,8 @@
 #include "qwaylandquickshellsurfaceitem.h"
 #include "qwaylandquickshellsurfaceitem_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
 QT_BEGIN_NAMESPACE
 

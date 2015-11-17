@@ -48,11 +48,11 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandinputpanel.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandinputpanel.h>
 
-#include <QtWaylandCompositor/private/qwaylandextension_p.h>
-#include <QtWaylandCompositor/private/qwayland-server-input-method.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-input-method.h>
 
 #include <QRect>
 #include <QScopedPointer>

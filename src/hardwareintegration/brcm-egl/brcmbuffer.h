@@ -37,7 +37,7 @@
 #ifndef BRCMBUFFER_H
 #define BRCMBUFFER_H
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 #include <QtCore/QSize>
 #include <QtCore/QVector>

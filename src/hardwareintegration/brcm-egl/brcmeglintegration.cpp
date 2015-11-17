@@ -36,8 +36,8 @@
 
 #include "brcmeglintegration.h"
 #include "brcmbuffer.h"
-#include <QtWaylandCompositor/private/qwlsurface_p.h>
-#include <QtWaylandCompositor/qwaylandsurface.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
 #include <qpa/qplatformnativeinterface.h>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QOpenGLContext>

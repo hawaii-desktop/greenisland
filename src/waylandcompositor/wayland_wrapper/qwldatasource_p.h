@@ -48,7 +48,7 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 #include <QObject>
 #include <QtCore/QList>
 

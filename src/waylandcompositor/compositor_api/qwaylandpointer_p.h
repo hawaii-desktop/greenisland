@@ -49,19 +49,19 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/QWaylandDestroyListener>
-#include <QtWaylandCompositor/QWaylandPointer>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandDestroyListener>
+#include <GreenIsland/QtWaylandCompositor/QWaylandPointer>
 
 #include <QtCore/QList>
 #include <QtCore/QPoint>
 #include <QtCore/QObject>
 #include <QtCore/private/qobject_p.h>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
-#include <QtWaylandCompositor/QWaylandView>
-#include <QtWaylandCompositor/QWaylandSurface>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandView>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
 #include <stdint.h>
 

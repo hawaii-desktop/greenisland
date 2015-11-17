@@ -48,7 +48,7 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 
 #include <QtCore/qplugin.h>
 #include <QtCore/qfactoryinterface.h>

@@ -36,7 +36,7 @@
 
 #include "qwaylandinputpanel.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
 #include <private/qobject_p.h>
 

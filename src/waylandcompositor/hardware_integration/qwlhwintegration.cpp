@@ -36,7 +36,7 @@
 
 #include "qwlhwintegration_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
 QT_BEGIN_NAMESPACE
 

@@ -37,11 +37,11 @@
 
 #include "qwaylandkeyboard.h"
 #include "qwaylandkeyboard_p.h"
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandInputDevice>
-#include <QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
 
-#include <QtWaylandCompositor/QWaylandShellSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
 
 #include <QtCore/QFile>
 #include <QtCore/QStandardPaths>

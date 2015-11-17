@@ -53,9 +53,9 @@
 #include <QtGui/QClipboard>
 #include <QtCore/QMimeData>
 
-#include <QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

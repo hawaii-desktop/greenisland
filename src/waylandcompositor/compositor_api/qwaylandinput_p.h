@@ -50,8 +50,8 @@
 
 #include <stdint.h>
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandinput.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
 
 #include <QtCore/QList>
 #include <QtCore/QPoint>
@@ -62,7 +62,7 @@
 #include <xkbcommon/xkbcommon.h>
 #endif
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

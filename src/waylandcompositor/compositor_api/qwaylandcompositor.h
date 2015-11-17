@@ -37,9 +37,9 @@
 #ifndef QWAYLANDCOMPOSITOR_H
 #define QWAYLANDCOMPOSITOR_H
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandextension.h>
-#include <QtWaylandCompositor/QWaylandOutput>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
 
 #include <QObject>
 #include <QImage>

@@ -37,8 +37,8 @@
 #ifndef QTWAYLAND_QWLTEXTINPUTMANAGER_P_H
 #define QTWAYLAND_QWLTEXTINPUTMANAGER_P_H
 
-#include <QtWaylandCompositor/QWaylandExtension>
-#include <QtWaylandCompositor/private/qwayland-server-text.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text.h>
 
 //
 //  W A R N I N G

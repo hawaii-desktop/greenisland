@@ -36,10 +36,10 @@
 
 #include "qwldatadevicemanager_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
-#include <QtWaylandCompositor/private/qwaylandcompositor_p.h>
-#include <QtWaylandCompositor/private/qwaylandinput_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 #include "qwldatadevice_p.h"
 #include "qwldatasource_p.h"
 #include "qwldataoffer_p.h"

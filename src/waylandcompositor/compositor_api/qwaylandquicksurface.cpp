@@ -42,12 +42,12 @@
 #include "qwaylandquicksurface.h"
 #include "qwaylandquickcompositor.h"
 #include "qwaylandquickitem.h"
-#include <QtWaylandCompositor/qwaylandbufferref.h>
-#include <QtWaylandCompositor/QWaylandView>
-#include <QtWaylandCompositor/private/qwaylandsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandView>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
 
-#include <QtWaylandCompositor/private/qwayland-server-surface-extension.h>
-#include <QtWaylandCompositor/private/qwlextendedsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-surface-extension.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlextendedsurface_p.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -50,9 +50,9 @@
 
 #include "wayland-util.h"
 
-#include <QtWaylandCompositor/QWaylandExtensionTemplate>
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/private/qwayland-server-qtkey-extension.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtensionTemplate>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-qtkey-extension.h>
 
 QT_BEGIN_NAMESPACE
 

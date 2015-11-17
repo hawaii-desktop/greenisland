@@ -46,7 +46,7 @@
 #include <wayland-server-protocol.h>
 #include "qwaylandshmformathelper.h"
 
-#include <QtWaylandCompositor/private/qwaylandcompositor_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 
 QT_BEGIN_NAMESPACE
 

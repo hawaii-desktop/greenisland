@@ -49,17 +49,17 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/QWaylandDestroyListener>
-#include <QtWaylandCompositor/QWaylandTouch>
-#include <QtWaylandCompositor/QWaylandInputDevice>
-#include <QtWaylandCompositor/QWaylandView>
-#include <QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandDestroyListener>
+#include <GreenIsland/QtWaylandCompositor/QWaylandTouch>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandView>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
 #include <QtCore/QPoint>
 #include <QtCore/private/qobject_p.h>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

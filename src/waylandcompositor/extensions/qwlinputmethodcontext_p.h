@@ -48,7 +48,7 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-input-method.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-input-method.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -48,8 +48,8 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandsurface.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
 #include <QtCore/QSize>
 #include <wayland-server.h>
 

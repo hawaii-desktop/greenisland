@@ -41,7 +41,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/private/qobject_p.h>
 
-#include <QtWaylandCompositor/QWaylandBufferRef>
+#include <GreenIsland/QtWaylandCompositor/QWaylandBufferRef>
 
 //
 //  W A R N I N G

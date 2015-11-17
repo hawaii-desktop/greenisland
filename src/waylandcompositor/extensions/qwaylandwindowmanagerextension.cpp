@@ -37,8 +37,8 @@
 #include "qwaylandwindowmanagerextension.h"
 #include "qwaylandwindowmanagerextension_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
 
 #include <QtCore/QUrl>
 

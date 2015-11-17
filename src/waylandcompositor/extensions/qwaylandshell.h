@@ -37,7 +37,7 @@
 #ifndef QWAYLANDSHELL_H
 #define QWAYLANDSHELL_H
 
-#include <QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
 #include <QtCore/QSize>
 

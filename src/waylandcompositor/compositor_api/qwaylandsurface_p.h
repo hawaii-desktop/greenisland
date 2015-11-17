@@ -49,15 +49,15 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 #include <private/qobject_p.h>
 
-#include <private/qwlsurfacebuffer_p.h>
-#include <QtWaylandCompositor/qwaylandsurface.h>
-#include <QtWaylandCompositor/qwaylandbufferref.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
 
-#include <QtWaylandCompositor/private/qwlinputpanelsurface_p.h>
-#include <QtWaylandCompositor/private/qwlregion_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlinputpanelsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlregion_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlsurfacebuffer_p.h>
 
 #include <QtCore/QVector>
 #include <QtCore/QRect>
@@ -70,7 +70,7 @@
 
 #include <wayland-util.h>
 
-#include <QtWaylandCompositor/private/qwayland-server-wayland.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
 
 QT_BEGIN_NAMESPACE
 

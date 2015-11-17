@@ -31,7 +31,7 @@
 **
 ****************************************************************************/
 
-#include <QtWaylandCompositor/private/qwlserverbufferintegrationplugin_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlserverbufferintegrationplugin_p.h>
 #include "drmeglserverbufferintegration.h"
 
 QT_BEGIN_NAMESPACE

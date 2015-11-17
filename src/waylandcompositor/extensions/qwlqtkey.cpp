@@ -35,7 +35,7 @@
 ****************************************************************************/
 
 #include "qwlqtkey_p.h"
-#include <QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 #include <QKeyEvent>
 #include <QWindow>
 

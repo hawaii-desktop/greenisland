@@ -31,8 +31,8 @@
 **
 ****************************************************************************/
 
-#include <QtWaylandCompositor/private/qwlserverbufferintegrationplugin_p.h>
-#include <QtWaylandCompositor/private/qwlserverbufferintegration_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlserverbufferintegrationplugin_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwlserverbufferintegration_p.h>
 #include "libhybriseglserverbufferintegration.h"
 
 QT_BEGIN_NAMESPACE

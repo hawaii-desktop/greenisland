@@ -48,9 +48,9 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-touch-extension.h>
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandExtensionTemplate>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-touch-extension.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtensionTemplate>
 #include "wayland-util.h"
 
 QT_BEGIN_NAMESPACE

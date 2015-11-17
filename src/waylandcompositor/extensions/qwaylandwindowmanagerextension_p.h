@@ -48,9 +48,9 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
 
-#include <QtWaylandCompositor/private/qwayland-server-windowmanager.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-windowmanager.h>
 
 #include <QMap>
 

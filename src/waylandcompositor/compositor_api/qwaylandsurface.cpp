@@ -44,14 +44,14 @@
 
 #include "extensions/qwlextendedsurface_p.h"
 
-#include <QtWaylandCompositor/QWaylandCompositor>
-#include <QtWaylandCompositor/QWaylandClient>
-#include <QtWaylandCompositor/QWaylandView>
-#include <QtWaylandCompositor/QWaylandBufferRef>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandView>
+#include <GreenIsland/QtWaylandCompositor/QWaylandBufferRef>
 
-#include <QtWaylandCompositor/private/qwaylandcompositor_p.h>
-#include <QtWaylandCompositor/private/qwaylandview_p.h>
-#include <QtWaylandCompositor/private/qwaylandinput_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandview_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 
 #include <QtCore/private/qobject_p.h>
 

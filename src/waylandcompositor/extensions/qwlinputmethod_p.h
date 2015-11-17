@@ -48,14 +48,14 @@
 // We mean it.
 //
 
-#include <QtWaylandCompositor/private/qwayland-server-input-method.h>
-#include <QtWaylandCompositor/QWaylandExtension>
-#include <QtWaylandCompositor/QWaylandInputDevice>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-input-method.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
 #include <QObject>
 #include <QScopedPointer>
 
-#include <QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
 QT_BEGIN_NAMESPACE
 

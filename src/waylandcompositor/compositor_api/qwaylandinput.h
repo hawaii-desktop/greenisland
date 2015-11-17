@@ -41,9 +41,9 @@
 #include <QtCore/QPoint>
 #include <QtCore/QString>
 
-#include <QtWaylandCompositor/qwaylandexport.h>
-#include <QtWaylandCompositor/qwaylandextension.h>
-#include <QtWaylandCompositor/qwaylandkeyboard.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandkeyboard.h>
 
 QT_BEGIN_NAMESPACE
 

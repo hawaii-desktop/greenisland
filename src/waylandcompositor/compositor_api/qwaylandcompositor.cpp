@@ -38,17 +38,17 @@
 #include "qwaylandcompositor.h"
 #include "qwaylandcompositor_p.h"
 
-#include <QtWaylandCompositor/qwaylandclient.h>
-#include <QtWaylandCompositor/qwaylandinput.h>
-#include <QtWaylandCompositor/qwaylandoutput.h>
-#include <QtWaylandCompositor/qwaylandview.h>
-#include <QtWaylandCompositor/qwaylandclient.h>
-#include <QtWaylandCompositor/qwaylandkeyboard.h>
-#include <QtWaylandCompositor/qwaylandpointer.h>
-#include <QtWaylandCompositor/qwaylandtouch.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandclient.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandoutput.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandview.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandclient.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandkeyboard.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandpointer.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandtouch.h>
 
-#include <QtWaylandCompositor/private/qwaylandkeyboard_p.h>
-#include <QtWaylandCompositor/private/qwaylandsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandkeyboard_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
 
 #include "wayland_wrapper/qwldatadevice_p.h"
 #include "wayland_wrapper/qwldatadevicemanager_p.h"

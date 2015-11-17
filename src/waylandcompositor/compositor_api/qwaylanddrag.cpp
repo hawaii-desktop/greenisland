@@ -40,7 +40,7 @@
 
 #include "qwldatadevice_p.h"
 #include "qwaylandview.h"
-#include <QtWaylandCompositor/private/qwaylandinput_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 
 QT_BEGIN_NAMESPACE
 
