@@ -28,8 +28,7 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QGuiApplication>
-
-#include <GreenIsland/Server/HomeApplication>
+#include <QtQml/QQmlApplicationEngine>
 
 #include "config.h"
 
@@ -48,9 +47,6 @@ int main(int argc, char *argv[])
     app.setOrganizationName(QStringLiteral("Hawaii"));
     app.setOrganizationDomain(QStringLiteral("hawaiios.org"));
     app.setQuitOnLastWindowClosed(false);
-
-    // Home application
-    GreenIsland::HomeApplication homeApp;
 
     // Command line parser
     QCommandLineParser parser;
@@ -94,7 +90,7 @@ int main(int argc, char *argv[])
 
     // Compositor package
     QCommandLineOption shellOption(QStringLiteral("shell"),
-                                   TR("Force loading the given shell"),
+                                   TR("Load the given shell"),
                                    TR("shell"),
                                    QStringLiteral("org.hawaiios.greenisland"));
     parser.addOption(shellOption);
@@ -147,6 +143,7 @@ int main(int argc, char *argv[])
         }
     }
 
+#if 0
     // Home application parameters
     homeApp.setNotificationEnabled(notify);
     homeApp.setFakeScreenData(fakeScreenData);
@@ -158,6 +155,9 @@ int main(int argc, char *argv[])
     // Create the compositor and run
     if (!homeApp.run(nested, parser.value(shellOption)))
         return 1;
+#else
+    QQmlApplicationEngine engine(QUrl::fromLocalFile(parser.value(shellOption)));
+#endif
 
     return app.exec();
 }

@@ -8,7 +8,12 @@ set(SOURCES
 )
 
 add_executable(greenisland ${SOURCES})
-target_link_libraries(greenisland PUBLIC GreenIsland::Server)
+target_link_libraries(greenisland
+    PUBLIC
+        Qt5::Core
+        Qt5::Gui
+        Qt5::Qml
+)
 
 if(systemd_FOUND)
     target_link_libraries(greenisland PRIVATE ${systemd_LIBRARIES})
