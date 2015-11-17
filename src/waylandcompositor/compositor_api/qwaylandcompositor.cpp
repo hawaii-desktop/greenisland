@@ -79,6 +79,7 @@ QT_BEGIN_NAMESPACE
 
 namespace QtWayland {
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 class WindowSystemEventHandler : public QWindowSystemEventHandler
 {
 public:
@@ -125,6 +126,7 @@ public:
 
     QWaylandCompositor *compositor;
 };
+#endif
 
 } // namespace
 
@@ -141,10 +143,16 @@ QWaylandCompositorPrivate::QWaylandCompositorPrivate(QWaylandCompositor *composi
     display = static_cast<wl_display*>(QGuiApplication::platformNativeInterface()->nativeResourceForIntegration("server_wl_display"));
     if (!display)
         display = wl_display_create();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     eventHandler.reset(new QtWayland::WindowSystemEventHandler(compositor));
+#else
+    Q_UNUSED(compositor);
+#endif
     timer.start();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QWindowSystemInterfacePrivate::installWindowSystemEventHandler(eventHandler.data());
+#endif
 }
 
 void QWaylandCompositorPrivate::init()
