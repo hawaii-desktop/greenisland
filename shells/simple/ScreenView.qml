@@ -25,47 +25,80 @@
  ***************************************************************************/
 
 import QtQuick 2.0
+import QtQuick.Window 2.2
+import GreenIsland 1.0
 
-Item {
-    readonly property string name: _greenisland_output.name
-    readonly property int number: _greenisland_output.number
-    readonly property bool primary: _greenisland_output.primary
+WaylandOutput {
+    property alias surfacesArea: backgroundLayer
 
-    readonly property alias currentWorkspace: backgroundLayer
-    property alias zoomEnabled: zoomArea.enabled
+    id: output
+    window: Window {
+        property QtObject output
 
-    id: root
-    transform: Scale {
-        id: screenScaler
-        origin.x: zoomArea.x2
-        origin.y: zoomArea.y2
-        xScale: zoomArea.zoom2
-        yScale: zoomArea.zoom2
-    }
+        id: window
+        width: 1024
+        height: 768
+        visible: true
 
-    /*
-     * Screen zoom handler
-     */
+        LocalPointerTracker {
+            id: localPointerTracker
+            anchors.fill: parent
+            globalTracker: globalPointerTracker
 
-    ScreenZoom {
-        id: zoomArea
-        anchors.fill: parent
-        scaler: screenScaler
-        enabled: true
-        z: 3000
-    }
+            Item {
+                property alias zoomEnabled: zoomArea.enabled
 
-    /*
-     * Workspace
-     */
+                anchors.fill: parent
+                transform: Scale {
+                    id: screenScaler
+                    origin.x: zoomArea.x2
+                    origin.y: zoomArea.y2
+                    xScale: zoomArea.zoom2
+                    yScale: zoomArea.zoom2
+                }
 
-    // Background is below everything
-    Image {
-        id: backgroundLayer
-        anchors.fill: parent
-        source: "images/wallpaper.png"
-        sourceSize.width: width
-        sourceSize.height: height
-        fillMode: Image.Tile
+                ScreenZoom {
+                    id: zoomArea
+                    anchors.fill: parent
+                    scaler: screenScaler
+                    enabled: true
+
+                    Text {
+                        anchors {
+                            top: parent.top
+                            right: parent.right
+                        }
+                        z: 1000
+                        text: fpsCounter.fps
+                        font.pointSize: 36
+                        style: Text.Raised
+                        styleColor: "#222"
+                        color: "white"
+                        visible: false
+
+                        FpsCounter {
+                            id: fpsCounter
+                        }
+                    }
+
+                    Image {
+                        id: backgroundLayer
+                        anchors.fill: parent
+                        source: "images/wallpaper.png"
+                        sourceSize.width: width
+                        sourceSize.height: height
+                        fillMode: Image.Tile
+                    }
+                }
+            }
+
+            PointerItem {
+                id: cursor
+                inputDevice: output.compositor.defaultInputDevice
+                x: localPointerTracker.mouseX - hotspotX
+                y: localPointerTracker.mouseY - hotspotY
+                visible: globalPointerTracker.output === output
+            }
+        }
     }
 }

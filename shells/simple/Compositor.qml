@@ -25,93 +25,59 @@
  ***************************************************************************/
 
 import QtQuick 2.0
-import GreenIsland 1.0 as GreenIsland
-import "WindowManagement.js" as WindowManagement
+import GreenIsland 1.0
 
-Item {
-    readonly property alias screenView: screenView
-    readonly property alias surfaceModel: surfaceModel
-    property var activeWindow: null
-    readonly property int activeWindowIndex: WindowManagement.getActiveWindowIndex()
-    readonly property var windowList: WindowManagement.windowList
+WaylandCompositor {
+    property var primarySurfacesArea: null
+    property variant windows: []
 
-    id: compositorRoot
+    id: compositor
+    extensions: [
+        Shell {
+            id: defaultShell
+            onCreateShellSurface: {
+                var props = {
+                    "windows": Qt.binding(function() { return compositor.windows }),
+                    "surface": surface
+                };
+                var item = chromeComponent.createObject(screen.surfacesArea, props);
+                item.shellSurface.initialize(defaultShell, surface, client, id);
+                windows.push(item);
+            }
 
-    ListModel {
-        id: surfaceModel
+            Component.onCompleted: {
+                initialize();
+            }
+        }
+    ]
+    onCreateSurface: {
+        var surface = surfaceComponent.createObject(compositor, {});
+        surface.initialize(compositor, client, id, version);
     }
 
-    Connections {
-        target: GreenIsland.Compositor
-        onWindowMapped: {
-            // A window was mapped
-            WindowManagement.windowMapped(window);
-        }
-        onWindowUnmapped: {
-            // A window was unmapped
-            WindowManagement.windowUnmapped(window);
-        }
-        onWindowDestroyed: {
-            // A window was unmapped
-            WindowManagement.windowDestroyed(id);
-        }
-        onSurfaceMapped: {
-            // A surface was mapped
-            WindowManagement.surfaceMapped(surface);
-        }
+    GlobalPointerTracker {
+        id: globalPointerTracker
+        compositor: compositor
     }
 
-    /*
-     * Components
-     */
-
-    // FPS counter
-    Text {
-        anchors {
-            top: parent.top
-            right: parent.right
-        }
-        z: 1000
-        text: fpsCounter.fps
-        font.pointSize: 36
-        style: Text.Raised
-        styleColor: "#222"
-        color: "white"
-        visible: false
-
-        GreenIsland.FpsCounter {
-            id: fpsCounter
-        }
-    }
-
-    // Screen
     ScreenView {
-        id: screenView
-        anchors.fill: parent
-        z: 998
+        id: screen
+        compositor: compositor
     }
 
-    /*
-     * Methods
-     */
+    Component {
+        id: surfaceComponent
 
-    function moveFront(window) {
-        return WindowManagement.moveFront(window);
+        WaylandSurface {}
     }
 
-    function enableInput() {
-        var i;
-        for (i = 0; i < compositorRoot.surfaceModel.count; i++) {
-            var window = compositorRoot.surfaceModel.get(i).item;
-            window.child.focus = true;
-        }
+    Component {
+        id: chromeComponent
+
+        WaylandWindow {}
     }
 
-    function disableInput() {
-        var i;
-        for (i = 0; i < compositorRoot.surfaceModel.count; i++) {
-            var window = compositorRoot.surfaceModel.get(i).item;
-            window.child.focus = false;
-        }
+    Component.onCompleted: {
+        compositor.primarySurfacesArea = screen.surfacesArea;
     }
 }
