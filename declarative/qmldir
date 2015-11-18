@@ -1,4 +1,5 @@
 module GreenIsland
 plugin greenislandplugin
-ContrastEffect 1.0 ContrastEffect.qml
-SurfaceRenderer 1.0 SurfaceRenderer.qml
+WaylandCursorItem 1.0 WaylandCursorItem.qml
+WaylandScreen 1.0 WaylandScreen.qml
+WaylandWindow 1.0 WaylandWindow.qml
