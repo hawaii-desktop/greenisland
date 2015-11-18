@@ -39,6 +39,7 @@ target_link_libraries(greenislandplugin
     Qt5::Qml
     Qt5::Quick
     GreenIsland::Compositor
+    GreenIsland::Server
 )
 
 install(TARGETS greenislandplugin LIBRARY

@@ -37,6 +37,10 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
+#include <GreenIsland/Server/QuickXdgPopupItem>
+#include <GreenIsland/Server/QuickXdgSurfaceItem>
+#include <GreenIsland/Server/XdgShell>
+
 #include "fpscounter.h"
 #include "globalpointertracker.h"
 #include "keybindingsfilter.h"
@@ -44,9 +48,15 @@
 #include "localpointertracker.h"
 #include "pointeritem.h"
 
+using namespace GreenIsland::Server;
+
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShellSurface)
+
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgPopup)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgShell)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgSurface)
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -92,6 +102,17 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<QWaylandShellQuickData>(uri, 1, 0, "Shell");
     qmlRegisterType<QWaylandShellSurfaceQuickData>(uri, 1, 0, "ShellSurface");
     qmlRegisterType<QWaylandQuickShellSurfaceItem>(uri, 1, 0, "ShellSurfaceItem");
+
+    // xdg-shell
+    qmlRegisterUncreatableType<XdgPopup>(uri, 1, 0, "XdgPopupBase",
+                                         QObject::tr("Cannot create instance of XdgPopupBase, use XdgPopup instead"));
+    qmlRegisterType<XdgPopupQuickData>(uri, 1, 0, "XdgPopup");
+    qmlRegisterType<QuickXdgPopupItem>(uri, 1, 0, "XdgPopupItem");
+    qmlRegisterType<XdgShellQuickData>(uri, 1, 0, "XdgShell");
+    qmlRegisterUncreatableType<XdgSurface>(uri, 1, 0, "XdgSurfaceBase",
+                                           QObject::tr("Cannot create instance of XdgSurfaceBase, use XdgSurface instead"));
+    qmlRegisterType<XdgSurfaceQuickData>(uri, 1, 0, "XdgSurface");
+    qmlRegisterType<QuickXdgSurfaceItem>(uri, 1, 0, "XdgSurfaceItem");
 
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
