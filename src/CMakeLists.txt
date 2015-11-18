@@ -34,4 +34,4 @@ install(FILES ${CMAKE_BINARY_DIR}/headers/greenisland_version.h
 add_subdirectory(platform)
 add_subdirectory(hardwareintegration)
 add_subdirectory(waylandcompositor)
-#add_subdirectory(server)
+add_subdirectory(server)
