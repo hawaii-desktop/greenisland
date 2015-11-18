@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,24 +24,48 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef XDGSURFACEGRABBER_H
-#define XDGSURFACEGRABBER_H
+#ifndef GREENISLAND_QUICKXDGPOPUPITEM_P_H
+#define GREENISLAND_QUICKXDGPOPUPITEM_P_H
 
-#include <waylandcompositor/wayland_wrapper/qwlpointer_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandquickitem_p.h>
 
-#include "xdgsurface.h"
+#include <GreenIsland/Server/XdgShell>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
-class XdgSurfaceGrabber : public QtWayland::PointerGrabber
+namespace Server {
+
+class GREENISLANDSERVER_EXPORT QuickXdgPopupItemPrivate : public QWaylandQuickItemPrivate
 {
 public:
-    explicit XdgSurfaceGrabber(XdgSurface *shellSurface);
+    enum GrabberState {
+        DefaultState,
+        ResizeState,
+        MoveState
+    };
 
-protected:
-    XdgSurface *m_shellSurface;
+    QuickXdgPopupItemPrivate()
+        : QWaylandQuickItemPrivate()
+        , shellSurface(Q_NULLPTR)
+    {
+    }
+
+    XdgPopup *shellSurface;
 };
 
-}
+} // namespace Server
 
-#endif // XDGSURFACEGRABBER_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_QUICKXDGPOPUPITEM_P_H

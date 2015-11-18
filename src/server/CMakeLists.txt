@@ -40,6 +40,9 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    extensions/xdgshell.cpp
+    extensions/quickxdgpopupitem.cpp
+    extensions/quickxdgsurfaceitem.cpp
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
@@ -131,27 +134,31 @@ set_target_properties(GreenIslandServer PROPERTIES
     EXPORT_NAME Server
 )
 
-#ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
-#    HEADER_NAMES
-#        AbstractPlugin
-#        ApplicationManager
-#        Compositor
-#        CompositorSettings
-#        ClientWindow
-#        HomeApplication
-#        KeyBinding
-#        KeyBindings
-#        Output
-#        OutputWindow
-#        WindowView
-#        ShellWindow
-#    PREFIX
-#        Server
-#    OUTPUT_DIR
-#        ${CMAKE_BINARY_DIR}/headers/GreenIsland
-#    REQUIRED_HEADERS
-#        GreenIslandServer_HEADERS
-#)
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
+        XdgShell,XdgSurface,XdgPopup
+        QuickXdgPopupItem
+        QuickXdgSurfaceItem
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        extensions
+)
+
+private_headers(GreenIslandServer_PRIVATE_HEADERS
+    HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland/server
+)
 
 install(TARGETS GreenIslandServer
         EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
@@ -160,25 +167,15 @@ install(FILES ${GreenIslandServer_CamelCase_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/Server
         COMPONENT Devel)
 
-#install(
-#    FILES
-#        ${CMAKE_BINARY_DIR}/headers/GreenIsland/server/greenislandserver_export.h
-#        ${GreenIslandServer_HEADERS}
-#        abstractplugin.h
-#        applicationmanager.h
-#        compositor.h
-#        clientwindow.h
-#        homeapplication.h
-#        keybinding.h
-#        output.h
-#        outputwindow.h
-#        windowview.h
-#        shellwindow.h
-#    DESTINATION
-#        ${GREENISLAND_INCLUDEDIR}/server
-#    COMPONENT
-#        Devel
-#)
+install(
+    FILES
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland/server/greenislandserver_export.h
+        ${GreenIslandServer_HEADERS}
+    DESTINATION
+        ${GREENISLAND_INCLUDEDIR}/server
+    COMPONENT
+        Devel
+)
 
 include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME GreenIslandServer
