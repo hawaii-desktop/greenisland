@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,39 +24,39 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef SCREENMANAGER_H
-#define SCREENMANAGER_H
+#ifndef GREENISLAND_SCREENMANAGER_H
+#define GREENISLAND_SCREENMANAGER_H
 
-#include <QtCore/QObject>
+#include <GreenIsland/Server/Screen>
 
 namespace GreenIsland {
 
-class Compositor;
-class Output;
-class ScreenBackend;
+namespace Server {
 
-class ScreenManager : public QObject
+class ScreenManagerPrivate;
+
+class GREENISLANDSERVER_EXPORT ScreenManager : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(ScreenManager)
+    Q_PROPERTY(Screen *primaryScreen READ primaryScreen NOTIFY primaryScreenChanged)
 public:
-    ScreenManager(Compositor *compositor);
+    ScreenManager(QObject *parent = Q_NULLPTR);
 
-public Q_SLOTS:
-    void acquireConfiguration(const QString &fileName = QString());
+    Screen *primaryScreen() const;
+
+    Q_INVOKABLE int indexOf(Screen *screen) const;
+
+    virtual void create();
 
 Q_SIGNALS:
-    void configurationAcquired();
-
-private:
-    Compositor *m_compositor;
-    ScreenBackend *m_backend;
-
-private Q_SLOTS:
-    void outputAdded(Output *output);
-    void outputRemoved(Output *output);
-    void primaryOutputChanged(Output *output);
+    void screenAdded(Screen *screen);
+    void screenRemoved(Screen *screen);
+    void primaryScreenChanged(Screen *screen);
 };
 
-}
+} // namespace Server
 
-#endif // SCREENMANAGER_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_SCREENMANAGER_H

@@ -24,37 +24,38 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef NATIVESCREENBACKEND_H
-#define NATIVESCREENBACKEND_H
+#ifndef GREENISLAND_NATIVESCREENBACKEND_H
+#define GREENISLAND_NATIVESCREENBACKEND_H
 
-#include "screenbackend.h"
+#include <GreenIsland/Server/ScreenBackend>
 
 Q_DECLARE_LOGGING_CATEGORY(NATIVE_BACKEND)
 
+class QScreen;
+
 namespace GreenIsland {
 
-class NativeScreenBackend : public ScreenBackend
+namespace Server {
+
+class GREENISLANDSERVER_EXPORT NativeScreenBackend : public ScreenBackend
 {
     Q_OBJECT
 public:
-    NativeScreenBackend(Compositor *compositor, QObject *parent = 0);
+    NativeScreenBackend(QObject *parent = Q_NULLPTR);
 
-public Q_SLOTS:
-    void acquireConfiguration();
+    void acquireConfiguration() Q_DECL_OVERRIDE;
 
 private:
-    QMap<QScreen *, Output *> m_screenMap;
+    bool m_initialized;
 
 private Q_SLOTS:
-    void screenAdded(QScreen *screen);
-    void screenRemoved(QScreen *screen);
-
-    void changeGeometry(QScreen *screen);
-    void changePhysicalSize(QScreen *screen);
-    void changeOrientation(QScreen *screen);
-    void changeSubpixelAntialiasing(QScreen *screen);
+    void handleScreenAdded(QScreen *qscreen);
+    void handleScreenRemoved(QScreen *qscreen);
+    void handleScreenChanged(QScreen *qscreen, Screen *screen);
 };
 
-}
+} // namespace Server
 
-#endif // NATIVESCREENBACKEND_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_NATIVESCREENBACKEND_H

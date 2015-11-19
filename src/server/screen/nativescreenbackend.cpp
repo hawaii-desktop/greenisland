@@ -30,202 +30,146 @@
 #include <QtGui/qpa/qplatformscreen.h>
 
 #include "nativescreenbackend.h"
+#include "screenbackend_p.h"
 
 Q_LOGGING_CATEGORY(NATIVE_BACKEND, "greenisland.screenbackend.native")
 
 namespace GreenIsland {
 
-NativeScreenBackend::NativeScreenBackend(Compositor *compositor, QObject *parent)
-    : ScreenBackend(compositor, parent)
+namespace Server {
+
+NativeScreenBackend::NativeScreenBackend(QObject *parent)
+    : ScreenBackend(parent)
+    , m_initialized(false)
 {
 }
 
 void NativeScreenBackend::acquireConfiguration()
 {
-    disconnect(qGuiApp, &QGuiApplication::screenAdded,
-               this, &NativeScreenBackend::screenAdded);
-    disconnect(qGuiApp, &QGuiApplication::screenRemoved,
-               this, &NativeScreenBackend::screenRemoved);
+    Q_FOREACH (QScreen *qscreen, qGuiApp->screens())
+        handleScreenAdded(qscreen);
 
-    Q_FOREACH (QScreen *screen, qGuiApp->screens())
-        screenAdded(screen);
-
-    Q_EMIT configurationAcquired();
+    m_initialized = true;
 
     connect(qGuiApp, &QGuiApplication::screenAdded,
-            this, &NativeScreenBackend::screenAdded);
+            this, &NativeScreenBackend::handleScreenAdded);
     connect(qGuiApp, &QGuiApplication::screenRemoved,
-            this, &NativeScreenBackend::screenRemoved);
-}
-
-void NativeScreenBackend::screenAdded(QScreen *screen)
-{
-    qCDebug(NATIVE_BACKEND) << "Screen added" << screen->name() << screen->availableGeometry();
-
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
-    QWaylandOutputMode *mode =
-            new QWaylandOutputMode(QStringLiteral("defaultMode"),
-                                   screen->availableGeometry().size(),
-                                   screen->refreshRate() * 1000);
-
-    Output *output = new Output(compositor(),
-                                screen->name(),
-                                QStringLiteral("Green Island"),
-                                screen->name(),
-                                QWaylandOutputModeList() << mode);
-#else
-    Output *output = new Output(compositor(),
-                                screen->name(),
-                                QStringLiteral("Green Island"),
-                                screen->name());
+            this, &NativeScreenBackend::handleScreenRemoved);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    connect(qGuiApp, &QGuiApplication::primaryScreenChanged, this,
+            [this](QScreen *qscreen) {
+        Q_FOREACH (Screen *screen, screens()) {
+            if (screen->screen() == qscreen) {
+                Q_EMIT primaryScreenChanged(screen);
+                break;
+            }
+        }
+    });
 #endif
-    output->window()->setScreen(screen);
-    output->window()->setFlags(Qt::FramelessWindowHint);
-    output->setPrimary(qGuiApp->primaryScreen() == screen);
-    m_screenMap.insert(screen, output);
-    changeGeometry(screen);
-    changePhysicalSize(screen);
-    changeOrientation(screen);
-    changeSubpixelAntialiasing(screen);
-    Q_EMIT outputAdded(output);
-
-    connect(screen, &QScreen::availableGeometryChanged, this,
-            [this, screen](const QRect &) {
-        changeGeometry(screen);
-    }, Qt::DirectConnection);
-    connect(screen, &QScreen::physicalSizeChanged, this,
-            [this, screen](const QSizeF &) {
-        changePhysicalSize(screen);
-    }, Qt::DirectConnection);
-    connect(screen, &QScreen::primaryOrientationChanged, this,
-            [this, screen](Qt::ScreenOrientation) {
-        changeOrientation(screen);
-    }, Qt::DirectConnection);
 }
 
-void NativeScreenBackend::screenRemoved(QScreen *screen)
+void NativeScreenBackend::handleScreenAdded(QScreen *qscreen)
 {
-    qCDebug(NATIVE_BACKEND) << "Screen removed" << screen->name() << screen->availableGeometry();
+    qCDebug(NATIVE_BACKEND) << "Screen added" << qscreen->name() << qscreen->availableGeometry();
 
-    if (!m_screenMap.contains(screen))
-        return;
+    Screen *screen = new Screen(this);
+    ScreenPrivate *screenPrivate = Screen::get(screen);
+    screenPrivate->m_screen = qscreen;
+    screenPrivate->m_manufacturer = QStringLiteral("Green Island");
+    screenPrivate->m_model = qscreen->name();
+    handleScreenChanged(qscreen, screen);
 
-    Output *output = m_screenMap.take(screen);
-    m_outputs.removeOne(output);
+    ScreenBackend::get(this)->screens.append(screen);
+    Q_EMIT screenAdded(screen);
 
-    // Determine the new primary output
-    QScreen *primaryScreen = qGuiApp->primaryScreen();
-    if (output->isPrimary() && m_screenMap.contains(primaryScreen)) {
-        Output *primaryOutput = Q_NULLPTR;
-
-        if (primaryScreen == screen) {
-            // Removed screen is still primary let's assign the primary
-            // status to the first output then
-            primaryOutput = m_outputs.at(0);
-        } else {
-            // Primary found let's use that
-            primaryOutput = m_screenMap[primaryScreen];
-        }
-
-        // Unset previous primary
-        Q_FOREACH (Output *o, m_outputs) {
-            if (o == primaryOutput)
-                continue;
-            o->setPrimary(false);
-        }
-
-        // Set new primary
-        primaryOutput->setPrimary(true);
-        Q_EMIT primaryOutputChanged(primaryOutput);
+    if (!m_initialized) {
+        if (qGuiApp->primaryScreen() == qscreen)
+            Q_EMIT primaryScreenChanged(screen);
     }
 
-    Q_EMIT outputRemoved(output);
-    output->deleteLater();
+    connect(qscreen, &QScreen::availableGeometryChanged, this,
+            [this, screen, qscreen](const QRect &) {
+        handleScreenChanged(qscreen, screen);
+    });
+    connect(qscreen, &QScreen::physicalSizeChanged, this,
+            [this, screen, qscreen](const QSizeF &) {
+        handleScreenChanged(qscreen, screen);
+    });
+    connect(qscreen, &QScreen::primaryOrientationChanged, this,
+            [this, screen, qscreen](Qt::ScreenOrientation) {
+        handleScreenChanged(qscreen, screen);
+    });
 }
 
-void NativeScreenBackend::changeGeometry(QScreen *screen)
+void NativeScreenBackend::handleScreenRemoved(QScreen *qscreen)
 {
-    if (!m_screenMap.contains(screen))
-        return;
+    qCDebug(NATIVE_BACKEND) << "Screen removed" << qscreen->name() << qscreen->availableGeometry();
 
-    Output *output = m_screenMap[screen];
-    output->setPosition(screen->availableGeometry().topLeft());
-    output->window()->setPosition(output->position());
-
-//#if QTCOMPOSITOR_VERSION < QT_VERSION_CHECK(5, 6, 0)
-#if 1
-    int refreshRate = screen->refreshRate() * 1000;
-    output->setMode({ screen->availableGeometry().size(),
-                      refreshRate });
-#endif
+    QList<Screen *> list = ScreenBackend::get(this)->screens;
+    auto it = list.begin();
+    while (it != list.end()) {
+        Screen *screen = (*it);
+        if (screen->screen() == qscreen) {
+            it = list.erase(it);
+            Q_EMIT screenRemoved(screen);
+            screen->deleteLater();
+        }
+    }
 }
 
-void NativeScreenBackend::changePhysicalSize(QScreen *screen)
+void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
 {
-    if (!m_screenMap.contains(screen))
-        return;
+    qCDebug(NATIVE_BACKEND) << "Screen" << qscreen->name() << "have been changed";
 
-    Output *output = m_screenMap[screen];
-    output->setPhysicalSize(screen->physicalSize().toSize());
-}
+    ScreenPrivate *screenPrivate = Screen::get(screen);
 
-void NativeScreenBackend::changeOrientation(QScreen *screen)
-{
-    if (!m_screenMap.contains(screen))
-        return;
+    screenPrivate->setPosition(qscreen->availableGeometry().topLeft());
+    screenPrivate->setSize(qscreen->availableGeometry().size());
+    screenPrivate->setRefreshRate(qscreen->refreshRate() * 1000);
+    screenPrivate->setPhysicalSize(qscreen->physicalSize());
+    // TODO: How do we get the scale factor from QScreen?
+    screenPrivate->setScaleFactor(1);
 
-    Output *output = m_screenMap[screen];
-    switch (screen->primaryOrientation()) {
+    switch (qscreen->orientation()) {
     case Qt::PortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform90);
+        screenPrivate->setTransform(Screen::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        output->setTransform(QWaylandOutput::Transform180);
+        screenPrivate->setTransform(Screen::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform270);
+        screenPrivate->setTransform(Screen::Transform270);
         break;
     default:
         break;
     }
-}
 
-void NativeScreenBackend::changeSubpixelAntialiasing(QScreen *screen)
-{
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-    if (!screen->handle())
-        return;
-    if (!m_screenMap.contains(screen))
-        return;
-
-    QWaylandOutput::Subpixel wlType = QWaylandOutput::SubpixelUnknown;
-    QPlatformScreen::SubpixelAntialiasingType type = screen->handle()->subpixelAntialiasingTypeHint();
-    switch (type) {
+    QPlatformScreen::SubpixelAntialiasingType subpixel = qscreen->handle()->subpixelAntialiasingTypeHint();
+    switch (subpixel) {
     case QPlatformScreen::Subpixel_None:
-        wlType = QWaylandOutput::SubpixelNone;
+        screenPrivate->setSubpixel(Screen::SubpixelNone);
         break;
     case QPlatformScreen::Subpixel_RGB:
-        wlType = QWaylandOutput::SubpixelHorizontalRgb;
+        screenPrivate->setSubpixel(Screen::SubpixelHorizontalRgb);
         break;
     case QPlatformScreen::Subpixel_BGR:
-        wlType = QWaylandOutput::SubpixelHorizontalBgr;
+        screenPrivate->setSubpixel(Screen::SubpixelHorizontalBgr);
         break;
     case QPlatformScreen::Subpixel_VRGB:
-        wlType = QWaylandOutput::SubpixelVerticalRgb;
+        screenPrivate->setSubpixel(Screen::SubpixelVerticalRgb);
         break;
     case QPlatformScreen::Subpixel_VBGR:
-        wlType = QWaylandOutput::SubpixelVerticalBgr;
+        screenPrivate->setSubpixel(Screen::SubpixelVerticalBgr);
+        break;
+    default:
         break;
     }
-
-    Output *output = m_screenMap[screen];
-    output->setSubpixel(wlType);
-#else
-    Q_UNUSED(screen)
 #endif
 }
 
-}
+} // namespace Server
+
+} // namespace GreenIsland
 
 #include "moc_nativescreenbackend.cpp"

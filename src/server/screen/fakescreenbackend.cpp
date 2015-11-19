@@ -24,115 +24,117 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QFile>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
+
 #include "fakescreenbackend.h"
-#include "screenconfiguration.h"
+#include "screenbackend_p.h"
 
 Q_LOGGING_CATEGORY(FAKE_BACKEND, "greenisland.screenbackend.fake")
 
 namespace GreenIsland {
 
-FakeScreenBackend::FakeScreenBackend(Compositor *compositor, QObject *parent)
-    : ScreenBackend(compositor, parent)
-    , m_config(Q_NULLPTR)
+namespace Server {
+
+FakeScreenBackend::FakeScreenBackend(QObject *parent)
+    : ScreenBackend(parent)
 {
 }
 
-FakeScreenBackend::~FakeScreenBackend()
+void FakeScreenBackend::setConfiguration(const QString &fileName)
 {
-    if (m_config)
-        m_config->deleteLater();
-}
-
-void FakeScreenBackend::loadConfiguration(const QString &fileName)
-{
-    qCDebug(FAKE_BACKEND) << "Load configuration from" << fileName;
-
-    QFile file(fileName);
-    if (!file.open(QFile::ReadOnly)) {
-        qCWarning(FAKE_BACKEND) << "Could not open configuration file"
-                              << fileName << "for reading";
-        return;
-    }
-
-    m_config = ScreenConfiguration::parseJson(file.readAll());
-
-    file.close();
+    m_fileName = fileName;
 }
 
 void FakeScreenBackend::acquireConfiguration()
 {
-    Q_FOREACH (ScreenOutput *output, m_config->outputs())
-        screenAdded(output);
+    qCDebug(FAKE_BACKEND) << "Load configuration from" << m_fileName;
 
-    Q_EMIT configurationAcquired();
-}
-
-void FakeScreenBackend::screenAdded(ScreenOutput *so)
-{
-    qCDebug(FAKE_BACKEND) << "Output added" << so->name() << so->geometry();
-
-    if (m_outputMap.contains(so)) {
-        qCWarning(FAKE_BACKEND) << "Output was already added!";
+    QFile file(m_fileName);
+    if (!file.open(QFile::ReadOnly)) {
+        qCWarning(FAKE_BACKEND) << "Could not open configuration file"
+                                << m_fileName << "for reading";
         return;
     }
 
-//#if QTCOMPOSITOR_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-#if 0
-    QWaylandOutputMode *mode =
-            new QWaylandOutputMode(QStringLiteral("defaultMode"),
-                                   so->mode().size,
-                                   so->mode().refreshRate);
+    QByteArray data = file.readAll();
 
-    Output *output = new Output(compositor(),
-                                so->name(),
-                                QStringLiteral("Green Island"),
-                                so->name(),
-                                QWaylandOutputModeList() << mode);
-#else
-    Output *output = new Output(compositor(),
-                                so->name(),
-                                QStringLiteral("Green Island"),
-                                so->name());
-    output->setMode({ so->mode().size, so->mode().refreshRate });
-#endif
-    output->setPrimary(so->isPrimary());
-    output->setPosition(so->position());
+    file.close();
 
-    switch (so->orientation()) {
-    case Qt::PortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform90);
-        break;
-    case Qt::InvertedLandscapeOrientation:
-        output->setTransform(QWaylandOutput::Transform180);
-        break;
-    case Qt::InvertedPortraitOrientation:
-        output->setTransform(QWaylandOutput::Transform270);
-        break;
-    default:
-        break;
-    }
-
-    m_outputMap[so] = output;
-
-    Q_EMIT outputAdded(output);
-}
-
-void FakeScreenBackend::screenRemoved(ScreenOutput *so)
-{
-    qCDebug(FAKE_BACKEND) << "Output removed" << so->name() << so->geometry();
-
-    if (!m_outputMap.contains(so)) {
-        qCWarning(FAKE_BACKEND) << "Output not mapped!";
+    const QJsonDocument doc = QJsonDocument::fromJson(data);
+    if (!doc.isObject()) {
+        qCWarning(FAKE_BACKEND) << "Invalid configuration file, no top-level JSON object";
         return;
     }
 
-    Output *output = m_outputMap[so];
-    m_outputMap.remove(so);
+    const QJsonObject object = doc.object();
 
-    Q_EMIT outputRemoved(output);
-    output->deleteLater();
+    const QJsonArray outputs = object.value(QStringLiteral("outputs")).toArray();
+    for (int i = 0; i < outputs.size(); i++) {
+        const QVariantMap outputSettings = outputs.at(i).toObject().toVariantMap();
+        qCDebug(FAKE_BACKEND) << "Output settings:" << outputSettings;
+
+        QString name = outputSettings.value(QStringLiteral("name")).toString();
+        qCDebug(FAKE_BACKEND) << "Output name:" << name;
+
+        bool primary = outputSettings.value(QStringLiteral("primary")).toBool();
+        qCDebug(FAKE_BACKEND) << "Output primary:" << primary;
+
+        const QVariantMap posValue = outputSettings.value(QStringLiteral("position")).toMap();
+        int x = posValue.value(QStringLiteral("x")).toInt();
+        int y = posValue.value(QStringLiteral("y")).toInt();
+        QPoint pos(x, y);
+        qCDebug(FAKE_BACKEND) << "Output position:" << pos;
+
+        const QVariantMap modeValue = outputSettings.value(QStringLiteral("mode")).toMap();
+        const QVariantMap sizeValue = modeValue.value(QStringLiteral("size")).toMap();
+        int w = sizeValue.value(QStringLiteral("width")).toInt();
+        int h = sizeValue.value(QStringLiteral("height")).toInt();
+        QSize size = QSize(w, h);
+        int refreshRate = modeValue.value(QStringLiteral("refreshRate")).toInt();
+        qCDebug(FAKE_BACKEND) << "Output size:" << size;
+        qCDebug(FAKE_BACKEND) << "Output refresh rate:" << refreshRate;
+
+        Qt::ScreenOrientation orientation =
+                static_cast<Qt::ScreenOrientation>(outputSettings.value(QStringLiteral("orientation")).toInt());
+        qCDebug(FAKE_BACKEND) << "Output orientation:" << orientation;
+
+        Screen *screen = new Screen(this);
+        ScreenPrivate *screenPrivate = Screen::get(screen);
+        screenPrivate->m_manufacturer = QStringLiteral("Green Island");
+        screenPrivate->m_model = name;
+        screenPrivate->setPosition(pos);
+        screenPrivate->setSize(size);
+        screenPrivate->setRefreshRate(refreshRate);
+        // TODO: How do we get the scale factor from QScreen?
+        screenPrivate->setScaleFactor(1);
+
+        switch (orientation) {
+        case Qt::PortraitOrientation:
+            screenPrivate->setTransform(Screen::Transform90);
+            break;
+        case Qt::InvertedLandscapeOrientation:
+            screenPrivate->setTransform(Screen::Transform180);
+            break;
+        case Qt::InvertedPortraitOrientation:
+            screenPrivate->setTransform(Screen::Transform270);
+            break;
+        default:
+            break;
+        }
+
+        ScreenBackend::get(this)->screens.append(screen);
+        Q_EMIT screenAdded(screen);
+
+        if (primary)
+            Q_EMIT primaryScreenChanged(screen);
+    }
 }
 
-}
+} // namespace Server
+
+} // namespace GreenIsland
 
 #include "moc_fakescreenbackend.cpp"

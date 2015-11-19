@@ -40,6 +40,11 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    screen/fakescreenbackend.cpp
+    screen/nativescreenbackend.cpp
+    screen/quickscreenmanager.cpp
+    screen/screenbackend.cpp
+    screen/screenmanager.cpp
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
     extensions/quickxdgsurfaceitem.cpp
@@ -149,11 +154,28 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
         extensions
 )
 
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
+        QuickScreenManager
+        ScreenBackend,Screen
+        ScreenManager
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        screen
+)
+
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
     OUTPUT_DIR

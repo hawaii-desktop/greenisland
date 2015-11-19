@@ -24,33 +24,33 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_FAKESCREENBACKEND_H
-#define GREENISLAND_FAKESCREENBACKEND_H
+#ifndef GREENISLAND_QUICKSCREENMANAGER_H
+#define GREENISLAND_QUICKSCREENMANAGER_H
 
-#include <GreenIsland/Server/ScreenBackend>
+#include <QtQml/QQmlParserStatus>
 
-Q_DECLARE_LOGGING_CATEGORY(FAKE_BACKEND)
+#include <GreenIsland/Server/ScreenManager>
 
 namespace GreenIsland {
 
 namespace Server {
 
-class GREENISLANDSERVER_EXPORT FakeScreenBackend : public ScreenBackend
+class GREENISLANDSERVER_EXPORT QuickScreenManager : public ScreenManager, public QQmlParserStatus
 {
+    Q_INTERFACES(QQmlParserStatus)
     Q_OBJECT
 public:
-    FakeScreenBackend(QObject *parent = Q_NULLPTR);
+    QuickScreenManager(QObject *parent = Q_NULLPTR);
 
-    void setConfiguration(const QString &fileName);
+    void create() Q_DECL_OVERRIDE;
 
-    void acquireConfiguration() Q_DECL_OVERRIDE;
-
-private:
-    QString m_fileName;
+protected:
+    void classBegin() Q_DECL_OVERRIDE;
+    void componentComplete() Q_DECL_OVERRIDE;
 };
 
 } // namespace Server
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_FAKESCREENBACKEND_H
+#endif // GREENISLAND_QUICKSCREENMANAGER_H

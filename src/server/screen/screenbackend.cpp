@@ -26,14 +26,170 @@
 
 #include "logging.h"
 #include "screenbackend.h"
+#include "screenbackend_p.h"
 
 Q_LOGGING_CATEGORY(SCREEN_BACKEND, "greenisland.screenbackend")
 
 namespace GreenIsland {
 
-ScreenBackend::ScreenBackend(Compositor *compositor, QObject *parent)
-    : QObject(parent)
-    , m_compositor(compositor)
+namespace Server {
+
+/*
+ * ScreenPrivate
+ */
+
+void ScreenPrivate::setPosition(const QPoint &pos)
+{
+    Q_Q(Screen);
+
+    if (m_position == pos)
+        return;
+
+    m_position = pos;
+    Q_EMIT q->positionChanged();
+}
+
+void ScreenPrivate::setSize(const QSize &size)
+{
+    Q_Q(Screen);
+
+    if (m_size == size)
+        return;
+
+    m_size = size;
+    Q_EMIT q->sizeChanged();
+}
+
+void ScreenPrivate::setRefreshRate(int refreshRate)
+{
+    Q_Q(Screen);
+
+    if (m_refreshRate == refreshRate)
+        return;
+
+    m_refreshRate = refreshRate;
+    Q_EMIT q->refreshRateChanged();
+}
+
+void ScreenPrivate::setPhysicalSize(const QSizeF &size)
+{
+    Q_Q(Screen);
+
+    if (m_physicalSize == size)
+        return;
+
+    m_physicalSize = size;
+    Q_EMIT q->physicalSizeChanged();
+}
+
+void ScreenPrivate::setSubpixel(Screen::Subpixel subpixel)
+{
+    Q_Q(Screen);
+
+    if (m_subpixel == subpixel)
+        return;
+
+    m_subpixel = subpixel;
+    Q_EMIT q->subpixelChanged();
+}
+
+void ScreenPrivate::setTransform(Screen::Transform transform)
+{
+    Q_Q(Screen);
+
+    if (m_transform == transform)
+        return;
+
+    m_transform = transform;
+    Q_EMIT q->transformChanged();
+}
+
+void ScreenPrivate::setScaleFactor(int scale)
+{
+    Q_Q(Screen);
+
+    if (m_scaleFactor == scale)
+        return;
+
+    m_scaleFactor = scale;
+    Q_EMIT q->scaleFactorChanged();
+}
+
+/*
+ * Screen
+ */
+
+Screen::Screen(QObject *parent)
+    : QObject(*new ScreenPrivate(), parent)
+{
+}
+
+QScreen *Screen::screen() const
+{
+    Q_D(const Screen);
+    return d->m_screen;
+}
+
+QString Screen::manufacturer() const
+{
+    Q_D(const Screen);
+    return d->m_manufacturer;
+}
+
+QString Screen::model() const
+{
+    Q_D(const Screen);
+    return d->m_model;
+}
+
+QPoint Screen::position() const
+{
+    Q_D(const Screen);
+    return d->m_position;
+}
+
+QSize Screen::size() const
+{
+    Q_D(const Screen);
+    return d->m_size;
+}
+
+int Screen::refreshRate() const
+{
+    Q_D(const Screen);
+    return d->m_refreshRate;
+}
+
+QSizeF Screen::physicalSize() const
+{
+    Q_D(const Screen);
+    return d->m_physicalSize;
+}
+
+Screen::Subpixel Screen::subpixel() const
+{
+    Q_D(const Screen);
+    return d->m_subpixel;
+}
+
+Screen::Transform Screen::transform() const
+{
+    Q_D(const Screen);
+    return d->m_transform;
+}
+
+int Screen::scaleFactor() const
+{
+    Q_D(const Screen);
+    return d->m_scaleFactor;
+}
+
+/*
+ * ScreenBackend
+ */
+
+ScreenBackend::ScreenBackend(QObject *parent)
+    : QObject(*new ScreenBackendPrivate(), parent)
 {
 }
 
@@ -41,24 +197,29 @@ ScreenBackend::~ScreenBackend()
 {
     qCDebug(SCREEN_BACKEND) << "Removing all outputs...";
 
-    Q_FOREACH (Output *output, m_outputs) {
-        if (m_outputs.removeOne(output)) {
-            output->window()->close();
-            delete output;
-        }
+    Q_D(ScreenBackend);
+
+    auto it = d->screens.begin();
+    while (it != d->screens.end()) {
+        Screen *screen = (*it);
+        it = d->screens.erase(it);
+        delete screen;
     }
 }
 
-Compositor *ScreenBackend::compositor() const
+QList<Screen *> ScreenBackend::screens() const
 {
-    return m_compositor;
+    Q_D(const ScreenBackend);
+    return d->screens;
 }
 
-QList<Output *> ScreenBackend::outputs() const
+void ScreenBackend::acquireConfiguration()
 {
-    return m_outputs;
+    qCDebug(SCREEN_BACKEND) << "ScreenBackend::acquireConfiguration() must be reimplemented";
 }
 
-}
+} // namespace Server
+
+} // namespace GreenIsland
 
 #include "moc_screenbackend.cpp"

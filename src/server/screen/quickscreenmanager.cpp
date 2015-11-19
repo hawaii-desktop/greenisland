@@ -24,33 +24,33 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_FAKESCREENBACKEND_H
-#define GREENISLAND_FAKESCREENBACKEND_H
-
-#include <GreenIsland/Server/ScreenBackend>
-
-Q_DECLARE_LOGGING_CATEGORY(FAKE_BACKEND)
+#include "quickscreenmanager.h"
 
 namespace GreenIsland {
 
 namespace Server {
 
-class GREENISLANDSERVER_EXPORT FakeScreenBackend : public ScreenBackend
+QuickScreenManager::QuickScreenManager(QObject *parent)
+    : ScreenManager(parent)
 {
-    Q_OBJECT
-public:
-    FakeScreenBackend(QObject *parent = Q_NULLPTR);
+}
 
-    void setConfiguration(const QString &fileName);
+void QuickScreenManager::create()
+{
+    ScreenManager::create();
+}
 
-    void acquireConfiguration() Q_DECL_OVERRIDE;
+void QuickScreenManager::classBegin()
+{
+}
 
-private:
-    QString m_fileName;
-};
+void QuickScreenManager::componentComplete()
+{
+    create();
+}
 
 } // namespace Server
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_FAKESCREENBACKEND_H
+#include "moc_quickscreenmanager.cpp"
