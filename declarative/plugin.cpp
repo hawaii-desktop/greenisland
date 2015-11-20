@@ -40,6 +40,8 @@
 #include <GreenIsland/Server/QuickXdgPopupItem>
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
 #include <GreenIsland/Server/XdgShell>
+#include <GreenIsland/Server/Screen>
+#include <GreenIsland/Server/QuickScreenManager>
 
 #include "fpscounter.h"
 #include "globalpointertracker.h"
@@ -114,6 +116,10 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<XdgSurfaceQuickData>(uri, 1, 0, "XdgSurface");
     qmlRegisterType<QuickXdgSurfaceItem>(uri, 1, 0, "XdgSurfaceItem");
 
+    // Screen
+    qmlRegisterType<QuickScreenManager>(uri, 1, 0, "ScreenManager");
+    qmlRegisterUncreatableType<Screen>(uri, 1, 0, "Screen",
+                                       QObject::tr("Cannot create instance of Screen"));
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
 }
