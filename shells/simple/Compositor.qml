@@ -29,6 +29,7 @@ import GreenIsland 1.0
 
 WaylandCompositor {
     property var primarySurfacesArea: null
+    property variant screens: []
     property variant windows: []
 
     id: compositor
@@ -40,7 +41,7 @@ WaylandCompositor {
                     "windows": Qt.binding(function() { return compositor.windows }),
                     "surface": surface
                 };
-                var item = chromeComponent.createObject(screen.surfacesArea, props);
+                var item = chromeComponent.createObject(primarySurfacesArea, props);
                 item.shellSurface.initialize(defaultShell, surface, client, id);
                 windows.push(item);
             }
@@ -60,9 +61,37 @@ WaylandCompositor {
         compositor: compositor
     }
 
-    ScreenView {
-        id: screen
-        compositor: compositor
+    ScreenManager {
+        id: screenManager
+        onScreenAdded: {
+            var view = screenComponent.createObject(
+                        compositor, {
+                            "compositor": compositor,
+                            "screen": screen
+                        });
+            screens.push(view);
+        }
+        onScreenRemoved: {
+            var index = screenManager.indexOf(screen);
+            if (index < screens.length) {
+                var view = screens[index];
+                screens.splice(index, 1);
+                view.destroy();
+            }
+        }
+        onPrimaryScreenChanged: {
+            var index = screenManager.indexOf(screen);
+            if (index < screens.length) {
+                primarySurfacesArea = screens[index].surfacesArea;
+                compositor.defaultOutput = screens[index];
+            }
+        }
+    }
+
+    Component {
+        id: screenComponent
+
+        ScreenView {}
     }
 
     Component {
@@ -75,9 +104,5 @@ WaylandCompositor {
         id: chromeComponent
 
         WaylandWindow {}
-    }
-
-    Component.onCompleted: {
-        compositor.primarySurfacesArea = screen.surfacesArea;
     }
 }

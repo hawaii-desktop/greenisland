@@ -29,15 +29,27 @@ import QtQuick.Window 2.2
 import GreenIsland 1.0
 
 WaylandOutput {
+    property QtObject screen
     property alias surfacesArea: backgroundLayer
 
     id: output
+    manufacturer: screen.manufacturer
+    model: screen.model
+    position: screen.position
+    physicalSize: screen.physicalSize
+    subpixel: screen.subpixel
+    transform: screen.transform
+    scaleFactor: screen.scaleFactor
+    sizeFollowsWindow: true
     window: Window {
         property QtObject output
 
         id: window
-        width: 1024
-        height: 768
+        x: screen.position.x
+        y: screen.position.y
+        width: screen.size.width
+        height: screen.size.height
+        flags: Qt.FramelessWindowHint
         visible: true
 
         LocalPointerTracker {
