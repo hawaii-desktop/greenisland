@@ -56,6 +56,7 @@ public:
     void setContextProperty(const QString &name, const QVariant &value);
 
     bool load(const QString &shell);
+    bool loadFile(const QString &fileName);
 
 Q_SIGNALS:
     void screenConfigurationChanged(const QString &fileName);

@@ -223,6 +223,35 @@ bool HomeApplication::load(const QString &shell)
     return false;
 }
 
+bool HomeApplication::loadFile(const QString &fileName)
+{
+    Q_D(HomeApplication);
+
+    // Do not run if already running
+    if (d->running) {
+        qCWarning(GREENISLAND_COMPOSITOR) << "Compositor already running";
+        return false;
+    }
+
+    // Check whether XDG_RUNTIME_DIR is ok or not
+    d->verifyXdgRuntimeDir();
+
+    qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << fileName;
+
+    d->engine->load(fileName);
+    d->running = true;
+
+#if HAVE_SYSTEMD
+    // Notify systemd when the screen configuration is ready
+    if (d->notify) {
+        qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+        sd_notify(0, "READY=1");
+    }
+#endif
+
+    return true;
+}
+
 } // namespace Server
 
 } // namespace GreenIsland
