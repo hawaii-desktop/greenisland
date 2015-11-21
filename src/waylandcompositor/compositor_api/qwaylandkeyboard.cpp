@@ -70,6 +70,8 @@ QWaylandKeyboardPrivate::QWaylandKeyboardPrivate(QWaylandInputDevice *seat)
     , keymap_fd(-1)
     , xkb_state(0)
 #endif
+    , repeatRate(40)
+    , repeatDelay(400)
 {
 #ifndef QT_NO_WAYLAND_XKB
     initXKB();
@@ -146,7 +148,7 @@ void QWaylandKeyboardPrivate::keyboard_bind_resource(wl_keyboard::Resource *reso
 {
     // Send repeat information
     if (resource->version() >= 4)
-        send_repeat_info(resource->handle, 40, 400);
+        send_repeat_info(resource->handle, repeatRate, repeatDelay);
 
 #ifndef QT_NO_WAYLAND_XKB
     if (xkb_context) {
@@ -367,6 +369,14 @@ void QWaylandKeyboardPrivate::createXKBKeymap()
 }
 #endif
 
+void QWaylandKeyboardPrivate::sendRepeatInfo()
+{
+    Q_FOREACH (wl_keyboard::Resource *resource, resourceMap()) {
+        if (resource->version() >= 4)
+            send_repeat_info(resource->handle, repeatRate, repeatDelay);
+    }
+}
+
 /*!
  * \class QWaylandKeyboard
  * \inmodule QtWaylandCompositor
@@ -455,6 +465,56 @@ void QWaylandKeyboard::sendKeyReleaseEvent(uint code)
 {
     Q_D(QWaylandKeyboard);
     d->sendKeyEvent(code, WL_KEYBOARD_KEY_STATE_RELEASED);
+}
+
+/*!
+ * Returns the current repeat rate.
+ */
+quint32 QWaylandKeyboard::repeatRate() const
+{
+    Q_D(const QWaylandKeyboard);
+    return d->repeatRate;
+}
+
+/*!
+ * Sets the repeat rate to \a rate.
+ */
+void QWaylandKeyboard::setRepeatRate(quint32 rate)
+{
+    Q_D(QWaylandKeyboard);
+
+    if (d->repeatRate == rate)
+        return;
+
+    d->repeatRate = rate;
+    Q_EMIT repeatRateChanged(rate);
+
+    d->sendRepeatInfo();
+}
+
+/*!
+ * Returns the current repeat delay.
+ */
+quint32 QWaylandKeyboard::repeatDelay() const
+{
+    Q_D(const QWaylandKeyboard);
+    return d->repeatDelay;
+}
+
+/*!
+ * Sets the repeat delay to \a delay.
+ */
+void QWaylandKeyboard::setRepeatDelay(quint32 delay)
+{
+    Q_D(QWaylandKeyboard);
+
+    if (d->repeatDelay == delay)
+        return;
+
+    d->repeatDelay = delay;
+    Q_EMIT repeatDelayChanged(delay);
+
+    d->sendRepeatInfo();
 }
 
 /*!
