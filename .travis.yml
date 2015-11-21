@@ -23,6 +23,10 @@ install:
   # clang
   #- if [ "$CXX" == "clang++" ]; then sudo apt-get install -qq clang-3.6; fi
   #- if [ "$CXX" == "clang++" ]; then export CXX="clang++-3.6"; fi
+  # gl
+  - sudo apt-get install -qq libgles2-mesa-dev
+  # wayland
+  - sudo apt-get install -qq libwayland-dev
   # qt
   - sudo apt-get update
   - sudo apt-get -y install qt54declarative qt54tools
