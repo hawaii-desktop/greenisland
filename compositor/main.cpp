@@ -96,6 +96,13 @@ int main(int argc, char *argv[])
                                    QStringLiteral("org.hawaiios.greenisland"));
     parser.addOption(shellOption);
 
+    // Shell main file
+    QCommandLineOption qmlOption(QStringLiteral("qml"),
+                                 TR("Load a shell main QML file, takes " \
+                                    "precedence over the --shell argument."),
+                                 TR("filename"));
+    parser.addOption(qmlOption);
+
     // Parse command line
     parser.process(app);
 
@@ -152,8 +159,13 @@ int main(int argc, char *argv[])
     GreenIsland::Server::HomeApplication homeApp;
     homeApp.setNotificationEnabled(notify);
     homeApp.setScreenConfiguration(fakeScreenData);
-    if (!homeApp.load(parser.value(shellOption)))
-        return 1;
+    if (parser.isSet(qmlOption)) {
+        if (!homeApp.loadFile(parser.value(qmlOption)))
+            return 1;
+    } else {
+        if (!homeApp.load(parser.value(shellOption)))
+            return 1;
+    }
 
     return app.exec();
 }
