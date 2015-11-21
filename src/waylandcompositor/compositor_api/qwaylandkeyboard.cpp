@@ -144,6 +144,10 @@ void QWaylandKeyboardPrivate::focused(QWaylandSurface *surface)
 
 void QWaylandKeyboardPrivate::keyboard_bind_resource(wl_keyboard::Resource *resource)
 {
+    // Send repeat information
+    if (resource->version() >= 4)
+        send_repeat_info(resource->handle, 40, 400);
+
 #ifndef QT_NO_WAYLAND_XKB
     if (xkb_context) {
         send_keymap(resource->handle, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
