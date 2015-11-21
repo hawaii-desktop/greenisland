@@ -40,6 +40,9 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    core/diagnostic_p.cpp
+    core/homeapplication.cpp
+    core/logging.cpp
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/quickscreenmanager.cpp
@@ -137,6 +140,19 @@ set_target_properties(GreenIslandServer PROPERTIES
     VERSION   ${PROJECT_VERSION}
     SOVERSION ${PROJECT_SOVERSION}
     EXPORT_NAME Server
+)
+
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
+        HomeApplication
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        core
 )
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS

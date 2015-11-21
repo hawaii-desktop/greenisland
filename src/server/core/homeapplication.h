@@ -24,51 +24,49 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef HOMEAPPLICATION_H
-#define HOMEAPPLICATION_H
+#ifndef GREENISLAND_HOMEAPPLICATION_H
+#define GREENISLAND_HOMEAPPLICATION_H
 
-#include <QtCore/QString>
+#include <QtQml/QQmlApplicationEngine>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
-class Compositor;
+namespace Server {
 
-class GREENISLANDSERVER_EXPORT HomeApplication
+class HomeApplicationPrivate;
+
+class GREENISLANDSERVER_EXPORT HomeApplication : public QObject
 {
+    Q_OBJECT
+    Q_DISABLE_COPY(HomeApplication)
+    Q_DECLARE_PRIVATE(HomeApplication)
+    Q_PROPERTY(QString screenConfiguration READ screenConfiguration WRITE setScreenConfiguration NOTIFY screenConfigurationChanged)
+    Q_PROPERTY(bool notificationEnabled READ isNotificationEnabled WRITE setNotificationEnabled NOTIFY notificationEnabledChanged)
 public:
-    HomeApplication();
-    virtual ~HomeApplication();
+    HomeApplication(QObject *parent = Q_NULLPTR);
 
-    QString fakeScreenData() const;
-    void setFakeScreenData(const QString &fileName);
-
-    int idleInterval() const;
-    void setIdleInterval(int time);
+    QString screenConfiguration() const;
+    void setScreenConfiguration(const QString &fileName);
 
     bool isNotificationEnabled() const;
     void setNotificationEnabled(bool notify);
 
-    bool run(bool nested, const QString &shell);
+    void setContextProperty(const QString &name, const QVariant &value);
 
-protected:
-    QString m_socket;
-    QString m_fakeScreenFileName;
-    int m_idleInterval;
-    bool m_notify;
-    QString m_ttyString;
-    int m_tty;
-    int m_oldKbdMode;
+    bool load(const QString &shell);
 
-    virtual void compositorLaunched();
-
-private:
-    void setupTty();
-    void restoreTty();
+Q_SIGNALS:
+    void screenConfigurationChanged(const QString &fileName);
+    void notificationEnabledChanged(bool enabled);
+    void contextPropertyChanged(const QString &name, const QVariant &value);
+    void objectCreated(QObject *object, const QUrl &url);
 };
+
+} // namespace Server
 
 } // namespace GreenIsland
 
-#endif // HOMEAPPLICATION_H
+#endif // GREENISLAND_HOMEAPPLICATION_H
 

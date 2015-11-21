@@ -24,7 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#include "core/logging.h"
 #include "screenbackend.h"
 #include "screenbackend_p.h"
 
