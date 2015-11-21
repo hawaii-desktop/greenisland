@@ -13,6 +13,7 @@ target_link_libraries(greenisland
         Qt5::Core
         Qt5::Gui
         Qt5::Qml
+        GreenIsland::Server
 )
 
 if(systemd_FOUND)

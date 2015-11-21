@@ -28,7 +28,8 @@
 #include <QtCore/QCommandLineParser>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QGuiApplication>
-#include <QtQml/QQmlApplicationEngine>
+
+#include <GreenIsland/Server/HomeApplication>
 
 #include "config.h"
 
@@ -108,6 +109,10 @@ int main(int argc, char *argv[])
 #endif
     QString fakeScreenData = parser.value(fakeScreenOption);
     int idleInterval = parser.value(idleTimeOption).toInt();
+    if (idleInterval >= 5)
+        idleInterval *= 1000;
+    else
+        idleInterval = -1;
 
     // Nested mode requires running from Wayland and a socket name
     // and fake screen data cannot be used
@@ -143,21 +148,12 @@ int main(int argc, char *argv[])
         }
     }
 
-#if 0
-    // Home application parameters
+    // Run
+    GreenIsland::Server::HomeApplication homeApp;
     homeApp.setNotificationEnabled(notify);
-    homeApp.setFakeScreenData(fakeScreenData);
-
-    // Idle timer
-    if (idleInterval >= 5)
-        homeApp.setIdleInterval(idleInterval * 1000);
-
-    // Create the compositor and run
-    if (!homeApp.run(nested, parser.value(shellOption)))
+    homeApp.setScreenConfiguration(fakeScreenData);
+    if (!homeApp.load(parser.value(shellOption)))
         return 1;
-#else
-    QQmlApplicationEngine engine(QUrl::fromLocalFile(parser.value(shellOption)));
-#endif
 
     return app.exec();
 }
