@@ -44,6 +44,17 @@ before_script:
   - tar -xzf cmake.tar.gz -C $HOME
   - export PATH=$HOME/cmake-3.3.0-Linux-x86_64/bin:$PATH
   - cmake --version
+  # e-c-m
+  - wget --no-check-certificate http://download.kde.org/stable/frameworks/5.12/extra-cmake-modules-5.12.0.tar.xz
+  - tar -xJf extra-cmake-modules-5.12.0.tar.xz
+  - pushd extra-cmake-modules-5.12.0
+  - rm -rf build
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/ecm
+  - make && make install
+  - popd
+  - export PATH=$HOME/ecm/bin:$PATH
   # prepare
   - source /opt/qt54/bin/qt54-env.sh
   - mkdir build
