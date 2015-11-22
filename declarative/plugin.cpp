@@ -37,6 +37,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
+#include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/QuickXdgPopupItem>
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
 #include <GreenIsland/Server/XdgShell>
@@ -55,6 +56,9 @@ using namespace GreenIsland::Server;
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShellSurface)
+
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkShell)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkSurface)
 
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgPopup)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgShell)
@@ -104,6 +108,12 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<QWaylandShellQuickData>(uri, 1, 0, "Shell");
     qmlRegisterType<QWaylandShellSurfaceQuickData>(uri, 1, 0, "ShellSurface");
     qmlRegisterType<QWaylandQuickShellSurfaceItem>(uri, 1, 0, "ShellSurfaceItem");
+
+    // gtk-shell
+    qmlRegisterType<GtkShellQuickData>(uri, 1, 0, "GtkShell");
+    qmlRegisterUncreatableType<GtkSurface>(uri, 1, 0, "GtkSurfaceBase",
+                                           QObject::tr("Cannot create instance of GtkSurfaceBase, use GtkSurface instead"));
+    qmlRegisterType<GtkSurfaceQuickData>(uri, 1, 0, "GtkSurface");
 
     // xdg-shell
     qmlRegisterUncreatableType<XdgPopup>(uri, 1, 0, "XdgPopupBase",
