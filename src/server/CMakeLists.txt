@@ -48,6 +48,7 @@ set(SOURCES
     screen/quickscreenmanager.cpp
     screen/screenbackend.cpp
     screen/screenmanager.cpp
+    extensions/gtkshell.cpp
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
     extensions/quickxdgsurfaceitem.cpp
@@ -157,6 +158,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        GtkShell,GtkSurface
         XdgShell,XdgSurface,XdgPopup
         QuickXdgPopupItem
         QuickXdgSurfaceItem
@@ -192,7 +194,9 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
     OUTPUT_DIR
         ${CMAKE_BINARY_DIR}/headers/GreenIsland/server
