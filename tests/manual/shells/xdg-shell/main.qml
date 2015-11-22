@@ -73,6 +73,20 @@ WaylandCompositor {
             Component.onCompleted: {
                 initialize();
             }
+        },
+        GtkShell {
+            id: gtkShell
+            onCreateSurface: {
+                var gtkSurface = gtkSurfaceComponent.createObject(null, {"surface": surface});
+                gtkSurface.appIdChanged.connect(function(appId) {
+                    console.log("Surface", surface, "associated to", appId);
+                });
+                gtkSurface.initialize(gtkShell, surface, client, id);
+            }
+
+            Component.onCompleted: {
+                initialize();
+            }
         }
     ]
     onCreateSurface: {
@@ -105,5 +119,11 @@ WaylandCompositor {
         id: popupComponent
 
         XdgPopupChrome {}
+    }
+
+    Component {
+        id: gtkSurfaceComponent
+
+        GtkSurface {}
     }
 }
