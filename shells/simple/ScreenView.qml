@@ -57,51 +57,13 @@ WaylandOutput {
             anchors.fill: parent
             globalTracker: globalPointerTracker
 
-            Item {
-                property alias zoomEnabled: zoomArea.enabled
-
+            Image {
+                id: backgroundLayer
                 anchors.fill: parent
-                transform: Scale {
-                    id: screenScaler
-                    origin.x: zoomArea.x2
-                    origin.y: zoomArea.y2
-                    xScale: zoomArea.zoom2
-                    yScale: zoomArea.zoom2
-                }
-
-                ScreenZoom {
-                    id: zoomArea
-                    anchors.fill: parent
-                    scaler: screenScaler
-                    enabled: true
-
-                    Text {
-                        anchors {
-                            top: parent.top
-                            right: parent.right
-                        }
-                        z: 1000
-                        text: fpsCounter.fps
-                        font.pointSize: 36
-                        style: Text.Raised
-                        styleColor: "#222"
-                        color: "white"
-                        visible: false
-
-                        FpsCounter {
-                            id: fpsCounter
-                        }
-                    }
-
-                    Image {
-                        id: backgroundLayer
-                        anchors.fill: parent
-                        source: "images/wallpaper.png"
-                        sourceSize.width: width
-                        sourceSize.height: height
-                        fillMode: Image.Tile
-                    }
-                }
+                source: "images/wallpaper.png"
+                sourceSize.width: width
+                sourceSize.height: height
+                fillMode: Image.Tile
             }
 
             PointerItem {
