@@ -26,7 +26,6 @@
 
 import QtQuick 2.0
 import GreenIsland 1.0
-import "../shared" as Shared
 
 WaylandCompositor {
     property variant windows: []
@@ -94,7 +93,7 @@ WaylandCompositor {
         surface.initialize(compositor, client, id, version);
     }
 
-    Shared.ScreenView {
+    WaylandScreen {
         id: screen
         compositor: compositor
 
