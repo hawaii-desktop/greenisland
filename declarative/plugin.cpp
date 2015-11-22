@@ -50,6 +50,7 @@
 #include "keyeventfilter.h"
 #include "localpointertracker.h"
 #include "pointeritem.h"
+#include "waylandwindowitem.h"
 
 using namespace GreenIsland::Server;
 
@@ -130,6 +131,10 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<QuickScreenManager>(uri, 1, 0, "ScreenManager");
     qmlRegisterUncreatableType<Screen>(uri, 1, 0, "Screen",
                                        QObject::tr("Cannot create instance of Screen"));
+
+    // Window manager
+    qmlRegisterType<WaylandWindowItem>(uri, 1, 0, "WaylandWindowItem");
+
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
 }

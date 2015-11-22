@@ -32,6 +32,7 @@ set(SOURCES
     globalpointertracker.cpp
     localpointertracker.cpp
     pointeritem.cpp
+    waylandwindowitem.cpp
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
@@ -47,8 +48,12 @@ install(TARGETS greenislandplugin LIBRARY
 
 set(MODULE_FILES
     qmldir
+    ShellSurfaceWindow.qml
     WaylandScreen.qml
     WaylandWindow.qml
+    WindowManager.qml
+    XdgPopupWindow.qml
+    XdgSurfaceWindow.qml
 )
 install(FILES ${MODULE_FILES}
     DESTINATION ${QML_INSTALL_DIR}/GreenIsland)

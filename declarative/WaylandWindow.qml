@@ -27,65 +27,28 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 
-ShellSurfaceItem {
-    property variant windows: []
-
+WaylandWindowItem {
     id: window
     transform: [
         Scale {
             id: scaleTransform
             origin.x: window.width / 2
             origin.y: window.height / 2
+        },
+        Scale {
+            id: scaleTransformPos
+            origin.x: window.width / 2
+            origin.y: window.y - window.height
         }
     ]
-    shellSurface: ShellSurface {
-        onSetDefaultToplevel: {
-            window.raise();
-            mapAnimation.start();
-        }
-        onSetTransient: {
-            var parentView = null;
+    opacity: 0.0
 
-            windows.forEach(function(element, index, array) {
-                if (element.surface === parentSurface) {
-                    parentView = element;
-                    return;
-                }
-            });
-
-            if (parentView) {
-                window.x = parentView.x + relativeToParent.x;
-                window.y = parentView.y + relativeToParent.y;
-            }
-        }
-        onSetPopup: {
-            var parentView = null;
-
-            windows.forEach(function(element, index, array) {
-                if (element.surface === parent) {
-                    parentView = element;
-                    return;
-                }
-            });
-
-            if (parentView) {
-                window.parent = parentView;
-                window.x = relativeToParent.x;
-                window.y = relativeToParent.y;
-            }
-        }
-    }
-    onFocusChanged: {
-        if (window.focus)
-            window.raise();
-    }
-    onSurfaceDestroyed: {
-        view.bufferLock = true;
-        destroyAnimation.start();
-    }
+    /*
+     * Top level window animations
+     */
 
     SequentialAnimation {
-        id: mapAnimation
+        id: topLevelMapAnimation
 
         ParallelAnimation {
             NumberAnimation {
@@ -116,7 +79,7 @@ ShellSurfaceItem {
     }
 
     SequentialAnimation {
-        id: destroyAnimation
+        id: topLevelDestroyAnimation
 
         ParallelAnimation {
             NumberAnimation {
@@ -138,11 +101,181 @@ ShellSurfaceItem {
             to: 0
             duration: 150
         }
+        NumberAnimation {
+            target: window
+            property: "opacity"
+            easing.type: Easing.OutQuad
+            to: 0.0
+            duration: 200
+        }
         ScriptAction {
             script: {
+                shellSurfaceItem.destroy();
                 window.destroy();
             }
         }
     }
-}
 
+    function runTopLevelMapAnimation() {
+        topLevelMapAnimation.start();
+    }
+
+    function runTopLevelDestroyAnimation() {
+        topLevelDestroyAnimation.start();
+    }
+
+    /*
+     * Transient window animations
+     */
+
+    ParallelAnimation {
+        id: transientMapAnimation
+
+        NumberAnimation {
+            target: window
+            property: "opacity"
+            easing.type: Easing.OutQuad
+            from: 0.0
+            to: 1.0
+            duration: 250
+        }
+        NumberAnimation {
+            target: scaleTransformPos
+            property: "xScale"
+            easing.type: Easing.OutExpo
+            from: 0.0
+            to: 1.0
+            duration: 250
+        }
+        NumberAnimation {
+            target: scaleTransformPos
+            property: "yScale"
+            easing.type: Easing.OutExpo
+            from: 0.0
+            to: 1.0
+            duration: 250
+        }
+    }
+
+    SequentialAnimation {
+        id: transientDestroyAnimation
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: scaleTransform
+                property: "xScale"
+                easing.type: Easing.OutQuad
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "yScale"
+                easing.type: Easing.OutQuad
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+            NumberAnimation {
+                target: window
+                property: "opacity"
+                easing.type: Easing.OutQuad
+                from: 1.0
+                to: 0.0
+                duration: 200
+            }
+        }
+        ScriptAction {
+            script: {
+                shellSurfaceItem.destroy();
+                window.destroy();
+            }
+        }
+    }
+
+    function runTransientMapAnimation() {
+        transientMapAnimation.start();
+    }
+
+    function runTransientDestroyAnimation() {
+        transientDestroyAnimation.start();
+    }
+
+    /*
+     * Popup window animations
+     */
+
+    SequentialAnimation {
+        id: popupMapAnimation
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: window
+                property: "opacity"
+                easing.type: Easing.OutQuad
+                from: 0.0
+                to: 1.0
+                duration: 150
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "xScale"
+                easing.type: Easing.OutExpo
+                from: 0.9
+                to: 1.0
+                duration: 150
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "yScale"
+                easing.type: Easing.OutExpo
+                from: 0.9
+                to: 1.0
+                duration: 150
+            }
+        }
+    }
+
+    ParallelAnimation {
+        id: popupDestroyAnimation
+
+        NumberAnimation {
+            target: scaleTransform
+            property: "xScale"
+            easing.type: Easing.OutExpo
+            from: 1.0
+            to: 0.8
+            duration: 150
+        }
+        NumberAnimation {
+            target: scaleTransform
+            property: "yScale"
+            easing.type: Easing.OutExpo
+            from: 1.0
+            to: 0.8
+            duration: 150
+        }
+        NumberAnimation {
+            target: window
+            property: "opacity"
+            easing.type: Easing.OutQuad
+            to: 0.0
+            duration: 150
+        }
+        ScriptAction {
+            script: {
+                shellSurfaceItem.destroy();
+                window.destroy();
+            }
+        }
+    }
+
+    function runPopupMapAnimation() {
+        popupMapAnimation.start();
+    }
+
+    function runPopupDestroyAnimation() {
+        popupDestroyAnimation.start();
+    }
+}
