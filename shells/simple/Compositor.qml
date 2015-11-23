@@ -27,30 +27,8 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 
-WaylandCompositor {
-    property var primarySurfacesArea: null
-    property variant screens: []
-    property variant windows: []
-
+WindowManager {
     id: compositor
-    extensions: [
-        Shell {
-            id: defaultShell
-            onCreateShellSurface: {
-                var props = {
-                    "windows": Qt.binding(function() { return compositor.windows }),
-                    "surface": surface
-                };
-                var item = chromeComponent.createObject(primarySurfacesArea, props);
-                item.shellSurface.initialize(defaultShell, surface, client, id);
-                windows.push(item);
-            }
-
-            Component.onCompleted: {
-                initialize();
-            }
-        }
-    ]
     onCreateSurface: {
         var surface = surfaceComponent.createObject(compositor, {});
         surface.initialize(compositor, client, id, version);
@@ -69,23 +47,29 @@ WaylandCompositor {
                             "compositor": compositor,
                             "screen": screen
                         });
-            screens.push(view);
+            d.screens.push(view);
         }
         onScreenRemoved: {
             var index = screenManager.indexOf(screen);
-            if (index < screens.length) {
-                var view = screens[index];
-                screens.splice(index, 1);
+            if (index < d.screens.length) {
+                var view = d.screens[index];
+                d.screens.splice(index, 1);
                 view.destroy();
             }
         }
         onPrimaryScreenChanged: {
             var index = screenManager.indexOf(screen);
-            if (index < screens.length) {
-                primarySurfacesArea = screens[index].surfacesArea;
-                compositor.defaultOutput = screens[index];
+            if (index < d.screens.length) {
+                compositor.primarySurfacesArea = d.screens[index].surfacesArea;
+                compositor.defaultOutput = d.screens[index];
             }
         }
+    }
+
+    QtObject {
+        id: d
+
+        property variant screens: []
     }
 
     Component {
@@ -98,11 +82,5 @@ WaylandCompositor {
         id: surfaceComponent
 
         WaylandSurface {}
-    }
-
-    Component {
-        id: chromeComponent
-
-        WaylandWindow {}
     }
 }
