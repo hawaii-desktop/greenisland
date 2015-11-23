@@ -90,12 +90,16 @@ public:
 
 Q_SIGNALS:
     void surfaceChanged();
+
     void appIdChanged(const QString &appId);
     void appMenuPathChanged(const QString &appMenuPath);
     void menuBarPathChanged(const QString &menuBarPath);
     void windowObjectPathChanged(const QString &windowObjectPath);
     void appObjectPathChanged(const QString &appObjectPath);
     void uniqueBusNameChanged(const QString &uniqueBusName);
+
+    void setModal();
+    void unsetModal();
 
 private:
     void initialize();

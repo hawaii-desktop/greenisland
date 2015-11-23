@@ -111,7 +111,7 @@ void GtkShell::initialize()
         qWarning() << "Failed to find QWaylandCompositor when initializing GtkShell";
         return;
     }
-    d->init(compositor->display(), 1);
+    d->init(compositor->display(), QtWaylandServer::gtk_shell::interfaceVersion());
 }
 
 const struct wl_interface *GtkShell::interface()
@@ -185,6 +185,26 @@ void GtkSurfacePrivate::surface_set_dbus_properties(Resource *resource,
     Q_EMIT q->windowObjectPathChanged(m_windowObjectPath);
     Q_EMIT q->appObjectPathChanged(m_appObjectPath);
     Q_EMIT q->uniqueBusNameChanged(m_uniqueBusName);
+}
+
+void GtkSurfacePrivate::surface_set_modal(Resource *resource)
+{
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+
+    Q_UNUSED(resource);
+
+    Q_Q(GtkSurface);
+    Q_EMIT q->setModal();
+}
+
+void GtkSurfacePrivate::surface_unset_modal(Resource *resource)
+{
+    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+
+    Q_UNUSED(resource);
+
+    Q_Q(GtkSurface);
+    Q_EMIT q->unsetModal();
 }
 
 /*

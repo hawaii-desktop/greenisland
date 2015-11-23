@@ -87,6 +87,9 @@ protected:
                                      const QString &application_object_path,
                                      const QString &unique_bus_name) Q_DECL_OVERRIDE;
 
+    void surface_set_modal(Resource *resource) Q_DECL_OVERRIDE;
+    void surface_unset_modal(Resource *resource) Q_DECL_OVERRIDE;
+
 private:
     GtkShell *m_shell;
     QWaylandSurface *m_surface;
