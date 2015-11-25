@@ -24,27 +24,26 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_OUTPUT_H
-#define GREENISLAND_OUTPUT_H
+#ifndef GREENISLAND_QUICKOUTPUT_H
+#define GREENISLAND_QUICKOUTPUT_H
 
-#include <GreenIsland/Compositor/QWaylandQuickOutput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
+#include <GreenIsland/Server/Screen>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
-class Compositor;
-class FakeScreenBackend;
-class OutputPrivate;
-class OutputWindow;
-class NativeScreenBackend;
+namespace Server {
 
-class GREENISLANDSERVER_EXPORT Output : public QWaylandQuickOutput
+class Screen;
+class QuickOutputPrivate;
+
+class GREENISLANDSERVER_EXPORT QuickOutput : public QWaylandQuickOutput
 {
     Q_OBJECT
-    Q_PROPERTY(QString name READ name CONSTANT)
-    Q_PROPERTY(int number READ number CONSTANT)
-    Q_PROPERTY(bool primary READ isPrimary NOTIFY primaryChanged)
+    Q_DECLARE_PRIVATE(QuickOutput)
+    Q_PROPERTY(Screen *nativeScreen READ nativeScreen WRITE setNativeScreen NOTIFY nativeScreenChanged DESIGNABLE false)
     Q_PROPERTY(QSize hotSpotSize READ hotSpotSize WRITE setHotSpotSize NOTIFY hotSpotSizeChanged)
     Q_PROPERTY(quint64 hotSpotThreshold READ hotSpotThreshold WRITE setHotSpotThreshold NOTIFY hotSpotThresholdChanged)
     Q_PROPERTY(quint64 hotSpotPushTime READ hotSpotPushTime WRITE setHotSpotPushTime NOTIFY hotSpotPushTimeChanged)
@@ -57,23 +56,11 @@ public:
         BottomRightHotSpot
     };
 
-#if 0
-    Output(Compositor *compositor, const QString &name,
-           const QString &manufacturer, const QString &model,
-           const QWaylandOutputModeList &modes);
-#else
-    Output(Compositor *compositor, const QString &name,
-           const QString &manufacturer, const QString &model);
-#endif
+    QuickOutput();
+    QuickOutput(QWaylandCompositor *compositor);
 
-    Compositor *compositor() const;
-    OutputWindow *outputWindow() const;
-
-    QString name() const;
-
-    int number() const;
-
-    bool isPrimary() const;
+    Screen *nativeScreen() const;
+    void setNativeScreen(Screen *screen);
 
     QSize hotSpotSize() const;
     void setHotSpotSize(const QSize &size);
@@ -84,32 +71,25 @@ public:
     quint64 hotSpotPushTime() const;
     void setHotSpotPushTime(quint64 value);
 
-    // Maps global coordinates to local space
-    Q_INVOKABLE QPointF mapToOutput(const QPointF &pt);
-
-    // Map output local coordinates to global space
-    Q_INVOKABLE QPointF mapToGlobal(const QPointF &pt);
-
-public Q_SLOTS:
-    void loadScene();
+protected:
+    void initialize() Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
-    void primaryChanged();
+    void nativeScreenChanged();
     void hotSpotSizeChanged();
     void hotSpotThresholdChanged();
     void hotSpotPushTimeChanged();
     void hotSpotTriggered(HotSpot hotSpot);
 
 private:
-    Q_DECLARE_PRIVATE(Output)
-    OutputPrivate *const d_ptr;
+    QuickOutputPrivate *const d_ptr;
 
-    friend class FakeScreenBackend;
-    friend class NativeScreenBackend;
-
-    void setPrimary(bool value);
+private Q_SLOTS:
+    void readContent();
 };
 
-}
+} // namespace Server
 
-#endif // GREENISLAND_OUTPUT_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_QUICKOUTPUT_H

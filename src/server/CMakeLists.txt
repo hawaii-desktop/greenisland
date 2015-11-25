@@ -43,6 +43,7 @@ set(SOURCES
     core/diagnostic_p.cpp
     core/homeapplication.cpp
     core/logging.cpp
+    core/quickoutput.cpp
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/quickscreenmanager.cpp
@@ -146,6 +147,7 @@ set_target_properties(GreenIslandServer PROPERTIES
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
         HomeApplication
+        QuickOutput
     PREFIX
         Server
     OUTPUT_DIR
