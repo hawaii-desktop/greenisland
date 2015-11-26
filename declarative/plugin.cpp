@@ -32,11 +32,11 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
+#include <GreenIsland/Server/QuickOutput>
 #include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/QuickXdgPopupItem>
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
@@ -81,7 +81,7 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     // Base types
     qmlRegisterType<QWaylandQuickCompositorQuickExtension>(uri, 1, 0, "WaylandCompositor");
     qmlRegisterType<QWaylandQuickItem>(uri, 1, 0, "WaylandQuickItem");
-    qmlRegisterType<QWaylandQuickOutput>(uri, 1, 0, "WaylandOutput");
+    qmlRegisterType<QuickOutput>(uri, 1, 0, "WaylandOutput");
     qmlRegisterType<QWaylandQuickSurface>(uri, 1, 0, "WaylandSurface");
 
     // Pointer tracking

@@ -39,7 +39,7 @@ WaylandOutput {
         id: window
         width: 1024
         height: 768
-        visible: true
+        visible: false
 
         WaylandMouseTracker {
             id: mouseTracker
