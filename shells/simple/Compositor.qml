@@ -47,21 +47,21 @@ WindowManager {
                             "compositor": compositor,
                             "nativeScreen": screen
                         });
-            d.screens.push(view);
+            d.outputs.push(view);
         }
         onScreenRemoved: {
             var index = screenManager.indexOf(screen);
-            if (index < d.screens.length) {
-                var view = d.screens[index];
-                d.screens.splice(index, 1);
-                view.destroy();
+            if (index < d.outputs.length) {
+                var output = d.outputs[index];
+                d.outputs.splice(index, 1);
+                output.destroy();
             }
         }
         onPrimaryScreenChanged: {
             var index = screenManager.indexOf(screen);
-            if (index < d.screens.length) {
-                compositor.primarySurfacesArea = d.screens[index].surfacesArea;
-                compositor.defaultOutput = d.screens[index];
+            if (index < d.outputs.length) {
+                compositor.primarySurfacesArea = d.outputs[index].surfacesArea;
+                compositor.defaultOutput = d.outputs[index];
             }
         }
     }
@@ -69,7 +69,7 @@ WindowManager {
     QtObject {
         id: d
 
-        property variant screens: []
+        property variant outputs: []
     }
 
     Component {
