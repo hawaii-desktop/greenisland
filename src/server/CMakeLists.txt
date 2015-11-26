@@ -44,6 +44,7 @@ set(SOURCES
     core/homeapplication.cpp
     core/logging.cpp
     core/quickoutput.cpp
+    input/keybindings.cpp
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/quickscreenmanager.cpp
@@ -155,6 +156,19 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        KeyBindings,KeyBinding
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        input
+)
+
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
         GtkShell,GtkSurface
         XdgShell,XdgSurface,XdgPopup
         QuickXdgPopupItem
@@ -189,6 +203,7 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/input/keybindings_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h

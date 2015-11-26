@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,50 +24,38 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "keybinding.h"
+#include "keybindings.h"
+#include "keybindings_p.h"
 
 namespace GreenIsland {
 
-class KeyBindingPrivate
-{
-public:
-    KeyBindingPrivate(const QString &_name, const QKeySequence &_sequence)
-        : name(_name)
-        , sequence(_sequence)
-    {
-    }
+namespace Server {
 
-    QString name;
-    QKeySequence sequence;
-};
+/*
+ * KeyBinding
+ */
 
-KeyBinding::KeyBinding(const QString &name, const QKeySequence &sequence)
-    : d_ptr(new KeyBindingPrivate(name, sequence))
+KeyBinding::KeyBinding(const QString &name, const QKeySequence &sequence, QObject *parent)
+    : QObject(*new KeyBindingPrivate(name, sequence), parent)
 {
-}
-
-KeyBinding::KeyBinding(const KeyBinding &other)
-    : d_ptr(new KeyBindingPrivate(other.name(), other.sequence()))
-{
-}
-
-KeyBinding::~KeyBinding()
-{
-    delete d_ptr;
 }
 
 QString KeyBinding::name() const
 {
-    return d_ptr->name;
+    Q_D(const KeyBinding);
+    return d->name;
 }
 
 QKeySequence KeyBinding::sequence() const
 {
-    return d_ptr->sequence;
+    Q_D(const KeyBinding);
+    return d->sequence;
 }
 
 bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers) const
 {
+    Q_D(const KeyBinding);
+
     Qt::Key qtKey = static_cast<Qt::Key>(key);
     if (qtKey == Qt::Key_unknown)
         return false;
@@ -78,7 +66,7 @@ bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers) const
     case Qt::Key_Shift:
     case Qt::Key_Alt:
     case Qt::Key_Meta:
-        if (d_ptr->sequence == QKeySequence(key))
+        if (d->sequence == QKeySequence(key))
             return true;
         break;
     default:
@@ -95,25 +83,69 @@ bool KeyBinding::matches(int key, const Qt::KeyboardModifiers &modifiers) const
         keyInt += Qt::ALT;
     if (modifiers & Qt::MetaModifier)
         keyInt += Qt::META;
-    if (d_ptr->sequence == QKeySequence(keyInt))
+    if (d->sequence == QKeySequence(keyInt))
         return true;
 
     return false;
 }
 
-KeyBinding &KeyBinding::operator=(const KeyBinding &other)
-{
-    if (this != &other) {
-        d_ptr->name = other.name();
-        d_ptr->sequence = other.sequence();
-    }
-
-    return *this;
-}
-
 bool KeyBinding::operator==(const KeyBinding &other)
 {
-    return (d_ptr->name == other.name() && d_ptr->sequence == other.sequence());
+    Q_D(KeyBinding);
+    return (d->name == other.name() && d->sequence == other.sequence());
 }
 
+/*
+ * KeyBindings
+ */
+
+KeyBindings::KeyBindings(QObject *parent)
+    : QObject(*new KeyBindingsPrivate(), parent)
+{
 }
+
+QList<KeyBinding *> KeyBindings::keyBindings() const
+{
+    Q_D(const KeyBindings);
+    return d->keyBindings;
+}
+
+bool KeyBindings::registerKeyBinding(const QString &name, const QString &keys)
+{
+    Q_D(KeyBindings);
+
+    // Do we already have this keybinding?
+    Q_FOREACH (KeyBinding *binding, d->keyBindings) {
+        if (binding->name() == name)
+            return false;
+    }
+
+    // Is the keybinding text valid?
+    QKeySequence sequence(keys);
+    if (!sequence.isEmpty()) {
+        d->keyBindings.append(new KeyBinding(name, sequence));
+        return true;
+    }
+
+    return false;
+}
+
+bool KeyBindings::unregisterKeyBinding(const QString &name)
+{
+    Q_D(KeyBindings);
+
+    Q_FOREACH (KeyBinding *binding, d->keyBindings) {
+        if (binding->name() == name) {
+            d->keyBindings.removeOne(binding);
+            return true;
+        }
+    }
+
+    return false;
+}
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#include "moc_keybindings.cpp"

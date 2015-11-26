@@ -24,36 +24,66 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef KEYBINDING_H
-#define KEYBINDING_H
+#ifndef GREENISLAND_KEYBINDINGS_H
+#define GREENISLAND_KEYBINDINGS_H
 
+#include <QtCore/QObject>
 #include <QtGui/QKeySequence>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
-class KeyBindingPrivate;
+namespace Server {
 
-class GREENISLANDSERVER_EXPORT KeyBinding
+class KeyBindingPrivate;
+class KeyBindingsPrivate;
+
+class GREENISLANDSERVER_EXPORT KeyBinding : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(KeyBinding)
+    Q_DISABLE_COPY(KeyBinding)
+    Q_PROPERTY(QString name READ name CONSTANT)
+    Q_PRIVATE_PROPERTY(d_func(), QString sequence READ sequenceString CONSTANT)
 public:
-    explicit KeyBinding(const QString &name, const QKeySequence &sequence);
-    KeyBinding(const KeyBinding &other);
-    ~KeyBinding();
+    explicit KeyBinding(const QString &name, const QKeySequence &sequence,
+                        QObject *parent = Q_NULLPTR);
 
     QString name() const;
     QKeySequence sequence() const;
 
     bool matches(int key, const Qt::KeyboardModifiers &modifiers) const;
 
-    KeyBinding &operator=(const KeyBinding &other);
     bool operator==(const KeyBinding &other);
-
-private:
-    KeyBindingPrivate *const d_ptr;
 };
 
-}
+class GREENISLANDSERVER_EXPORT KeyBindings : public QObject
+{
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(KeyBindings)
+public:
+    enum Action {
+        Press = 1,
+        Release
+    };
+    Q_ENUM(Action)
 
-#endif // KEYBINDING_H
+    KeyBindings(QObject *parent = Q_NULLPTR);
+
+    QList<KeyBinding *> keyBindings() const;
+
+    Q_INVOKABLE bool registerKeyBinding(const QString &name, const QString &keys);
+    Q_INVOKABLE bool unregisterKeyBinding(const QString &name);
+
+Q_SIGNALS:
+    void keyBindingPressed(const QString &name);
+    void keyBindingReleased(const QString &name);
+    void keyBindingTriggered(Action action, const QString &name);
+};
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_KEYBINDINGS_H
