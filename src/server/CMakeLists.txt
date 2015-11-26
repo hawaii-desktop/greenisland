@@ -55,11 +55,6 @@ set(SOURCES
     extensions/quickxdgsurfaceitem.cpp
 )
 
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
-    #set(SOURCES ${SOURCES} bufferattacher.cpp)
-endif()
-
 greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
     BASENAME wayland
