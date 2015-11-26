@@ -42,12 +42,14 @@ WindowManager {
     ScreenManager {
         id: screenManager
         onScreenAdded: {
+            console.time("output" + d.outputs.length);
             var view = screenComponent.createObject(
                         compositor, {
                             "compositor": compositor,
                             "nativeScreen": screen
                         });
             d.outputs.push(view);
+            console.timeEnd("output" + d.outputs.length - 1);
         }
         onScreenRemoved: {
             var index = screenManager.indexOf(screen);
