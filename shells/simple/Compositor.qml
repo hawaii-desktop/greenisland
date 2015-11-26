@@ -45,7 +45,7 @@ WindowManager {
             var view = screenComponent.createObject(
                         compositor, {
                             "compositor": compositor,
-                            "screen": screen
+                            "nativeScreen": screen
                         });
             d.screens.push(view);
         }
