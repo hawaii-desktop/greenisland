@@ -28,10 +28,12 @@ include_directories(
 
 set(SOURCES
     plugin.cpp
+    quickkeybindings.cpp
     fpscounter.cpp
     globalpointertracker.cpp
     localpointertracker.cpp
     pointeritem.cpp
+    keybindingsfilter.cpp
     waylandwindowitem.cpp
 )
 

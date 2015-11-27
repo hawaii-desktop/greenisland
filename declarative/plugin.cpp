@@ -44,12 +44,14 @@
 #include <GreenIsland/Server/Screen>
 #include <GreenIsland/Server/QuickScreenManager>
 
+#include "quickkeybindings.h"
 #include "fpscounter.h"
 #include "globalpointertracker.h"
 #include "keybindingsfilter.h"
 #include "keyeventfilter.h"
 #include "localpointertracker.h"
 #include "pointeritem.h"
+#include "keybindingsfilter.h"
 #include "waylandwindowitem.h"
 
 using namespace GreenIsland::Server;
@@ -134,6 +136,12 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Window manager
     qmlRegisterType<WaylandWindowItem>(uri, 1, 0, "WaylandWindowItem");
+
+    // Key bindings
+    qmlRegisterUncreatableType<KeyBinding>(uri, 1, 0, "KeyBinding",
+                                           QObject::tr("Cannot create instance of KeyBinding"));
+    qmlRegisterType<QuickKeyBindings>(uri, 1, 0, "KeyBindings");
+    qmlRegisterType<KeyBindingsFilter>(uri, 1, 0, "KeyBindingsFilter");
 
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
