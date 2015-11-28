@@ -29,6 +29,7 @@ include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Qml_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
+    ${xkbcommon_INCLUDE_DIRS}
 )
 
 include(../GreenIslandConfigExtrasLocal.cmake)
@@ -137,13 +138,9 @@ target_link_libraries(GreenIslandCompositor
         Qt5::Qml
         Qt5::Quick
         Wayland::Server
+    PRIVATE
+        ${xkbcommon_LIBRARIES}
 )
-
-if(xkbcommon_FOUND)
-    include_directories(${xkbcommon_INCLUDE_DIRS})
-    add_definitions(-DHAVE_XKBCOMMON)
-    target_link_libraries(GreenIslandCompositor PRIVATE ${xkbcommon_LIBRARIES})
-endif()
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     target_link_libraries(GreenIslandCompositor PUBLIC ${OPENGL_LIBRARIES})

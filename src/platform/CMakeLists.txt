@@ -42,6 +42,7 @@ include_directories(
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${UDEV_INCLUDE_DIR}
+    ${xkbcommon_INCLUDE_DIRS}
     ${gio_INCLUDE_DIR}
 )
 
@@ -106,6 +107,7 @@ target_link_libraries(GreenIslandPlatform
     EGL::EGL
   PRIVATE
     ${UDEV_LIBS}
+    ${xkbcommon_LIBRARIES}
     Libinput::Libinput
     ${gio_LIBRARIES}
     ${FONTCONFIG_LIBRARIES}
@@ -113,12 +115,6 @@ target_link_libraries(GreenIslandPlatform
     Qt5PlatformSupport::Qt5PlatformSupport
     Threads::Threads
 )
-
-if(xkbcommon_FOUND)
-    include_directories(${xkbcommon_INCLUDE_DIRS})
-    add_definitions(-DHAVE_XKBCOMMON)
-    target_link_libraries(GreenIslandPlatform PRIVATE ${xkbcommon_LIBRARIES})
-endif()
 
 if(X11_FOUND)
     target_link_libraries(GreenIslandPlatform PRIVATE ${X11_LIBRARIES})
@@ -265,7 +261,7 @@ install(FILES ${PRI_FILENAME}
 include(ECMGeneratePkgConfigFile)
 ecm_generate_pkgconfig_file(BASE_NAME GreenIslandPlatform
                             LIB_NAME GreenIslandPlatform
-                            DEPS "Qt5Core Qt5DBus Qt5Gui"
+                            DEPS "Qt5Core Qt5DBus Qt5Gui xkbcommon"
                             FILENAME_VAR PKGCONFIG_FILENAME
                             INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}"
                             INSTALL)

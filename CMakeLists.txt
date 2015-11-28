@@ -141,10 +141,7 @@ add_feature_info("systemd" systemd_FOUND "Required for systemd integration")
 
 # xkbcommon
 pkg_check_modules(xkbcommon xkbcommon REQUIRED)
-if(xkbcommon_FOUND)
-    set(HAVE_XKBCOMMON 1)
-endif()
-add_feature_info("xkbcommon" xkbcommon_FOUND "Require for keymap support")
+add_feature_info("xkbcommon" xkbcommon_FOUND "Required for keymap support")
 
 # Subdirectories
 if(ENABLE_ONLY_EGLDEVICEINTEGRATION)
