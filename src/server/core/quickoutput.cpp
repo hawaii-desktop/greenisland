@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QElapsedTimer>
 #include <QtCore/private/qobject_p.h>
 
 #include "quickoutput.h"
@@ -33,6 +34,100 @@
 namespace GreenIsland {
 
 namespace Server {
+
+/*
+ * WindowFilter
+ */
+
+class WindowFilter : public QObject
+{
+public:
+    WindowFilter(QObject *parent = Q_NULLPTR)
+        : QObject(parent)
+        , hotSpotLastTime(0)
+        , hotSpotEntered(0)
+    {
+        quickOutput = static_cast<QuickOutput *>(parent);
+        if (quickOutput) {
+            connect(quickOutput, &QuickOutput::windowChanged, this, [this] {
+                // Remove the event filter if it was previously installed
+                if (!quickWindow.isNull()) {
+                    quickWindow->removeEventFilter(this);
+                    quickWindow.clear();
+                }
+
+                // Install the event filter when a window is set
+                QQuickWindow *window = static_cast<QQuickWindow *>(quickOutput->window());
+                if (window) {
+                    quickWindow = window;
+                    window->installEventFilter(this);
+                    timer.restart();
+                }
+            });
+        }
+    }
+
+    QuickOutput *quickOutput;
+    QPointer<QQuickWindow> quickWindow;
+    QElapsedTimer timer;
+    quint64 hotSpotLastTime;
+    quint64 hotSpotEntered;
+
+protected:
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE
+    {
+        // Do not filter other objects
+        if (object != quickWindow)
+            return QObject::eventFilter(object, event);
+
+        // We are only interested in mouse move events
+        if (event->type() != QEvent::MouseMove)
+            return false;
+
+        // We also cannot continue without the output
+        if (!quickOutput)
+            return false;
+
+        // Coordinates
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        const QPoint pt = mouseEvent->localPos().toPoint();
+        const QRect r = quickOutput->geometry();
+
+        // Hot spots are triggered after the threshold
+        qint64 time = timer.elapsed();
+        if (time - hotSpotLastTime >= quickOutput->hotSpotThreshold()) {
+            // Determine which hotspot was triggered
+            QuickOutput::HotSpot hotSpot;
+            const int w = quickOutput->hotSpotSize().width();
+            const int h = quickOutput->hotSpotSize().height();
+            bool triggered = true;
+            if (pt.x() <= r.left() + w && pt.y() <= r.top() + h)
+                hotSpot = QuickOutput::HotSpot::TopLeftHotSpot;
+            else if (pt.x() >= r.right() - w && pt.y() <= r.top() + h)
+                hotSpot = QuickOutput::HotSpot::TopRightHotSpot;
+            else if (pt.x() <= r.left() + w && pt.y() >= r.bottom() - h)
+                hotSpot = QuickOutput::HotSpot::BottomLeftHotSpot;
+            else if (pt.x() >= r.right() - w && pt.y() >= r.bottom() - h)
+                hotSpot = QuickOutput::HotSpot::BottomRightHotSpot;
+            else {
+                triggered = false;
+                hotSpotEntered = 0;
+            }
+
+            // Trigger an action
+            if (triggered) {
+                if (hotSpotEntered == 0)
+                    hotSpotEntered = time;
+                else if (time - hotSpotEntered < quickOutput->hotSpotPushTime()) {
+                    hotSpotLastTime = time;
+                    Q_EMIT quickOutput->hotSpotTriggered(hotSpot);
+                }
+            }
+        }
+
+        return false;
+    }
+};
 
 /*
  * OutputPrivate
@@ -45,9 +140,9 @@ public:
     QuickOutputPrivate()
         : initialized(false)
         , nativeScreen(Q_NULLPTR)
-        , hotSpotSize(QSize(10, 10))
+        , hotSpotSize(QSize(5, 5))
         , hotSpotThreshold(1000)
-        , hotSpotPushTime(150)
+        , hotSpotPushTime(50)
     {
     }
 
@@ -66,12 +161,16 @@ QuickOutput::QuickOutput()
     : QWaylandQuickOutput()
     , d_ptr(new QuickOutputPrivate())
 {
+    // Filter events on the output window
+    new WindowFilter(this);
 }
 
 QuickOutput::QuickOutput(QWaylandCompositor *compositor)
     : QWaylandQuickOutput(compositor, Q_NULLPTR)
     , d_ptr(new QuickOutputPrivate())
 {
+    // Filter events on the output window
+    new WindowFilter(this);
 }
 
 Screen *QuickOutput::nativeScreen() const

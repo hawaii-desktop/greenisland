@@ -47,7 +47,6 @@ class GREENISLANDSERVER_EXPORT QuickOutput : public QWaylandQuickOutput
     Q_PROPERTY(QSize hotSpotSize READ hotSpotSize WRITE setHotSpotSize NOTIFY hotSpotSizeChanged)
     Q_PROPERTY(quint64 hotSpotThreshold READ hotSpotThreshold WRITE setHotSpotThreshold NOTIFY hotSpotThresholdChanged)
     Q_PROPERTY(quint64 hotSpotPushTime READ hotSpotPushTime WRITE setHotSpotPushTime NOTIFY hotSpotPushTimeChanged)
-    Q_ENUMS(HotSpot)
 public:
     enum HotSpot {
         TopLeftHotSpot = 0,
@@ -55,6 +54,7 @@ public:
         BottomLeftHotSpot,
         BottomRightHotSpot
     };
+    Q_ENUM(HotSpot)
 
     QuickOutput();
     QuickOutput(QWaylandCompositor *compositor);
