@@ -36,6 +36,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
+#include <GreenIsland/Server/CompositorSettings>
 #include <GreenIsland/Server/QuickOutput>
 #include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/Keymap>
@@ -150,6 +151,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Keymap
     qmlRegisterType<Keymap>(uri, 1, 0, "Keymap");
+
+    // Settings
+    qmlRegisterType<CompositorSettings>(uri, 1, 0, "CompositorSettings");
 
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
