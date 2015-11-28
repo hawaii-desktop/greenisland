@@ -38,6 +38,7 @@
 
 #include <GreenIsland/Server/QuickOutput>
 #include <GreenIsland/Server/GtkShell>
+#include <GreenIsland/Server/Keymap>
 #include <GreenIsland/Server/QuickXdgPopupItem>
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
 #include <GreenIsland/Server/XdgShell>
@@ -146,6 +147,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Key event filter
     qmlRegisterType<KeyEventFilter>(uri, 1, 0, "KeyEventFilter");
+
+    // Keymap
+    qmlRegisterType<Keymap>(uri, 1, 0, "Keymap");
 
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
