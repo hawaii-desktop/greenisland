@@ -34,6 +34,7 @@ set(SOURCES
     localpointertracker.cpp
     pointeritem.cpp
     keybindingsfilter.cpp
+    keyeventfilter.cpp
     waylandwindowitem.cpp
 )
 

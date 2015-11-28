@@ -52,6 +52,7 @@
 #include "localpointertracker.h"
 #include "pointeritem.h"
 #include "keybindingsfilter.h"
+#include "keyeventfilter.h"
 #include "waylandwindowitem.h"
 
 using namespace GreenIsland::Server;
@@ -142,6 +143,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                            QObject::tr("Cannot create instance of KeyBinding"));
     qmlRegisterType<QuickKeyBindings>(uri, 1, 0, "KeyBindings");
     qmlRegisterType<KeyBindingsFilter>(uri, 1, 0, "KeyBindingsFilter");
+
+    // Key event filter
+    qmlRegisterType<KeyEventFilter>(uri, 1, 0, "KeyEventFilter");
 
     // Misc
     qmlRegisterType<FpsCounter>(uri, 1, 0, "FpsCounter");
