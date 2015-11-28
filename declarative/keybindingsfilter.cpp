@@ -25,7 +25,6 @@
  ***************************************************************************/
 
 #include <QtQuick/QQuickWindow>
-#include <QDebug>
 
 #include "keybindingsfilter.h"
 

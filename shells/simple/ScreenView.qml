@@ -51,6 +51,11 @@ WaylandOutput {
         flags: Qt.FramelessWindowHint
         visible: false
 
+        KeyBindingsFilter {
+            anchors.fill: parent
+            keyBindings: compositor.keyBindingsManager
+        }
+
         LocalPointerTracker {
             id: localPointerTracker
             anchors.fill: parent

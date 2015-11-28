@@ -28,6 +28,8 @@ import QtQuick 2.0
 import GreenIsland 1.0
 
 WindowManager {
+    readonly property alias keyBindingsManager: keyBindings
+
     id: compositor
     onCreateSurface: {
         var surface = surfaceComponent.createObject(compositor, {});
@@ -65,6 +67,21 @@ WindowManager {
                 compositor.primarySurfacesArea = d.outputs[index].surfacesArea;
                 compositor.defaultOutput = d.outputs[index];
             }
+        }
+    }
+
+    KeyBindings {
+        id: keyBindings
+        onKeyBindingReleased: {
+            switch (name) {
+            case "quit":
+                Qt.quit();
+                break;
+            }
+        }
+
+        Component.onCompleted: {
+            registerKeyBinding("quit", "Meta+Q");
         }
     }
 
