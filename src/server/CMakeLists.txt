@@ -40,6 +40,7 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    core/compositorsettings.cpp
     core/diagnostic_p.cpp
     core/homeapplication.cpp
     core/logging.cpp
@@ -143,6 +144,7 @@ set_target_properties(GreenIslandServer PROPERTIES
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        CompositorSettings
         HomeApplication
         QuickOutput
     PREFIX

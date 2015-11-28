@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2012-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * Author(s):
  *    Pier Luigi Fiorini
@@ -24,32 +24,36 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef COMPOSITORSETTINGS_H
-#define COMPOSITORSETTINGS_H
+#ifndef GREENISLAND_COMPOSITORSETTINGS_H
+#define GREENISLAND_COMPOSITORSETTINGS_H
 
-#include <QtCore/QObject>
-#include <GreenIsland/Compositor/QWaylandInput>
+#include <QtQml/QQmlParserStatus>
 
-#include <GreenIsland/Server/Compositor>
+#include <GreenIsland/Server/Keymap>
+
+class QWaylandCompositor;
 
 namespace GreenIsland {
 
+namespace Server {
+
 class CompositorSettingsPrivate;
 
-class GREENISLANDSERVER_EXPORT CompositorSettings : public QObject
+class GREENISLANDSERVER_EXPORT CompositorSettings : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
+    Q_DECLARE_PRIVATE(CompositorSettings)
+    Q_PROPERTY(QWaylandCompositor *compositor READ compositor WRITE setCompositor NOTIFY compositorChanged)
     Q_PROPERTY(Qt::KeyboardModifier windowActionKey READ windowActionKey WRITE setWindowActionKey NOTIFY windowActionKeyChanged)
     Q_PROPERTY(quint32 keyboardRepeatRate READ keyboardRepeatRate WRITE setKeyboardRepeatRate NOTIFY keyboardRepeatRateChanged)
     Q_PROPERTY(quint32 keyboardRepeatDelay READ keyboardRepeatDelay WRITE setKeyboardRepeatDelay NOTIFY keyboardRepeatDelayChanged)
-    Q_PROPERTY(QString keyboardLayout READ keyboardLayout WRITE setKeyboardLayout NOTIFY keyMapChanged)
-    Q_PROPERTY(QString keyboardVariant READ keyboardVariant WRITE setKeyboardVariant NOTIFY keyMapChanged)
-    Q_PROPERTY(QString keyboardOptions READ keyboardOptions WRITE setKeyboardOptions NOTIFY keyMapChanged)
-    Q_PROPERTY(QString keyboardRules READ keyboardRules WRITE setKeyboardRules NOTIFY keyMapChanged)
-    Q_PROPERTY(QString keyboardModel READ keyboardModel WRITE setKeyboardModel NOTIFY keyMapChanged)
+    Q_PROPERTY(Keymap *keymap READ keymap WRITE setKeymap NOTIFY keymapChanged)
 public:
-    CompositorSettings(Compositor *compositor);
-    ~CompositorSettings();
+    CompositorSettings(QObject *parent = Q_NULLPTR);
+
+    QWaylandCompositor *compositor() const;
+    void setCompositor(QWaylandCompositor *compositor);
 
     Qt::KeyboardModifier windowActionKey() const;
     void setWindowActionKey(Qt::KeyboardModifier mod);
@@ -60,32 +64,26 @@ public:
     quint32 keyboardRepeatDelay() const;
     void setKeyboardRepeatDelay(quint32 delay);
 
-    QString keyboardLayout() const;
-    void setKeyboardLayout(const QString &layout);
-
-    QString keyboardVariant() const;
-    void setKeyboardVariant(const QString &variant);
-
-    QString keyboardOptions() const;
-    void setKeyboardOptions(const QString &options);
-
-    QString keyboardRules() const;
-    void setKeyboardRules(const QString &rules);
-
-    QString keyboardModel() const;
-    void setKeyboardModel(const QString &model);
+    Keymap *keymap() const;
+    void setKeymap(Keymap *keymap);
 
 Q_SIGNALS:
+    void compositorChanged();
     void windowActionKeyChanged();
     void keyboardRepeatRateChanged();
     void keyboardRepeatDelayChanged();
-    void keyMapChanged();
+    void keymapChanged();
+
+protected:
+    void classBegin() Q_DECL_OVERRIDE;
+    void componentComplete() Q_DECL_OVERRIDE;
 
 private:
-    Q_DECLARE_PRIVATE(CompositorSettings)
-    CompositorSettingsPrivate *const d_ptr;
+    Q_PRIVATE_SLOT(d_func(), void _q_setupKeymap())
 };
 
-}
+} // namespace Server
 
-#endif // COMPOSITORSETTINGS_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_COMPOSITORSETTINGS_H
