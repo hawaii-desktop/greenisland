@@ -24,11 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef APPLICATIONMANAGER_P_H
-#define APPLICATIONMANAGER_P_H
+#ifndef GREENISLAND_APPLICATIONMANAGER_P_H
+#define GREENISLAND_APPLICATIONMANAGER_P_H
 
-#include <QtCore/QHash>
-#include <QtCore/QSet>
+#include <QtCore/QMultiMap>
+#include <QtCore/private/qobject_p.h>
+
+#include <GreenIsland/Server/ApplicationManager>
 
 //  W A R N I N G
 //  -------------
@@ -39,29 +41,27 @@
 //
 // We mean it.
 
-class QWaylandSurface;
-
 namespace GreenIsland {
 
-class ApplicationManager;
+namespace Server {
 
-class ApplicationManagerPrivate
+class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(ApplicationManager)
 public:
-    ApplicationManagerPrivate(ApplicationManager *parent);
+    ApplicationManagerPrivate()
+    {
+    }
 
-    void registerSurface(QWaylandSurface *surface, const QString &appId);
-    void unregisterSurface(QWaylandSurface *surface, const QString &appId);
+    void _q_appIdChanged(const QString &appId);
 
-    QHash<QString, QList<QWaylandSurface *> > surfaces;
-    QHash<QWaylandSurface *, pid_t> surfacePids;
-
-protected:
-    ApplicationManager *q_ptr;
+    QList<QObject *> shellSurfaces;
+    QMultiMap<QString, QObject *> appIdMap;
 };
 
-}
+} // namespace Server
 
-#endif // APPLICATIONMANAGER_P_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_APPLICATIONMANAGER_P_H
 

@@ -40,6 +40,7 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    core/applicationmanager.cpp
     core/compositorsettings.cpp
     core/diagnostic_p.cpp
     core/homeapplication.cpp
@@ -144,6 +145,7 @@ set_target_properties(GreenIslandServer PROPERTIES
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        ApplicationManager
         CompositorSettings
         HomeApplication
         QuickOutput
@@ -204,6 +206,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/core/applicationmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h

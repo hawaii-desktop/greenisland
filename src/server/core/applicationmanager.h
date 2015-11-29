@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef APPLICATIONMANAGER_H
-#define APPLICATIONMANAGER_H
+#ifndef GREENISLAND_APPLICATIONMANAGER_H
+#define GREENISLAND_APPLICATIONMANAGER_H
 
 #include <QtCore/QObject>
 
@@ -33,18 +33,26 @@
 
 namespace GreenIsland {
 
-class ApplicationInfo;
+namespace Server {
+
 class ApplicationManagerPrivate;
-class ClientWindow;
 
 class GREENISLANDSERVER_EXPORT ApplicationManager : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)
 public:
-    ~ApplicationManager();
+    ApplicationManager(QObject *parent = Q_NULLPTR);
 
-    static ApplicationManager *instance();
+    /*!
+     * \brief Registers the \a window.
+     */
+    Q_INVOKABLE void registerWindow(QObject *window);
+
+    /*!
+     * \brief Unregisters the \a window.
+     */
+    Q_INVOKABLE void unregisterWindow(QObject *window);
 
     /*!
      * \brief Returns whether the application is registered or not.
@@ -85,26 +93,12 @@ Q_SIGNALS:
      */
     void applicationUnfocused(const QString &appId);
 
-    /*!
-     * \brief An application window was mapped.
-     * \param window Application window.
-     */
-    void windowMapped(ClientWindow *window);
-
-    /*!
-     * \brief An application window was unmapped.
-     * \param window Application window.
-     */
-    void windowUnmapped(ClientWindow *window);
-
 private:
-    ApplicationManagerPrivate *const d_ptr;
-
-    ApplicationManager();
-
-    friend class ClientWindow;
+    Q_PRIVATE_SLOT(d_func(), void _q_appIdChanged(const QString &appId))
 };
 
-}
+} // namespace Server
 
-#endif // APPLICATIONMANAGER_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_APPLICATIONMANAGER_H
