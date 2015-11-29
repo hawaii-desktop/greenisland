@@ -30,6 +30,7 @@ import GreenIsland 1.0
 WaylandCompositor {
     property QtObject primarySurfacesArea: null
     property variant additionalExtensions: []
+    readonly property alias applicationManager: appManager
 
     id: windowManager
     extensions: [
@@ -38,7 +39,9 @@ WaylandCompositor {
             onCreateShellSurface: {
                 var item = wlWindowComponent.createObject(null, {"surface": surface});
                 item.shellSurface.initialize(wlShell, surface, client, id);
-                d.addWindow(d.createWindow(item));
+                var window = d.createWindow(item);
+                d.addWindow(window);
+                appManager.registerWindow(window);
             }
 
             Component.onCompleted: {
@@ -50,7 +53,9 @@ WaylandCompositor {
             onCreateSurface: {
                 var item = xdgWindowComponent.createObject(null, {"surface": surface});
                 item.shellSurface.initialize(xdgShell, surface, client, id);
-                d.addWindow(d.createWindow(item));
+                var window = d.createWindow(item);
+                d.addWindow(window);
+                appManager.registerWindow(window);
             }
             onCreatePopup: {
                 var parentWindow = windowForSurface(parentSurface);
@@ -121,6 +126,10 @@ WaylandCompositor {
             // Add to the windows list
             windows.push(window);
         }
+    }
+
+    ApplicationManager {
+        id: appManager
     }
 
     Component {

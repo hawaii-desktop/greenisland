@@ -36,6 +36,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
+#include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
 #include <GreenIsland/Server/QuickOutput>
 #include <GreenIsland/Server/GtkShell>
@@ -139,6 +140,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Window manager
     qmlRegisterType<WaylandWindowItem>(uri, 1, 0, "WaylandWindowItem");
+
+    // Application manager
+    qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
 
     // Key bindings
     qmlRegisterUncreatableType<KeyBinding>(uri, 1, 0, "KeyBinding",
