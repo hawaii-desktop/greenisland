@@ -53,6 +53,8 @@ public:
     bool isNotificationEnabled() const;
     void setNotificationEnabled(bool notify);
 
+    QList<QObject *> rootObjects() const;
+
     void setContextProperty(const QString &name, const QVariant &value);
     void setContextProperty(const QString &name, QObject *object);
 

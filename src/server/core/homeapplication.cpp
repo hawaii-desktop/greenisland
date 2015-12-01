@@ -140,6 +140,12 @@ void HomeApplication::setScreenConfiguration(const QString &fileName)
         QCoreApplication::instance()->setProperty("__greenisland_screen_configuration", d->screenConfiguration);
 }
 
+QList<QObject *> HomeApplication::rootObjects() const
+{
+    Q_D(const HomeApplication);
+    return d->engine->rootObjects();
+}
+
 void HomeApplication::setContextProperty(const QString &name, const QVariant &value)
 {
     Q_D(HomeApplication);
