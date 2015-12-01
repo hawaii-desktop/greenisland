@@ -54,6 +54,7 @@ public:
     void setNotificationEnabled(bool notify);
 
     void setContextProperty(const QString &name, const QVariant &value);
+    void setContextProperty(const QString &name, QObject *object);
 
     bool load(const QString &shell);
     bool loadFile(const QString &fileName);
@@ -62,6 +63,7 @@ Q_SIGNALS:
     void screenConfigurationChanged(const QString &fileName);
     void notificationEnabledChanged(bool enabled);
     void contextPropertyChanged(const QString &name, const QVariant &value);
+    void contextPropertyChanged(const QString &name, QObject *object);
     void objectCreated(QObject *object, const QUrl &url);
 };
 

@@ -148,6 +148,14 @@ void HomeApplication::setContextProperty(const QString &name, const QVariant &va
     Q_EMIT contextPropertyChanged(name, value);
 }
 
+void HomeApplication::setContextProperty(const QString &name, QObject *object)
+{
+    Q_D(HomeApplication);
+
+    d->engine->rootContext()->setContextProperty(name, object);
+    Q_EMIT contextPropertyChanged(name, object);
+}
+
 bool HomeApplication::isNotificationEnabled() const
 {
     Q_D(const HomeApplication);
