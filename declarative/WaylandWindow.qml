@@ -27,8 +27,9 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 
-WaylandWindowItem {
-    property bool animationsEnabled: false
+ClientWindowView {
+    property QtObject window
+    property bool animationsEnabled: true
     property QtObject savedProperties: QtObject {
         property bool saved: false
         property real x
@@ -38,20 +39,81 @@ WaylandWindowItem {
         property real scale
     }
 
-    id: window
+    id: view
     transform: [
         Scale {
             id: scaleTransform
-            origin.x: window.width / 2
-            origin.y: window.height / 2
+            origin.x: view.width / 2
+            origin.y: view.height / 2
         },
         Scale {
             id: scaleTransformPos
-            origin.x: window.width / 2
-            origin.y: window.y - window.height
+            origin.x: view.width / 2
+            origin.y: view.y - view.height
         }
     ]
     opacity: 0.0
+
+    QtObject {
+        id: d
+
+        property real x
+        property real y
+        property bool unresponsive: false
+    }
+
+    Timer {
+        id: pingTimer
+        interval: 250
+        onTriggered: {
+            console.warn("WaylandWindow is unresponsive");
+            d.unresponsive = true;
+        }
+    }
+
+    Connections {
+        target: window
+        onTypeChanged: {
+            switch (window.type) {
+            case ClientWindow.TopLevel:
+                topLevelMapAnimation.start();
+                break;
+            case ClientWindow.Transient:
+                transientMapAnimation.start();
+                break;
+            case ClientWindow.Popup:
+                popupMapAnimation.start();
+                break;
+            }
+        }
+        onPingRequested: {
+            pingTimer.start();
+        }
+        onPong: {
+            pingTimer.stop();
+            d.unresponsive = false;
+        }
+        onWindowMenuRequested: {
+            console.log("Window menu requested at " + position.x + "," + position.y);
+        }
+    }
+
+    Connections {
+        target: window ? window.surface : null
+        onSurfaceDestroyed: {
+            switch (window.type) {
+            case ClientWindow.TopLevel:
+                topLevelDestroyAnimation.start();
+                break;
+            case ClientWindow.Transient:
+                transientDestroyAnimation.start();
+                break;
+            case ClientWindow.Popup:
+                popupDestroyAnimation.start();
+                break;
+            }
+        }
+    }
 
     /*
      * Behavior
@@ -73,6 +135,22 @@ WaylandWindowItem {
         }
     }
 
+    Behavior on width {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.OutQuad
+            duration: 350
+        }
+    }
+
+    Behavior on height {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.OutQuad
+            duration: 350
+        }
+    }
+
     Behavior on scale {
         enabled: animationsEnabled
         SmoothedAnimation {
@@ -82,7 +160,7 @@ WaylandWindowItem {
     }
 
     /*
-     * Top level window animations
+     * Top level view animations
      */
 
     SequentialAnimation {
@@ -90,7 +168,7 @@ WaylandWindowItem {
 
         ParallelAnimation {
             NumberAnimation {
-                target: window
+                target: view
                 property: "opacity"
                 easing.type: Easing.OutExpo
                 from: 0.0
@@ -140,7 +218,7 @@ WaylandWindowItem {
             duration: 150
         }
         NumberAnimation {
-            target: window
+            target: view
             property: "opacity"
             easing.type: Easing.OutQuad
             to: 0.0
@@ -148,29 +226,20 @@ WaylandWindowItem {
         }
         ScriptAction {
             script: {
-                shellSurfaceItem.destroy();
-                window.destroy();
+                view.destroy();
             }
         }
     }
 
-    function runTopLevelMapAnimation() {
-        topLevelMapAnimation.start();
-    }
-
-    function runTopLevelDestroyAnimation() {
-        topLevelDestroyAnimation.start();
-    }
-
     /*
-     * Transient window animations
+     * Transient view animations
      */
 
     ParallelAnimation {
         id: transientMapAnimation
 
         NumberAnimation {
-            target: window
+            target: view
             property: "opacity"
             easing.type: Easing.OutQuad
             from: 0.0
@@ -216,7 +285,7 @@ WaylandWindowItem {
                 duration: 200
             }
             NumberAnimation {
-                target: window
+                target: view
                 property: "opacity"
                 easing.type: Easing.OutQuad
                 from: 1.0
@@ -226,22 +295,13 @@ WaylandWindowItem {
         }
         ScriptAction {
             script: {
-                shellSurfaceItem.destroy();
-                window.destroy();
+                view.destroy();
             }
         }
     }
 
-    function runTransientMapAnimation() {
-        transientMapAnimation.start();
-    }
-
-    function runTransientDestroyAnimation() {
-        transientDestroyAnimation.start();
-    }
-
     /*
-     * Popup window animations
+     * Popup view animations
      */
 
     SequentialAnimation {
@@ -249,7 +309,7 @@ WaylandWindowItem {
 
         ParallelAnimation {
             NumberAnimation {
-                target: window
+                target: view
                 property: "opacity"
                 easing.type: Easing.OutQuad
                 from: 0.0
@@ -295,7 +355,7 @@ WaylandWindowItem {
             duration: 150
         }
         NumberAnimation {
-            target: window
+            target: view
             property: "opacity"
             easing.type: Easing.OutQuad
             to: 0.0
@@ -303,17 +363,8 @@ WaylandWindowItem {
         }
         ScriptAction {
             script: {
-                shellSurfaceItem.destroy();
-                window.destroy();
+                view.destroy();
             }
         }
-    }
-
-    function runPopupMapAnimation() {
-        popupMapAnimation.start();
-    }
-
-    function runPopupDestroyAnimation() {
-        popupDestroyAnimation.start();
     }
 }

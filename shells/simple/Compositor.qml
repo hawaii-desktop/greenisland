@@ -27,7 +27,8 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 
-WindowManager {
+WaylandCompositor {
+    property QtObject primarySurfacesArea: null
     readonly property alias keyBindingsManager: keyBindings
 
     id: compositor
@@ -51,15 +52,19 @@ WindowManager {
                             "nativeScreen": screen
                         });
             d.outputs.push(view);
+            windowManager.recalculateVirtualGeometry();
             console.timeEnd("output" + d.outputs.length - 1);
         }
         onScreenRemoved: {
             var index = screenManager.indexOf(screen);
+            console.time("output" + index);
             if (index < d.outputs.length) {
                 var output = d.outputs[index];
                 d.outputs.splice(index, 1);
                 output.destroy();
+                windowManager.recalculateVirtualGeometry();
             }
+            console.timeEnd("output" + index);
         }
         onPrimaryScreenChanged: {
             var index = screenManager.indexOf(screen);
@@ -85,6 +90,23 @@ WindowManager {
         }
     }
 
+    WindowManager {
+        id: windowManager
+        compositor: compositor
+        onWindowCreated: {
+            var i, output, view;
+            for (i = 0; i < d.outputs.length; i++) {
+                output = d.outputs[i];
+                view = windowComponent.createObject(output.surfacesArea, {"window": window});
+                view.initialize(window, output);
+            }
+        }
+
+        Component.onCompleted: {
+            initialize();
+        }
+    }
+
     QtObject {
         id: d
 
@@ -101,5 +123,11 @@ WindowManager {
         id: surfaceComponent
 
         WaylandSurface {}
+    }
+
+    Component {
+        id: windowComponent
+
+        WaylandWindow {}
     }
 }

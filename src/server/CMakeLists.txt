@@ -53,6 +53,9 @@ set(SOURCES
     screen/quickscreenmanager.cpp
     screen/screenbackend.cpp
     screen/screenmanager.cpp
+    shell/clientwindow.cpp
+    shell/clientwindowview.cpp
+    shell/windowmanager.cpp
     extensions/gtkshell.cpp
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
@@ -204,6 +207,21 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
         screen
 )
 
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
+        ClientWindow
+        ClientWindowView
+        WindowManager
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        shell
+)
+
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/core/applicationmanager_p.h
@@ -214,6 +232,9 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowview_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell/windowmanager_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h

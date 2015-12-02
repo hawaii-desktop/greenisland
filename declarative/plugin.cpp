@@ -38,6 +38,8 @@
 
 #include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
+#include <GreenIsland/Server/ClientWindow>
+#include <GreenIsland/Server/ClientWindowView>
 #include <GreenIsland/Server/QuickOutput>
 #include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/Keymap>
@@ -46,6 +48,7 @@
 #include <GreenIsland/Server/XdgShell>
 #include <GreenIsland/Server/Screen>
 #include <GreenIsland/Server/QuickScreenManager>
+#include <GreenIsland/Server/WindowManager>
 
 #include "quickkeybindings.h"
 #include "fpscounter.h"
@@ -56,7 +59,6 @@
 #include "pointeritem.h"
 #include "keybindingsfilter.h"
 #include "keyeventfilter.h"
-#include "waylandwindowitem.h"
 
 using namespace GreenIsland::Server;
 
@@ -139,7 +141,10 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                        QObject::tr("Cannot create instance of Screen"));
 
     // Window manager
-    qmlRegisterType<WaylandWindowItem>(uri, 1, 0, "WaylandWindowItem");
+    qmlRegisterType<WindowManager>(uri, 1, 0, "WindowManager");
+    qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
+                                             QObject::tr("Cannot create instance of ClientWindow"));
+    qmlRegisterType<ClientWindowView>(uri, 1, 0, "ClientWindowView");
 
     // Application manager
     qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
