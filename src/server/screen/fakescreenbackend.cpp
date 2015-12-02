@@ -69,9 +69,11 @@ void FakeScreenBackend::acquireConfiguration()
         return;
     }
 
-    const QJsonObject object = doc.object();
+    bool primarySet = false;
 
+    const QJsonObject object = doc.object();
     const QJsonArray outputs = object.value(QStringLiteral("outputs")).toArray();
+
     for (int i = 0; i < outputs.size(); i++) {
         const QVariantMap outputSettings = outputs.at(i).toObject().toVariantMap();
         qCDebug(FAKE_BACKEND) << "Output settings:" << outputSettings;
@@ -128,9 +130,16 @@ void FakeScreenBackend::acquireConfiguration()
         ScreenBackend::get(this)->screens.append(screen);
         Q_EMIT screenAdded(screen);
 
-        if (primary)
+        if (primary) {
+            primarySet = true;
             Q_EMIT primaryScreenChanged(screen);
+        }
     }
+
+    // Automatically promote to primary the first screen if the configuration
+    // doesn't explicitely assign one
+    if (!primarySet)
+        Q_EMIT primaryScreenChanged(ScreenBackend::get(this)->screens.at(0));
 }
 
 } // namespace Server
