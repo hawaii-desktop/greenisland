@@ -28,6 +28,8 @@ import QtQuick 2.0
 import GreenIsland 1.0
 
 WaylandWindowItem {
+    property bool animationsEnabled: false
+
     id: window
     transform: [
         Scale {
@@ -42,6 +44,34 @@ WaylandWindowItem {
         }
     ]
     opacity: 0.0
+
+    /*
+     * Behavior
+     */
+
+    Behavior on x {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.OutQuad
+            duration: 350
+        }
+    }
+
+    Behavior on y {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.OutQuad
+            duration: 350
+        }
+    }
+
+    Behavior on scale {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.OutQuad
+            duration: 350
+        }
+    }
 
     /*
      * Top level window animations
