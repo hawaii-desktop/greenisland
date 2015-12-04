@@ -29,6 +29,14 @@ import GreenIsland 1.0
 
 WaylandWindowItem {
     property bool animationsEnabled: false
+    property QtObject savedProperties: QtObject {
+        property bool saved: false
+        property real x
+        property real y
+        property real width
+        property real height
+        property real scale
+    }
 
     id: window
     transform: [
