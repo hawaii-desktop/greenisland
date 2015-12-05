@@ -28,6 +28,8 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QScreen>
 
 #include "fakescreenbackend.h"
 #include "screenbackend_p.h"
@@ -99,6 +101,13 @@ void FakeScreenBackend::acquireConfiguration()
         qCDebug(FAKE_BACKEND) << "Output size:" << size;
         qCDebug(FAKE_BACKEND) << "Output refresh rate:" << refreshRate;
 
+        QSize physicalSize = outputSettings.value(QStringLiteral("physicalSize"), QSize()).toSize();
+        if (!physicalSize.isValid()) {
+            physicalSize.setWidth(w * 0.26458);
+            physicalSize.setHeight(h * 0.26458);
+        }
+        qCDebug(FAKE_BACKEND) << "Physical size millimiters:" << size;
+
         Qt::ScreenOrientation orientation =
                 static_cast<Qt::ScreenOrientation>(outputSettings.value(QStringLiteral("orientation")).toInt());
         qCDebug(FAKE_BACKEND) << "Output orientation:" << orientation;
@@ -107,6 +116,8 @@ void FakeScreenBackend::acquireConfiguration()
         ScreenPrivate *screenPrivate = Screen::get(screen);
         screenPrivate->m_manufacturer = QStringLiteral("Green Island");
         screenPrivate->m_model = name;
+        if (physicalSize.isValid())
+            screenPrivate->setPhysicalSize(physicalSize);
         screenPrivate->setPosition(pos);
         screenPrivate->setSize(size);
         screenPrivate->setRefreshRate(refreshRate);
