@@ -32,6 +32,8 @@
 #include "windowmanager.h"
 #include "windowmanager_p.h"
 #include "core/logging.h"
+#include "core/applicationmanager.h"
+#include "core/applicationmanager_p.h"
 
 namespace GreenIsland {
 
@@ -178,6 +180,8 @@ void WindowManager::initialize()
     d->xdgShell->initialize();
     d->gtkShell->initialize();
 
+    d->appMan = ApplicationManager::findIn(d->compositor);
+
     d->initialized = true;
 
     recalculateVirtualGeometry();
@@ -204,6 +208,11 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
 
     connect(surface, &QWaylandSurface::surfaceDestroyed,
             this, &WindowManager::surfaceDestroyed);
+
+    if (!d->appMan)
+        d->appMan = ApplicationManager::findIn(d->compositor);
+    if (d->appMan)
+        ApplicationManagerPrivate::get(d->appMan)->registerWindow(window);
 
     Q_EMIT windowCreated(window);
 
@@ -246,6 +255,11 @@ void WindowManager::createXdgSurface(QWaylandSurface *surface,
 
     connect(surface, &QWaylandSurface::surfaceDestroyed,
             this, &WindowManager::surfaceDestroyed);
+
+    if (!d->appMan)
+        d->appMan = ApplicationManager::findIn(d->compositor);
+    if (d->appMan)
+        ApplicationManagerPrivate::get(d->appMan)->registerWindow(window);
 
     Q_EMIT windowCreated(window);
 
@@ -516,6 +530,9 @@ void WindowManager::surfaceDestroyed()
     ClientWindow *window = d->windowForSurface(surface);
     if (!window)
         return;
+
+    if (d->appMan)
+        ApplicationManagerPrivate::get(d->appMan)->unregisterWindow(window);
 
     // We don't have to disconnect the signals here because both surface
     // and shell surface are already gone here

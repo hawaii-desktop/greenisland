@@ -28,9 +28,11 @@
 #define GREENISLAND_APPLICATIONMANAGER_P_H
 
 #include <QtCore/QMultiMap>
-#include <QtCore/private/qobject_p.h>
+
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
 
 #include <GreenIsland/Server/ApplicationManager>
+#include <GreenIsland/server/private/qwayland-server-greenisland.h>
 
 //  W A R N I N G
 //  -------------
@@ -45,18 +47,28 @@ namespace GreenIsland {
 
 namespace Server {
 
-class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate : public QObjectPrivate
+class ClientWindow;
+
+class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate
+        : public QWaylandExtensionTemplatePrivate
+        , public QtWaylandServer::greenisland_applications
 {
     Q_DECLARE_PUBLIC(ApplicationManager)
 public:
-    ApplicationManagerPrivate()
-    {
-    }
+    ApplicationManagerPrivate();
 
-    void _q_appIdChanged(const QString &appId);
+    void registerWindow(ClientWindow *window);
+    void unregisterWindow(ClientWindow *window);
 
-    QList<QObject *> shellSurfaces;
-    QMultiMap<QString, QObject *> appIdMap;
+    void _q_appIdChanged();
+    void _q_activeChanged();
+
+    static ApplicationManagerPrivate *get(ApplicationManager *appMan) { return appMan->d_func(); }
+
+    QMultiMap<QString, ClientWindow *> appIdMap;
+
+protected:
+    void applications_quit(Resource *resource, const QString &app_id) Q_DECL_OVERRIDE;
 };
 
 } // namespace Server

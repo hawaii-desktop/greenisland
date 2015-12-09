@@ -27,9 +27,11 @@
 #ifndef GREENISLAND_APPLICATIONMANAGER_H
 #define GREENISLAND_APPLICATIONMANAGER_H
 
-#include <QtCore/QObject>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
+
+class QWaylandCompositor;
 
 namespace GreenIsland {
 
@@ -37,22 +39,13 @@ namespace Server {
 
 class ApplicationManagerPrivate;
 
-class GREENISLANDSERVER_EXPORT ApplicationManager : public QObject
+class GREENISLANDSERVER_EXPORT ApplicationManager : public QWaylandExtensionTemplate<ApplicationManager>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)
 public:
-    ApplicationManager(QObject *parent = Q_NULLPTR);
-
-    /*!
-     * \brief Registers the \a window.
-     */
-    Q_INVOKABLE void registerWindow(QObject *window);
-
-    /*!
-     * \brief Unregisters the \a window.
-     */
-    Q_INVOKABLE void unregisterWindow(QObject *window);
+    ApplicationManager();
+    ApplicationManager(QWaylandCompositor *compositor);
 
     /*!
      * \brief Returns whether the application is registered or not.
@@ -65,6 +58,14 @@ public:
      * \param appId Application identifier.
      */
     Q_INVOKABLE void quit(const QString &appId);
+
+    /*!
+     * \brief Initializes the extension.
+     */
+    void initialize() Q_DECL_OVERRIDE;
+
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
 
 Q_SIGNALS:
     /*!
@@ -94,7 +95,8 @@ Q_SIGNALS:
     void applicationUnfocused(const QString &appId);
 
 private:
-    Q_PRIVATE_SLOT(d_func(), void _q_appIdChanged(const QString &appId))
+    Q_PRIVATE_SLOT(d_func(), void _q_appIdChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_activeChanged())
 };
 
 } // namespace Server

@@ -50,6 +50,7 @@ namespace GreenIsland {
 
 namespace Server {
 
+class ApplicationManager;
 class ClientWindow;
 
 class GREENISLANDSERVER_EXPORT WindowManagerPrivate : public QObjectPrivate
@@ -63,6 +64,7 @@ public:
         , wlShell(Q_NULLPTR)
         , xdgShell(Q_NULLPTR)
         , gtkShell(Q_NULLPTR)
+        , appMan(Q_NULLPTR)
     {}
 
     ~WindowManagerPrivate()
@@ -86,6 +88,7 @@ public:
     XdgShell *xdgShell;
     GtkShell *gtkShell;
     QVector<ClientWindow *> windowsList;
+    ApplicationManager *appMan;
 };
 
 } // namespace Server

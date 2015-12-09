@@ -237,6 +237,7 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/windowmanager_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
     OUTPUT_DIR
