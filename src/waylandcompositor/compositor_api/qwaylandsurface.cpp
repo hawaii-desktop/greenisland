@@ -130,6 +130,7 @@ QWaylandSurfacePrivate::QWaylandSurfacePrivate()
     , mapped(false)
     , isInitialized(false)
     , contentOrientation(Qt::PrimaryOrientation)
+    , subsurface(0)
 {
     pending.buffer = 0;
     pending.newlyAttached = false;
@@ -775,6 +776,37 @@ void QWaylandSurfacePrivate::derefView(QWaylandView *view)
     for (int i = 0; i < nViews && refCount > 0; i++) {
         deref();
     }
+}
+
+void QWaylandSurfacePrivate::initSubsurface(wl_client *client, int id, int version)
+{
+    subsurface = new Subsurface(this);
+    subsurface->init(client, id, version);
+}
+
+void QWaylandSurfacePrivate::Subsurface::subsurface_set_position(wl_subsurface::Resource *resource, int32_t x, int32_t y)
+{
+    qDebug() << Q_FUNC_INFO << x << y;
+}
+
+void QWaylandSurfacePrivate::Subsurface::subsurface_place_above(wl_subsurface::Resource *resource, struct wl_resource *sibling)
+{
+    qDebug() << Q_FUNC_INFO << sibling;
+}
+
+void QWaylandSurfacePrivate::Subsurface::subsurface_place_below(wl_subsurface::Resource *resource, struct wl_resource *sibling)
+{
+    qDebug() << Q_FUNC_INFO << sibling;
+}
+
+void QWaylandSurfacePrivate::Subsurface::subsurface_set_sync(wl_subsurface::Resource *resource)
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void QWaylandSurfacePrivate::Subsurface::subsurface_set_desync(wl_subsurface::Resource *resource)
+{
+    qDebug() << Q_FUNC_INFO;
 }
 
 QT_END_NAMESPACE

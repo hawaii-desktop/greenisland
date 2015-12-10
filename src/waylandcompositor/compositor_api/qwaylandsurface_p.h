@@ -112,6 +112,9 @@ public:
     static void removeUninitializedSurface(QWaylandSurfacePrivate *surface);
     static bool hasUninitializedSurface();
 #endif
+
+    void initSubsurface(struct ::wl_client *client, int id, int version);
+
 protected:
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
@@ -169,6 +172,25 @@ protected: //member variables
     bool isInitialized;
     Qt::ScreenOrientation contentOrientation;
     QWindow::Visibility visibility;
+
+    class Subsurface : public QtWaylandServer::wl_subsurface
+    {
+    public:
+        Subsurface(QWaylandSurfacePrivate *s) : surface(s) {}
+        QWaylandSurfacePrivate *surfaceFromResource();
+
+    protected:
+        void subsurface_set_position(wl_subsurface::Resource *resource, int32_t x, int32_t y);
+        void subsurface_place_above(wl_subsurface::Resource *resource, struct wl_resource *sibling);
+        void subsurface_place_below(wl_subsurface::Resource *resource, struct wl_resource *sibling);
+        void subsurface_set_sync(wl_subsurface::Resource *resource);
+        void subsurface_set_desync(wl_subsurface::Resource *resource);
+
+    private:
+        QWaylandSurfacePrivate *surface;
+    };
+
+    Subsurface *subsurface;
 
 #ifndef QT_NO_DEBUG
     static QList<QWaylandSurfacePrivate *> uninitializedSurfaces;

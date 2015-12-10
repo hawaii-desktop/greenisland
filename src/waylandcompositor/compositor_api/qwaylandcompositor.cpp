@@ -75,6 +75,8 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/private/qguiapplication_p.h>
 
+#include <QDebug>
+
 QT_BEGIN_NAMESPACE
 
 namespace QtWayland {
@@ -165,6 +167,7 @@ void QWaylandCompositorPrivate::init()
         socket_name = arguments.at(socketArg + 1).toLocal8Bit();
 
     wl_compositor::init(display, 3);
+    wl_subcompositor::init(display, 1);
 
     data_device_manager =  new QtWayland::DataDeviceManager(q);
 
@@ -277,7 +280,7 @@ void QWaylandCompositorPrivate::addPolishObject(QObject *object)
 */
 
 
-void QWaylandCompositorPrivate::compositor_create_surface(Resource *resource, uint32_t id)
+void QWaylandCompositorPrivate::compositor_create_surface(wl_compositor::Resource *resource, uint32_t id)
 {
     Q_Q(QWaylandCompositor);
     QWaylandClient *client = QWaylandClient::fromWlClient(q, resource->client());
@@ -299,9 +302,16 @@ void QWaylandCompositorPrivate::compositor_create_surface(Resource *resource, ui
     emit q->surfaceCreated(surface);
 }
 
-void QWaylandCompositorPrivate::compositor_create_region(Resource *resource, uint32_t id)
+void QWaylandCompositorPrivate::compositor_create_region(wl_compositor::Resource *resource, uint32_t id)
 {
     new QtWayland::Region(resource->client(), id);
+}
+
+void QWaylandCompositorPrivate::subcompositor_get_subsurface(wl_subcompositor::Resource *resource, uint32_t id, wl_resource *surface, wl_resource *parent)
+{
+    qDebug() << Q_FUNC_INFO << resource << id << surface << parent;
+    QWaylandSurface *childSurface = QWaylandSurface::fromResource(surface);
+    QWaylandSurfacePrivate::get(childSurface)->initSubsurface(resource->client(), id, 1);
 }
 
 /*!
