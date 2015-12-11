@@ -24,12 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-import QtQuick 2.0
+import QtQuick 2.5
 import GreenIsland 1.0
 
 WaylandCompositor {
     property QtObject primarySurfacesArea: null
-    readonly property alias keyBindingsManager: keyBindings
 
     id: compositor
     onCreateSurface: {
@@ -75,19 +74,10 @@ WaylandCompositor {
         }
     }
 
-    KeyBindings {
-        id: keyBindings
-        onKeyBindingReleased: {
-            switch (name) {
-            case "quit":
-                Qt.quit();
-                break;
-            }
-        }
-
-        Component.onCompleted: {
-            registerKeyBinding("quit", "Meta+Q");
-        }
+    Shortcut {
+        context: Qt.ApplicationShortcut
+        sequence: "Meta+Q"
+        onActivated: Qt.quit()
     }
 
     WindowManager {
