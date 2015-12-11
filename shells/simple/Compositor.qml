@@ -76,7 +76,7 @@ WaylandCompositor {
 
     Shortcut {
         context: Qt.ApplicationShortcut
-        sequence: "Meta+Q"
+        sequence: "Ctrl+Alt+Backspace"
         onActivated: Qt.quit()
     }
 
