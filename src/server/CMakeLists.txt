@@ -40,6 +40,7 @@ include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
 
 set(SOURCES
+    core/abstractplugin.cpp
     core/applicationmanager.cpp
     core/compositorsettings.cpp
     core/diagnostic_p.cpp
@@ -148,6 +149,7 @@ set_target_properties(GreenIslandServer PROPERTIES
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        AbstractPlugin
         ApplicationManager
         CompositorSettings
         HomeApplication

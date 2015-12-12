@@ -24,12 +24,18 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef ABSTRACTPLUGIN_H
-#define ABSTRACTPLUGIN_H
+#ifndef GREENISLAND_ABSTRACTPLUGIN_H
+#define GREENISLAND_ABSTRACTPLUGIN_H
 
-#include <GreenIsland/Server/Compositor>
+#include <QtCore/QObject>
+
+#include <GreenIsland/server/greenislandserver_export.h>
+
+class QWaylandCompositor;
 
 namespace GreenIsland {
+
+namespace Server {
 
 /*!
  * @brief Abstract plugin class.
@@ -56,19 +62,13 @@ public:
      * When implementing this method, the plugin can connect to the
      * Compositor signals or save the pointer to do something later.
      */
-    virtual void registerPlugin(Compositor *compositor) = 0;
-
-    /*!
-     * \brief Add global interfaces.
-     *
-     * Plugins can override this method to add their global
-     * interfaces in order to implement custom Wayland protocols.
-     */
-    virtual void addGlobalInterfaces();
+    virtual void registerPlugin(QWaylandCompositor *compositor) = 0;
 };
 
-}
+} // namespace Server
 
-Q_DECLARE_INTERFACE(GreenIsland::AbstractPlugin, "org.hawaiios.greenisland.Plugin")
+} // namespace GreenIsland
 
-#endif // ABSTRACTPLUGIN_H
+Q_DECLARE_INTERFACE(GreenIsland::Server::AbstractPlugin, "org.hawaiios.greenisland.Plugin")
+
+#endif // GREENISLAND_ABSTRACTPLUGIN_H

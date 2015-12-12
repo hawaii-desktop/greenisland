@@ -28,14 +28,14 @@
 
 namespace GreenIsland {
 
+namespace Server {
+
 AbstractPlugin::~AbstractPlugin()
 {
 }
 
-void AbstractPlugin::addGlobalInterfaces()
-{
-}
+} // namespace Server
 
-}
+} // namespace GreenIsland
 
 #include "moc_abstractplugin.cpp"
