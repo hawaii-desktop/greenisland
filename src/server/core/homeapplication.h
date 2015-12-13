@@ -59,7 +59,7 @@ public:
     void setContextProperty(const QString &name, QObject *object);
 
     bool load(const QString &shell);
-    bool loadFile(const QString &fileName);
+    bool loadUrl(const QUrl &url);
 
 Q_SIGNALS:
     void screenConfigurationChanged(const QString &fileName);

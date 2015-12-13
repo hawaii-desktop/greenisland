@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
     homeApp.setNotificationEnabled(notify);
     homeApp.setScreenConfiguration(fakeScreenData);
     if (parser.isSet(qmlOption)) {
-        if (!homeApp.loadFile(parser.value(qmlOption)))
+        if (!homeApp.loadUrl(QUrl::fromLocalFile(parser.value(qmlOption))))
             return 1;
     } else {
         if (!homeApp.load(parser.value(shellOption)))

@@ -237,7 +237,7 @@ bool HomeApplication::load(const QString &shell)
     return false;
 }
 
-bool HomeApplication::loadFile(const QString &fileName)
+bool HomeApplication::loadUrl(const QUrl &url)
 {
     Q_D(HomeApplication);
 
@@ -250,9 +250,9 @@ bool HomeApplication::loadFile(const QString &fileName)
     // Check whether XDG_RUNTIME_DIR is ok or not
     d->verifyXdgRuntimeDir();
 
-    qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << fileName;
+    qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << url.toString();
 
-    d->engine->load(fileName);
+    d->engine->load(url);
     d->running = true;
 
 #if HAVE_SYSTEMD
