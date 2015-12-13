@@ -1,13 +1,38 @@
-@PACKAGE_INIT@
+if(NOT GreenIsland_FIND_COMPONENTS)
+    set(GreenIsland_NOT_FOUND_MESSAGE "The GreenIsland package requires at least one component")
+    set(GreenIsland_FOUND False)
+    return()
+endif()
 
-#find_dependency(@EGL_IMPLEMENTATION@)
-find_dependency(Qt5Core @REQUIRED_QT_VERSION@)
-find_dependency(Qt5Gui @REQUIRED_QT_VERSION@)
-find_dependency(Qt5Widgets @REQUIRED_QT_VERSION@)
-find_dependency(Qt5Qml @REQUIRED_QT_VERSION@)
-find_dependency(Qt5Quick @REQUIRED_QT_VERSION@)
-find_dependency(Wayland @REQUIRED_WAYLAND_VERSION@)
+set(_GreenIsland_FIND_PARTS_REQUIRED)
+if (GreenIsland_FIND_REQUIRED)
+    set(_GreenIsland_FIND_PARTS_REQUIRED REQUIRED)
+endif()
+set(_GreenIsland_FIND_PARTS_QUIET)
+if (GreenIsland_FIND_QUIETLY)
+    set(_GreenIsland_FIND_PARTS_QUIET QUIET)
+endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/GreenIslandConfigExtras.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/GreenIslandTargets.cmake")
-include("${CMAKE_CURRENT_LIST_DIR}/GreenIslandMacros.cmake")
+get_filename_component(_greenisland_install_prefix "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
+
+set(_GreenIsland_NOTFOUND_MESSAGE)
+
+foreach(module ${GreenIsland_FIND_COMPONENTS})
+    find_package(GreenIsland${module}
+        ${_GreenIsland_FIND_PARTS_QUIET}
+        ${_GreenIsland_FIND_PARTS_REQUIRED}
+        PATHS "${_greenisland_install_prefix}" NO_DEFAULT_PATH
+    )
+    if (NOT GreenIsland${module}_FOUND)
+        if (GreenIsland_FIND_REQUIRED_${module})
+            set(_GreenIsland_NOTFOUND_MESSAGE "${_GreenIsland_NOTFOUND_MESSAGE}Failed to find GreenIsland component \"${module}\" config file at \"${_greenisland_install_prefix}/GreenIsland${module}/GreenIsland${module}Config.cmake\"\n")
+        elseif(NOT GreenIsland_FIND_QUIETLY)
+            message(WARNING "Failed to find GreenIsland component \"${module}\" config file at \"${_greenisland_install_prefix}/GreenIsland${module}/GreenIsland${module}Config.cmake\"")
+        endif()
+    endif()
+endforeach()
+
+if (_GreenIsland_NOTFOUND_MESSAGE)
+    set(GreenIsland_NOT_FOUND_MESSAGE "${_GreenIsland_NOTFOUND_MESSAGE}")
+    set(GreenIsland_FOUND False)
+endif()

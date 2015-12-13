@@ -247,8 +247,21 @@ install(
 )
 
 install(TARGETS GreenIslandPlatform
-        EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+        EXPORT GreenIslandPlatformTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
+# CMake package config
+set(GreenIslandPlatform_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandPlatform")
+ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandPlatformConfig.cmake.in"
+                                  "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandPlatformConfig.cmake"
+                                  INSTALL_DESTINATION ${GreenIslandPlatform_CMAKECONFIG_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandPlatformConfig.cmake"
+        DESTINATION "${GreenIslandPlatform_CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel)
+install(EXPORT GreenIslandPlatformTargets
+        DESTINATION "${GreenIslandPlatform_CMAKECONFIG_INSTALL_DIR}"
+        FILE GreenIslandPlatformTargets.cmake NAMESPACE GreenIsland::)
+
+# qmake pri file
 include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME GreenIslandPlatform
                       LIB_NAME GreenIslandPlatform
@@ -258,6 +271,7 @@ ecm_generate_pri_file(BASE_NAME GreenIslandPlatform
 install(FILES ${PRI_FILENAME}
         DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
 
+# pkg-config file
 include(ECMGeneratePkgConfigFile)
 ecm_generate_pkgconfig_file(BASE_NAME GreenIslandPlatform
                             LIB_NAME GreenIslandPlatform

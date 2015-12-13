@@ -39,8 +39,8 @@ add_definitions(
     -DMESA_EGL_NO_X11_HEADERS
 )
 
-include(../GreenIslandConfigExtrasLocal.cmake)
-include(../GreenIslandMacros.cmake)
+include(GreenIslandServerConfigExtrasLocal.cmake)
+include(GreenIslandServerMacros.cmake)
 
 set(SOURCES
     core/abstractplugin.cpp
@@ -251,7 +251,7 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
 )
 
 install(TARGETS GreenIslandServer
-        EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+        EXPORT GreenIslandServerTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES ${GreenIslandServer_CamelCase_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/Server
@@ -267,6 +267,21 @@ install(
         Devel
 )
 
+# CMake package config
+set(GreenIslandServer_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandServer")
+ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerConfig.cmake.in"
+                                  "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfig.cmake"
+                                  INSTALL_DESTINATION ${GreenIslandServer_CMAKECONFIG_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfig.cmake"
+              "${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerConfigExtras.cmake"
+              "${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerMacros.cmake"
+        DESTINATION "${GreenIslandServer_CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel)
+install(EXPORT GreenIslandServerTargets
+        DESTINATION "${GreenIslandServer_CMAKECONFIG_INSTALL_DIR}"
+        FILE GreenIslandServerTargets.cmake NAMESPACE GreenIsland::)
+
+# qmake pri file
 include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME GreenIslandServer
                       LIB_NAME GreenIslandServer
@@ -276,6 +291,7 @@ ecm_generate_pri_file(BASE_NAME GreenIslandServer
 install(FILES ${PRI_FILENAME}
         DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
 
+# pkg-config file
 include(ECMGeneratePkgConfigFile)
 ecm_generate_pkgconfig_file(BASE_NAME GreenIslandServer
                             LIB_NAME GreenIslandServer

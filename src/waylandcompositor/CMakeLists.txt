@@ -32,8 +32,8 @@ include_directories(
     ${xkbcommon_INCLUDE_DIRS}
 )
 
-include(../GreenIslandConfigExtrasLocal.cmake)
-include(../GreenIslandMacros.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerConfigExtrasLocal.cmake)
+include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerMacros.cmake)
 
 set(SOURCES
     compositor_api/qwaylandbufferref.cpp
@@ -291,7 +291,7 @@ private_headers(GreenIslandCompositor_PRIVATE_HEADERS
 )
 
 install(TARGETS GreenIslandCompositor
-        EXPORT GreenIslandTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
+        EXPORT GreenIslandCompositorTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(
     FILES
@@ -303,6 +303,19 @@ install(
         Devel
 )
 
+# CMake package config
+set(GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandCompositor")
+ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandCompositorConfig.cmake.in"
+                                  "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfig.cmake"
+                                  INSTALL_DESTINATION ${GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfig.cmake"
+        DESTINATION "${GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel)
+install(EXPORT GreenIslandCompositorTargets
+        DESTINATION "${GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR}"
+        FILE GreenIslandCompositorTargets.cmake NAMESPACE GreenIsland::)
+
+# qmake pri file
 include(ECMGeneratePriFile)
 ecm_generate_pri_file(BASE_NAME GreenIslandCompositor
                       LIB_NAME GreenIslandCompositor
@@ -312,6 +325,7 @@ ecm_generate_pri_file(BASE_NAME GreenIslandCompositor
 install(FILES ${PRI_FILENAME}
         DESTINATION ${ECM_MKSPECS_INSTALL_DIR})
 
+# pkg-config file
 include(ECMGeneratePkgConfigFile)
 ecm_generate_pkgconfig_file(BASE_NAME GreenIslandCompositor
                             LIB_NAME GreenIslandCompositor
