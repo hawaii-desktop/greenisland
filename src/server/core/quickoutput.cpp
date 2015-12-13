@@ -26,6 +26,9 @@
 
 #include <QtCore/QElapsedTimer>
 #include <QtCore/private/qobject_p.h>
+#include <QtGui/QScreen>
+
+#include <GreenIsland/Platform/EglFSScreen>
 
 #include "quickoutput.h"
 #include "logging.h"
@@ -195,6 +198,49 @@ void QuickOutput::setNativeScreen(Screen *screen)
 
     d->nativeScreen = screen;
     Q_EMIT nativeScreenChanged();
+}
+
+QuickOutput::PowerState QuickOutput::powerState() const
+{
+    Q_D(const QuickOutput);
+
+    // Power state is supported only with native screens and our QPA
+    Platform::EglFSScreen *screen = Q_NULLPTR;
+    if (d->nativeScreen && d->nativeScreen->screen())
+        screen = static_cast<Platform::EglFSScreen *>(
+                    d->nativeScreen->screen()->handle());
+    if (!screen) {
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "QuickOutput::powerState always returns "
+                << "ON without native screens or the greenisland QPA";
+        return PowerStateOn;
+    }
+
+    return static_cast<QuickOutput::PowerState>(screen->powerState());
+}
+
+void QuickOutput::setPowerState(PowerState state)
+{
+    Q_D(QuickOutput);
+
+    // Power state is supported only with native screens and our QPA
+    Platform::EglFSScreen *screen = Q_NULLPTR;
+    if (d->nativeScreen && d->nativeScreen->screen())
+        screen = static_cast<Platform::EglFSScreen *>(
+                    d->nativeScreen->screen()->handle());
+    if (!screen) {
+        qCWarning(GREENISLAND_COMPOSITOR)
+                << "Setting QuickOutput::powerState without native screens "
+                << "or without the greenisland QPA has no effect";
+        return;
+    }
+
+    Platform::EglFSScreen::PowerState pstate =
+            static_cast<Platform::EglFSScreen::PowerState>(state);
+    if (screen->powerState() != pstate) {
+        screen->setPowerState(pstate);
+        Q_EMIT powerStateChanged();
+    }
 }
 
 QSize QuickOutput::hotSpotSize() const

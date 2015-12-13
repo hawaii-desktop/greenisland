@@ -34,7 +34,10 @@ if(systemd_FOUND)
     include_directories(${systemd_INCLUDE_DIRS})
 endif()
 
-add_definitions(-Wno-deprecated-declarations)
+add_definitions(
+    -Wno-deprecated-declarations
+    -DMESA_EGL_NO_X11_HEADERS
+)
 
 include(../GreenIslandConfigExtrasLocal.cmake)
 include(../GreenIslandMacros.cmake)
@@ -117,6 +120,7 @@ target_link_libraries(GreenIslandServer
         Wayland::Client
         Wayland::Server
         GreenIslandCompositor
+        GreenIsland::Platform
     PRIVATE
         Wayland::Cursor
         ${EGL_TARGET}

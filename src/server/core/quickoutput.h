@@ -44,10 +44,19 @@ class GREENISLANDSERVER_EXPORT QuickOutput : public QWaylandQuickOutput
     Q_OBJECT
     Q_DECLARE_PRIVATE(QuickOutput)
     Q_PROPERTY(Screen *nativeScreen READ nativeScreen WRITE setNativeScreen NOTIFY nativeScreenChanged DESIGNABLE false)
+    Q_PROPERTY(PowerState powerState READ powerState WRITE setPowerState NOTIFY powerStateChanged)
     Q_PROPERTY(QSize hotSpotSize READ hotSpotSize WRITE setHotSpotSize NOTIFY hotSpotSizeChanged)
     Q_PROPERTY(quint64 hotSpotThreshold READ hotSpotThreshold WRITE setHotSpotThreshold NOTIFY hotSpotThresholdChanged)
     Q_PROPERTY(quint64 hotSpotPushTime READ hotSpotPushTime WRITE setHotSpotPushTime NOTIFY hotSpotPushTimeChanged)
 public:
+    enum PowerState {
+        PowerStateOn,
+        PowerStateStandby,
+        PowerStateSuspend,
+        PowerStateOff
+    };
+    Q_ENUM(PowerState)
+
     enum HotSpot {
         TopLeftHotSpot = 0,
         TopRightHotSpot,
@@ -61,6 +70,9 @@ public:
 
     Screen *nativeScreen() const;
     void setNativeScreen(Screen *screen);
+
+    PowerState powerState() const;
+    void setPowerState(PowerState state);
 
     QSize hotSpotSize() const;
     void setHotSpotSize(const QSize &size);
@@ -76,6 +88,7 @@ protected:
 
 Q_SIGNALS:
     void nativeScreenChanged();
+    void powerStateChanged();
     void hotSpotSizeChanged();
     void hotSpotThresholdChanged();
     void hotSpotPushTimeChanged();
