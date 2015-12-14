@@ -47,6 +47,7 @@
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
 #include <GreenIsland/Server/XdgShell>
 #include <GreenIsland/Server/Screen>
+#include <GreenIsland/Server/Screenshooter>
 #include <GreenIsland/Server/QuickScreenManager>
 #include <GreenIsland/Server/WindowManager>
 
@@ -148,6 +149,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Application manager
     qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
+
+    // Screen shooter
+    qmlRegisterType<Screenshooter>(uri, 1, 0, "Screenshooter");
 
     // Key bindings
     qmlRegisterUncreatableType<KeyBinding>(uri, 1, 0, "KeyBinding",
