@@ -25,6 +25,12 @@
       The done event is sent when the buffer is filled.
     </description>
 
+    <enum name="what">
+      <entry name="whole_screen" value="1"/>
+      <entry name="current_window" value="2"/>
+      <entry name="select_area" value="3"/>
+    </enum>
+
     <enum name="result">
       <entry name="bad_output" value="1"/>
       <entry name="bad_buffer" value="2"/>
@@ -32,11 +38,13 @@
     </enum>
 
     <request name="shoot">
-      <description summary="quit an application">
-        Ask the compositor to terminate a Wayland client with the specified application identifier.
+      <description summary="take a screenshot">
+        Ask the compositor to take a screenshot of the output and save it
+        to the buffer.
       </description>
-      <arg name="output" type="object" summary="wl_output"/>
-      <arg name="buffer" type="object" summary="wl_buffer"/>
+      <arg name="what" type="int"/>
+      <arg name="output" type="object" interface="wl_output"/>
+      <arg name="buffer" type="object" interface="wl_buffer"/>
     </request>
 
     <event name="done">
