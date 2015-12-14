@@ -24,40 +24,44 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDSCREENSHOOTER_H
-#define GREENISLANDSCREENSHOOTER_H
+#ifndef GREENISLAND_SCREENSHOOTER_P_H
+#define GREENISLAND_SCREENSHOOTER_P_H
 
-#include <QtCore/QLoggingCategory>
-#include <GreenIsland/Compositor/QWaylandGlobalInterface>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
 
-#include "qwayland-server-greenisland-screenshooter.h"
+#include <GreenIsland/Server/Screenshooter>
+#include <GreenIsland/server/private/qwayland-server-greenisland-screenshooter.h>
 
-Q_DECLARE_LOGGING_CATEGORY(SCREENSHOOTER_PROTOCOL)
-
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 namespace GreenIsland {
 
-class GreenIslandScreenshooterGlobal : public QObject, public QWaylandGlobalInterface
-{
-public:
-    explicit GreenIslandScreenshooterGlobal(QObject *parent = 0);
+namespace Server {
 
-    const wl_interface *interface() const Q_DECL_OVERRIDE;
-    void bind(wl_client *client, uint32_t version, uint32_t id) Q_DECL_OVERRIDE;
-};
-
-class GreenIslandScreenshooter : public QObject, public QtWaylandServer::greenisland_screenshooter
+class GREENISLANDSERVER_EXPORT ScreenshooterPrivate
+        : public QWaylandExtensionTemplatePrivate
+        , public QtWaylandServer::greenisland_screenshooter
 {
+    Q_DECLARE_PUBLIC(Screenshooter)
 public:
-    GreenIslandScreenshooter(wl_client *client, uint32_t name, uint32_t version, QObject *parent);
-    ~GreenIslandScreenshooter();
+    ScreenshooterPrivate();
 
 protected:
-    void screenshooter_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
-    void screenshooter_shoot(Resource *resource,
+    void screenshooter_shoot(Resource *resource, int32_t what,
                              wl_resource *outputResource,
                              wl_resource *bufferResource) Q_DECL_OVERRIDE;
 };
 
-}
+} // namespace Server
 
-#endif // GREENISLANDSCREENSHOOTER_H
+} // namespace GreenIsland
+
+#endif // GREENISLAND_SCREENSHOOTER_P_H

@@ -64,6 +64,7 @@ set(SOURCES
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
     extensions/quickxdgsurfaceitem.cpp
+    extensions/screenshooter.cpp
 )
 
 greenisland_add_server_protocol(SOURCES
@@ -188,6 +189,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
         XdgShell,XdgSurface,XdgPopup
         QuickXdgPopupItem
         QuickXdgSurfaceItem
+        Screenshooter
     PREFIX
         Server
     OUTPUT_DIR
@@ -241,9 +243,11 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowview_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/windowmanager_p.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
     OUTPUT_DIR
