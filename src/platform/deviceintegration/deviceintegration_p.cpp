@@ -48,7 +48,7 @@ public:
     static QString detectHardware()
     {
         // Detect X11
-        if (qEnvironmentVariableIsSet("DISPLAY"))
+        if (!qEnvironmentVariableIsEmpty("DISPLAY"))
             return QStringLiteral("x11");
 
         // Detect Broadcom
