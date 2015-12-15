@@ -28,7 +28,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QSocketNotifier>
 
-#include "wlclientconnection.h"
+#include "clientconnection.h"
 
 #include <wayland-client.h>
 
@@ -183,4 +183,4 @@ void WlClientConnection::flush()
 
 }
 
-#include "moc_wlclientconnection.cpp"
+#include "moc_clientconnection.cpp"

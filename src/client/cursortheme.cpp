@@ -24,12 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "compositor.h"
-#include "compositor_p.h"
-#include "wlcursortheme.h"
-#include "wlpointer.h"
-#include "wlseat.h"
-#include "wlshmpool.h"
+#include "cursortheme.h"
+#include "pointer.h"
+#include "seat.h"
+#include "shmpool.h"
 
 #include <wayland-client.h>
 #include <wayland-cursor.h>

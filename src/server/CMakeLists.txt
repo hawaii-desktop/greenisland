@@ -98,17 +98,6 @@ greenisland_add_server_protocol(SOURCES
     PREFIX gtk_
 )
 
-greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
-    BASENAME wayland
-    PREFIX wl_
-)
-greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/fullscreen-shell.xml
-    BASENAME fullscreen-shell
-    PREFIX _wl_
-)
-
 add_library(GreenIslandServer SHARED ${SOURCES})
 generate_export_header(GreenIslandServer EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/server/greenislandserver_export.h)
 add_library(GreenIsland::Server ALIAS GreenIslandServer)

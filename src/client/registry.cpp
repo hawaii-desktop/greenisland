@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "wlregistry.h"
-#include "wlshmpool.h"
+#include "registry.h"
+#include "shmpool.h"
 #include "qwayland-fullscreen-shell.h"
 
 #include <wayland-client.h>
@@ -288,4 +288,4 @@ WlShmPool *WlRegistry::createShmPool(QObject *parent)
 
 }
 
-#include "moc_wlregistry.cpp"
+#include "moc_registry.cpp"

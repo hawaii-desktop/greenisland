@@ -27,7 +27,7 @@
 #ifndef WLSEAT_H
 #define WLSEAT_H
 
-#include "wlregistry.h"
+#include "registry.h"
 
 #include "qwayland-wayland.h"
 

@@ -24,8 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "wlpointer.h"
-#include "wlseat.h"
+#include "pointer.h"
+#include "seat.h"
 
 namespace GreenIsland {
 

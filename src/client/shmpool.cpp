@@ -26,7 +26,7 @@
 
 #include <QtCore/QTemporaryFile>
 
-#include "wlshmpool.h"
+#include "shmpool.h"
 
 #include <unistd.h>
 #include <sys/mman.h>
@@ -185,4 +185,4 @@ wl_shm *WlShmPool::shm() const
 
 }
 
-#include "moc_wlshmpool.cpp"
+#include "moc_shmpool.cpp"

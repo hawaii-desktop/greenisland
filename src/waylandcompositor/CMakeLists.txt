@@ -163,9 +163,6 @@ set_target_properties(GreenIslandCompositor PROPERTIES
     EXPORT_NAME Compositor
 )
 
-include(GenerateHeaders)
-include(PrivateHeaders)
-
 generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     HEADER_NAMES
         QWaylandBufferRef
