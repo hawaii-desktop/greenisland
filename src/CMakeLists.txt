@@ -25,7 +25,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandConfig.cmake"
 install(FILES ${CMAKE_BINARY_DIR}/headers/greenisland_version.h
         DESTINATION ${HAWAII_INCLUDEDIR} COMPONENT Devel)
 
-add_subdirectory(platform)
 add_subdirectory(hardwareintegration)
-add_subdirectory(waylandcompositor)
+add_subdirectory(platform)
 add_subdirectory(server)
+add_subdirectory(waylandcompositor)
