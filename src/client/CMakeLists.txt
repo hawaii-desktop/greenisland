@@ -56,6 +56,7 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
     HEADER_NAMES
         ClientConnection
         CursorTheme
+        FullScreenShell
         Pointer
         Registry
         Seat
