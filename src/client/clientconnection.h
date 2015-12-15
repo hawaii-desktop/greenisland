@@ -24,23 +24,27 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLCLIENTCONNECTION_H
-#define WLCLIENTCONNECTION_H
+#ifndef GREENISLANDCLIENT_CLIENTCONNECTION_H
+#define GREENISLANDCLIENT_CLIENTCONNECTION_H
 
 #include <QtCore/QObject>
+
+#include <GreenIsland/client/greenislandclient_export.h>
 
 struct wl_display;
 
 namespace GreenIsland {
 
-class WlClientConnectionPrivate;
+namespace Client {
 
-class WlClientConnection : public QObject
+class ClientConnectionPrivate;
+
+class GREENISLANDCLIENT_EXPORT ClientConnection : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(ClientConnection)
 public:
-    WlClientConnection(QObject *parent = 0);
-    ~WlClientConnection();
+    ClientConnection(QObject *parent = Q_NULLPTR);
 
     wl_display *display() const;
     void setDisplay(wl_display *display);
@@ -61,12 +65,11 @@ Q_SIGNALS:
     void eventsDispatched();
 
 private:
-    Q_DECLARE_PRIVATE(WlClientConnection)
-    WlClientConnectionPrivate *const d_ptr;
-
     Q_PRIVATE_SLOT(d_func(), void _q_initConnection())
 };
 
-}
+} // namespace Client
 
-#endif // WLCLIENTCONNECTION_H
+} // namespace GreenIslanmd
+
+#endif // GREENISLANDCLIENT_CLIENTCONNECTION_H

@@ -24,43 +24,47 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_SEAT_P_H
+#define GREENISLANDCLIENT_SEAT_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/client/greenislandclient_export.h>
+#include <GreenIsland/Client/Seat>
+#include <GreenIsland/client/private/qwayland-wayland.h>
 
-struct wl_shm;
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Registry;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT SeatPrivate
+        : public QObjectPrivate
+        , public QtWayland::wl_seat
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
-    Q_PROPERTY(bool valid READ isValid CONSTANT)
+    Q_DECLARE_PUBLIC(Seat)
 public:
-    bool isValid() const;
+    SeatPrivate();
 
-    wl_shm *shm() const;
+    quint32 version;
+    wl_compositor *compositor;
+    Pointer *pointer;
 
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(wl_shm *shm, QObject *parent = Q_NULLPTR);
-
-    friend class Registry;
+protected:
+    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_SEAT_P_H

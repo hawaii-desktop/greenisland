@@ -25,43 +25,46 @@
  ***************************************************************************/
 
 #include "registry.h"
+#include "registry_p.h"
 #include "shmpool.h"
 #include "qwayland-fullscreen-shell.h"
 
 #include <wayland-client.h>
 #include <wayland-server.h>
 
-Q_LOGGING_CATEGORY(WLREGISTRY, "greenisland.wlregistry")
+Q_LOGGING_CATEGORY(WLREGISTRY, "greenisland.client.registry")
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
- * WlRegistryPrivate
+ * RegistryPrivate
  */
 
-static WlRegistry::Interface nameToInterface(const char *interface)
+static Registry::Interface nameToInterface(const char *interface)
 {
     if (strcmp(interface, "wl_compositor") == 0)
-        return WlRegistry::Compositor;
+        return Registry::Compositor;
     else if (strcmp(interface, "wl_seat") == 0)
-        return WlRegistry::Seat;
+        return Registry::Seat;
     else if (strcmp(interface, "wl_shm") == 0)
-        return WlRegistry::Shm;
+        return Registry::Shm;
     else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
-        return WlRegistry::FullscreenShell;
-    return WlRegistry::Unknown;
+        return Registry::FullscreenShell;
+    return Registry::Unknown;
 }
 
-static const wl_interface *wlInterface(WlRegistry::Interface interface)
+static const wl_interface *wlInterface(Registry::Interface interface)
 {
     switch (interface) {
-    case WlRegistry::Compositor:
+    case Registry::Compositor:
         return &wl_compositor_interface;
-    case WlRegistry::Seat:
+    case Registry::Seat:
         return &wl_seat_interface;
-    case WlRegistry::Shm:
+    case Registry::Shm:
         return &wl_shm_interface;
-    case WlRegistry::FullscreenShell:
+    case Registry::FullscreenShell:
         return &_wl_fullscreen_shell_interface;
     default:
         break;
@@ -70,196 +73,174 @@ static const wl_interface *wlInterface(WlRegistry::Interface interface)
     return Q_NULLPTR;
 }
 
-class WlRegistryPrivate
+RegistryPrivate::RegistryPrivate()
+    : registry(Q_NULLPTR)
+    , callback(Q_NULLPTR)
 {
-public:
-    WlRegistryPrivate(WlRegistry *q)
-        : registry(Q_NULLPTR)
-        , callback(Q_NULLPTR)
-        , q(q)
-    {
-    }
+}
 
-    ~WlRegistryPrivate()
-    {
-        if (registry)
-            wl_registry_destroy(registry);
-        if (callback)
-            wl_callback_destroy(callback);
-    }
+RegistryPrivate::~RegistryPrivate()
+{
+    if (registry)
+        wl_registry_destroy(registry);
+    if (callback)
+        wl_callback_destroy(callback);
+}
 
-    void setup()
-    {
-        wl_registry_add_listener(registry, &s_registryListener, this);
-        wl_callback_add_listener(callback, &s_callbackListener, this);
-    }
+void RegistryPrivate::setup()
+{
+    wl_registry_add_listener(registry, &s_registryListener, this);
+    wl_callback_add_listener(callback, &s_callbackListener, this);
+}
 
-    template <typename T>
-    T *bind(WlRegistry::Interface interface)
-    {
-        QList<InterfaceInfo>::iterator it;
-        for (it = m_interfaces.begin(); it != m_interfaces.end(); ++it) {
-            InterfaceInfo info = *it;
+template <typename T>
+T *RegistryPrivate::bind(Registry::Interface interface)
+{
+    QList<InterfaceInfo>::iterator it;
+    for (it = interfaces.begin(); it != interfaces.end(); ++it) {
+        InterfaceInfo info = *it;
 
-            if (info.interface == interface) {
-                auto t = reinterpret_cast<T*>(wl_registry_bind(registry, info.name,
-                                                               wlInterface(interface), info.version));
-                return t;
-            }
-        }
-
-        qCWarning(WLREGISTRY) << "Cannot bind unknown interface";
-        return Q_NULLPTR;
-    }
-
-    wl_registry *registry;
-    wl_callback *callback;
-
-private:
-    WlRegistry *q;
-
-    struct InterfaceInfo {
-        WlRegistry::Interface interface;
-        quint32 name;
-        quint32 version;
-    };
-    QList<InterfaceInfo> m_interfaces;
-
-    static const struct wl_registry_listener s_registryListener;
-    static const struct wl_callback_listener s_callbackListener;
-
-    void handleAnnounce(const char *interface, quint32 name, quint32 version)
-    {
-        Q_EMIT q->interfaceAnnounced(QString::fromUtf8(interface), name, version);
-
-        WlRegistry::Interface i = nameToInterface(interface);
-        m_interfaces.append({i, name, version});
-
-        switch (i) {
-        case WlRegistry::Compositor:
-            Q_EMIT q->compositorAnnounced(name, version);
-            break;
-        case WlRegistry::Seat:
-            Q_EMIT q->seatAnnounced(name, version);
-            break;
-        case WlRegistry::Shm:
-            Q_EMIT q->shmAnnounced(name, version);
-            break;
-        case WlRegistry::FullscreenShell:
-            Q_EMIT q->fullscreenShellAnnounced(name, version);
-            break;
-        default:
-            break;
+        if (info.interface == interface) {
+            auto t = reinterpret_cast<T*>(wl_registry_bind(registry, info.name,
+                                                           wlInterface(interface), info.version));
+            return t;
         }
     }
 
-    void handleRemove(quint32 name)
-    {
-        QList<InterfaceInfo>::iterator it;
-        for (it = m_interfaces.begin(); it != m_interfaces.end(); ++it) {
-            InterfaceInfo info = *it;
-            if (info.name == name) {
-                m_interfaces.erase(it);
+    qCWarning(WLREGISTRY) << "Cannot bind unknown interface";
+    return Q_NULLPTR;
+}
 
-                switch (info.interface) {
-                case WlRegistry::Compositor:
-                    Q_EMIT q->compositorRemoved(name);
-                    break;
-                case WlRegistry::Seat:
-                    Q_EMIT q->seatRemoved(name);
-                    break;
-                case WlRegistry::Shm:
-                    Q_EMIT q->shmRemoved(name);
-                    break;
-                case WlRegistry::FullscreenShell:
-                    Q_EMIT q->fullscreenShellRemoved(name);
-                    break;
-                default:
-                    break;
-                }
+void RegistryPrivate::handleAnnounce(const char *interface, quint32 name, quint32 version)
+{
+    Q_Q(Registry);
 
+    Q_EMIT q->interfaceAnnounced(QString::fromUtf8(interface), name, version);
+
+    Registry::Interface i = nameToInterface(interface);
+    interfaces.append({i, name, version});
+
+    switch (i) {
+    case Registry::Compositor:
+        Q_EMIT q->compositorAnnounced(name, version);
+        break;
+    case Registry::Seat:
+        Q_EMIT q->seatAnnounced(name, version);
+        break;
+    case Registry::Shm:
+        Q_EMIT q->shmAnnounced(name, version);
+        break;
+    case Registry::FullscreenShell:
+        Q_EMIT q->fullscreenShellAnnounced(name, version);
+        break;
+    default:
+        break;
+    }
+}
+
+void RegistryPrivate::handleRemove(quint32 name)
+{
+    Q_Q(Registry);
+
+    QList<InterfaceInfo>::iterator it;
+    for (it = interfaces.begin(); it != interfaces.end(); ++it) {
+        InterfaceInfo info = *it;
+        if (info.name == name) {
+            interfaces.erase(it);
+
+            switch (info.interface) {
+            case Registry::Compositor:
+                Q_EMIT q->compositorRemoved(name);
+                break;
+            case Registry::Seat:
+                Q_EMIT q->seatRemoved(name);
+                break;
+            case Registry::Shm:
+                Q_EMIT q->shmRemoved(name);
+                break;
+            case Registry::FullscreenShell:
+                Q_EMIT q->fullscreenShellRemoved(name);
+                break;
+            default:
                 break;
             }
+
+            break;
         }
-
-        Q_EMIT q->interfaceRemoved(name);
-
-        if (m_interfaces.size() == 0)
-            Q_EMIT q->interfacesRemoved();
     }
 
-    void handleSync()
-    {
-        Q_EMIT q->interfacesAnnounced();
-    }
+    Q_EMIT q->interfaceRemoved(name);
 
-    static void globalAnnounce(void *data, wl_registry *registry, uint32_t name,
-                               const char *interface, uint32_t version)
-    {
-        auto self = reinterpret_cast<WlRegistryPrivate *>(data);
-        Q_ASSERT(registry == self->registry);
-        self->handleAnnounce(interface, name, version);
-    }
+    if (interfaces.size() == 0)
+        Q_EMIT q->interfacesRemoved();
+}
 
-    static void globalRemove(void *data, wl_registry *registry, uint32_t name)
-    {
-        auto self = reinterpret_cast<WlRegistryPrivate *>(data);
-        Q_ASSERT(registry == self->registry);
-        self->handleRemove(name);
-    }
+void RegistryPrivate::handleSync()
+{
+    Q_Q(Registry);
+    Q_EMIT q->interfacesAnnounced();
+}
 
-    static void globalSync(void *data, wl_callback *callback, uint32_t serial)
-    {
-        Q_UNUSED(serial)
+void RegistryPrivate::globalAnnounce(void *data, wl_registry *registry, uint32_t name,
+                                            const char *interface, uint32_t version)
+{
+    auto self = reinterpret_cast<RegistryPrivate *>(data);
+    Q_ASSERT(registry == self->registry);
+    self->handleAnnounce(interface, name, version);
+}
 
-        auto self = reinterpret_cast<WlRegistryPrivate *>(data);
-        Q_ASSERT(callback == self->callback);
-        self->handleSync();
-        wl_callback_destroy(self->callback);
-        self->callback = Q_NULLPTR;
-    }
-};
+void RegistryPrivate::globalRemove(void *data, wl_registry *registry, uint32_t name)
+{
+    auto self = reinterpret_cast<RegistryPrivate *>(data);
+    Q_ASSERT(registry == self->registry);
+    self->handleRemove(name);
+}
 
-const struct wl_registry_listener WlRegistryPrivate::s_registryListener = {
+void RegistryPrivate::globalSync(void *data, wl_callback *callback, uint32_t serial)
+{
+    Q_UNUSED(serial)
+
+    auto self = reinterpret_cast<RegistryPrivate *>(data);
+    Q_ASSERT(callback == self->callback);
+    self->handleSync();
+    wl_callback_destroy(self->callback);
+    self->callback = Q_NULLPTR;
+}
+
+const struct wl_registry_listener RegistryPrivate::s_registryListener = {
     globalAnnounce,
     globalRemove
 };
 
-const struct wl_callback_listener WlRegistryPrivate::s_callbackListener = {
-   globalSync
+const struct wl_callback_listener RegistryPrivate::s_callbackListener = {
+    globalSync
 };
 
 
 /*
- * WlRegistry
+ * Registry
  */
 
-WlRegistry::WlRegistry(QObject *parent)
-    : QObject(parent)
-    , d_ptr(new WlRegistryPrivate(this))
+Registry::Registry(QObject *parent)
+    : QObject(*new RegistryPrivate(), parent)
 {
 }
 
-WlRegistry::~WlRegistry()
+bool Registry::isValid() const
 {
-    delete d_ptr;
-}
-
-bool WlRegistry::isValid() const
-{
-    Q_D(const WlRegistry);
+    Q_D(const Registry);
     return d->registry != Q_NULLPTR;
 }
 
-wl_registry *WlRegistry::registry() const
+wl_registry *Registry::registry() const
 {
-    Q_D(const WlRegistry);
+    Q_D(const Registry);
     return d->registry;
 }
 
-void WlRegistry::create(wl_display *display)
+void Registry::create(wl_display *display)
 {
-    Q_D(WlRegistry);
+    Q_D(Registry);
 
     Q_ASSERT(display);
     Q_ASSERT(!isValid());
@@ -267,25 +248,27 @@ void WlRegistry::create(wl_display *display)
     d->callback = wl_display_sync(display);
 }
 
-void WlRegistry::setup()
+void Registry::setup()
 {
-    Q_D(WlRegistry);
+    Q_D(Registry);
     Q_ASSERT(isValid());
     d->setup();
 }
 
-wl_compositor *WlRegistry::bindCompositor()
+wl_compositor *Registry::bindCompositor()
 {
-    Q_D(WlRegistry);
+    Q_D(Registry);
     return d->bind<wl_compositor>(Compositor);
 }
 
-WlShmPool *WlRegistry::createShmPool(QObject *parent)
+ShmPool *Registry::createShmPool(QObject *parent)
 {
-    Q_D(WlRegistry);
-    return new WlShmPool(d->bind<wl_shm>(Shm), parent);
+    Q_D(Registry);
+    return new ShmPool(d->bind<wl_shm>(Shm), parent);
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_registry.cpp"

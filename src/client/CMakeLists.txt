@@ -1,6 +1,7 @@
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    ${Qt5Core_PRIVATE_INCLUDE_DIRS}
 )
 
 include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerConfigExtrasLocal.cmake)
@@ -68,6 +69,23 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
     REQUIRED_HEADERS
         GreenIslandClient_HEADERS
 )
+
+private_headers(GreenIslandClient_PRIVATE_HEADERS
+    HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/clientconnection_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/cursortheme_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shmpool_p.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland/client
+)
+
 
 install(TARGETS GreenIslandClient
         EXPORT GreenIslandClientTargets ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

@@ -25,33 +25,72 @@
  ***************************************************************************/
 
 #include "pointer.h"
+#include "pointer_p.h"
 #include "seat.h"
+#include "seat_p.h"
 
 namespace GreenIsland {
 
-WlSeat::WlSeat(WlRegistry *registry, wl_compositor *compositor,
-               quint32 name, quint32 version)
-    : QtWayland::wl_seat(registry->registry(), name, version)
-    , m_version(version)
-    , m_compositor(compositor)
-    , m_pointer(Q_NULLPTR)
+namespace Client {
+
+/*
+ * SeatPrivate
+ */
+
+SeatPrivate::SeatPrivate()
+    : QtWayland::wl_seat()
+    , version(0)
+    , compositor(Q_NULLPTR)
+    , pointer(Q_NULLPTR)
 {
 }
 
-WlSeat::~WlSeat()
+void SeatPrivate::seat_capabilities(uint32_t capabilities)
 {
-    delete m_pointer;
-}
+    Q_Q(Seat);
 
-void WlSeat::seat_capabilities(uint32_t capabilities)
-{
-    if (capabilities & capability_pointer && !m_pointer) {
-        m_pointer = new WlPointer(this);
-        m_pointer->init(get_pointer());
-    } else if (!(capabilities & capability_pointer) && m_pointer) {
-        delete m_pointer;
-        m_pointer = Q_NULLPTR;
+    if (capabilities & capability_pointer && !pointer) {
+        pointer = new Pointer(q);
+        PointerPrivate::get(pointer)->init(get_pointer());
+    } else if (!(capabilities & capability_pointer) && pointer) {
+        delete pointer;
+        pointer = Q_NULLPTR;
     }
 }
 
+/*
+ * Seat
+ */
+
+Seat::Seat(Registry *registry, wl_compositor *compositor,
+           quint32 name, quint32 version)
+    : QObject(*new SeatPrivate(), registry)
+{
+    d_func()->version = version;
+    d_func()->compositor = compositor;
+    d_func()->init(registry->registry(), name, version);
 }
+
+quint32 Seat::version() const
+{
+    Q_D(const Seat);
+    return d->version;
+}
+
+wl_compositor *Seat::compositor() const
+{
+    Q_D(const Seat);
+    return d->compositor;
+}
+
+Pointer *Seat::pointer() const
+{
+    Q_D(const Seat);
+    return d->pointer;
+}
+
+} // namespace Client
+
+} // namespace GreenIsland
+
+#include "moc_seat.cpp"

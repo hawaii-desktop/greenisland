@@ -24,43 +24,51 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_CLIENTCONNECTION_P_H
+#define GREENISLANDCLIENT_CLIENTCONNECTION_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/client/greenislandclient_export.h>
+#include <GreenIsland/Client/ClientConnection>
 
-struct wl_shm;
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Registry;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT ClientConnectionPrivate : public QObjectPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
-    Q_PROPERTY(bool valid READ isValid CONSTANT)
+    Q_DECLARE_PUBLIC(ClientConnection)
 public:
-    bool isValid() const;
+    ClientConnectionPrivate();
+    ~ClientConnectionPrivate();
 
-    wl_shm *shm() const;
+    void _q_initConnection();
 
-Q_SIGNALS:
-    void resized();
+    static ClientConnectionPrivate *get(ClientConnection *conn) { return conn->d_func(); }
+
+    wl_display *display;
+    int fd;
+    QString socketName;
+    QScopedPointer<QSocketNotifier> socketNotifier;
 
 private:
-    ShmPool(wl_shm *shm, QObject *parent = Q_NULLPTR);
-
-    friend class Registry;
+    void setupSocketNotifier();
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_CLIENTCONNECTION_P_H
+

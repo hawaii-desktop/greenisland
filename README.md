@@ -219,8 +219,9 @@ to learn how to enable them.
   * **greenisland.qpa.udev:** udev integration
 
 * Client-side:
-  * **greenisland.wlregistry:** Registry
-  * **greenisland.wlshmpool:** Shared memory pool
+  * **greenisland.client.registry:** Registry
+  * **greenisland.client.shmpool:** Shared memory pool
+  * **greenisland.client.cursortheme:** Cursor theme
 
 * Protocols:
   * **greenisland.protocols.xdgshell:** xdg_shell

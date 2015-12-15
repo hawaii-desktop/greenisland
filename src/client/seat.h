@@ -24,38 +24,34 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLSEAT_H
-#define WLSEAT_H
+#ifndef GREENISLANDCLIENT_SEAT_H
+#define GREENISLANDCLIENT_SEAT_H
 
-#include "registry.h"
-
-#include "qwayland-wayland.h"
+#include <GreenIsland/Client/Registry>
 
 namespace GreenIsland {
 
-class WlPointer;
+namespace Client {
 
-class WlSeat : public QtWayland::wl_seat
+class Pointer;
+class SeatPrivate;
+
+class GREENISLANDCLIENT_EXPORT Seat : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(Seat)
 public:
-    WlSeat(WlRegistry *registry, wl_compositor *compositor,
-           quint32 name, quint32 version);
-    ~WlSeat();
+    Seat(Registry *registry, wl_compositor *compositor,
+         quint32 name, quint32 version);
 
-    inline quint32 version() const { return m_version; }
+    quint32 version() const;
 
-    inline wl_compositor *compositor() const { return m_compositor; }
-    inline WlPointer *pointer() const { return m_pointer; }
-
-protected:
-    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
-
-private:
-    quint32 m_version;
-    wl_compositor *m_compositor;
-    WlPointer *m_pointer;
+    wl_compositor *compositor() const;
+    Pointer *pointer() const;
 };
 
-}
+} // namespace Client
 
-#endif // WLSEAT_H
+} // namespace GreenIsland
+
+#endif // GREENISLANDCLIENT_SEAT_H

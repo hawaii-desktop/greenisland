@@ -25,37 +25,64 @@
  ***************************************************************************/
 
 #include "pointer.h"
+#include "pointer_p.h"
 #include "seat.h"
-
-#include <wayland-cursor.h>
 
 namespace GreenIsland {
 
-WlPointer::WlPointer(WlSeat *seat)
+namespace Client {
+
+/*
+ * PointerPrivate
+ */
+
+PointerPrivate::PointerPrivate()
     : QtWayland::wl_pointer()
-    , m_seat(seat)
-    , m_enterSerial(0)
+    , seat(Q_NULLPTR)
+    , enterSerial(0)
 {
-    // Create a surface to hold the cursor image
-    m_cursorSurface = wl_compositor_create_surface(seat->compositor());
 }
 
-WlPointer::~WlPointer()
+PointerPrivate::~PointerPrivate()
 {
-    if (m_cursorSurface)
-        wl_surface_destroy(m_cursorSurface);
+    if (cursorSurface)
+        wl_surface_destroy(cursorSurface);
 
-    if (m_seat->version() >= 3)
+    if (seat->version() >= 3)
         release();
     else
         wl_pointer_destroy(object());
 }
 
-void WlPointer::setCursor(wl_cursor_image *image)
+void PointerPrivate::pointer_enter(uint32_t serial, wl_surface *surface,
+                                   wl_fixed_t surface_x, wl_fixed_t surface_y)
 {
+    Q_UNUSED(surface);
+    Q_UNUSED(surface_x);
+    Q_UNUSED(surface_y);
+
+    enterSerial = serial;
+}
+
+/*
+ * Pointer
+ */
+
+Pointer::Pointer(Seat *seat)
+    : QObject(*new PointerPrivate(), seat)
+{
+    // Create a surface to hold the cursor image
+    d_func()->seat = seat;
+    d_func()->cursorSurface = wl_compositor_create_surface(seat->compositor());
+}
+
+void Pointer::setCursor(wl_cursor_image *image)
+{
+    Q_D(Pointer);
+
     // Hide the cursor when no image is provided
     if (!image) {
-        set_cursor(m_enterSerial, Q_NULLPTR, 0, 0);
+        d->set_cursor(d->enterSerial, Q_NULLPTR, 0, 0);
         return;
     }
 
@@ -63,27 +90,22 @@ void WlPointer::setCursor(wl_cursor_image *image)
     wl_buffer *buffer = wl_cursor_image_get_buffer(image);
     if (!buffer) {
         // Hide the cursor when no buffer is provided
-        set_cursor(m_enterSerial, Q_NULLPTR, 0, 0);
+        d->set_cursor(d->enterSerial, Q_NULLPTR, 0, 0);
         return;
     }
 
     // Set cursor surface
-    set_cursor(m_enterSerial, m_cursorSurface, image->hotspot_x, image->hotspot_y);
+    d->set_cursor(d->enterSerial, d->cursorSurface,
+                  image->hotspot_x, image->hotspot_y);
 
     // Attach cursor buffer to surface
-    wl_surface_attach(m_cursorSurface, buffer, 0, 0);
-    wl_surface_damage(m_cursorSurface, 0, 0, image->width, image->height);
-    wl_surface_commit(m_cursorSurface);
+    wl_surface_attach(d->cursorSurface, buffer, 0, 0);
+    wl_surface_damage(d->cursorSurface, 0, 0, image->width, image->height);
+    wl_surface_commit(d->cursorSurface);
 }
 
-void WlPointer::pointer_enter(uint32_t serial, wl_surface *surface,
-                              wl_fixed_t surface_x, wl_fixed_t surface_y)
-{
-    Q_UNUSED(surface)
-    Q_UNUSED(surface_x)
-    Q_UNUSED(surface_y)
+} // namespace Client
 
-    m_enterSerial = serial;
-}
+} // namespace GreenIsland
 
-}
+#include "moc_pointer.cpp"

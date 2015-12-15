@@ -24,35 +24,34 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLPOINTER_H
-#define WLPOINTER_H
+#ifndef GREENISLANDCLIENT_POINTER_H
+#define GREENISLANDCLIENT_POINTER_H
 
-#include "qwayland-wayland.h"
+#include <QtCore/QObject>
+
+#include <GreenIsland/client/greenislandclient_export.h>
 
 struct wl_cursor_image;
 
 namespace GreenIsland {
 
-class WlSeat;
+namespace Client {
 
-class WlPointer : public QtWayland::wl_pointer
+class PointerPrivate;
+class Seat;
+
+class GREENISLANDCLIENT_EXPORT Pointer : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(Pointer)
 public:
-    WlPointer(WlSeat *seat);
-    ~WlPointer();
+    Pointer(Seat *seat);
 
     void setCursor(wl_cursor_image *image);
-
-protected:
-    void pointer_enter(uint32_t serial, wl_surface *surface,
-                       wl_fixed_t surface_x, wl_fixed_t surface_y) Q_DECL_OVERRIDE;
-
-private:
-    WlSeat *m_seat;
-    wl_surface *m_cursorSurface;
-    quint32 m_enterSerial;
 };
 
-}
+} // namespace Client
 
-#endif // WLPOINTER_H
+} // namespace GreenIsland
+
+#endif // GREENISLANDCLIENT_POINTER_H

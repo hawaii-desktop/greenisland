@@ -24,43 +24,53 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_POINTER_P_H
+#define GREENISLANDCLIENT_POINTER_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/client/greenislandclient_export.h>
+#include <GreenIsland/Client/Pointer>
+#include <GreenIsland/client/private/qwayland-wayland.h>
 
-struct wl_shm;
+#include <wayland-cursor.h>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Registry;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT PointerPrivate
+        : public QObjectPrivate
+        , public QtWayland::wl_pointer
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
-    Q_PROPERTY(bool valid READ isValid CONSTANT)
+    Q_DECLARE_PUBLIC(Pointer)
 public:
-    bool isValid() const;
+    PointerPrivate();
+    ~PointerPrivate();
 
-    wl_shm *shm() const;
+    Seat *seat;
+    wl_surface *cursorSurface;
+    quint32 enterSerial;
 
-Q_SIGNALS:
-    void resized();
+    static PointerPrivate *get(Pointer *pointer) { return pointer->d_func(); }
 
-private:
-    ShmPool(wl_shm *shm, QObject *parent = Q_NULLPTR);
-
-    friend class Registry;
+protected:
+    void pointer_enter(uint32_t serial, wl_surface *surface,
+                       wl_fixed_t surface_x, wl_fixed_t surface_y) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_POINTER_P_H

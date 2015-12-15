@@ -24,13 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLREGISTRY_H
-#define WLREGISTRY_H
+#ifndef GREENISLANDCLIENT_REGISTRY_H
+#define GREENISLANDCLIENT_REGISTRY_H
 
 #include <QtCore/QObject>
-#include <QtCore/QLoggingCategory>
 
-Q_DECLARE_LOGGING_CATEGORY(WLREGISTRY)
+#include <GreenIsland/client/greenislandclient_export.h>
 
 struct wl_compositor;
 struct wl_display;
@@ -39,12 +38,15 @@ struct wl_seat;
 
 namespace GreenIsland {
 
-class WlRegistryPrivate;
-class WlShmPool;
+namespace Client {
 
-class WlRegistry : public QObject
+class RegistryPrivate;
+class ShmPool;
+
+class GREENISLANDCLIENT_EXPORT Registry : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(Registry)
 public:
     enum Interface {
         Unknown,
@@ -54,8 +56,7 @@ public:
         FullscreenShell
     };
 
-    WlRegistry(QObject *parent = 0);
-    ~WlRegistry();
+    Registry(QObject *parent = Q_NULLPTR);
 
     bool isValid() const;
 
@@ -66,7 +67,7 @@ public:
 
     wl_compositor *bindCompositor();
 
-    WlShmPool *createShmPool(QObject *parent);
+    ShmPool *createShmPool(QObject *parent);
 
 Q_SIGNALS:
     void interfaceAnnounced(const QString &interface, quint32 name, quint32 version);
@@ -86,12 +87,10 @@ Q_SIGNALS:
 
     void fullscreenShellAnnounced(quint32 name, quint32 version);
     void fullscreenShellRemoved(quint32 name);
-
-private:
-    Q_DECLARE_PRIVATE(WlRegistry)
-    WlRegistryPrivate *const d_ptr;
 };
 
-}
+} // namespace Client
 
-#endif // WLREGISTRY_H
+} // namespace GreenIsland
+
+#endif // GREENISLANDCLIENT_REGISTRY_H

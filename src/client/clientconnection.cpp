@@ -29,120 +29,108 @@
 #include <QtCore/QSocketNotifier>
 
 #include "clientconnection.h"
+#include "clientconnection_p.h"
 
 #include <wayland-client.h>
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
- * WlClientConnectionPrivate
+ * ClientConnectionPrivate
  */
 
-class WlClientConnectionPrivate
+ClientConnectionPrivate::ClientConnectionPrivate()
+    : display(Q_NULLPTR)
+    , fd(-1)
 {
-public:
-    WlClientConnectionPrivate(WlClientConnection *q)
-        : display(Q_NULLPTR)
-        , fd(-1)
-        , q(q)
-    {
+}
+
+ClientConnectionPrivate::~ClientConnectionPrivate()
+{
+    if (display) {
+        wl_display_flush(display);
+        wl_display_disconnect(display);
+    }
+}
+
+void ClientConnectionPrivate::_q_initConnection()
+{
+    Q_Q(ClientConnection);
+
+    // Try to connect to the server
+    if (!display) {
+        if (fd != -1)
+            display = wl_display_connect_to_fd(fd);
+        else
+            display = wl_display_connect(socketName.toUtf8().constData());
+    }
+    if (!display) {
+        Q_EMIT q->failed();
+        return;
     }
 
-    ~WlClientConnectionPrivate()
-    {
-        if (display) {
-            wl_display_flush(display);
-            wl_display_disconnect(display);
-        }
-    }
+    // Setup socket notifier and emit the signal
+    setupSocketNotifier();
+    Q_EMIT q->connected();
+}
 
-    void _q_initConnection()
-    {
-        // Try to connect to the server
-        if (!display) {
-            if (fd != -1)
-                display = wl_display_connect_to_fd(fd);
-            else
-                display = wl_display_connect(socketName.toUtf8().constData());
-        }
-        if (!display) {
-            Q_EMIT q->failed();
+void ClientConnectionPrivate::setupSocketNotifier()
+{
+    Q_Q(ClientConnection);
+
+    // Do not listen for events if we were given a display
+    // instead of a fd or a socket name, we don't want to
+    // interfere with qtwayland
+    if (fd == -1 && socketName.isEmpty())
+        return;
+
+    const int fd = wl_display_get_fd(display);
+    socketNotifier.reset(new QSocketNotifier(fd, QSocketNotifier::Read));
+    q->connect(socketNotifier.data(), &QSocketNotifier::activated, q, [q, this] {
+        if (!display)
             return;
-        }
-
-        // Setup socket notifier and emit the signal
-        setupSocketNotifier();
-        Q_EMIT q->connected();
-    }
-
-    wl_display *display;
-    int fd;
-    QString socketName;
-    QScopedPointer<QSocketNotifier> socketNotifier;
-
-private:
-    WlClientConnection *q;
-
-    void setupSocketNotifier()
-    {
-        // Do not listen for events if we were given a display
-        // instead of a fd or a socket name, we don't want to
-        // interfere with qtwayland
-        if (fd == -1 && socketName.isEmpty())
-            return;
-
-        const int fd = wl_display_get_fd(display);
-        socketNotifier.reset(new QSocketNotifier(fd, QSocketNotifier::Read));
-        q->connect(socketNotifier.data(), &QSocketNotifier::activated, q, [this] {
-            if (!display)
-                return;
-            wl_display_dispatch(display);
-            Q_EMIT q->eventsDispatched();
-        });
-    }
-};
+        wl_display_dispatch(display);
+        Q_EMIT q->eventsDispatched();
+    });
+}
 
 /*
- * WlClientConnection
+ * ClientConnection
  */
 
-WlClientConnection::WlClientConnection(QObject *parent)
-    : QObject(parent)
-    , d_ptr(new WlClientConnectionPrivate(this))
+ClientConnection::ClientConnection(QObject *parent)
+    : QObject(*new ClientConnectionPrivate(), parent)
 {
     connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::aboutToBlock, this, [this] {
         flush();
     }, Qt::DirectConnection);
 }
 
-WlClientConnection::~WlClientConnection()
+wl_display *ClientConnection::display() const
 {
-    delete d_ptr;
-}
-
-wl_display *WlClientConnection::display() const
-{
-    Q_D(const WlClientConnection);
+    Q_D(const ClientConnection);
     return d->display;
 }
 
-void WlClientConnection::setDisplay(wl_display *display)
+void ClientConnection::setDisplay(wl_display *display)
 {
-    Q_D(WlClientConnection);
+    Q_D(ClientConnection);
 
     if (!d->display)
         d->display = display;
 }
 
-int WlClientConnection::socketFd() const
+int ClientConnection::socketFd() const
 {
-    Q_D(const WlClientConnection);
+    Q_D(const ClientConnection);
     return d->fd;
 }
 
-void WlClientConnection::setSocketFd(int fd)
+void ClientConnection::setSocketFd(int fd)
 {
-    Q_D(WlClientConnection);
+    Q_D(ClientConnection);
 
     if (d->display)
         return;
@@ -150,15 +138,15 @@ void WlClientConnection::setSocketFd(int fd)
     d->fd = fd;
 }
 
-QString WlClientConnection::socketName() const
+QString ClientConnection::socketName() const
 {
-    Q_D(const WlClientConnection);
+    Q_D(const ClientConnection);
     return d->socketName;
 }
 
-void WlClientConnection::setSocketName(const QString &socketName)
+void ClientConnection::setSocketName(const QString &socketName)
 {
-    Q_D(WlClientConnection);
+    Q_D(ClientConnection);
 
     if (d->display)
         return;
@@ -166,14 +154,14 @@ void WlClientConnection::setSocketName(const QString &socketName)
     d->socketName = socketName;
 }
 
-void WlClientConnection::initializeConnection()
+void ClientConnection::initializeConnection()
 {
     QMetaObject::invokeMethod(this, "_q_initConnection", Qt::QueuedConnection);
 }
 
-void WlClientConnection::flush()
+void ClientConnection::flush()
 {
-    Q_D(WlClientConnection);
+    Q_D(ClientConnection);
 
     if (!d->display)
         return;
@@ -181,6 +169,8 @@ void WlClientConnection::flush()
     wl_display_flush(d->display);
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_clientconnection.cpp"

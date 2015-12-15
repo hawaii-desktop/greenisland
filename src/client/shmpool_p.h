@@ -24,43 +24,58 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_SHMPOOL_P_H
+#define GREENISLANDCLIENT_SHMPOOL_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/QLoggingCategory>
+#include <QtCore/QTemporaryFile>
+#include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/client/greenislandclient_export.h>
 
-struct wl_shm;
+#include <unistd.h>
+#include <sys/mman.h>
+
+#include <wayland-client-protocol.h>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
+
+Q_DECLARE_LOGGING_CATEGORY(WLSHMPOOL)
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Registry;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT ShmPoolPrivate : public QObjectPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
-    Q_PROPERTY(bool valid READ isValid CONSTANT)
+    Q_DECLARE_PUBLIC(ShmPool)
 public:
-    bool isValid() const;
+    ShmPoolPrivate();
+    ~ShmPoolPrivate();
 
-    wl_shm *shm() const;
+    bool create();
+    bool resize(size_t newSize);
+    void release();
 
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(wl_shm *shm, QObject *parent = Q_NULLPTR);
-
-    friend class Registry;
+    wl_shm *shm;
+    wl_shm_pool *pool;
+    QScopedPointer<QTemporaryFile> file;
+    uchar *data;
+    size_t size;
+    bool valid;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_SHMPOOL_P_H

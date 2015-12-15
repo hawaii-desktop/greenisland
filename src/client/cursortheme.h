@@ -24,24 +24,28 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef WLCURSORTHEME_H
-#define WLCURSORTHEME_H
+#ifndef GREENISLANDCLIENT_CURSORTHEME_H
+#define GREENISLANDCLIENT_CURSORTHEME_H
 
 #include <QtCore/QLoggingCategory>
 #include <QtGui/QCursor>
 
-Q_DECLARE_LOGGING_CATEGORY(WLCURSORTHEME)
+#include <GreenIsland/client/greenislandclient_export.h>
 
 struct wl_cursor_image;
 
 namespace GreenIsland {
 
-class WlCursorThemePrivate;
-class WlSeat;
-class WlShmPool;
+namespace Client {
 
-class WlCursorTheme
+class CursorThemePrivate;
+class Seat;
+class ShmPool;
+
+class GREENISLANDCLIENT_EXPORT CursorTheme : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(CursorTheme)
 public:
     enum CursorShape {
         ArrowCursor = Qt::ArrowCursor,
@@ -75,18 +79,17 @@ public:
         ResizeNorthEastCursor,
         ResizeSouthWestCursor
     };
+    Q_ENUM(CursorShape)
 
-    WlCursorTheme(WlShmPool *pool, WlSeat *seat);
-    ~WlCursorTheme();
+    CursorTheme(ShmPool *pool, Seat *seat);
 
     wl_cursor_image *cursorImage(CursorShape shape);
 
     void changeCursor(CursorShape shape);
-
-private:
-    WlCursorThemePrivate *const d;
 };
 
-}
+} // namespace Client
 
-#endif // WLCURSORTHEME_H
+} // namespace GreenIsland
+
+#endif // GREENISLANDCLIENT_CURSORTHEME_H

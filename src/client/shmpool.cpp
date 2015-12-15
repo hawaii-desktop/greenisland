@@ -24,165 +24,144 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtCore/QTemporaryFile>
-
 #include "shmpool.h"
+#include "shmpool_p.h"
 
-#include <unistd.h>
-#include <sys/mman.h>
-
-#include <wayland-client-protocol.h>
-
-Q_LOGGING_CATEGORY(WLSHMPOOL, "greenisland.wlshmpool")
+Q_LOGGING_CATEGORY(WLSHMPOOL, "greenisland.client.shmpool")
 
 namespace GreenIsland {
 
+namespace Client {
+
 /*
- * WlShmPoolPrivate
+ * ShmPoolPrivate
  */
 
-class WlShmPoolPrivate
+ShmPoolPrivate::ShmPoolPrivate()
+    : shm(Q_NULLPTR)
+    , pool(Q_NULLPTR)
+    , file(new QTemporaryFile())
+    , data(Q_NULLPTR)
+    , size(1024)
+    , valid(false)
 {
-public:
-    WlShmPoolPrivate(WlShmPool *q)
-        : shm(Q_NULLPTR)
-        , pool(Q_NULLPTR)
-        , file(new QTemporaryFile())
-        , data(Q_NULLPTR)
-        , size(1024)
-        , valid(false)
-        , q(q)
-    {
-        file->setFileTemplate(QStringLiteral("greenisland-shm-XXXXXX"));
+    file->setFileTemplate(QStringLiteral("greenisland-shm-XXXXXX"));
+}
+
+ShmPoolPrivate::~ShmPoolPrivate()
+{
+    release();
+}
+
+bool ShmPoolPrivate::create()
+{
+    if (!file->open()) {
+        qCWarning(WLSHMPOOL) << "Cannot open temporary file for shm pool";
+        return false;
     }
 
-    ~WlShmPoolPrivate()
-    {
-        release();
+    if (::unlink(qPrintable(file->fileName())) != 0) {
+        qCWarning(WLSHMPOOL) << "Cannot unlink temporary file for shm pool";
+        return false;
     }
 
-    bool create()
-    {
-        if (!file->open()) {
-            qCWarning(WLSHMPOOL) << "Cannot open temporary file for shm pool";
-            return false;
-        }
-
-        if (::unlink(qPrintable(file->fileName())) != 0) {
-            qCWarning(WLSHMPOOL) << "Cannot unlink temporary file for shm pool";
-            return false;
-        }
-
-        if (::ftruncate(file->handle(), size) < 0) {
-            qCWarning(WLSHMPOOL) << "Cannot set shm pool size";
-            return false;
-        }
-
-        data = (uchar *)::mmap(Q_NULLPTR, size, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
-        if (data == (uchar *)MAP_FAILED) {
-            qCWarning(WLSHMPOOL, "Failed to mmap /dev/zero: %s", ::strerror(errno));
-            data = Q_NULLPTR;
-            return false;
-        }
-
-        pool = wl_shm_create_pool(shm, file->handle(), size);
-        if (!pool) {
-            qCWarning(WLSHMPOOL) << "Failed to create shm pool";
-            ::munmap(data, size);
-            data = Q_NULLPTR;
-            return false;
-        }
-
-        return true;
+    if (::ftruncate(file->handle(), size) < 0) {
+        qCWarning(WLSHMPOOL) << "Cannot set shm pool size";
+        return false;
     }
 
-    bool resize(size_t newSize)
-    {
-        Q_ASSERT(data);
-        Q_ASSERT(shm);
-        Q_ASSERT(pool);
-        Q_ASSERT(file->isOpen());
+    data = (uchar *)::mmap(Q_NULLPTR, size, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
+    if (data == (uchar *)MAP_FAILED) {
+        qCWarning(WLSHMPOOL, "Failed to mmap /dev/zero: %s", ::strerror(errno));
+        data = Q_NULLPTR;
+        return false;
+    }
 
-        if (::ftruncate(file->handle(), newSize) < 0) {
-            qCWarning(WLSHMPOOL) << "Failed to resize shm pool";
-            return false;
-        }
-
-        wl_shm_pool_resize(pool, newSize);
-
+    pool = wl_shm_create_pool(shm, file->handle(), size);
+    if (!pool) {
+        qCWarning(WLSHMPOOL) << "Failed to create shm pool";
         ::munmap(data, size);
-        data = (uchar *)::mmap(Q_NULLPTR, newSize, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
-        if (data == (uchar *)MAP_FAILED) {
-            qCWarning(WLSHMPOOL, "Failed to mmap /dev/zero: %s", ::strerror(errno));
-            data = Q_NULLPTR;
-            return false;
-        }
-
-        size = newSize;
-        Q_EMIT q->resized();
-
-        return true;
+        data = Q_NULLPTR;
+        return false;
     }
 
-    void release()
-    {
-        if (data) {
-            ::munmap(data, size);
-            data = Q_NULLPTR;
-        }
-        if (pool) {
-            wl_shm_pool_destroy(pool);
-            pool = Q_NULLPTR;
-        }
-        if (shm) {
-            wl_shm_destroy(shm);
-            shm = Q_NULLPTR;
-        }
-        file->close();
-        valid = false;
+    return true;
+}
+
+bool ShmPoolPrivate::resize(size_t newSize)
+{
+    Q_Q(ShmPool);
+
+    Q_ASSERT(data);
+    Q_ASSERT(shm);
+    Q_ASSERT(pool);
+    Q_ASSERT(file->isOpen());
+
+    if (::ftruncate(file->handle(), newSize) < 0) {
+        qCWarning(WLSHMPOOL) << "Failed to resize shm pool";
+        return false;
     }
 
-    wl_shm *shm;
-    wl_shm_pool *pool;
-    QScopedPointer<QTemporaryFile> file;
-    uchar *data;
-    size_t size;
-    bool valid;
+    wl_shm_pool_resize(pool, newSize);
 
-private:
-    WlShmPool *q;
-};
+    ::munmap(data, size);
+    data = (uchar *)::mmap(Q_NULLPTR, newSize, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
+    if (data == (uchar *)MAP_FAILED) {
+        qCWarning(WLSHMPOOL, "Failed to mmap /dev/zero: %s", ::strerror(errno));
+        data = Q_NULLPTR;
+        return false;
+    }
+
+    size = newSize;
+    Q_EMIT q->resized();
+
+    return true;
+}
+
+void ShmPoolPrivate::release()
+{
+    if (data) {
+        ::munmap(data, size);
+        data = Q_NULLPTR;
+    }
+    if (pool) {
+        wl_shm_pool_destroy(pool);
+        pool = Q_NULLPTR;
+    }
+    if (shm) {
+        wl_shm_destroy(shm);
+        shm = Q_NULLPTR;
+    }
+    file->close();
+    valid = false;
+}
 
 /*
- * WlShmPool
+ * ShmPool
  */
 
-WlShmPool::WlShmPool(wl_shm *shm, QObject *parent)
-    : QObject(parent)
-    , d_ptr(new WlShmPoolPrivate(this))
+ShmPool::ShmPool(wl_shm *shm, QObject *parent)
+    : QObject(*new ShmPoolPrivate(), parent)
 {
-    d_ptr->shm = shm;
+    d_func()->shm = shm;
     Q_ASSERT(shm);
-    d_ptr->valid = d_ptr->create();
+    d_func()->valid = d_func()->create();
 }
 
-WlShmPool::~WlShmPool()
+bool ShmPool::isValid() const
 {
-    delete d_ptr;
-}
-
-bool WlShmPool::isValid() const
-{
-    Q_D(const WlShmPool);
+    Q_D(const ShmPool);
     return d->valid;
 }
 
-wl_shm *WlShmPool::shm() const
+wl_shm *ShmPool::shm() const
 {
-    Q_D(const WlShmPool);
+    Q_D(const ShmPool);
     return d->shm;
 }
 
-}
+} // namespace Client
+
+} // namespace GreenIsland
 
 #include "moc_shmpool.cpp"
