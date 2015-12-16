@@ -1,0 +1,4 @@
+{
+    "Keys": [ "eglfs_wayland" ],
+    "Hardware": "wayland"
+}

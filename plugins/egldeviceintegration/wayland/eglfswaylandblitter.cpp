@@ -1,0 +1,133 @@
+/****************************************************************************
+ * This file is part of Green Island.
+ *
+ * Copyright (C) 2015 Pier Luigi Fiorini
+ *
+ * Author(s):
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ *
+ * $BEGIN_LICENSE:LGPL2.1+$
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * $END_LICENSE$
+ ***************************************************************************/
+
+#include <QtGui/QOpenGLShaderProgram>
+
+#include "eglfswaylandblitter.h"
+#include "eglfswaylandcontext.h"
+#include "eglfswaylandwindow.h"
+#include "eglfswaylandlogging.h"
+
+namespace GreenIsland {
+
+namespace Platform {
+
+EglFSWaylandBlitter::EglFSWaylandBlitter(EglFSWaylandContext *context)
+    : QOpenGLFunctions()
+    , m_context(context)
+{
+    initializeOpenGLFunctions();
+
+    m_blitProgram = new QOpenGLShaderProgram();
+
+    const QString vertex =
+            QStringLiteral("attribute vec4 position;\n"
+                           "attribute vec4 texCoords;\n"
+                           "varying vec2 outTexCoords;\n"
+                           "void main() {"
+                           "gl_Position = position;\n"
+                           "outTexCoords = texCoords.xy;\n"
+                           "}");
+    m_blitProgram->addShaderFromSourceCode(QOpenGLShader::Vertex, vertex);
+
+    const QString fragment =
+            QStringLiteral("varying highp vec2 outTexCoords;\n"
+                           "uniform sampler2D texture;\n"
+                           "void main() {\n"
+                           "gl_FragColor = texture2D(texture, outTexCoords);\n"
+                           "}");
+    m_blitProgram->addShaderFromSourceCode(QOpenGLShader::Fragment, fragment);
+
+    m_blitProgram->bindAttributeLocation("position", 0);
+    m_blitProgram->bindAttributeLocation("texCoords", 1);
+
+    if (!m_blitProgram->link()) {
+        qCWarning(gLcEglFSWayland)
+                << "Shader Program link failed:\n"
+                << m_blitProgram->log();
+    }
+}
+
+EglFSWaylandBlitter::~EglFSWaylandBlitter()
+{
+    delete m_blitProgram;
+}
+
+void EglFSWaylandBlitter::blit(EglFSWaylandWindow *window)
+{
+    QRect windowRect = window->window()->frameGeometry();
+    int scale = window->scale();
+    glViewport(0, 0, windowRect.width() * scale, windowRect.height() * scale);
+
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_SCISSOR_TEST);
+    glDepthMask(GL_FALSE);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+    m_context->m_useNativeDefaultFbo = true;
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    m_context->m_useNativeDefaultFbo = false;
+
+    static const GLfloat squareVertices[] = {
+        -1.f, -1.f,
+        1.0f, -1.f,
+        -1.f,  1.0f,
+        1.0f,  1.0f
+    };
+
+    static const GLfloat textureVertices[] = {
+        0.0f,  0.0f,
+        1.0f,  0.0f,
+        0.0f,  1.0f,
+        1.0f,  1.0f,
+    };
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    m_blitProgram->bind();
+
+    m_blitProgram->enableAttributeArray(0);
+    m_blitProgram->enableAttributeArray(1);
+    m_blitProgram->setAttributeArray(1, textureVertices, 2);
+
+    glActiveTexture(GL_TEXTURE0);
+
+    // Draw
+    m_blitProgram->setAttributeArray(0, squareVertices, 2);
+    glBindTexture(GL_TEXTURE_2D, window->contentTexture());
+    QRect r = window->contentsRect();
+    glViewport(r.x(), r.y(), r.width() * scale, r.height() * scale);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    // Cleanup
+    m_blitProgram->disableAttributeArray(0);
+    m_blitProgram->disableAttributeArray(1);
+}
+
+} // namespace Platform
+
+} // namespace GreenIsland

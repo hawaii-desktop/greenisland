@@ -218,6 +218,9 @@ to learn how to enable them.
   * **greenisland.qpa.logind:** Logind integration
   * **greenisland.qpa.udev:** udev integration
 
+* EGL Device Integrations:
+  * **greenisland.qpa.wayland:** Wayland EGL device integration
+
 * Client-side:
   * **greenisland.client.registry:** Registry
   * **greenisland.client.shmpool:** Shared memory pool
