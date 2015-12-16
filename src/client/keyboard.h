@@ -24,47 +24,50 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_KEYBOARD_H
+#define GREENISLANDCLIENT_KEYBOARD_H
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/client/greenislandclient_export.h>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+class KeyboardPrivate;
+class Seat;
+class Surface;
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT Keyboard : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PRIVATE(Keyboard)
+    Q_PROPERTY(quint32 repeatRate READ repeatRate NOTIFY repeatRateChanged)
+    Q_PROPERTY(quint32 repeatDelay READ repeatDelay NOTIFY repeatDelayChanged)
 public:
-    Shm *shm() const;
+    Keyboard(Seat *seat);
 
-    void *address() const;
+    Surface *focusSurface() const;
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
-
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    quint32 repeatRate() const;
+    quint32 repeatDelay() const;
 
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
+    void keymapChanged(int fd, quint32 size);
+    void enter(quint32 serial);
+    void leave(quint32 serial);
+    void keyPressed(quint32 time, quint32 key);
+    void keyReleased(quint32 time, quint32 key);
+    void modifiersChanged(quint32 depressed, quint32 latched, quint32 locked, quint32 group);
+    void repeatRateChanged();
+    void repeatDelayChanged();
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_KEYBOARD_H

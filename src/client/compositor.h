@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,47 +24,41 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_COMPOSITOR_H
+#define GREENISLANDCLIENT_COMPOSITOR_H
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/client/greenislandclient_export.h>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+class CompositorPrivate;
+class Region;
+class Registry;
+class Surface;
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT Compositor : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PRIVATE(Compositor)
 public:
-    Shm *shm() const;
-
-    void *address() const;
-
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
-
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    Surface *createSurface(QObject *parent = Q_NULLPTR);
+    Region *createRegion(QObject *parent = Q_NULLPTR);
+    Region *createRegion(const QRegion &region, QObject *parent = Q_NULLPTR);
 
     static QByteArray interfaceName();
 
-Q_SIGNALS:
-    void resized();
-
 private:
-    ShmPool(Shm *shm);
+    Compositor(QObject *parent = Q_NULLPTR);
 
-    friend class Shm;
+    friend class Registry;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_COMPOSITOR_H

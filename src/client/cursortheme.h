@@ -38,6 +38,7 @@ namespace GreenIsland {
 
 namespace Client {
 
+class Compositor;
 class CursorThemePrivate;
 class Seat;
 class ShmPool;
@@ -81,7 +82,7 @@ public:
     };
     Q_ENUM(CursorShape)
 
-    CursorTheme(ShmPool *pool, Seat *seat);
+    CursorTheme(Compositor *compositor, ShmPool *pool, Seat *seat);
 
     wl_cursor_image *cursorImage(CursorShape shape);
 

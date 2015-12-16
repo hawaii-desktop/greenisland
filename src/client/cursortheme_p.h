@@ -30,6 +30,7 @@
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/Client/CursorTheme>
+#include <GreenIsland/Client/Surface>
 
 #include <wayland-client.h>
 #include <wayland-cursor.h>
@@ -56,7 +57,7 @@ class GREENISLANDCLIENT_EXPORT CursorThemePrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(CursorTheme)
 public:
-    CursorThemePrivate(ShmPool *pool, Seat *seat);
+    CursorThemePrivate();
     ~CursorThemePrivate();
 
     void fillCursorShapes();
@@ -66,10 +67,12 @@ public:
 
     wl_cursor *requestCursor(CursorTheme::CursorShape shape);
 
+    Compositor *compositor;
     ShmPool *pool;
     Seat *seat;
     QString cursorThemeName;
     int cursorSize;
+    Surface *cursorSurface;
     wl_cursor_theme *theme;
     QMultiMap<CursorTheme::CursorShape, QByteArray> cursorShapes;
     QMap<CursorTheme::CursorShape, wl_cursor *> cursors;

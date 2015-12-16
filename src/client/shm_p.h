@@ -24,47 +24,47 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_SHM_P_H
+#define GREENISLANDCLIENT_SHM_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/Client/Shm>
+#include <GreenIsland/client/private/qwayland-wayland.h>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT ShmPrivate
+        : public QObjectPrivate
+        , public QtWayland::wl_shm
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PUBLIC(Shm)
 public:
-    Shm *shm() const;
+    ShmPrivate();
 
-    void *address() const;
+    static ShmPrivate *get(Shm *shm) { return shm->d_func(); }
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
+    Shm::Formats formats;
 
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
-
-    static QByteArray interfaceName();
-
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
+protected:
+    void shm_format(uint32_t format) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_SHM_P_H

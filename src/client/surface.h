@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,47 +24,59 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_SURFACE_H
+#define GREENISLANDCLIENT_SURFACE_H
 
 #include <QtCore/QObject>
+#include <QtCore/QRect>
 
 #include <GreenIsland/Client/Buffer>
+#include <GreenIsland/Client/Output>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+class Output;
+class Region;
+class SurfacePrivate;
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT Surface : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PRIVATE(Surface)
 public:
-    Shm *shm() const;
+    enum CommitMode {
+        NoCommitMode,
+        FrameCallbackCommitMode
+    };
 
-    void *address() const;
+    Surface(QObject *parent = Q_NULLPTR);
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
+    void setupFrameCallback();
 
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    void attach(Buffer *buffer, const QPoint &position);
+    void attach(BufferPtr buffer, const QPoint &position);
+
+    void damage(const QRect &rect);
+    void commit(CommitMode mode = FrameCallbackCommitMode);
+
+    void setOpaqueRegion(Region *region);
+    void setInputRegion(Region *region);
+
+    void setBufferTransform(Output::Transform transform);
+    void setBufferScale(qint32 scale);
 
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
+    void enter(Output *output);
+    void leave(Output *output);
+    void frameRendered();
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_SURFACE_H

@@ -24,12 +24,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SEAT_P_H
-#define GREENISLANDCLIENT_SEAT_P_H
+#ifndef GREENISLANDCLIENT_TOUCH_P_H
+#define GREENISLANDCLIENT_TOUCH_P_H
 
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/Client/Seat>
+#include <GreenIsland/Client/Surface>
+#include <GreenIsland/Client/Touch>
 #include <GreenIsland/client/private/qwayland-wayland.h>
 
 //
@@ -47,29 +49,54 @@ namespace GreenIsland {
 
 namespace Client {
 
-class GREENISLANDCLIENT_EXPORT SeatPrivate
+class GREENISLANDCLIENT_EXPORT TouchPrivate
         : public QObjectPrivate
-        , public QtWayland::wl_seat
+        , public QtWayland::wl_touch
 {
-    Q_DECLARE_PUBLIC(Seat)
+    Q_DECLARE_PUBLIC(Touch)
 public:
-    SeatPrivate();
+    TouchPrivate();
+    ~TouchPrivate();
 
-    QString name;
-    quint32 version;
-    Keyboard *keyboard;
-    Pointer *pointer;
-    Touch *touch;
+    Seat *seat;
+    bool active;
+    QVector<TouchPoint *> points;
 
-    static SeatPrivate *get(Seat *seat) { return seat->d_func(); }
+    TouchPoint *getPressedPoint(qint32 id) const;
+
+    static Touch *fromWlTouch(struct ::wl_touch *touch);
+    static TouchPrivate *get(Touch *touch) { return touch->d_func(); }
 
 protected:
-    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
-    void seat_name(const QString &name) Q_DECL_OVERRIDE;
+    void touch_down(uint32_t serial, uint32_t time,
+                    struct ::wl_surface *surface, int32_t id,
+                    wl_fixed_t x, wl_fixed_t y) Q_DECL_OVERRIDE;
+    void touch_up(uint32_t serial, uint32_t time, int32_t id) Q_DECL_OVERRIDE;
+    void touch_motion(uint32_t time, int32_t id,
+                      wl_fixed_t x, wl_fixed_t y) Q_DECL_OVERRIDE;
+    void touch_frame() Q_DECL_OVERRIDE;
+    void touch_cancel() Q_DECL_OVERRIDE;
+};
+
+class GREENISLANDCLIENT_EXPORT TouchPointPrivate
+{
+    Q_DECLARE_PUBLIC(TouchPoint)
+public:
+    TouchPointPrivate();
+
+    qint32 id;
+    quint32 upSerial, downSerial;
+    QPointer<Surface> surface;
+    QVector<QPointF> positions;
+    QVector<quint32> timestamps;
+    bool down;
+
+private:
+    TouchPoint *q_ptr;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SEAT_P_H
+#endif // GREENISLANDCLIENT_TOUCH_P_H

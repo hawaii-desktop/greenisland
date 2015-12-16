@@ -24,9 +24,16 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include "compositor.h"
+#include "compositor_p.h"
+#include "output.h"
+#include "output_p.h"
 #include "registry.h"
 #include "registry_p.h"
-#include "shmpool.h"
+#include "seat.h"
+#include "seat_p.h"
+#include "shm.h"
+#include "shm_p.h"
 #include "qwayland-fullscreen-shell.h"
 
 #include <wayland-client.h>
@@ -45,27 +52,31 @@ namespace Client {
 static Registry::Interface nameToInterface(const char *interface)
 {
     if (strcmp(interface, "wl_compositor") == 0)
-        return Registry::Compositor;
-    else if (strcmp(interface, "wl_seat") == 0)
-        return Registry::Seat;
-    else if (strcmp(interface, "wl_shm") == 0)
-        return Registry::Shm;
+        return Registry::CompositorInterface;
     else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
-        return Registry::FullscreenShell;
-    return Registry::Unknown;
+        return Registry::FullscreenShellInterface;
+    else if (strcmp(interface, "wl_output") == 0)
+        return Registry::OutputInterface;
+    else if (strcmp(interface, "wl_seat") == 0)
+        return Registry::SeatInterface;
+    else if (strcmp(interface, "wl_shm") == 0)
+        return Registry::ShmInterface;
+    return Registry::UnknownInterface;
 }
 
 static const wl_interface *wlInterface(Registry::Interface interface)
 {
     switch (interface) {
-    case Registry::Compositor:
+    case Registry::CompositorInterface:
         return &wl_compositor_interface;
-    case Registry::Seat:
-        return &wl_seat_interface;
-    case Registry::Shm:
-        return &wl_shm_interface;
-    case Registry::FullscreenShell:
+    case Registry::OutputInterface:
+        return &wl_output_interface;
+    case Registry::FullscreenShellInterface:
         return &_wl_fullscreen_shell_interface;
+    case Registry::SeatInterface:
+        return &wl_seat_interface;
+    case Registry::ShmInterface:
+        return &wl_shm_interface;
     default:
         break;
     }
@@ -115,23 +126,26 @@ void RegistryPrivate::handleAnnounce(const char *interface, quint32 name, quint3
 {
     Q_Q(Registry);
 
-    Q_EMIT q->interfaceAnnounced(QString::fromUtf8(interface), name, version);
+    Q_EMIT q->interfaceAnnounced(QByteArray(interface), name, version);
 
     Registry::Interface i = nameToInterface(interface);
     interfaces.append({i, name, version});
 
     switch (i) {
-    case Registry::Compositor:
+    case Registry::CompositorInterface:
         Q_EMIT q->compositorAnnounced(name, version);
         break;
-    case Registry::Seat:
+    case Registry::FullscreenShellInterface:
+        Q_EMIT q->fullscreenShellAnnounced(name, version);
+        break;
+    case Registry::OutputInterface:
+        Q_EMIT q->outputAnnounced(name, version);
+        break;
+    case Registry::SeatInterface:
         Q_EMIT q->seatAnnounced(name, version);
         break;
-    case Registry::Shm:
+    case Registry::ShmInterface:
         Q_EMIT q->shmAnnounced(name, version);
-        break;
-    case Registry::FullscreenShell:
-        Q_EMIT q->fullscreenShellAnnounced(name, version);
         break;
     default:
         break;
@@ -149,17 +163,20 @@ void RegistryPrivate::handleRemove(quint32 name)
             interfaces.erase(it);
 
             switch (info.interface) {
-            case Registry::Compositor:
+            case Registry::CompositorInterface:
                 Q_EMIT q->compositorRemoved(name);
                 break;
-            case Registry::Seat:
+            case Registry::FullscreenShellInterface:
+                Q_EMIT q->fullscreenShellRemoved(name);
+                break;
+            case Registry::OutputInterface:
+                Q_EMIT q->outputRemoved(name);
+                break;
+            case Registry::SeatInterface:
                 Q_EMIT q->seatRemoved(name);
                 break;
-            case Registry::Shm:
+            case Registry::ShmInterface:
                 Q_EMIT q->shmRemoved(name);
-                break;
-            case Registry::FullscreenShell:
-                Q_EMIT q->fullscreenShellRemoved(name);
                 break;
             default:
                 break;
@@ -182,7 +199,7 @@ void RegistryPrivate::handleSync()
 }
 
 void RegistryPrivate::globalAnnounce(void *data, wl_registry *registry, uint32_t name,
-                                            const char *interface, uint32_t version)
+                                     const char *interface, uint32_t version)
 {
     auto self = reinterpret_cast<RegistryPrivate *>(data);
     Q_ASSERT(registry == self->registry);
@@ -232,12 +249,6 @@ bool Registry::isValid() const
     return d->registry != Q_NULLPTR;
 }
 
-wl_registry *Registry::registry() const
-{
-    Q_D(const Registry);
-    return d->registry;
-}
-
 void Registry::create(wl_display *display)
 {
     Q_D(Registry);
@@ -255,16 +266,42 @@ void Registry::setup()
     d->setup();
 }
 
-wl_compositor *Registry::bindCompositor()
+Compositor *Registry::createCompositor(quint32 name, quint32 version, QObject *parent)
 {
     Q_D(Registry);
-    return d->bind<wl_compositor>(Compositor);
+    Compositor *compositor = new Compositor(parent);
+    CompositorPrivate::get(compositor)->init(d->registry, name, version);
+    return compositor;
 }
 
-ShmPool *Registry::createShmPool(QObject *parent)
+Output *Registry::createOutput(quint32 name, quint32 version, QObject *parent)
 {
     Q_D(Registry);
-    return new ShmPool(d->bind<wl_shm>(Shm), parent);
+    Output *output = new Output(parent);
+    OutputPrivate::get(output)->init(d->registry, name, version);
+    return output;
+}
+
+Seat *Registry::createSeat(quint32 name, quint32 version, QObject *parent)
+{
+    Q_D(Registry);
+    Seat *seat = new Seat(parent);
+    SeatPrivate::get(seat)->init(d->registry, name, version);
+    SeatPrivate::get(seat)->version = version;
+    return seat;
+}
+
+Shm *Registry::createShm(quint32 name, quint32 version, QObject *parent)
+{
+    Q_D(Registry);
+    Shm *shm = new Shm(parent);
+    ShmPrivate::get(shm)->init(d->registry, name, version);
+    return shm;
+}
+
+QByteArray Registry::interfaceName()
+{
+    return QByteArrayLiteral("wl_registry");
 }
 
 } // namespace Client

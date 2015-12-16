@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,12 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SEAT_P_H
-#define GREENISLANDCLIENT_SEAT_P_H
+#ifndef GREENISLANDCLIENT_SURFACE_P_H
+#define GREENISLANDCLIENT_SURFACE_P_H
 
 #include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/Client/Seat>
+#include <GreenIsland/Client/Surface>
 #include <GreenIsland/client/private/qwayland-wayland.h>
 
 //
@@ -47,29 +47,31 @@ namespace GreenIsland {
 
 namespace Client {
 
-class GREENISLANDCLIENT_EXPORT SeatPrivate
+class GREENISLANDCLIENT_EXPORT SurfacePrivate
         : public QObjectPrivate
-        , public QtWayland::wl_seat
+        , public QtWayland::wl_surface
 {
-    Q_DECLARE_PUBLIC(Seat)
+    Q_DECLARE_PUBLIC(Surface)
 public:
-    SeatPrivate();
+    SurfacePrivate();
 
-    QString name;
-    quint32 version;
-    Keyboard *keyboard;
-    Pointer *pointer;
-    Touch *touch;
+    bool frameCallbackInstalled;
 
-    static SeatPrivate *get(Seat *seat) { return seat->d_func(); }
+    void handleFrameCallback();
+
+    static void frameCallback(void *data, wl_callback *callback, uint32_t time);
+    static const wl_callback_listener callbackListener;
+
+    static Surface *fromWlSurface(struct ::wl_surface *surface);
+    static SurfacePrivate *get(Surface *surface) { return surface->d_func(); }
 
 protected:
-    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
-    void seat_name(const QString &name) Q_DECL_OVERRIDE;
+    void surface_enter(wl_output *output) Q_DECL_OVERRIDE;
+    void surface_leave(wl_output *output) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SEAT_P_H
+#endif // GREENISLANDCLIENT_SURFACE_P_H

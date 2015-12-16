@@ -31,17 +31,17 @@
 
 #include <GreenIsland/client/greenislandclient_export.h>
 
-struct wl_compositor;
 struct wl_display;
-struct wl_registry;
-struct wl_seat;
 
 namespace GreenIsland {
 
 namespace Client {
 
+class Compositor;
+class Output;
 class RegistryPrivate;
-class ShmPool;
+class Seat;
+class Shm;
 
 class GREENISLANDCLIENT_EXPORT Registry : public QObject
 {
@@ -49,28 +49,31 @@ class GREENISLANDCLIENT_EXPORT Registry : public QObject
     Q_DECLARE_PRIVATE(Registry)
 public:
     enum Interface {
-        Unknown,
-        Compositor,
-        Seat,
-        Shm,
-        FullscreenShell
+        UnknownInterface = 0,
+        CompositorInterface,
+        FullscreenShellInterface,
+        OutputInterface,
+        SeatInterface,
+        ShmInterface
     };
+    Q_ENUM(Interface)
 
     Registry(QObject *parent = Q_NULLPTR);
 
     bool isValid() const;
 
-    wl_registry *registry() const;
-
     void create(wl_display *display);
     void setup();
 
-    wl_compositor *bindCompositor();
+    Compositor *createCompositor(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+    Output *createOutput(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+    Seat *createSeat(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+    Shm *createShm(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
 
-    ShmPool *createShmPool(QObject *parent);
+    static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void interfaceAnnounced(const QString &interface, quint32 name, quint32 version);
+    void interfaceAnnounced(const QByteArray &interface, quint32 name, quint32 version);
     void interfaceRemoved(quint32 name);
 
     void interfacesAnnounced();
@@ -79,14 +82,17 @@ Q_SIGNALS:
     void compositorAnnounced(quint32 name, quint32 version);
     void compositorRemoved(quint32 name);
 
+    void fullscreenShellAnnounced(quint32 name, quint32 version);
+    void fullscreenShellRemoved(quint32 name);
+
+    void outputAnnounced(quint32 name, quint32 version);
+    void outputRemoved(quint32 name);
+
     void seatAnnounced(quint32 name, quint32 version);
     void seatRemoved(quint32 name);
 
     void shmAnnounced(quint32 name, quint32 version);
     void shmRemoved(quint32 name);
-
-    void fullscreenShellAnnounced(quint32 name, quint32 version);
-    void fullscreenShellRemoved(quint32 name);
 };
 
 } // namespace Client

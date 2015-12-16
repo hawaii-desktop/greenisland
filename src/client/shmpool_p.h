@@ -31,12 +31,11 @@
 #include <QtCore/QTemporaryFile>
 #include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/client/greenislandclient_export.h>
+#include <GreenIsland/Client/ShmPool>
+#include <GreenIsland/client/private/qwayland-wayland.h>
 
 #include <unistd.h>
 #include <sys/mman.h>
-
-#include <wayland-client-protocol.h>
 
 //
 //  W A R N I N G
@@ -55,23 +54,28 @@ namespace GreenIsland {
 
 namespace Client {
 
-class GREENISLANDCLIENT_EXPORT ShmPoolPrivate : public QObjectPrivate
+class GREENISLANDCLIENT_EXPORT ShmPoolPrivate
+        : public QObjectPrivate
+        , public QtWayland::wl_shm_pool
 {
     Q_DECLARE_PUBLIC(ShmPool)
 public:
     ShmPoolPrivate();
     ~ShmPoolPrivate();
 
-    bool create();
-    bool resize(size_t newSize);
-    void release();
+    bool createPool(Shm *shm, size_t createSize);
+    bool resizePool(size_t newSize);
 
-    wl_shm *shm;
-    wl_shm_pool *pool;
+    QVector<BufferSharedPtr>::iterator reuseBuffer(const QSize &s, qint32 stride, Buffer::Format format);
+
+    static ShmPoolPrivate *get(ShmPool *pool) { return pool->d_func(); }
+
+    Shm *shm;
     QScopedPointer<QTemporaryFile> file;
     uchar *data;
-    size_t size;
-    bool valid;
+    qint32 size;
+    qint32 offset;
+    QVector<BufferSharedPtr> buffers;
 };
 
 } // namespace Client

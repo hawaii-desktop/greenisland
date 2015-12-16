@@ -30,6 +30,7 @@
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/Client/Pointer>
+#include <GreenIsland/Client/Surface>
 #include <GreenIsland/client/private/qwayland-wayland.h>
 
 #include <wayland-cursor.h>
@@ -59,14 +60,22 @@ public:
     ~PointerPrivate();
 
     Seat *seat;
-    wl_surface *cursorSurface;
+    Surface *cursorSurface;
+    Surface *focusSurface;
     quint32 enterSerial;
 
+    static Pointer *fromWlPointer(struct ::wl_pointer *pointer);
     static PointerPrivate *get(Pointer *pointer) { return pointer->d_func(); }
 
 protected:
-    void pointer_enter(uint32_t serial, wl_surface *surface,
+    void pointer_enter(uint32_t serial, struct ::wl_surface *surface,
                        wl_fixed_t surface_x, wl_fixed_t surface_y) Q_DECL_OVERRIDE;
+    void pointer_leave(uint32_t serial, struct ::wl_surface *surface) Q_DECL_OVERRIDE;
+    void pointer_motion(uint32_t time, wl_fixed_t surface_x,
+                        wl_fixed_t surface_y) Q_DECL_OVERRIDE;
+    void pointer_button(uint32_t serial, uint32_t time, uint32_t button,
+                        uint32_t state) Q_DECL_OVERRIDE;
+    void pointer_axis(uint32_t time, uint32_t axis, wl_fixed_t value) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client

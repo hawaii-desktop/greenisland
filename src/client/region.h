@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,47 +24,40 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_REGION_H
+#define GREENISLANDCLIENT_REGION_H
 
 #include <QtCore/QObject>
+#include <QtGui/QRegion>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/client/greenislandclient_export.h>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+class RegionPrivate;
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT Region : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PRIVATE(Region)
 public:
-    Shm *shm() const;
+    Region(const QRegion &region, QObject *parent = Q_NULLPTR);
 
-    void *address() const;
+    bool isInitialized() const;
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
+    void add(const QRegion &region);
+    void add(const QRect &rect);
 
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    void subtract(const QRegion &region);
+    void subtract(const QRect &rect);
 
     static QByteArray interfaceName();
-
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_REGION_H

@@ -24,47 +24,66 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
-
-#include <QtCore/QObject>
-
-#include <GreenIsland/Client/Buffer>
+#include "shm.h"
+#include "shm_p.h"
+#include "shmpool.h"
+#include "shmpool_p.h"
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+/*
+ * ShmPrivate
+ */
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+ShmPrivate::ShmPrivate()
+    : QtWayland::wl_shm()
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
-public:
-    Shm *shm() const;
+}
 
-    void *address() const;
+void ShmPrivate::shm_format(uint32_t format)
+{
+    Q_Q(Shm);
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
+    formats = static_cast<Shm::Formats>(format);
+    Q_EMIT q->formatsChanged();
+}
 
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+/*
+ * Shm
+ */
 
-    static QByteArray interfaceName();
+Shm::Shm(QObject *parent)
+    : QObject(*new ShmPrivate(), parent)
+{
+}
 
-Q_SIGNALS:
-    void resized();
+Shm::Formats Shm::formats() const
+{
+    Q_D(const Shm);
+    return d->formats;
+}
 
-private:
-    ShmPool(Shm *shm);
+ShmPool *Shm::createPool(size_t size)
+{
+    Q_D(Shm);
+    ShmPool *pool = new ShmPool(this);
+    ShmPoolPrivate *dPool = ShmPoolPrivate::get(pool);
+    if (!dPool->createPool(this, size)) {
+        delete pool;
+        return Q_NULLPTR;
+    }
+    return pool;
+}
 
-    friend class Shm;
-};
+QByteArray Shm::interfaceName()
+{
+    return QByteArrayLiteral("wl_shm");
+}
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#include "moc_shm.cpp"

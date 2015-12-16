@@ -65,6 +65,8 @@ public:
     wl_registry *registry;
     wl_callback *callback;
 
+    static RegistryPrivate *get(Registry *r) { return r->d_func(); }
+
 private:
     struct InterfaceInfo {
         Registry::Interface interface;

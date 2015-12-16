@@ -24,10 +24,15 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include "keyboard.h"
+#include "keyboard_p.h"
 #include "pointer.h"
 #include "pointer_p.h"
+#include "registry_p.h"
 #include "seat.h"
 #include "seat_p.h"
+#include "touch.h"
+#include "touch_p.h"
 
 namespace GreenIsland {
 
@@ -40,8 +45,9 @@ namespace Client {
 SeatPrivate::SeatPrivate()
     : QtWayland::wl_seat()
     , version(0)
-    , compositor(Q_NULLPTR)
+    , keyboard(Q_NULLPTR)
     , pointer(Q_NULLPTR)
+    , touch(Q_NULLPTR)
 {
 }
 
@@ -49,12 +55,44 @@ void SeatPrivate::seat_capabilities(uint32_t capabilities)
 {
     Q_Q(Seat);
 
+    if (capabilities & capability_keyboard && !keyboard) {
+        keyboard = new Keyboard(q);
+        KeyboardPrivate::get(keyboard)->init(get_keyboard());
+        Q_EMIT q->keyboardAdded();
+    } else if (!(capabilities & capability_keyboard) && keyboard) {
+        delete keyboard;
+        keyboard = Q_NULLPTR;
+        Q_EMIT q->keyboardRemoved();
+    }
+
     if (capabilities & capability_pointer && !pointer) {
         pointer = new Pointer(q);
         PointerPrivate::get(pointer)->init(get_pointer());
+        Q_EMIT q->pointerAdded();
     } else if (!(capabilities & capability_pointer) && pointer) {
         delete pointer;
         pointer = Q_NULLPTR;
+        Q_EMIT q->pointerRemoved();
+    }
+
+    if (capabilities & capability_touch && !touch) {
+        touch = new Touch(q);
+        TouchPrivate::get(touch)->init(get_touch());
+        Q_EMIT q->touchAdded();
+    } else if (!(capabilities & capability_touch) && touch) {
+        delete touch;
+        touch = Q_NULLPTR;
+        Q_EMIT q->touchRemoved();
+    }
+}
+
+void SeatPrivate::seat_name(const QString &name)
+{
+    Q_Q(Seat);
+
+    if (this->name != name) {
+        this->name = name;
+        Q_EMIT q->nameChanged();
     }
 }
 
@@ -62,13 +100,15 @@ void SeatPrivate::seat_capabilities(uint32_t capabilities)
  * Seat
  */
 
-Seat::Seat(Registry *registry, wl_compositor *compositor,
-           quint32 name, quint32 version)
-    : QObject(*new SeatPrivate(), registry)
+Seat::Seat(QObject *parent)
+    : QObject(*new SeatPrivate(), parent)
 {
-    d_func()->version = version;
-    d_func()->compositor = compositor;
-    d_func()->init(registry->registry(), name, version);
+}
+
+QString Seat::name() const
+{
+    Q_D(const Seat);
+    return d->name;
 }
 
 quint32 Seat::version() const
@@ -77,16 +117,27 @@ quint32 Seat::version() const
     return d->version;
 }
 
-wl_compositor *Seat::compositor() const
+Keyboard *Seat::keyboard() const
 {
     Q_D(const Seat);
-    return d->compositor;
+    return d->keyboard;
 }
 
 Pointer *Seat::pointer() const
 {
     Q_D(const Seat);
     return d->pointer;
+}
+
+Touch *Seat::touch() const
+{
+    Q_D(const Seat);
+    return d->touch;
+}
+
+QByteArray Seat::interfaceName()
+{
+    return QByteArrayLiteral("wl_seat");
 }
 
 } // namespace Client

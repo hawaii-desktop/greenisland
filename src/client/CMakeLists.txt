@@ -7,13 +7,24 @@ include_directories(
 include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerConfigExtrasLocal.cmake)
 include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerMacros.cmake)
 
+# Avoid warnings regarding wl_buffer being deprecated
+add_definitions(-Wno-deprecated-declarations)
+
 set(SOURCES
+    buffer.cpp
     clientconnection.cpp
+    compositor.cpp
     cursortheme.cpp
+    keyboard.cpp
+    output.cpp
     pointer.cpp
+    region.cpp
     registry.cpp
     seat.cpp
+    shm.cpp
     shmpool.cpp
+    surface.cpp
+    touch.cpp
 )
 
 greenisland_add_client_protocol(SOURCES
@@ -55,13 +66,21 @@ set_target_properties(GreenIslandClient PROPERTIES
 
 ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
     HEADER_NAMES
+        Buffer
         ClientConnection
+        Compositor
         CursorTheme
         FullScreenShell
+        Keyboard
+        Output
         Pointer
+        Region
         Registry
         Seat
+        Shm
         ShmPool
+        Surface
+        Touch
     PREFIX
         Client
     OUTPUT_DIR
@@ -72,12 +91,19 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
 
 private_headers(GreenIslandClient_PRIVATE_HEADERS
     HEADERS
+        ${CMAKE_CURRENT_SOURCE_DIR}/buffer_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/clientconnection_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cursortheme_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/keyboard_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/output_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/region_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shm_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shmpool_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/surface_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h

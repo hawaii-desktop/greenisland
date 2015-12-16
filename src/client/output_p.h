@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,12 +24,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SEAT_P_H
-#define GREENISLANDCLIENT_SEAT_P_H
+#ifndef GREENISLANDCLIENT_OUTPUT_P_H
+#define GREENISLANDCLIENT_OUTPUT_P_H
 
 #include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/Client/Seat>
+#include <GreenIsland/Client/Output>
 #include <GreenIsland/client/private/qwayland-wayland.h>
 
 //
@@ -47,29 +47,42 @@ namespace GreenIsland {
 
 namespace Client {
 
-class GREENISLANDCLIENT_EXPORT SeatPrivate
+class GREENISLANDCLIENT_EXPORT OutputPrivate
         : public QObjectPrivate
-        , public QtWayland::wl_seat
+        , public QtWayland::wl_output
 {
-    Q_DECLARE_PUBLIC(Seat)
+    Q_DECLARE_PUBLIC(Output)
 public:
-    SeatPrivate();
+    OutputPrivate();
 
-    QString name;
-    quint32 version;
-    Keyboard *keyboard;
-    Pointer *pointer;
-    Touch *touch;
+    QString manufacturer;
+    QString model;
 
-    static SeatPrivate *get(Seat *seat) { return seat->d_func(); }
+    QPoint position;
+    QSize physicalSize;
+    qint32 scale;
+
+    QVector<Output::Mode> modes;
+    QVector<Output::Mode>::iterator currentMode;
+
+    Output::Subpixel subpixelValue;
+    Output::Transform transformValue;
+
+    static Output *fromWlOutput(struct ::wl_output *output);
+    static OutputPrivate *get(Output *output) { return output->d_func(); }
 
 protected:
-    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
-    void seat_name(const QString &name) Q_DECL_OVERRIDE;
+    void output_geometry(int32_t x, int32_t y,
+                         int32_t physical_width, int32_t physical_height,
+                         int32_t subpixel, const QString &make,
+                         const QString &model, int32_t transform) Q_DECL_OVERRIDE;
+    void output_mode(uint32_t flags, int32_t width, int32_t height, int32_t refresh) Q_DECL_OVERRIDE;
+    void output_done() Q_DECL_OVERRIDE;
+    void output_scale(int32_t factor) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SEAT_P_H
+#endif // GREENISLANDCLIENT_OUTPUT_P_H

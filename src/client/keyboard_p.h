@@ -24,12 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SEAT_P_H
-#define GREENISLANDCLIENT_SEAT_P_H
+#ifndef GREENISLANDCLIENT_KEYBOARD_P_H
+#define GREENISLANDCLIENT_KEYBOARD_P_H
 
 #include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/Client/Seat>
+#include <GreenIsland/Client/Keyboard>
+#include <GreenIsland/Client/Surface>
 #include <GreenIsland/client/private/qwayland-wayland.h>
 
 //
@@ -47,29 +48,39 @@ namespace GreenIsland {
 
 namespace Client {
 
-class GREENISLANDCLIENT_EXPORT SeatPrivate
+class GREENISLANDCLIENT_EXPORT KeyboardPrivate
         : public QObjectPrivate
-        , public QtWayland::wl_seat
+        , public QtWayland::wl_keyboard
 {
-    Q_DECLARE_PUBLIC(Seat)
+    Q_DECLARE_PUBLIC(Keyboard)
 public:
-    SeatPrivate();
+    KeyboardPrivate();
+    ~KeyboardPrivate();
 
-    QString name;
-    quint32 version;
-    Keyboard *keyboard;
-    Pointer *pointer;
-    Touch *touch;
+    Seat *seat;
+    Surface *focusSurface;
+    quint32 repeatRate;
+    quint32 repeatDelay;
 
-    static SeatPrivate *get(Seat *seat) { return seat->d_func(); }
+    static Keyboard *fromWlKeyboard(struct ::wl_keyboard *keyboard);
+    static KeyboardPrivate *get(Keyboard *keyboard) { return keyboard->d_func(); }
 
 protected:
-    void seat_capabilities(uint32_t capabilities) Q_DECL_OVERRIDE;
-    void seat_name(const QString &name) Q_DECL_OVERRIDE;
+    void keyboard_keymap(uint32_t format, int32_t fd,
+                         uint32_t size) Q_DECL_OVERRIDE;
+    void keyboard_enter(uint32_t serial, struct ::wl_surface *surface,
+                        wl_array *keys) Q_DECL_OVERRIDE;
+    void keyboard_leave(uint32_t serial, struct ::wl_surface *surface) Q_DECL_OVERRIDE;
+    void keyboard_key(uint32_t serial, uint32_t time, uint32_t key,
+                      uint32_t state) Q_DECL_OVERRIDE;
+    void keyboard_modifiers(uint32_t serial, uint32_t mods_depressed,
+                            uint32_t mods_latched, uint32_t mods_locked,
+                            uint32_t group) Q_DECL_OVERRIDE;
+    void keyboard_repeat_info(int32_t rate, int32_t delay) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SEAT_P_H
+#endif // GREENISLANDCLIENT_KEYBOARD_P_H

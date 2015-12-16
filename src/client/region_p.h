@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,47 +24,44 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_REGION_P_H
+#define GREENISLANDCLIENT_REGION_P_H
 
-#include <QtCore/QObject>
+#include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/Client/Region>
+#include <GreenIsland/client/private/qwayland-wayland.h>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT RegionPrivate
+        : public QObjectPrivate
+        , public QtWayland::wl_region
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PUBLIC(Region)
 public:
-    Shm *shm() const;
+    RegionPrivate();
 
-    void *address() const;
+    static RegionPrivate *get(Region *r) { return r->d_func(); }
 
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
-
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
-
-    static QByteArray interfaceName();
-
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
+    QRegion region;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_REGION_P_H

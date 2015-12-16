@@ -28,6 +28,7 @@
 #define GREENISLANDCLIENT_POINTER_H
 
 #include <QtCore/QObject>
+#include <QtCore/QPoint>
 
 #include <GreenIsland/client/greenislandclient_export.h>
 
@@ -39,15 +40,33 @@ namespace Client {
 
 class PointerPrivate;
 class Seat;
+class Surface;
 
 class GREENISLANDCLIENT_EXPORT Pointer : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Pointer)
+    Q_PROPERTY(Surface *focusSurface READ focusSurface NOTIFY focusSurfaceChanged)
+    Q_PROPERTY(Surface *cursorSurface READ cursorSurface NOTIFY cursorSurfaceChanged)
 public:
     Pointer(Seat *seat);
 
-    void setCursor(wl_cursor_image *image);
+    Surface *focusSurface() const;
+
+    Surface *cursorSurface() const;
+    void setCursor(Surface *surface, const QPoint &hotSpot = QPoint(0, 0));
+
+    static QByteArray interfaceName();
+
+Q_SIGNALS:
+    void focusSurfaceChanged();
+    void cursorSurfaceChanged();
+    void enter(quint32 serial, const QPointF &relativeToSurface);
+    void leave(quint32 serial);
+    void motion(quint32 time, const QPointF &relativeToSurface);
+    void buttonPressed(quint32 serial, quint32 time, const Qt::MouseButton &button);
+    void buttonReleased(quint32 serial, quint32 time, const Qt::MouseButton &button);
+    void axisChanged(quint32 time, const Qt::Orientation &orientation, qreal value);
 };
 
 } // namespace Client

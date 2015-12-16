@@ -24,6 +24,11 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QImage>
+
+#include "buffer_p.h"
+#include "shm.h"
+#include "shm_p.h"
 #include "shmpool.h"
 #include "shmpool_p.h"
 
@@ -33,27 +38,66 @@ namespace GreenIsland {
 
 namespace Client {
 
+static QtWayland::wl_shm::format formatToWayland(Buffer::Format format)
+{
+    switch (format) {
+    case Buffer::Format_ARGB32:
+        return QtWayland::wl_shm::format_argb8888;
+    case Buffer::Format_RGB32:
+        return QtWayland::wl_shm::format_xrgb8888;
+    }
+
+    qCWarning(WLSHMPOOL) << "Unsupported buffer format" << format << "fallback to ARGB8888 but rendering errors are expected";
+    return QtWayland::wl_shm::format_argb8888;
+}
+
+static Buffer::Format formatToBuffer(QImage::Format format)
+{
+    switch (format) {
+    case QImage::Format_ARGB32:
+    case QImage::Format_ARGB32_Premultiplied:
+        return Buffer::Format_ARGB32;
+    case QImage::Format_RGB32:
+        return Buffer::Format_RGB32;
+    default:
+        break;
+    }
+
+    qCWarning(WLSHMPOOL) << "Unsupported image format" << format << "fallback to ARGB32 but rendering errors are expected";
+    return Buffer::Format_RGB32;
+}
+
 /*
  * ShmPoolPrivate
  */
 
 ShmPoolPrivate::ShmPoolPrivate()
-    : shm(Q_NULLPTR)
-    , pool(Q_NULLPTR)
+    : QtWayland::wl_shm_pool()
+    , shm(Q_NULLPTR)
     , file(new QTemporaryFile())
     , data(Q_NULLPTR)
     , size(1024)
-    , valid(false)
+    , offset(0)
 {
     file->setFileTemplate(QStringLiteral("greenisland-shm-XXXXXX"));
 }
 
 ShmPoolPrivate::~ShmPoolPrivate()
 {
-    release();
+    for (auto it = buffers.begin(); it != buffers.end();) {
+        delete (*it).data();
+        it = buffers.erase(it);
+    }
+
+    if (data) {
+        ::munmap(data, size);
+        data = Q_NULLPTR;
+    }
+
+    file->close();
 }
 
-bool ShmPoolPrivate::create()
+bool ShmPoolPrivate::createPool(Shm *shm, size_t createSize)
 {
     if (!file->open()) {
         qCWarning(WLSHMPOOL) << "Cannot open temporary file for shm pool";
@@ -65,19 +109,19 @@ bool ShmPoolPrivate::create()
         return false;
     }
 
-    if (::ftruncate(file->handle(), size) < 0) {
+    if (::ftruncate(file->handle(), createSize) < 0) {
         qCWarning(WLSHMPOOL) << "Cannot set shm pool size";
         return false;
     }
 
-    data = (uchar *)::mmap(Q_NULLPTR, size, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
+    data = (uchar *)::mmap(Q_NULLPTR, createSize, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
     if (data == (uchar *)MAP_FAILED) {
         qCWarning(WLSHMPOOL, "Failed to mmap /dev/zero: %s", ::strerror(errno));
         data = Q_NULLPTR;
         return false;
     }
 
-    pool = wl_shm_create_pool(shm, file->handle(), size);
+    ::wl_shm_pool *pool = ShmPrivate::get(shm)->create_pool(file->handle(), createSize);
     if (!pool) {
         qCWarning(WLSHMPOOL) << "Failed to create shm pool";
         ::munmap(data, size);
@@ -85,16 +129,17 @@ bool ShmPoolPrivate::create()
         return false;
     }
 
+    init(pool);
+    size = createSize;
+
     return true;
 }
 
-bool ShmPoolPrivate::resize(size_t newSize)
+bool ShmPoolPrivate::resizePool(size_t newSize)
 {
     Q_Q(ShmPool);
 
     Q_ASSERT(data);
-    Q_ASSERT(shm);
-    Q_ASSERT(pool);
     Q_ASSERT(file->isOpen());
 
     if (::ftruncate(file->handle(), newSize) < 0) {
@@ -102,7 +147,7 @@ bool ShmPoolPrivate::resize(size_t newSize)
         return false;
     }
 
-    wl_shm_pool_resize(pool, newSize);
+    resize(newSize);
 
     ::munmap(data, size);
     data = (uchar *)::mmap(Q_NULLPTR, newSize, PROT_READ | PROT_WRITE, MAP_SHARED, file->handle(), 0);
@@ -118,46 +163,110 @@ bool ShmPoolPrivate::resize(size_t newSize)
     return true;
 }
 
-void ShmPoolPrivate::release()
+QVector<BufferSharedPtr>::iterator ShmPoolPrivate::reuseBuffer(const QSize &s, qint32 stride, Buffer::Format format)
 {
-    if (data) {
-        ::munmap(data, size);
-        data = Q_NULLPTR;
+    Q_Q(ShmPool);
+
+    // We can't return a shared pointer here so we just return
+    // the iterator of the buffers vector that can be used to
+    // retrieve the actual shared pointer
+
+    // Try to reuse an existing buffer
+    for (auto it = buffers.begin(); it != buffers.end(); ++it) {
+        QSharedPointer<Buffer> buffer = (*it);
+
+        // Skip buffers that are in use or do not match what the user is looking for
+        if (!buffer->isReleased() || buffer->isUsed())
+            continue;
+        if (buffer->size() != s || buffer->stride() != stride || buffer->format() != format)
+            continue;
+
+        // We found the buffer
+        buffer->setReleased(false);
+        return it;
     }
-    if (pool) {
-        wl_shm_pool_destroy(pool);
-        pool = Q_NULLPTR;
+
+    // No buffer found: resize the pool to accomodate a new buffer
+    const qint32 bytesCount = s.height() * stride;
+    if (offset + bytesCount > size) {
+        if (!resizePool(bytesCount + size))
+            return Q_NULLPTR;
     }
-    if (shm) {
-        wl_shm_destroy(shm);
-        shm = Q_NULLPTR;
-    }
-    file->close();
-    valid = false;
+
+    // No buffer can be reused, create a new one and advance the offset
+    wl_buffer *nativeBuffer =
+            create_buffer(offset, s.width(), s.height(), stride, formatToWayland(format));
+    if (!nativeBuffer)
+        return Q_NULLPTR;
+    Buffer *buffer = new Buffer(q, s, stride, offset, format);
+    BufferPrivate::get(buffer)->init(nativeBuffer);
+    offset += bytesCount;
+    return buffers.insert(buffers.end(), BufferSharedPtr(buffer));
 }
 
 /*
  * ShmPool
  */
 
-ShmPool::ShmPool(wl_shm *shm, QObject *parent)
-    : QObject(*new ShmPoolPrivate(), parent)
+ShmPool::ShmPool(Shm *shm)
+    : QObject(*new ShmPoolPrivate(), shm)
 {
     d_func()->shm = shm;
-    Q_ASSERT(shm);
-    d_func()->valid = d_func()->create();
 }
 
-bool ShmPool::isValid() const
-{
-    Q_D(const ShmPool);
-    return d->valid;
-}
-
-wl_shm *ShmPool::shm() const
+Shm *ShmPool::shm() const
 {
     Q_D(const ShmPool);
     return d->shm;
+}
+
+void *ShmPool::address() const
+{
+    Q_D(const ShmPool);
+    return d->data;
+}
+
+BufferPtr ShmPool::createBuffer(const QImage &image)
+{
+    Q_D(ShmPool);
+
+    if (image.isNull())
+        return BufferPtr();
+
+    auto it = d->reuseBuffer(image.size(), image.bytesPerLine(), formatToBuffer(image.format()));
+    if (it == d->buffers.end())
+        return BufferPtr();
+    (*it)->copy(image.bits());
+    return BufferPtr(*it);
+}
+
+BufferPtr ShmPool::createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format)
+{
+    Q_D(ShmPool);
+
+    if (size.isEmpty())
+        return BufferPtr();
+
+    auto it = d->reuseBuffer(size, stride, format);
+    if (it == d->buffers.end())
+        return BufferPtr();
+    (*it)->copy(source);
+    return BufferPtr(*it);
+}
+
+BufferPtr ShmPool::findBuffer(const QSize &size, quint32 stride, Buffer::Format format)
+{
+    Q_D(ShmPool);
+
+    auto it = d->reuseBuffer(size, stride, format);
+    if (it == d->buffers.end())
+        return BufferPtr();
+    return BufferPtr(*it);
+}
+
+QByteArray ShmPool::interfaceName()
+{
+    return QByteArrayLiteral("wl_shm_pool");
 }
 
 } // namespace Client

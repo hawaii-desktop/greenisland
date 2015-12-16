@@ -24,47 +24,68 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_TOUCH_H
+#define GREENISLANDCLIENT_TOUCH_H
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/Client/Buffer>
+#include <GreenIsland/client/greenislandclient_export.h>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class Shm;
-class ShmPoolPrivate;
+class Seat;
+class Surface;
+class TouchPrivate;
 
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class TouchPoint;
+class TouchPointPrivate;
+
+class GREENISLANDCLIENT_EXPORT Touch : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
+    Q_DECLARE_PRIVATE(Touch)
 public:
-    Shm *shm() const;
-
-    void *address() const;
-
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
-
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    Touch(Seat *seat);
 
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void resized();
+    void sequenceStarted(TouchPoint *firstPoint);
+    void sequenceCanceled();
+    void sequenceFinished();
+    void frameFinished();
+    void pointAdded(TouchPoint *point);
+    void pointRemoved(TouchPoint *point);
+    void pointMoved(TouchPoint *point);
+};
+
+class GREENISLANDCLIENT_EXPORT TouchPoint
+{
+    Q_DECLARE_PRIVATE(TouchPoint)
+public:
+    TouchPoint();
+    ~TouchPoint();
+
+    qint32 id() const;
+    quint32 upSerial() const;
+    quint32 downSerial() const;
+    quint32 timestamp() const;
+    QVector<quint32> timestamps() const;
+    QPointF position() const;
+    QVector<QPointF> positions() const;
+    QPointer<Surface> surface() const;
+    bool isDown() const;
 
 private:
-    ShmPool(Shm *shm);
+    TouchPointPrivate *const d_ptr;
 
-    friend class Shm;
+    friend class TouchPrivate;
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_TOUCH_H

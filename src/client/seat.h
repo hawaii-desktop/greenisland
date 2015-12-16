@@ -33,21 +33,39 @@ namespace GreenIsland {
 
 namespace Client {
 
+class Keyboard;
 class Pointer;
 class SeatPrivate;
+class Touch;
 
 class GREENISLANDCLIENT_EXPORT Seat : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Seat)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
 public:
-    Seat(Registry *registry, wl_compositor *compositor,
-         quint32 name, quint32 version);
-
+    QString name() const;
     quint32 version() const;
 
-    wl_compositor *compositor() const;
+    Keyboard *keyboard() const;
     Pointer *pointer() const;
+    Touch *touch() const;
+
+    static QByteArray interfaceName();
+
+Q_SIGNALS:
+    void nameChanged();
+    void keyboardAdded();
+    void keyboardRemoved();
+    void pointerAdded();
+    void pointerRemoved();
+    void touchAdded();
+    void touchRemoved();
+
+private:
+    Seat(QObject *parent = Q_NULLPTR);
+
+    friend class Registry;
 };
 
 } // namespace Client

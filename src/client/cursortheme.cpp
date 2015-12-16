@@ -24,10 +24,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include "buffer_p.h"
+#include "compositor.h"
 #include "cursortheme.h"
 #include "cursortheme_p.h"
 #include "pointer.h"
 #include "seat.h"
+#include "shm_p.h"
 #include "shmpool.h"
 
 Q_LOGGING_CATEGORY(WLCURSORTHEME, "greenisland.client.cursortheme")
@@ -40,9 +43,11 @@ namespace Client {
  * CursorThemePrivate
  */
 
-CursorThemePrivate::CursorThemePrivate(ShmPool *pool, Seat *seat)
-    : pool(pool)
-    , seat(seat)
+CursorThemePrivate::CursorThemePrivate()
+    : compositor(Q_NULLPTR)
+    , pool(Q_NULLPTR)
+    , seat(Q_NULLPTR)
+    , cursorSurface(Q_NULLPTR)
     , theme(Q_NULLPTR)
 {
     // Cursor theme name
@@ -187,13 +192,11 @@ void CursorThemePrivate::fillCursorShapes()
 
 void CursorThemePrivate::loadTheme()
 {
-    if (!pool->isValid())
-        return;
     if (theme)
         return;
 
     theme = wl_cursor_theme_load(cursorThemeName.toUtf8().constData(),
-                                 cursorSize, pool->shm());
+                                 cursorSize, ShmPrivate::get(pool->shm())->object());
     if (theme)
         qCDebug(WLCURSORTHEME) << "Cursor theme" << cursorThemeName << "loaded";
     else
@@ -240,9 +243,12 @@ wl_cursor *CursorThemePrivate::requestCursor(CursorTheme::CursorShape shape)
  * CursorTheme
  */
 
-CursorTheme::CursorTheme(ShmPool *pool, Seat *seat)
-    : QObject(*new CursorThemePrivate(pool, seat), seat)
+CursorTheme::CursorTheme(Compositor *compositor, ShmPool *pool, Seat *seat)
+    : QObject(*new CursorThemePrivate(), seat)
 {
+    d_func()->compositor = compositor;
+    d_func()->pool = pool;
+    d_func()->seat = seat;
 }
 
 wl_cursor_image *CursorTheme::cursorImage(CursorShape shape)
@@ -278,8 +284,20 @@ void CursorTheme::changeCursor(CursorShape shape)
     }
 
     // Set cursor surface and hotspot (only if the shape has changed)
-    if (d->seat->pointer())
-        d->seat->pointer()->setCursor(image);
+    if (d->seat->pointer()) {
+        wl_buffer *wlBuffer = wl_cursor_image_get_buffer(image);
+        if (!wlBuffer)
+            return;
+        Buffer *buffer = new Buffer();
+        BufferPrivate::get(buffer)->init(wlBuffer);
+
+        if (!d->cursorSurface)
+            d->cursorSurface = d->compositor->createSurface(this);
+        d->seat->pointer()->setCursor(d->cursorSurface, QPoint(image->hotspot_x, image->hotspot_y));
+        d->cursorSurface->attach(buffer, QPoint(0, 0));
+        d->cursorSurface->damage(QRect(0, 0, image->width, image->height));
+        d->cursorSurface->commit(Surface::NoCommitMode);
+    }
 }
 
 } // namespace Client
