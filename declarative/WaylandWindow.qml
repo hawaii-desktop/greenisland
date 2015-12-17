@@ -410,14 +410,14 @@ ClientWindowView {
             target: view
             property: "x"
             easing.type: Easing.OutQuad
-            to: window.x - (view.output ? view.output.position.x : 0)
+            to: view.savedProperties.x
             duration: 350
         }
         NumberAnimation {
             target: view
             property: "y"
             easing.type: Easing.OutQuad
-            to: window.y - (view.output ? view.output.position.y : 0)
+            to: view.savedProperties.y
             duration: 350
         }
         NumberAnimation {

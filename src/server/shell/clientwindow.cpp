@@ -618,15 +618,21 @@ void ClientWindow::setMinimized(bool minimized)
     if (d->minimized == minimized)
         return;
 
-    d->minimized = minimized;
-    Q_EMIT minimizedChanged();
-
-    // No input events for minimized windows to prevent accidental interaction
-    // with it (like keyboard input being sent to the window)
     Q_FOREACH (ClientWindowView *view, d->views) {
+        // No input events for minimized windows to prevent accidental interaction
+        // with it (like keyboard input being sent to the window)
         if (view->shellSurfaceItem())
             view->shellSurfaceItem()->setInputEventsEnabled(!minimized);
+
+        // Also, save the position if the window is going to be minimized
+        if (minimized && view->savedProperties()) {
+            view->savedProperties()->insert(QStringLiteral("x"), view->x());
+            view->savedProperties()->insert(QStringLiteral("y"), view->y());
+        }
     }
+
+    d->minimized = minimized;
+    Q_EMIT minimizedChanged();
 }
 
 bool ClientWindow::isMaximized() const
