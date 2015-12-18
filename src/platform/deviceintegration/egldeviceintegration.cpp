@@ -37,6 +37,7 @@
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscursor.h"
 #include "deviceintegration/eglfsintegration.h"
+#include "deviceintegration/eglfswindow.h"
 
 #if defined(Q_OS_LINUX)
 #include <fcntl.h>
@@ -190,6 +191,13 @@ QSurfaceFormat EGLDeviceIntegration::surfaceFormatFor(const QSurfaceFormat &inpu
 bool EGLDeviceIntegration::filterConfig(EGLDisplay, EGLConfig) const
 {
     return true;
+}
+
+QPlatformWindow *EGLDeviceIntegration::createPlatformWindow(QWindow *window)
+{
+    EglFSWindow *w = new EglFSWindow(window);
+    w->create();
+    return w;
 }
 
 EGLNativeWindowType EGLDeviceIntegration::createNativeWindow(QPlatformWindow *platformWindow,
