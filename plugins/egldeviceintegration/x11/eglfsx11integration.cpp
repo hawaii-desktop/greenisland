@@ -208,6 +208,11 @@ EGLNativeDisplayType EglFSX11Integration::platformDisplay() const
     return DISPLAY;
 }
 
+bool EglFSX11Integration::handlesInput()
+{
+    return true;
+}
+
 QSize EglFSX11Integration::screenSize() const
 {
     if (m_screenSize.isEmpty()) {

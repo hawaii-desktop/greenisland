@@ -61,6 +61,9 @@ public:
     void platformInit() Q_DECL_OVERRIDE;
     void platformDestroy() Q_DECL_OVERRIDE;
     EGLNativeDisplayType platformDisplay() const Q_DECL_OVERRIDE;
+
+    bool handlesInput() Q_DECL_OVERRIDE;
+
     QSize screenSize() const Q_DECL_OVERRIDE;
     EGLNativeWindowType createNativeWindow(QPlatformWindow *window,
                                            const QSize &size,
