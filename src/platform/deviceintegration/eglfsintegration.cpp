@@ -120,7 +120,8 @@ void EglFSIntegration::initialize()
 
     m_vtHandler.reset(new VtHandler);
 
-    m_liHandler = new Platform::LibInputManager(this);
+    if (!egl_device_integration()->handlesInput())
+        m_liHandler = new Platform::LibInputManager(this);
 
     if (egl_device_integration()->usesDefaultScreen())
         addScreen(new EglFSScreen(display()));

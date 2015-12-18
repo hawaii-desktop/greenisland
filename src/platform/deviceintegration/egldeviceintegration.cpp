@@ -111,6 +111,11 @@ void EGLDeviceIntegration::platformDestroy()
         close(framebuffer);
 }
 
+bool EGLDeviceIntegration::handlesInput()
+{
+    return false;
+}
+
 bool EGLDeviceIntegration::usesDefaultScreen()
 {
     return true;

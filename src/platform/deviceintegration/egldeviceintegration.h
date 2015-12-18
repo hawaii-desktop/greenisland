@@ -58,6 +58,8 @@ public:
     virtual void platformInit();
     virtual void platformDestroy();
 
+    virtual bool handlesInput();
+
     virtual bool usesDefaultScreen();
 
     virtual void screenInit();
