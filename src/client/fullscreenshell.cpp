@@ -24,86 +24,78 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include <QtGui/QGuiApplication>
-#include <QtGui/qpa/qplatformnativeinterface.h>
-#include <QtGui/QScreen>
-
-#include "fullscreenshellclient.h"
+#include "fullscreenshell.h"
+#include "fullscreenshell_p.h"
 #include "output.h"
+#include "output_p.h"
+#include "surface.h"
+#include "surface_p.h"
 
 Q_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL, "greenisland.protocols.fullscreenshell.client")
 
 namespace GreenIsland {
 
-FullScreenShellClient::FullScreenShellClient(wl_registry *registry, quint32 name, quint32 version)
-    : QtWayland::_wl_fullscreen_shell(registry, name, version)
-    , m_capabilities(0)
+namespace Client {
+
+/*
+ * FullScreenShellPrivate
+ */
+
+FullScreenShellPrivate::FullScreenShellPrivate()
+    : QtWayland::_wl_fullscreen_shell()
+    , capabilities(FullScreenShell::NoCapability)
+{
+}
+
+void FullScreenShellPrivate::fullscreen_shell_capability(uint32_t capability)
+{
+    Q_Q(FullScreenShell);
+
+    FullScreenShell::Capabilities oldCapabilities = capabilities;
+
+    if (capability & QtWayland::_wl_fullscreen_shell::capability_arbitrary_modes)
+        capabilities |= FullScreenShell::ArbitraryModes;
+    if (capability & QtWayland::_wl_fullscreen_shell::capability_cursor_plane)
+        capabilities |= FullScreenShell::CursorPlane;
+
+    if (oldCapabilities != capabilities)
+        Q_EMIT q->capabilitiesChanged();
+}
+
+/*
+ * FullScreenShell
+ */
+
+FullScreenShell::FullScreenShell(QObject *parent)
+    : QObject(parent)
 {
 }
 
 
-FullScreenShellClient::Capabilities FullScreenShellClient::capabilities() const
+FullScreenShell::Capabilities FullScreenShell::capabilities() const
 {
-    return m_capabilities;
+    Q_D(const FullScreenShell);
+    return d->capabilities;
 }
 
-void FullScreenShellClient::showOutput(Output *output)
+void FullScreenShell::presentSurface(Surface *surface, Output *output, PresentMethod method)
 {
-    if (!output || !output->window()) {
-        qCWarning(FSH_CLIENT_PROTOCOL) << "Cannot show a null output window!";
-        return;
-    }
-
-    QPlatformNativeInterface *native =
-            QGuiApplication::platformNativeInterface();
-    if (!native)
-        qFatal("Platform native interface not found, aborting...");
-
-    wl_surface *wlSurface = static_cast<wl_surface*>(
-                native->nativeResourceForWindow("surface", output->window()));
-    if (!wlSurface)
-        qFatal("Unable to get wl_surface from output window, aborting...");
-
-    wl_output *wlOutput = static_cast<wl_output *>(
-                native->nativeResourceForScreen("output", output->window()->screen()));
-    if (!wlOutput)
-        qFatal("Unable to get wl_output from output, aborting...");
-
-    present_surface(wlSurface, present_method_default, wlOutput);
+    Q_D(FullScreenShell);
+    d->present_surface(SurfacePrivate::get(surface)->object(),
+                       static_cast<uint32_t>(method),
+                       OutputPrivate::get(output)->object());
 }
 
-void FullScreenShellClient::hideOutput(Output *output)
+void FullScreenShell::hideOutput(Output *output)
 {
-    if (!output || !output->window()) {
-        qCWarning(FSH_CLIENT_PROTOCOL) << "Cannot hide a null output window!";
-        return;
-    }
-
-    QPlatformNativeInterface *native =
-            QGuiApplication::platformNativeInterface();
-    if (!native)
-        qFatal("Platform native interface not found, aborting...");
-
-    wl_output *wlOutput = static_cast<wl_output *>(
-                native->nativeResourceForScreen("output", output->window()->screen()));
-    if (!wlOutput)
-        qFatal("Unable to get wl_output from output, aborting...");
-
-    present_surface(Q_NULLPTR, present_method_default, wlOutput);
+    Q_D(FullScreenShell);
+    d->present_surface(Q_NULLPTR,
+                       QtWayland::_wl_fullscreen_shell::present_method_default,
+                       OutputPrivate::get(output)->object());
 }
 
-void FullScreenShellClient::fullscreen_shell_capability(uint32_t capability)
-{
-    switch (capability) {
-    case QtWayland::_wl_fullscreen_shell::capability_arbitrary_modes:
-        m_capabilities |= FullScreenShellClient::ArbitraryModes;
-        break;
-    case QtWayland::_wl_fullscreen_shell::capability_cursor_plane:
-        m_capabilities |= FullScreenShellClient::CursorPlane;
-        break;
-    default:
-        break;
-    }
-}
+} // namespace Client
 
-}
+} // namespace GreenIsland
+
+#include "moc_fullscreenshell.cpp"

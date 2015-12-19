@@ -26,6 +26,8 @@
 
 #include "compositor.h"
 #include "compositor_p.h"
+#include "fullscreenshell.h"
+#include "fullscreenshell_p.h"
 #include "output.h"
 #include "output_p.h"
 #include "registry.h"
@@ -272,6 +274,14 @@ Compositor *Registry::createCompositor(quint32 name, quint32 version, QObject *p
     Compositor *compositor = new Compositor(parent);
     CompositorPrivate::get(compositor)->init(d->registry, name, version);
     return compositor;
+}
+
+FullScreenShell *Registry::createFullScreenShell(quint32 name, quint32 version, QObject *parent)
+{
+    Q_D(Registry);
+    FullScreenShell *fsh = new FullScreenShell(parent);
+    FullScreenShellPrivate::get(fsh)->init(d->registry, name, version);
+    return fsh;
 }
 
 Output *Registry::createOutput(quint32 name, quint32 version, QObject *parent)

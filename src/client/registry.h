@@ -38,6 +38,7 @@ namespace GreenIsland {
 namespace Client {
 
 class Compositor;
+class FullScreenShell;
 class Output;
 class RegistryPrivate;
 class Seat;
@@ -66,6 +67,7 @@ public:
     void setup();
 
     Compositor *createCompositor(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+    FullScreenShell *createFullScreenShell(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Output *createOutput(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Seat *createSeat(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Shm *createShm(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);

@@ -16,6 +16,7 @@ set(SOURCES
     compositor.cpp
     cursortheme.cpp
     keyboard.cpp
+    fullscreenshell.cpp
     output.cpp
     pointer.cpp
     region.cpp
@@ -95,6 +96,7 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/clientconnection_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/cursortheme_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/keyboard_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/fullscreenshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/output_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/region_p.h

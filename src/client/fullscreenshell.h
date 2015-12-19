@@ -24,45 +24,62 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef FULLSCREENSHELLCLIENT_H
-#define FULLSCREENSHELLCLIENT_H
+#ifndef GREENISLANDCLIENT_FULLSCREENSHELL_H
+#define GREENISLANDCLIENT_FULLSCREENSHELL_H
 
-#include <QtCore/QLoggingCategory>
+#include <QtCore/QObject>
 
-#include "qwayland-fullscreen-shell.h"
-
-Q_DECLARE_LOGGING_CATEGORY(FSH_CLIENT_PROTOCOL)
-
-struct wl_registry;
+#include <GreenIsland/client/greenislandclient_export.h>
 
 namespace GreenIsland {
 
-class Output;
+namespace Client {
 
-class FullScreenShellClient : public QtWayland::_wl_fullscreen_shell
+class FullScreenShellPrivate;
+class Output;
+class Registry;
+class Surface;
+
+class GREENISLANDCLIENT_EXPORT FullScreenShell : public QObject
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(FullScreenShell)
+    Q_PROPERTY(Capabilities capabilities READ capabilities NOTIFY capabilitiesChanged)
 public:
     enum Capability {
-        ArbitraryModes = 1,
+        NoCapability = 0,
+        ArbitraryModes,
         CursorPlane
     };
     Q_DECLARE_FLAGS(Capabilities, Capability)
 
-    FullScreenShellClient(wl_registry *registry, quint32 name, quint32 version);
+    enum PresentMethod {
+        PresentMethodDefault = 0,
+        PresentMethodCenter,
+        PresentMethodZoom,
+        PresentMethodZoomCrop,
+        PresentMethodStretch
+    };
+    Q_ENUM(PresentMethod)
 
     Capabilities capabilities() const;
 
-    void showOutput(Output *output);
+    void presentSurface(Surface *surface, Output *output, PresentMethod method = PresentMethodDefault);
     void hideOutput(Output *output);
 
-private:
-    Capabilities m_capabilities;
+Q_SIGNALS:
+    void capabilitiesChanged();
 
-    void fullscreen_shell_capability(uint32_t capabilty) Q_DECL_OVERRIDE;
+private:
+    FullScreenShell(QObject *parent = Q_NULLPTR);
+
+    friend class Registry;
 };
 
-Q_DECLARE_OPERATORS_FOR_FLAGS(FullScreenShellClient::Capabilities)
+Q_DECLARE_OPERATORS_FOR_FLAGS(FullScreenShell::Capabilities)
 
-}
+} // namespace Client
 
-#endif // FULLSCREENSHELLCLIENT_H
+} // namespace GreenIsland
+
+#endif // GREENISLANDCLIENT_FULLSCREENSHELL_H
