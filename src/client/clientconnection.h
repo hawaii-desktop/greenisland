@@ -46,6 +46,8 @@ class GREENISLANDCLIENT_EXPORT ClientConnection : public QObject
 public:
     ClientConnection(QObject *parent = Q_NULLPTR);
 
+    bool isConnected() const;
+
     wl_display *display() const;
     void setDisplay(wl_display *display);
 
@@ -56,8 +58,12 @@ public:
     void setSocketName(const QString &socketName);
 
     void initializeConnection();
+    void synchronousConnection();
 
-    void flush();
+public Q_SLOTS:
+    void forceRoundTrip();
+    void flushRequests();
+    void blockingReadEvents();
 
 Q_SIGNALS:
     void connected();

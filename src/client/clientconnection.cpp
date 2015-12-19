@@ -55,6 +55,15 @@ ClientConnectionPrivate::~ClientConnectionPrivate()
     }
 }
 
+void ClientConnectionPrivate::checkError()
+{
+    int error = wl_display_get_error(display);
+    if (error == EPIPE || error == ECONNRESET)
+        qWarning("The Wayland connection was interrupted");
+    else
+        qErrnoWarning(error, "The Wayland connection experienced a fatal error");
+}
+
 void ClientConnectionPrivate::_q_initConnection()
 {
     Q_Q(ClientConnection);
@@ -103,9 +112,16 @@ void ClientConnectionPrivate::setupSocketNotifier()
 ClientConnection::ClientConnection(QObject *parent)
     : QObject(*new ClientConnectionPrivate(), parent)
 {
-    connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::aboutToBlock, this, [this] {
-        flush();
-    }, Qt::DirectConnection);
+    connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::aboutToBlock,
+            this, &ClientConnection::flushRequests);
+    connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::awake,
+            this, &ClientConnection::flushRequests);
+}
+
+bool ClientConnection::isConnected() const
+{
+    Q_D(const ClientConnection);
+    return d->display != Q_NULLPTR;
 }
 
 wl_display *ClientConnection::display() const
@@ -159,14 +175,51 @@ void ClientConnection::initializeConnection()
     QMetaObject::invokeMethod(this, "_q_initConnection", Qt::QueuedConnection);
 }
 
-void ClientConnection::flush()
+void ClientConnection::synchronousConnection()
+{
+    Q_D(ClientConnection);
+    d->_q_initConnection();
+}
+
+void ClientConnection::forceRoundTrip()
 {
     Q_D(ClientConnection);
 
     if (!d->display)
         return;
 
+    wl_display_roundtrip(d->display);
+}
+
+void ClientConnection::flushRequests()
+{
+    Q_D(ClientConnection);
+
+    if (!d->display)
+        return;
+
+    if (wl_display_prepare_read(d->display) == 0)
+        wl_display_read_events(d->display);
+
+    if (wl_display_dispatch_pending(d->display) < 0) {
+        d->checkError();
+        ::exit(1);
+    }
+
     wl_display_flush(d->display);
+}
+
+void ClientConnection::blockingReadEvents()
+{
+    Q_D(ClientConnection);
+
+    if (!d->display)
+        return;
+
+    if (wl_display_dispatch(d->display) < 0) {
+        d->checkError();
+        ::exit(1);
+    }
 }
 
 } // namespace Client

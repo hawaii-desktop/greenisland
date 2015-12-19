@@ -53,6 +53,8 @@ public:
     ClientConnectionPrivate();
     ~ClientConnectionPrivate();
 
+    void checkError();
+
     void _q_initConnection();
 
     static ClientConnectionPrivate *get(ClientConnection *conn) { return conn->d_func(); }
