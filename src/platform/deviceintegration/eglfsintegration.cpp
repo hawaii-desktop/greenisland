@@ -175,6 +175,10 @@ QPlatformBackingStore *EglFSIntegration::createPlatformBackingStore(QWindow *win
 
 QPlatformOpenGLContext *EglFSIntegration::createPlatformOpenGLContext(QOpenGLContext *context) const
 {
+    QPlatformOpenGLContext *pctx = egl_device_integration()->createPlatformOpenGLContext(context);
+    if (pctx)
+        return pctx;
+
     // If there is a "root" window into which raster and QOpenGLWidget content is
     // composited, all other contexts must share with its context.
     QOpenGLContext *compositingContext = OpenGLCompositor::instance()->context();

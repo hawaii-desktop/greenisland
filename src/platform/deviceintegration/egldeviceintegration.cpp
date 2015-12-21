@@ -216,6 +216,12 @@ QPlatformBackingStore *EGLDeviceIntegration::createPlatformBackingStore(QWindow 
     return Q_NULLPTR;
 }
 
+QPlatformOpenGLContext *EGLDeviceIntegration::createPlatformOpenGLContext(QOpenGLContext *context)
+{
+    Q_UNUSED(context);
+    return Q_NULLPTR;
+}
+
 EGLNativeWindowType EGLDeviceIntegration::createNativeWindow(QPlatformWindow *platformWindow,
                                                              const QSize &size,
                                                              const QSurfaceFormat &format)

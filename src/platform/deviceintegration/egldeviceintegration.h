@@ -78,6 +78,7 @@ public:
 
     virtual QPlatformWindow *createPlatformWindow(QWindow *window);
     virtual QPlatformBackingStore *createPlatformBackingStore(QWindow *window);
+    virtual QPlatformOpenGLContext *createPlatformOpenGLContext(QOpenGLContext *context);
 
     virtual EGLNativeWindowType createNativeWindow(QPlatformWindow *platformWindow,
                                                    const QSize &size,
