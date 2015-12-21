@@ -161,6 +161,10 @@ QPlatformWindow *EglFSIntegration::createPlatformWindow(QWindow *window) const
 
 QPlatformBackingStore *EglFSIntegration::createPlatformBackingStore(QWindow *window) const
 {
+    QPlatformBackingStore *pbs = egl_device_integration()->createPlatformBackingStore(window);
+    if (pbs)
+        return pbs;
+
     OpenGLCompositorBackingStore *bs = new OpenGLCompositorBackingStore(window);
     if (!window->handle())
         window->create();

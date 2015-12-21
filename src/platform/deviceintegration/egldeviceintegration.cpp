@@ -205,6 +205,12 @@ QPlatformWindow *EGLDeviceIntegration::createPlatformWindow(QWindow *window)
     return w;
 }
 
+QPlatformBackingStore *EGLDeviceIntegration::createPlatformBackingStore(QWindow *window)
+{
+    Q_UNUSED(window);
+    return Q_NULLPTR;
+}
+
 EGLNativeWindowType EGLDeviceIntegration::createNativeWindow(QPlatformWindow *platformWindow,
                                                              const QSize &size,
                                                              const QSurfaceFormat &format)

@@ -77,6 +77,8 @@ public:
     virtual QSurfaceFormat surfaceFormatFor(const QSurfaceFormat &inputFormat) const;
 
     virtual QPlatformWindow *createPlatformWindow(QWindow *window);
+    virtual QPlatformBackingStore *createPlatformBackingStore(QWindow *window);
+
     virtual EGLNativeWindowType createNativeWindow(QPlatformWindow *platformWindow,
                                                    const QSize &size,
                                                    const QSurfaceFormat &format);
