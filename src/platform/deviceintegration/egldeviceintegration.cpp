@@ -116,6 +116,11 @@ bool EGLDeviceIntegration::handlesInput()
     return false;
 }
 
+bool EGLDeviceIntegration::usesVtHandler()
+{
+    return true;
+}
+
 bool EGLDeviceIntegration::usesDefaultScreen()
 {
     return true;

@@ -118,7 +118,8 @@ void EglFSIntegration::initialize()
 
     m_inputContext = QPlatformInputContextFactory::create();
 
-    m_vtHandler.reset(new VtHandler);
+    if (egl_device_integration()->usesVtHandler())
+        m_vtHandler.reset(new VtHandler);
 
     if (!egl_device_integration()->handlesInput())
         m_liHandler = new Platform::LibInputManager(this);
