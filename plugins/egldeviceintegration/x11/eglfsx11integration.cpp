@@ -208,6 +208,11 @@ EGLNativeDisplayType EglFSX11Integration::platformDisplay() const
     return DISPLAY;
 }
 
+bool EglFSX11Integration::usesVtHandler()
+{
+    return false;
+}
+
 bool EglFSX11Integration::handlesInput()
 {
     return true;

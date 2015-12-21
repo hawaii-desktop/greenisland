@@ -62,6 +62,7 @@ public:
     void platformDestroy() Q_DECL_OVERRIDE;
     EGLNativeDisplayType platformDisplay() const Q_DECL_OVERRIDE;
 
+    bool usesVtHandler() Q_DECL_OVERRIDE;
     bool handlesInput() Q_DECL_OVERRIDE;
 
     QSize screenSize() const Q_DECL_OVERRIDE;
