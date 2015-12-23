@@ -263,7 +263,7 @@ QProcessEnvironment CompositorLauncher::compositorEnv() const
     // Specific environment
     switch (m_mode) {
     case NestedMode:
-        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("wayland"));
+        env.insert(QStringLiteral("QT_QPA_PLATFORM"), QStringLiteral("greenisland"));
         env.insert(QStringLiteral("WAYLAND_DISPLAY"), m_weston->socketName());
 
         if (m_hardware == BroadcomHardware) {
