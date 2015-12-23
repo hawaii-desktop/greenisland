@@ -124,12 +124,12 @@ int main(int argc, char *argv[])
     // Nested mode requires running from Wayland and a socket name
     // and fake screen data cannot be used
     if (nested) {
-        if (!QGuiApplication::platformName().startsWith(QStringLiteral("wayland"))) {
+        if (!QGuiApplication::platformName().startsWith(QStringLiteral("greenisland"))) {
             qCritical("Nested mode only make sense when running on Wayland.\n"
-                      "Please pass the \"-platform wayland\" argument.");
+                      "Please pass the \"-platform greenisland\" argument.");
 #if HAVE_SYSTEMD
             if (notify)
-                sd_notifyf(0, "STATUS=Nested mode requested, but no wayland QPA");
+                sd_notifyf(0, "STATUS=Nested mode requested, wrong QPA plugin");
 #endif
             return 1;
         }
