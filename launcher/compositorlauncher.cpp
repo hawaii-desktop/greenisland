@@ -240,11 +240,6 @@ QStringList CompositorLauncher::compositorArgs() const
     case HwComposerMode:
         if (m_hasLibInputPlugin)
             args << QStringLiteral("-plugin") << QStringLiteral("libinput");
-        /*
-        else
-            args << QStringLiteral("-plugin") << QStringLiteral("EvdevMouse")
-                 << QStringLiteral("-plugin") << QStringLiteral("EvdevKeyboard");
-        */
         break;
     case NestedMode:
         args << QStringLiteral("--nested");
