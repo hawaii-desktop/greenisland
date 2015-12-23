@@ -61,6 +61,7 @@ set(SOURCES
     deviceintegration/eglfsoffscreenwindow.cpp
     deviceintegration/eglfsscreen.cpp
     deviceintegration/eglfswindow.cpp
+    deviceintegration/eglfsxkb.cpp
     eglconvenience/eglconvenience.cpp
     eglconvenience/eglstreamconvenience.cpp
     udev/udev.cpp
@@ -148,6 +149,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
         EglFSOffscreenWindow
         EglFSScreen
         EglFSWindow
+        EglFSXkb
     PREFIX
         Platform
     OUTPUT_DIR
