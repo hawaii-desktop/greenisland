@@ -179,6 +179,24 @@ int EglFSXkb::keysymToQtKey(xkb_keysym_t keysym, Qt::KeyboardModifiers &modifier
     return code;
 }
 
+Qt::KeyboardModifiers EglFSXkb::modifiers(xkb_state *state)
+{
+    Qt::KeyboardModifiers modifiers = Qt::NoModifier;
+
+    xkb_state_component c = static_cast<xkb_state_component>(XKB_STATE_DEPRESSED | XKB_STATE_LATCHED | XKB_STATE_LOCKED);
+
+    if (xkb_state_mod_name_is_active(state, XKB_MOD_NAME_SHIFT, c))
+        modifiers |= Qt::ShiftModifier;
+    if (xkb_state_mod_name_is_active(state, XKB_MOD_NAME_CTRL, c))
+        modifiers |= Qt::ControlModifier;
+    if (xkb_state_mod_name_is_active(state, XKB_MOD_NAME_ALT, c))
+        modifiers |= Qt::AltModifier;
+    if (xkb_state_mod_name_is_active(state, XKB_MOD_NAME_LOGO, c))
+        modifiers |= Qt::MetaModifier;
+
+    return modifiers;
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

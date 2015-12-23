@@ -42,6 +42,7 @@ class GREENISLANDPLATFORM_EXPORT EglFSXkb
 public:
     static int keysymToQtKey(xkb_keysym_t keysym);
     static int keysymToQtKey(xkb_keysym_t keysym, Qt::KeyboardModifiers &modifiers, const QString &text);
+    static Qt::KeyboardModifiers modifiers(xkb_state *state);
 };
 
 } // namespace Platform
