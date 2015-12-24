@@ -96,6 +96,8 @@ public:
     virtual void presentBuffer(QPlatformSurface *surface);
 
     virtual bool supportsPBuffers() const;
+
+    virtual void *wlDisplay() const;
 };
 
 class GREENISLANDPLATFORM_EXPORT EGLDeviceIntegrationPlugin : public QObject

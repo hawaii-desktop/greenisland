@@ -276,6 +276,11 @@ bool EGLDeviceIntegration::supportsPBuffers() const
     return true;
 }
 
+void *EGLDeviceIntegration::wlDisplay() const
+{
+    return Q_NULLPTR;
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland
