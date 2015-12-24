@@ -73,13 +73,6 @@ if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     )
 endif()
 
-if(X11_FOUND)
-    set(SOURCES
-        ${SOURCES}
-        eglconvenience/xlibeglintegration.cpp
-    )
-endif()
-
 qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 
 add_library(GreenIslandPlatform SHARED ${SOURCES})
@@ -120,10 +113,6 @@ target_compile_definitions(GreenIslandPlatform
         -DMESA_EGL_NO_X11_HEADERS
         -DQ_FONTCONFIGDATABASE
 )
-
-if(X11_FOUND)
-    target_link_libraries(GreenIslandPlatform PRIVATE ${X11_LIBRARIES})
-endif()
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     target_link_libraries(GreenIslandPlatform PUBLIC ${OPENGL_LIBRARIES})
@@ -170,7 +159,6 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
         EGLPbuffer
         EGLPlatformContext
         EGLStreamConvenience
-        XlibEglIntegration
     PREFIX
         Platform
     OUTPUT_DIR
