@@ -112,7 +112,7 @@ target_link_libraries(GreenIslandServer
         GreenIsland::Platform
     PRIVATE
         Wayland::Cursor
-        ${EGL_TARGET}
+        EGL::EGL
 )
 
 if(EGL_FOUND)

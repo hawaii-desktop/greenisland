@@ -89,8 +89,6 @@ set_package_properties(OpenGLES PROPERTIES
 
 # EGL
 find_package(EGL REQUIRED)
-set(EGL_IMPLEMENTATION EGL)
-set(EGL_TARGET EGL::EGL)
 
 # GL requirements
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
