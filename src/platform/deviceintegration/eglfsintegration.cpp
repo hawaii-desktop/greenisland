@@ -166,7 +166,9 @@ QPlatformWindow *EglFSIntegration::createPlatformWindow(QWindow *window) const
         static_cast<EglFSWindow *>(w)->create();
     }
 
-    if (window->type() != Qt::ToolTip)
+    // Activate only the compositor window for the primary screen in order to
+    // make keyboard input work
+    if (window->type() != Qt::ToolTip && window->screen() == QGuiApplication::primaryScreen())
         w->requestActivateWindow();
 
     return w;
