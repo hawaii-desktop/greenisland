@@ -79,6 +79,11 @@ QDpi EglFSScreen::logicalDpi() const
     return egl_device_integration()->logicalDpi();
 }
 
+qreal EglFSScreen::pixelDensity() const
+{
+    return egl_device_integration()->pixelDensity();
+}
+
 Qt::ScreenOrientation EglFSScreen::nativeOrientation() const
 {
     return egl_device_integration()->nativeOrientation();
