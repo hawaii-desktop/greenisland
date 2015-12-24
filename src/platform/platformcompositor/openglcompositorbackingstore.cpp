@@ -28,6 +28,7 @@
 #include <QtGui/QWindow>
 #include <QtGui/QPainter>
 #include <QtGui/qpa/qplatformbackingstore.h>
+#include <QtGui/private/qwindow_p.h>
 
 #include "openglcompositorbackingstore.h"
 #include "openglcompositor.h"
@@ -181,6 +182,8 @@ void OpenGLCompositorBackingStore::composeAndFlush(QWindow *window, const QRegio
         return;
 
     dstCtx->makeCurrent(dstWin);
+
+    QWindowPrivate::get(window)->lastComposeTime.start();
 
     m_textures->clear();
     for (int i = 0; i < textures->count(); ++i)
