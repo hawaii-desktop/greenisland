@@ -5,7 +5,6 @@ include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
-add_definitions(-DMESA_EGL_NO_X11_HEADERS)
 add_definitions(-DLINUX=1 -DEGL_API_FB=1)
 
 set(SOURCES

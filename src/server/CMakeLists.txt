@@ -36,7 +36,6 @@ endif()
 
 add_definitions(
     -Wno-deprecated-declarations
-    -DMESA_EGL_NO_X11_HEADERS
 )
 
 include(GreenIslandServerConfigExtrasLocal.cmake)

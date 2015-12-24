@@ -46,11 +46,6 @@ include_directories(
     ${gio_INCLUDE_DIR}
 )
 
-add_definitions(
-    -DMESA_EGL_NO_X11_HEADERS
-    -DQ_FONTCONFIGDATABASE
-)
-
 set(SOURCES
     logging.cpp
     deviceintegration/deviceintegration_p.cpp
@@ -100,21 +95,28 @@ qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 add_library(GreenIslandPlatform SHARED ${SOURCES})
 generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h)
 add_library(GreenIsland::Platform ALIAS GreenIslandPlatform)
+
 target_link_libraries(GreenIslandPlatform
-  PUBLIC
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Gui
-    EGL::EGL
-  PRIVATE
-    ${UDEV_LIBS}
-    ${xkbcommon_LIBRARIES}
-    Libinput::Libinput
-    ${gio_LIBRARIES}
-    ${FONTCONFIG_LIBRARIES}
-    ${FREETYPE_LIBRARIES}
-    Qt5PlatformSupport::Qt5PlatformSupport
-    Threads::Threads
+    PUBLIC
+        Qt5::Core
+        Qt5::DBus
+        Qt5::Gui
+        EGL::EGL
+    PRIVATE
+        ${UDEV_LIBS}
+        ${xkbcommon_LIBRARIES}
+        Libinput::Libinput
+        ${gio_LIBRARIES}
+        ${FONTCONFIG_LIBRARIES}
+        ${FREETYPE_LIBRARIES}
+        Qt5PlatformSupport::Qt5PlatformSupport
+        Threads::Threads
+)
+
+target_compile_definitions(GreenIslandPlatform
+    PUBLIC
+        -DMESA_EGL_NO_X11_HEADERS
+        -DQ_FONTCONFIGDATABASE
 )
 
 if(X11_FOUND)

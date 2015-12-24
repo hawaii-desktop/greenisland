@@ -6,8 +6,6 @@ include_directories(
     ${xkbcommon_INCLUDE_DIRS}
 )
 
-add_definitions(-DMESA_EGL_NO_X11_HEADERS)
-
 set(SOURCES
     eglfswaylandblitter.cpp
     eglfswaylandcontext.cpp

@@ -11,8 +11,6 @@ include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
-add_definitions(-DMESA_EGL_NO_X11_HEADERS)
-
 set(SOURCES
     eglfsx11integration.cpp
     main.cpp
