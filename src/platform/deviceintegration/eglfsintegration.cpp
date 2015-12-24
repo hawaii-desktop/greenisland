@@ -131,6 +131,11 @@ void EglFSIntegration::initialize()
         addScreen(new EglFSScreen(display()));
     else
         egl_device_integration()->screenInit();
+
+    // Set the first screen as primary
+    QScreen *firstScreen = QGuiApplication::screens().at(0);
+    if (firstScreen && firstScreen->handle())
+        setPrimaryScreen(firstScreen->handle());
 }
 
 void EglFSIntegration::destroy()
