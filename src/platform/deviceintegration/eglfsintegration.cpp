@@ -116,7 +116,10 @@ void EglFSIntegration::initialize()
     if (!eglInitialize(m_display, &major, &minor))
         qFatal("Failed to initialize EGL display");
 
-    m_inputContext = QPlatformInputContextFactory::create();
+    QString icStr = QPlatformInputContextFactory::requested();
+    if (icStr.isNull())
+        icStr = QLatin1String("compose");
+    m_inputContext = QPlatformInputContextFactory::create(icStr);
 
     if (egl_device_integration()->usesVtHandler())
         m_vtHandler.reset(new VtHandler);
