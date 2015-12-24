@@ -37,7 +37,6 @@
 #include "deviceintegration/egldeviceintegration.h"
 #include "deviceintegration/eglfscursor.h"
 #include "deviceintegration/eglfsintegration.h"
-#include "deviceintegration/eglfswindow.h"
 
 #if defined(Q_OS_LINUX)
 #include <fcntl.h>
@@ -205,9 +204,8 @@ bool EGLDeviceIntegration::filterConfig(EGLDisplay, EGLConfig) const
 
 QPlatformWindow *EGLDeviceIntegration::createPlatformWindow(QWindow *window)
 {
-    EglFSWindow *w = new EglFSWindow(window);
-    w->create();
-    return w;
+    Q_UNUSED(window);
+    return Q_NULLPTR;
 }
 
 QPlatformBackingStore *EGLDeviceIntegration::createPlatformBackingStore(QWindow *window)

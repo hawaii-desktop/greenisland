@@ -156,10 +156,14 @@ QPlatformWindow *EglFSIntegration::createPlatformWindow(QWindow *window) const
     QWindowSystemInterface::flushWindowSystemEvents();
 
     QPlatformWindow *w = egl_device_integration()->createPlatformWindow(window);
-    if (w) {
-        if (window->type() != Qt::ToolTip)
-            w->requestActivateWindow();
+    if (!w) {
+        w = new EglFSWindow(window);
+        static_cast<EglFSWindow *>(w)->create();
     }
+
+    if (window->type() != Qt::ToolTip)
+        w->requestActivateWindow();
+
     return w;
 }
 
