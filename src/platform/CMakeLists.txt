@@ -36,16 +36,6 @@ set_package_properties(Threads PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required by the vt handler code")
 
-include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
-    ${Qt5Core_PRIVATE_INCLUDE_DIRS}
-    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-    ${UDEV_INCLUDE_DIR}
-    ${xkbcommon_INCLUDE_DIRS}
-    ${gio_INCLUDE_DIR}
-)
-
 set(SOURCES
     logging.cpp
     deviceintegration/deviceintegration_p.cpp
@@ -96,17 +86,29 @@ add_library(GreenIslandPlatform SHARED ${SOURCES})
 generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h)
 add_library(GreenIsland::Platform ALIAS GreenIslandPlatform)
 
+target_include_directories(GreenIslandPlatform
+    PUBLIC
+        ${UDEV_INCLUDE_DIR}
+        ${xkbcommon_INCLUDE_DIRS}
+        ${gio_INCLUDE_DIR}
+    PRIVATE
+        ${CMAKE_BINARY_DIR}/headers
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        ${Qt5Core_PRIVATE_INCLUDE_DIRS}
+        ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+)
+
 target_link_libraries(GreenIslandPlatform
     PUBLIC
         Qt5::Core
         Qt5::DBus
         Qt5::Gui
         EGL::EGL
-    PRIVATE
+        Libinput::Libinput
         ${UDEV_LIBS}
         ${xkbcommon_LIBRARIES}
-        Libinput::Libinput
         ${gio_LIBRARIES}
+    PRIVATE
         ${FONTCONFIG_LIBRARIES}
         ${FREETYPE_LIBRARIES}
         Qt5PlatformSupport::Qt5PlatformSupport

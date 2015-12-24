@@ -22,19 +22,11 @@ set(SOURCES
     main.cpp
 )
 
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    set(GL_TARGET ${OPENGL_LIBRARIES})
-else()
-    set(GL_TARGET ${OPENGLES_LIBRARIES})
-endif()
-
 add_library(kms SHARED MODULE ${SOURCES})
 target_link_libraries(kms
     GreenIsland::Platform
     Libdrm::Libdrm
     gbm::gbm
-    EGL::EGL
-    ${GL_TARGET}
 )
 
 install(TARGETS kms

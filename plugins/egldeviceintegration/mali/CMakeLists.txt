@@ -13,8 +13,6 @@ set(SOURCES
 add_library(mali SHARED MODULE ${SOURCES})
 target_link_libraries(mali
     GreenIsland::Platform
-    EGL::EGL
-    ${OPENGLES_LIBRARIES}
 )
 
 install(TARGETS mali

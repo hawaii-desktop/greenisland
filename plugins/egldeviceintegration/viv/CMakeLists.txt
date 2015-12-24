@@ -16,8 +16,6 @@ add_library(viv SHARED MODULE ${SOURCES})
 target_link_libraries(viv
     GreenIsland::Platform
     Wayland::Server
-    EGL::EGL
-    ${OPENGLES_LIBRARIES}
     GAL
 )
 
