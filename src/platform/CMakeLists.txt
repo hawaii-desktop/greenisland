@@ -97,11 +97,11 @@ target_link_libraries(GreenIslandPlatform
         Qt5::DBus
         Qt5::Gui
         EGL::EGL
-        Libinput::Libinput
         ${UDEV_LIBS}
         ${xkbcommon_LIBRARIES}
         ${gio_LIBRARIES}
     PRIVATE
+        Libinput::Libinput
         ${FONTCONFIG_LIBRARIES}
         ${FREETYPE_LIBRARIES}
         Qt5PlatformSupport::Qt5PlatformSupport
