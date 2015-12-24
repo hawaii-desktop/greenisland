@@ -29,6 +29,8 @@
 #include <EGL/eglvivante.h>
 #include <QDebug>
 
+#include <wayland-server.h>
+
 namespace GreenIsland {
 
 namespace Platform {
@@ -47,6 +49,7 @@ void EglFSVivIntegration::platformInit()
         qputenv("FB_MULTI_BUFFER", "2");
     }
 
+    mWaylandDisplay = wl_display_create();
     mNativeDisplay = fbGetDisplayByIndex(framebufferIndex());
     fbGetDisplayGeometry(mNativeDisplay, &width, &height);
     mScreenSize.setHeight(height);
@@ -56,6 +59,11 @@ void EglFSVivIntegration::platformInit()
 QSize EglFSVivIntegration::screenSize() const
 {
     return mScreenSize;
+}
+
+void *EglFSVivIntegration::wlDisplay() const
+{
+    return mWaylandDisplay;
 }
 
 EGLNativeDisplayType EglFSVivIntegration::platformDisplay() const

@@ -40,10 +40,12 @@ public:
     QSize screenSize() const Q_DECL_OVERRIDE;
     EGLNativeWindowType createNativeWindow(QPlatformWindow *window, const QSize &size, const QSurfaceFormat &format) Q_DECL_OVERRIDE;
     void destroyNativeWindow(EGLNativeWindowType window) Q_DECL_OVERRIDE;
+    void *wlDisplay() const Q_DECL_OVERRIDE;
     EGLNativeDisplayType platformDisplay() const Q_DECL_OVERRIDE;
 
 private:
     QSize mScreenSize;
+    wl_display *mWaylandDisplay;
     EGLNativeDisplayType mNativeDisplay;
 };
 
