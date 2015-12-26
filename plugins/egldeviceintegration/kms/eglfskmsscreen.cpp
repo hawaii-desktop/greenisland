@@ -46,15 +46,11 @@ public:
     EglFSKmsInterruptHandler(EglFSKmsScreen *screen) : m_screen(screen) {
         m_vt = static_cast<EglFSIntegration *>(QGuiApplicationPrivate::platformIntegration())->vtHandler();
         connect(m_vt, &VtHandler::interrupted, this, &EglFSKmsInterruptHandler::restoreVideoMode);
-        connect(m_vt, &VtHandler::suspendRequested, this, &EglFSKmsInterruptHandler::handleSuspendRequest);
+        connect(m_vt, &VtHandler::aboutToSuspend, this, &EglFSKmsInterruptHandler::restoreVideoMode);
     }
 
 public slots:
     void restoreVideoMode() { m_screen->restoreMode(); }
-    void handleSuspendRequest() {
-        m_screen->restoreMode();
-        m_vt->suspend();
-    }
 
 private:
     VtHandler *m_vt;

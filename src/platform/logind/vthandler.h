@@ -54,7 +54,7 @@ Q_SIGNALS:
     void created();
     void activeChanged(bool active);
     void interrupted();
-    void suspendRequested();
+    void aboutToSuspend();
     void resumed();
 };
 

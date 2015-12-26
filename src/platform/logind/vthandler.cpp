@@ -27,6 +27,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QSocketNotifier>
 #include <QtCore/private/qobject_p.h>
+#include <QtCore/private/qcore_unix_p.h>
 
 #include "logging.h"
 #include "logind/logind.h"
@@ -35,7 +36,7 @@
 extern "C" {
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/signalfd.h>
+#include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <linux/major.h>
 #include <linux/kd.h>
@@ -57,6 +58,8 @@ namespace GreenIsland {
 
 namespace Platform {
 
+static VtHandler *vth;
+
 /*
  * VtHandlerPrivate
  */
@@ -67,14 +70,15 @@ class VtHandlerPrivate : public QObjectPrivate
 public:
     VtHandlerPrivate(VtHandler *self)
         : logind(Logind::instance())
-        , signalFd(-1)
         , notifier(Q_NULLPTR)
         , vtFd(-1)
         , vtNumber(0)
         , kbMode(K_OFF)
         , active(false)
-        , q_ptr(self)
     {
+        vth = self;
+
+        // Disable the cursor
         toggleTtyCursor(false);
     }
 
@@ -93,11 +97,11 @@ public:
         }
 
         // Open the tty for this vt
-        const QString devName = QStringLiteral("/dev/tty%1").arg(nr);
+        devName = QStringLiteral("/dev/tty%1").arg(nr);
         vtFd = ::open(qPrintable(devName), O_RDWR | O_CLOEXEC | O_NONBLOCK);
         if (vtFd < 0) {
             qCWarning(lcLogind, "Failed to open vt \"%s\": %s",
-                      qPrintable(devName), qPrintable(::strerror(errno)));
+                      qPrintable(devName), ::strerror(errno));
             return;
         }
 
@@ -109,28 +113,14 @@ public:
             return;
         }
 
-        // Read keyboard mode
-        if (::ioctl(vtFd, KDGKBMODE, &kbMode) < 0) {
-            qCWarning(lcLogind, "Unable to read keyboard mode on \"%s\": %s",
-                      qPrintable(devName), qPrintable(::strerror(errno)));
-            kbMode = K_UNICODE;
-        } else if (kbMode == K_OFF) {
-            kbMode = K_UNICODE;
-        }
-
         // Avoid input going to the tty
-        if (::ioctl(vtFd, KDSKBMUTE, 1) < 0 &&
-                ::ioctl(vtFd, KDSKBMODE, K_OFF) < 0) {
-            qCWarning(lcLogind, "Unable to set K_OFF keyboard mode on \"%s\": %s",
-                      qPrintable(devName), qPrintable(::strerror(errno)));
-            closeFd();
-        }
+        toggleKeyboard(false);
 
         // Graphics mode
         if (::ioctl(vtFd, KDSETMODE, KD_GRAPHICS) < 0) {
             qCWarning(lcLogind, "Unable to set KD_GRAPHICS mode on \"%s\": %s",
-                      qPrintable(devName), qPrintable(::strerror(errno)));
-            restoreKeyboard();
+                      qPrintable(devName), ::strerror(errno));
+            toggleKeyboard(true);
             closeFd();
             return;
         }
@@ -138,7 +128,7 @@ public:
         // Signal handler
         if (!installSignalHandler()) {
             ::ioctl(vtFd, KDSETMODE, KD_TEXT);
-            restoreKeyboard();
+            toggleKeyboard(true);
             closeFd();
             return;
         }
@@ -149,7 +139,7 @@ public:
             qCWarning(lcLogind, "Unable to take over VT \"%s\": %s",
                       qPrintable(devName), qPrintable(::strerror(errno)));
             ::ioctl(vtFd, KDSETMODE, KD_TEXT);
-            restoreKeyboard();
+            toggleKeyboard(true);
             closeFd();
             return ;
         }
@@ -173,55 +163,36 @@ public:
             return false;
         }
 
-        // Block other signals and use signalfd
-        sigset_t mask;
-        ::sigemptyset(&mask);
-
-        // Catch Ctlr+C
-        ::sigaddset(&mask, SIGINT);
-
-        // Catch Ctrl+Z (must handle suspend from the device integration)
-        ::sigaddset(&mask, SIGTSTP);
-        ::sigaddset(&mask, SIGCONT);
-
-        // KIll
-        ::sigaddset(&mask, SIGTERM);
-
-        // Release and acquire
-        ::sigaddset(&mask, RELEASE_SIGNAL);
-        ::sigaddset(&mask, ACQUISITION_SIGNAL);
-
-        signalFd = ::signalfd(-1, &mask, SFD_NONBLOCK | SFD_CLOEXEC);
-        if (signalFd < 0) {
-            qCWarning(lcLogind, "Failed to create signalfd: %d",
-                      qPrintable(::strerror(errno)));
-            ::ioctl(vtFd, KDSETMODE, KD_TEXT);
-            restoreKeyboard();
-            closeFd();
-            return false;
+        if (::socketpair(AF_UNIX, SOCK_STREAM, 0, signalFd)) {
+            qCWarning(lcLogind, "Failed to create socket pair: %s",
+                      ::strerror(errno));
         }
-
-        notifier = new QSocketNotifier(signalFd, QSocketNotifier::Read, q);
+        notifier = new QSocketNotifier(signalFd[1], QSocketNotifier::Read, q);
         q->connect(notifier, &QSocketNotifier::activated, q, [this, q] {
             if (vtFd < 0)
                 return;
 
             notifier->setEnabled(false);
 
-            signalfd_siginfo sig;
-            if (::read(signalFd, &sig, sizeof(sig)) == sizeof(sig)) {
-                switch (sig.ssi_signo) {
+            char sigNo;
+            if (QT_READ(signalFd[1], &sigNo, sizeof(sigNo)) == sizeof(sigNo)) {
+                switch (sigNo) {
                 case SIGINT:
                 case SIGTERM:
                     Q_EMIT q->interrupted();
-                    restoreKeyboard();
+                    toggleKeyboard(true);
                     toggleTtyCursor(true);
                     ::_exit(1);
                     break;
                 case SIGTSTP:
-                    Q_EMIT q->suspendRequested();
+                    Q_EMIT q->aboutToSuspend();
+                    toggleKeyboard(true);
+                    toggleTtyCursor(true);
+                    q->suspend();
                     break;
                 case SIGCONT:
+                    toggleKeyboard(false);
+                    toggleTtyCursor(false);
                     Q_EMIT q->resumed();
                     break;
                 case RELEASE_SIGNAL:
@@ -240,10 +211,16 @@ public:
             notifier->setEnabled(true);
         });
 
-        // Block signals that are handled via signalfd, this is done only for
-        // the current thread, but new threads will inherit the signal mask
-        // from the creator
-        ::pthread_sigmask(SIG_BLOCK, &mask, Q_NULLPTR);
+        struct sigaction sa;
+        sa.sa_flags = 0;
+        sa.sa_handler = signalHandler;
+        ::sigemptyset(&sa.sa_mask);
+        ::sigaction(SIGINT, &sa, 0);
+        ::sigaction(SIGTSTP, &sa, 0);
+        ::sigaction(SIGCONT, &sa, 0);
+        ::sigaction(SIGTERM, &sa, 0);
+        ::sigaction(ACQUISITION_SIGNAL, &sa, 0);
+        ::sigaction(RELEASE_SIGNAL, &sa, 0);
 
         return true;
     }
@@ -266,13 +243,38 @@ public:
         }
     }
 
-    void restoreKeyboard()
+    void toggleKeyboard(bool enable)
     {
         if (vtFd < 0)
             return;
 
-        ::ioctl(vtFd, KDSKBMUTE, 0);
-        ::ioctl(vtFd, KDSKBMUTE, kbMode);
+        if (enable) {
+            if (::ioctl(vtFd, KDSKBMUTE, 0) < 0)
+                qCWarning(lcLogind, "Unable to unmute keyboard on \"%s\": %s",
+                          qPrintable(devName), ::strerror(errno));
+            if (::ioctl(vtFd, KDSKBMODE, kbMode) < 0)
+                qCWarning(lcLogind, "Unable to restore keyboard mode on \"%s\": %s",
+                          qPrintable(devName), ::strerror(errno));
+        } else {
+            // Read keyboard mode
+            if (::ioctl(vtFd, KDGKBMODE, &kbMode) < 0) {
+                qCWarning(lcLogind, "Unable to read keyboard mode on \"%s\": %s",
+                          qPrintable(devName), ::strerror(errno));
+                kbMode = K_UNICODE;
+            } else if (kbMode == K_OFF) {
+                kbMode = K_UNICODE;
+            }
+
+            if (!qEnvironmentVariableIntValue("GREENISLAND_QPA_ENABLE_TERMINAL_KEYBOARD")) {
+                // Avoid input going to the tty
+                if (::ioctl(vtFd, KDSKBMUTE, 1) < 0 &&
+                        ::ioctl(vtFd, KDSKBMODE, K_OFF) < 0) {
+                    qCWarning(lcLogind, "Unable to set K_OFF keyboard mode on \"%s\": %s",
+                              qPrintable(devName), ::strerror(errno));
+                    closeFd();
+                }
+            }
+        }
     }
 
     void closeFd()
@@ -284,8 +286,8 @@ public:
             delete notifier;
             notifier = Q_NULLPTR;
 
-            ::close(signalFd);
-            signalFd = -1;
+            ::close(signalFd[0]);
+            ::close(signalFd[1]);
         }
 
         ::close(vtFd);
@@ -321,20 +323,24 @@ public:
         return true;
     }
 
+    static void signalHandler(int sigNo)
+    {
+        char a = sigNo;
+        QT_WRITE(vth->d_func()->signalFd[0], &a, sizeof(a));
+    }
+
     Logind *logind;
 
-    int signalFd;
+    int signalFd[2];
     QSocketNotifier *notifier;
 
     int vtFd;
     int vtNumber;
+    QString devName;
 
     int kbMode;
 
     bool active;
-
-private:
-    VtHandler *q_ptr;
 };
 
 /*
@@ -367,10 +373,14 @@ VtHandler::~VtHandler()
 {
     Q_D(VtHandler);
 
-    d->restoreKeyboard();
+    d->toggleKeyboard(true);
     d->toggleTtyCursor(true);
-    if (d->signalFd != -1)
-        ::close(d->signalFd);
+
+    if (d->notifier) {
+        ::close(d->signalFd[0]);
+        ::close(d->signalFd[1]);
+    }
+
     d->closeFd();
 }
 
@@ -401,7 +411,7 @@ void VtHandler::activate(int nr)
 
 void VtHandler::suspend()
 {
-    ::kill((pid_t)QCoreApplication::applicationPid(), SIGSTOP);
+    ::kill(::getpid(), SIGSTOP);
 }
 
 } // namespace Platform

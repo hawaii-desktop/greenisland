@@ -30,12 +30,6 @@ set_package_properties(Fontconfig PROPERTIES
     TYPE REQUIRED
     PURPOSE "Required by the QPA plugin")
 
-# pthread
-find_package(Threads)
-set_package_properties(Threads PROPERTIES
-    TYPE REQUIRED
-    PURPOSE "Required by the vt handler code")
-
 set(SOURCES
     logging.cpp
     deviceintegration/deviceintegration_p.cpp
@@ -105,7 +99,6 @@ target_link_libraries(GreenIslandPlatform
         ${FONTCONFIG_LIBRARIES}
         ${FREETYPE_LIBRARIES}
         Qt5PlatformSupport::Qt5PlatformSupport
-        Threads::Threads
 )
 
 target_compile_definitions(GreenIslandPlatform
