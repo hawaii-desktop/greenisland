@@ -315,16 +315,16 @@ void LibInputHandlerPrivate::logHandler(libinput *handle, libinput_log_priority 
         // library can be dinstinguished from ours
         switch (priority) {
         case LIBINPUT_LOG_PRIORITY_DEBUG:
-            qCDebug(lcInput, "libinput: %s", buffer);
+            qCDebug(lcInput, "%s", buffer);
             break;
         case LIBINPUT_LOG_PRIORITY_ERROR:
-            qCWarning(lcInput, "libinput: %s", buffer);
+            qCWarning(lcInput, "%s", buffer);
             break;
         case LIBINPUT_LOG_PRIORITY_INFO:
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-            qCInfo(lcInput, "libinput: %s", buffer);
+            qCInfo(lcInput, "%s", buffer);
 #else
-            qCDebug(lcInput, "libinput: %s", buffer);
+            qCDebug(lcInput, "%s", buffer);
 #endif
             break;
         default:
