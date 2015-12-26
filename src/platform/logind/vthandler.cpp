@@ -106,7 +106,7 @@ public:
         }
 
         // Must be a valid vt
-        if (isValidVt(vtFd)) {
+        if (!isValidVt(vtFd)) {
             qCWarning(lcLogind, "TTY \"%s\" is not a virtual terminal",
                       qPrintable(devName));
             closeFd();
