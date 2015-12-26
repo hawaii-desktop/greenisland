@@ -43,7 +43,6 @@ class GREENISLANDPLATFORM_EXPORT VtHandler : public QObject
     Q_DECLARE_PRIVATE(VtHandler)
 public:
     VtHandler(QObject *parent = 0);
-    ~VtHandler();
 
     bool isActive() const;
 

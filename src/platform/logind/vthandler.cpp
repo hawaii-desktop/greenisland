@@ -82,6 +82,19 @@ public:
         toggleTtyCursor(false);
     }
 
+    ~VtHandlerPrivate()
+    {
+        toggleKeyboard(true);
+        toggleTtyCursor(true);
+
+        if (notifier) {
+            ::close(signalFd[0]);
+            ::close(signalFd[1]);
+        }
+
+        closeFd();
+    }
+
     void setup(int nr)
     {
         Q_Q(VtHandler);
@@ -367,21 +380,6 @@ VtHandler::VtHandler(QObject *parent)
     else
         connect(d->logind, &Logind::connectedChanged,
                 d->logind, &Logind::takeControl);
-}
-
-VtHandler::~VtHandler()
-{
-    Q_D(VtHandler);
-
-    d->toggleKeyboard(true);
-    d->toggleTtyCursor(true);
-
-    if (d->notifier) {
-        ::close(d->signalFd[0]);
-        ::close(d->signalFd[1]);
-    }
-
-    d->closeFd();
 }
 
 bool VtHandler::isActive() const
