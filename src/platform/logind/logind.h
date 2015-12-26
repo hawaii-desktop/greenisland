@@ -86,6 +86,8 @@ public Q_SLOTS:
     int takeDevice(const QString &fileName);
     void releaseDevice(int fd);
 
+    void switchTo(quint32 vt);
+
 Q_SIGNALS:
     void connectedChanged(bool);
     void hasSessionControlChanged(bool);

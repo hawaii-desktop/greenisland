@@ -46,7 +46,7 @@ public:
 
     bool isActive() const;
 
-    void activate(int nr);
+    void activate(quint32 nr);
     void suspend();
 
 Q_SIGNALS:

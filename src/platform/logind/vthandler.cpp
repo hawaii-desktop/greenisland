@@ -388,22 +388,18 @@ bool VtHandler::isActive() const
     return d->active;
 }
 
-void VtHandler::activate(int nr)
+void VtHandler::activate(quint32 nr)
 {
     Q_D(VtHandler);
 
     if (d->vtFd < 0)
         return;
 
-    if (d->vtNumber == nr)
+    if (d->vtNumber == int(nr))
         return;
 
-    if (::ioctl(d->vtFd, VT_ACTIVATE, nr) < 0) {
-        qCWarning(lcLogind, "Unable to activate vt number %d: %s",
-                  nr, qPrintable(::strerror(errno)));
-        return;
-    }
-
+    qCDebug(lcLogind, "Switching to vt %d", nr);
+    d->logind->switchTo(nr);
     d->setActive(false);
 }
 
