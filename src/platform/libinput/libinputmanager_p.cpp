@@ -125,6 +125,11 @@ LibInputManager::LibInputManager(QObject *parent)
     });
 }
 
+LibInputHandler *LibInputManager::handler() const
+{
+    return m_handler;
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

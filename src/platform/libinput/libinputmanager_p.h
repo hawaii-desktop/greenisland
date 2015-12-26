@@ -52,6 +52,8 @@ class LibInputManager : public QObject
 public:
     explicit LibInputManager(QObject *parent = 0);
 
+    LibInputHandler *handler() const;
+
 private:
     LibInputHandler *m_handler;
 };
