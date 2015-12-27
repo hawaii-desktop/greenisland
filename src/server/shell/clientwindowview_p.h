@@ -62,6 +62,10 @@ public:
 
     void setShellSurfaceItem(QWaylandQuickItem *item);
 
+    bool mousePressEvent(QMouseEvent *event);
+    bool mouseReleaseEvent(QMouseEvent *event);
+    bool mouseMoveEvent(QMouseEvent *event);
+
     static ClientWindowViewPrivate *get(ClientWindowView *view) { return view->d_func(); }
 
     bool initialized;

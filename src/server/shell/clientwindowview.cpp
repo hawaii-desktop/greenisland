@@ -76,6 +76,54 @@ void ClientWindowViewPrivate::setShellSurfaceItem(QWaylandQuickItem *item)
     Q_EMIT q->shellSurfaceItemChanged();
 }
 
+bool ClientWindowViewPrivate::mousePressEvent(QMouseEvent *event)
+{
+    // If the modifier is pressed we initiate a move operation
+    Qt::KeyboardModifier mod = Qt::MetaModifier;
+    if (QGuiApplication::queryKeyboardModifiers().testFlag(mod) && event->buttons().testFlag(Qt::LeftButton)) {
+        grabberState = ClientWindowViewPrivate::MoveState;
+        moveState.initialized = false;
+        return true;
+    }
+
+    return false;
+}
+
+bool ClientWindowViewPrivate::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+
+    if (grabberState != ClientWindowViewPrivate::DefaultState) {
+        grabberState = ClientWindowViewPrivate::DefaultState;
+        return true;
+    }
+
+    return false;
+}
+
+bool ClientWindowViewPrivate::mouseMoveEvent(QMouseEvent *event)
+{
+    Q_Q(ClientWindowView);
+
+    if (grabberState == ClientWindowViewPrivate::MoveState) {
+        if (!moveState.initialized) {
+            moveState.initialOffset = q->mapFromItem(Q_NULLPTR, event->windowPos());
+            moveState.initialized = true;
+        }
+
+        if (!q->parentItem())
+            return false;
+
+        QPointF parentPos = q->parentItem()->mapFromItem(Q_NULLPTR, event->windowPos());
+        QPointF pos = parentPos - moveState.initialOffset;
+        q->setPosition(pos);
+
+        return true;
+    }
+
+    return false;
+}
+
 /*
  * ClientWindowView
  */
@@ -85,6 +133,7 @@ ClientWindowView::ClientWindowView(QQuickItem *parent)
 {
     setAcceptHoverEvents(true);
     setAcceptedMouseButtons(Qt::AllButtons);
+    setFiltersChildMouseEvents(true);
 }
 
 QWaylandOutput *ClientWindowView::output() const
@@ -185,54 +234,28 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
     d->initialized = true;
 }
 
-void ClientWindowView::mousePressEvent(QMouseEvent *event)
+bool ClientWindowView::childMouseEventFilter(QQuickItem *item, QEvent *event)
 {
     Q_D(ClientWindowView);
 
-    // If the modifier is pressed we initiate a move operation
-    Qt::KeyboardModifier mod = Qt::MetaModifier;
-    if (QGuiApplication::queryKeyboardModifiers().testFlag(mod) && event->buttons().testFlag(Qt::LeftButton)) {
-        d->grabberState = ClientWindowViewPrivate::MoveState;
-        d->moveState.initialized = false;
-        return;
+    // Make sure we will filter only events for the shell surface item
+    if (item != d->shellSurfaceItem)
+        return false;
+
+    // Filter mouse events
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+        return d->mousePressEvent(static_cast<QMouseEvent *>(event));
+    case QEvent::MouseButtonRelease:
+        return d->mouseReleaseEvent(static_cast<QMouseEvent *>(event));
+    case QEvent::MouseMove:
+        return d->mouseMoveEvent(static_cast<QMouseEvent *>(event));
+    default:
+        break;
     }
 
-    QQuickItem::mousePressEvent(event);
-}
-
-void ClientWindowView::mouseReleaseEvent(QMouseEvent *event)
-{
-    Q_D(ClientWindowView);
-
-    if (d->grabberState != ClientWindowViewPrivate::DefaultState) {
-        d->grabberState = ClientWindowViewPrivate::DefaultState;
-        return;
-    }
-
-    QQuickItem::mouseReleaseEvent(event);
-}
-
-void ClientWindowView::mouseMoveEvent(QMouseEvent *event)
-{
-    Q_D(ClientWindowView);
-
-    if (d->grabberState == ClientWindowViewPrivate::MoveState) {
-        if (!d->moveState.initialized) {
-            d->moveState.initialOffset = mapFromItem(Q_NULLPTR, event->windowPos());
-            d->moveState.initialized = true;
-        }
-
-        if (!parentItem())
-            return;
-
-        QPointF parentPos = parentItem()->mapFromItem(Q_NULLPTR, event->windowPos());
-        QPointF pos = parentPos - d->moveState.initialOffset;
-        setPosition(pos);
-
-        return;
-    }
-
-    QQuickItem::mouseMoveEvent(event);
+    // Do not filter out events we don't care about
+    return false;
 }
 
 void ClientWindowView::shellSurfaceItemWidthChanged()
