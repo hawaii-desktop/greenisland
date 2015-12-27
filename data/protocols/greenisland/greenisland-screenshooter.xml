@@ -18,40 +18,122 @@
   ]]></copyright>
 
   <interface name="greenisland_screenshooter" version="1">
-    <description summary="dump the contents of an output to a buffer">
-      This interface is used by programs to take a screenshot of an output.
-      Output contents are dumped into a buffer that is read by
-      the screenshot application and saved as an image file.
-      The done event is sent when the buffer is filled.
+    <description summary="dump the contents of an output, a surface or an area to a buffer">
+      This interface is used by programs to take a screenshot of an entire
+      output, a user-selected area or a specific surface.
+
+      The client asks the compositor to capture with one of the capture
+      requests. As a result, a greenisland_screenshot object will be created
+      and the greenisland_screenshot.setup event will be sent as soon as the
+      client binds to the interface.
+
+      See the documentation of greenisland_screencast for more details.
     </description>
 
-    <enum name="what">
-      <entry name="whole_screen" value="1"/>
-      <entry name="current_window" value="2"/>
-      <entry name="select_area" value="3"/>
-    </enum>
-
-    <enum name="result">
-      <entry name="bad_output" value="1"/>
-      <entry name="bad_buffer" value="2"/>
-      <entry name="success" value="3"/>
-    </enum>
-
-    <request name="shoot">
-      <description summary="take a screenshot">
-        Ask the compositor to take a screenshot of the output and save it
-        to the buffer.
+    <request name="capture_output">
+      <description summary="take a screenshot of an entire output">
+        Asks the compositor to capture an entire output.
       </description>
-      <arg name="what" type="int"/>
+      <arg name="id" type="new_id" interface="greenisland_screenshot"/>
       <arg name="output" type="object" interface="wl_output"/>
-      <arg name="buffer" type="object" interface="wl_buffer"/>
     </request>
+
+    <request name="capture_active">
+      <description summary="take a screenshot of the active window">
+        Asks the compositor to take a screenshot of the active window.
+      </description>
+      <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+    </request>
+
+    <request name="capture_surface">
+      <description summary="take a screenshot of a surface">
+        Asks the compositor to take a screenshot of a surface of a window
+        selected by the user.
+      </description>
+      <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+    </request>
+
+    <request name="capture_area">
+      <description summary="take a screenshot of an area">
+        Asks the compositor to take a screenshot of an area.
+        This request starts a user-driven selection of the area that will
+        be captured.
+      </description>
+      <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+    </request>
+  </interface>
+
+  <interface name="greenisland_screenshot" version="1">
+    <description summary="screenshot">
+      A screenshot allows a client to perform a capture of an entire output,
+      an area selected by a user-driven operation, the active window or a
+      specific surface.  Whatever is to be captured is decided by the capture
+      request that was called from the greenisland_screenshooter interface.
+
+      The 'setup' event is sent as soon as the client binds to this interface
+      and indicates the size of the buffer that needs to be allocated.
+
+      Invoking the 'capture' request triggers the actual capture.
+      The 'done' event is sent when the capture is done, at this point the
+      client can decide what to do with the buffer (store into a file, display
+      to the user, ...).
+    </description>
+
+    <enum name="error">
+      <description summary="greenisland_screenshot error values">
+        These errors are emitted with the 'failed' event when a
+        capture request fails.
+      </description>
+      <entry name="bad_buffer" value="0" summary="Buffer doesn't match requirements"/>
+    </enum>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy greenisland_screenshot">
+        Destroy this greenisland_screenshot object.
+      </description>
+    </request>
+
+    <request name="record">
+      <description summary="take a screenshot">
+        Ask the compositor to take a screenshot and save the contents into
+        the buffer.  What is being capture can be either an output, a surface
+        or an area that was selected with user interaction, depending on the
+        greenisland_screenshooter request that was invoked.
+      </description>
+      <arg name="buffer" type="object" interface="wl_buffer" summary="client buffer that will hold data"/>
+    </request>
+
+    <event name="setup">
+      <description summary="notify buffer size requirements">
+        This event will be sent immediately after creating the
+        greenisland_screenshot object.
+
+        The wl_buffer passed to the 'record' request must be big enough to
+        accomodate an image with the given width, height and format.
+        If it's smaller, the compositor will send the 'failed' event.
+
+        The buffer must be a shm buffer, trying to use another type of
+        buffer will result in a failure.
+        The format argument value is defined in the wl_shm::format enum.
+      </description>
+      <arg name="width" type="int" summary="width of the frame, in pixels"/>
+      <arg name="height" type="int" summary="height of the frame, in pixels"/>
+      <arg name="stride" type="int" summary="stride of the buffer"/>
+      <arg name="format" type="int" summary="format of the buffer"/>
+    </event>
 
     <event name="done">
       <description summary="emitted when the buffer is filled">
-        This event is sent when the buffer is filled and the screenshot has been done.
+        The done event is sent when the buffer is filled.
+        This object can be destroyed calling 'destroy' afterwards.
       </description>
-      <arg name="result" type="int"/>
+    </event>
+
+    <event name="failed">
+      <description summary="capture failed">
+        The value of the error argument is one if the 'error' enum.
+      </description>
+      <arg name="error" type="int" summary="error that has occurred"/>
     </event>
   </interface>
 </protocol>
