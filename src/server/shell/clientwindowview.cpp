@@ -132,7 +132,7 @@ bool ClientWindowViewPrivate::mouseMoveEvent(QMouseEvent *event)
 ClientWindowView::ClientWindowView(QQuickItem *parent)
     : QQuickItem(*new ClientWindowViewPrivate(), parent)
 {
-    setAcceptHoverEvents(true);
+    setAcceptHoverEvents(false);
     setAcceptedMouseButtons(Qt::AllButtons);
     setFiltersChildMouseEvents(true);
 }
