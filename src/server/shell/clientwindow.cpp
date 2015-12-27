@@ -36,9 +36,9 @@
 #include "clientwindow_p.h"
 #include "clientwindowview.h"
 #include "clientwindowview_p.h"
+#include "serverlogging_p.h"
 #include "windowmanager.h"
 #include "windowmanager_p.h"
-#include "core/logging.h"
 #include "extensions/quickxdgsurfaceitem.h"
 #include "extensions/quickxdgpopupitem.h"
 
@@ -145,8 +145,7 @@ void ClientWindowPrivate::findOutputs()
 void ClientWindowPrivate::setSurface(QWaylandSurface *surface)
 {
     if (this->surface) {
-        qCWarning(GREENISLAND_COMPOSITOR,
-                  "Setting ClientWindow surface is allowed only once.");
+        qCWarning(gLcCore, "Setting ClientWindow surface is allowed only once");
         return;
     }
 

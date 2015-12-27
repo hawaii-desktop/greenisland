@@ -33,7 +33,7 @@
 #include <GreenIsland/Platform/EglFSScreen>
 
 #include "quickoutput.h"
-#include "logging.h"
+#include "serverlogging_p.h"
 #include "extensions/screencaster.h"
 #include "screen/screenbackend.h"
 
@@ -193,7 +193,7 @@ void QuickOutput::setNativeScreen(Screen *screen)
         return;
 
     if (d->initialized) {
-        qCWarning(GREENISLAND_COMPOSITOR)
+        qCWarning(gLcCore)
                 << "Setting GreenIsland::Server::Output::nativeScreen "
                    "after initialization has no effect";
         return;
@@ -213,7 +213,7 @@ QuickOutput::PowerState QuickOutput::powerState() const
         screen = static_cast<Platform::EglFSScreen *>(
                     d->nativeScreen->screen()->handle());
     if (!screen) {
-        qCWarning(GREENISLAND_COMPOSITOR)
+        qCWarning(gLcCore)
                 << "QuickOutput::powerState always returns "
                 << "ON without native screens or the greenisland QPA";
         return PowerStateOn;
@@ -232,7 +232,7 @@ void QuickOutput::setPowerState(PowerState state)
         screen = static_cast<Platform::EglFSScreen *>(
                     d->nativeScreen->screen()->handle());
     if (!screen) {
-        qCWarning(GREENISLAND_COMPOSITOR)
+        qCWarning(gLcCore)
                 << "Setting QuickOutput::powerState without native screens "
                 << "or without the greenisland QPA has no effect";
         return;
@@ -305,7 +305,7 @@ void QuickOutput::initialize()
 
     QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window());
     if (!quickWindow) {
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Could not locate QQuickWindow on initializing"
                   "GreenIsland::Server::Output %p.\n", this);
         return;

@@ -28,13 +28,9 @@
 #define GREENISLAND_XDGSHELL_H
 
 #include <QtCore/QHash>
-#include <QtCore/QLoggingCategory>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-
-Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_PROTOCOL)
-Q_DECLARE_LOGGING_CATEGORY(XDGSHELL_TRACE)
 
 class QWaylandClient;
 class QWaylandInputDevice;

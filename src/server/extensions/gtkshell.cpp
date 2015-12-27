@@ -29,9 +29,7 @@
 
 #include "gtkshell.h"
 #include "gtkshell_p.h"
-
-Q_LOGGING_CATEGORY(GTKSHELL_PROTOCOL, "greenisland.protocols.gtkshell")
-Q_LOGGING_CATEGORY(GTKSHELL_TRACE, "greenisland.protocols.gtkshell.trace")
+#include "serverlogging_p.h"
 
 namespace GreenIsland {
 
@@ -45,19 +43,19 @@ GtkShellPrivate::GtkShellPrivate()
     : QWaylandExtensionTemplatePrivate()
     , QtWaylandServer::gtk_shell()
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 void GtkShellPrivate::shell_bind_resource(Resource *resource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     send_capabilities(resource->handle, 0);
 }
 
 void GtkShellPrivate::shell_destroy_resource(Resource *resource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -67,7 +65,7 @@ void GtkShellPrivate::shell_destroy_resource(Resource *resource)
 
 void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_Q(GtkShell);
 
@@ -90,18 +88,18 @@ void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_
 GtkShell::GtkShell()
     : QWaylandExtensionTemplate<GtkShell>(*new GtkShellPrivate())
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 GtkShell::GtkShell(QWaylandCompositor *compositor)
     : QWaylandExtensionTemplate<GtkShell>(compositor, *new GtkShellPrivate())
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 void GtkShell::initialize()
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_D(GtkShell);
 
@@ -134,7 +132,7 @@ GtkSurfacePrivate::GtkSurfacePrivate()
     , m_shell(Q_NULLPTR)
     , m_surface(Q_NULLPTR)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 GtkSurfacePrivate::~GtkSurfacePrivate()
@@ -143,7 +141,7 @@ GtkSurfacePrivate::~GtkSurfacePrivate()
 
 void GtkSurfacePrivate::surface_destroy_resource(Resource *resource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -159,13 +157,13 @@ void GtkSurfacePrivate::surface_set_dbus_properties(Resource *resource,
                                                     const QString &application_object_path,
                                                     const QString &unique_bus_name)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
     Q_Q(GtkSurface);
 
-    qCDebug(GTKSHELL_PROTOCOL)
+    qCDebug(gLcGtkShell)
             << "Application ID:" << application_id
             << "App menu path:" << app_menu_path
             << "Menubar path:" << menubar_path
@@ -189,7 +187,7 @@ void GtkSurfacePrivate::surface_set_dbus_properties(Resource *resource,
 
 void GtkSurfacePrivate::surface_set_modal(Resource *resource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -199,7 +197,7 @@ void GtkSurfacePrivate::surface_set_modal(Resource *resource)
 
 void GtkSurfacePrivate::surface_unset_modal(Resource *resource)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -214,14 +212,14 @@ void GtkSurfacePrivate::surface_unset_modal(Resource *resource)
 GtkSurface::GtkSurface()
     : QWaylandExtensionTemplate<GtkSurface>(*new GtkSurfacePrivate())
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 GtkSurface::GtkSurface(GtkShell *shell, QWaylandSurface *surface,
                        QWaylandClient *client, uint id)
     : QWaylandExtensionTemplate<GtkSurface>(*new GtkSurfacePrivate())
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     initialize(shell, surface, client, id);
 }
@@ -229,7 +227,7 @@ GtkSurface::GtkSurface(GtkShell *shell, QWaylandSurface *surface,
 void GtkSurface::initialize(GtkShell *shell, QWaylandSurface *surface,
                             QWaylandClient *client, uint id)
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_D(GtkSurface);
     d->m_shell = shell;
@@ -242,7 +240,7 @@ void GtkSurface::initialize(GtkShell *shell, QWaylandSurface *surface,
 
 void GtkSurface::initialize()
 {
-    qCDebug(GTKSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     QWaylandExtensionTemplate::initialize();
 }

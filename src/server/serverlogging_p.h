@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2013-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,6 +24,21 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "logging.h"
+#ifndef GREENISLAND_SERVERLOGGING_H
+#define GREENISLAND_SERVERLOGGING_H
 
-Q_LOGGING_CATEGORY(GREENISLAND_COMPOSITOR, "greenisland.compositor")
+#include <QtCore/QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(gLcCore)
+Q_DECLARE_LOGGING_CATEGORY(gLcGtkShell)
+Q_DECLARE_LOGGING_CATEGORY(gLcGtkShellTrace)
+Q_DECLARE_LOGGING_CATEGORY(gLcScreencaster)
+Q_DECLARE_LOGGING_CATEGORY(gLcScreenshooter)
+Q_DECLARE_LOGGING_CATEGORY(gLcTaskManager)
+Q_DECLARE_LOGGING_CATEGORY(gLcXdgShell)
+Q_DECLARE_LOGGING_CATEGORY(gLcXdgShellTrace)
+Q_DECLARE_LOGGING_CATEGORY(gLcScreenBackend)
+Q_DECLARE_LOGGING_CATEGORY(gLcFakeScreenBackend)
+Q_DECLARE_LOGGING_CATEGORY(gLcNativeScreenBackend)
+
+#endif // GREENISLAND_SERVERLOGGING_H

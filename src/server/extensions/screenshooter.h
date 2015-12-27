@@ -27,13 +27,9 @@
 #ifndef GREENISLAND_SCREENSHOOTER_H
 #define GREENISLAND_SCREENSHOOTER_H
 
-#include <QtCore/QLoggingCategory>
-
 #include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
-
-Q_DECLARE_LOGGING_CATEGORY(SCREENSHOOTER_PROTOCOL)
 
 class QWaylandOutput;
 class QWaylandSurface;

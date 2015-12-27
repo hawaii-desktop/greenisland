@@ -32,9 +32,9 @@
 #include "clientwindow_p.h"
 #include "clientwindowview.h"
 #include "clientwindowview_p.h"
+#include "serverlogging_p.h"
 #include "windowmanager.h"
 #include "windowmanager_p.h"
-#include "core/logging.h"
 #include "extensions/quickxdgpopupitem.h"
 #include "extensions/quickxdgsurfaceitem.h"
 
@@ -154,8 +154,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
     Q_D(ClientWindowView);
 
     if (d->initialized) {
-        qCWarning(GREENISLAND_COMPOSITOR,
-                  "ClientWindowView is already initialized");
+        qCWarning(gLcCore, "ClientWindowView is already initialized");
         return;
     }
 
@@ -166,7 +165,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
         QWaylandShellSurface *shellSurface =
                 QWaylandShellSurface::findIn(dWindow->surface);
         if (!shellSurface) {
-            qCWarning(GREENISLAND_COMPOSITOR, "Shell surface not found");
+            qCWarning(gLcCore, "Shell surface not found");
             return;
         }
 
@@ -180,7 +179,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
     } else if (dWindow->interfaceName == XdgSurface::interfaceName()) {
         XdgSurface *shellSurface = XdgSurface::findIn(dWindow->surface);
         if (!shellSurface) {
-            qCWarning(GREENISLAND_COMPOSITOR, "Shell surface not found");
+            qCWarning(gLcCore, "Shell surface not found");
             return;
         }
 
@@ -194,7 +193,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
     } else if (dWindow->interfaceName == XdgPopup::interfaceName()) {
         XdgPopup *shellSurface = XdgPopup::findIn(dWindow->surface);
         if (!shellSurface) {
-            qCWarning(GREENISLAND_COMPOSITOR, "Shell surface not found");
+            qCWarning(gLcCore, "Shell surface not found");
             return;
         }
 
@@ -205,8 +204,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
 
         d->setShellSurfaceItem(shellSurfaceItem);
     } else {
-        qCWarning(GREENISLAND_COMPOSITOR,
-                  "Surface implements an unknown interface");
+        qCWarning(gLcCore, "Surface implements an unknown interface");
         return;
     }
 

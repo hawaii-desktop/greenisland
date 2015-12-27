@@ -27,13 +27,8 @@
 #ifndef GREENISLAND_GTKSHELL_H
 #define GREENISLAND_GTKSHELL_H
 
-#include <QtCore/QLoggingCategory>
-
 #include <GreenIsland/server/greenislandserver_export.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-
-Q_DECLARE_LOGGING_CATEGORY(GTKSHELL_PROTOCOL)
-Q_DECLARE_LOGGING_CATEGORY(GTKSHELL_TRACE)
 
 class QWaylandClient;
 class QWaylandSurface;

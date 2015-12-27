@@ -29,8 +29,6 @@
 
 #include <GreenIsland/Server/ScreenBackend>
 
-Q_DECLARE_LOGGING_CATEGORY(NATIVE_BACKEND)
-
 class QScreen;
 
 namespace GreenIsland {

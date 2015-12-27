@@ -29,7 +29,7 @@
 
 #include "compositorsettings.h"
 #include "compositorsettings_p.h"
-#include "logging.h"
+#include "serverlogging_p.h"
 
 namespace GreenIsland {
 
@@ -46,8 +46,8 @@ void CompositorSettingsPrivate::_q_setupKeymap()
 
     QWaylandInputDevice *inputDevice = compositor->defaultInputDevice();
     if (inputDevice && inputDevice->keyboard()) {
-        qCDebug(GREENISLAND_COMPOSITOR,
-                "Setting keymap to '%s' (variant '%s', options '%s', model '%s', rules '%s)",
+        qCDebug(gLcCore,
+                "Setting keymap to '%s' (variant '%s', options '%s', model '%s', rules '%s')",
                 qPrintable(keymap->layout()),
                 qPrintable(keymap->variant()),
                 qPrintable(keymap->options()),

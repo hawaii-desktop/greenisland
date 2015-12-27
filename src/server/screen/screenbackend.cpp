@@ -24,11 +24,9 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "core/logging.h"
+#include "serverlogging_p.h"
 #include "screenbackend.h"
 #include "screenbackend_p.h"
-
-Q_LOGGING_CATEGORY(SCREEN_BACKEND, "greenisland.screenbackend")
 
 namespace GreenIsland {
 
@@ -195,7 +193,7 @@ ScreenBackend::ScreenBackend(QObject *parent)
 
 ScreenBackend::~ScreenBackend()
 {
-    qCDebug(SCREEN_BACKEND) << "Removing all outputs...";
+    qCDebug(gLcScreenBackend) << "Removing all outputs...";
 
     Q_D(ScreenBackend);
 
@@ -215,7 +213,7 @@ QList<Screen *> ScreenBackend::screens() const
 
 void ScreenBackend::acquireConfiguration()
 {
-    qCDebug(SCREEN_BACKEND) << "ScreenBackend::acquireConfiguration() must be reimplemented";
+    qCWarning(gLcScreenBackend) << "ScreenBackend::acquireConfiguration() must be reimplemented";
 }
 
 } // namespace Server

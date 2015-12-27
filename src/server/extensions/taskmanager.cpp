@@ -26,9 +26,9 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 
+#include "serverlogging_p.h"
 #include "taskmanager.h"
 #include "taskmanager_p.h"
-#include "extensions/taskmanagerlogging.h"
 
 namespace GreenIsland {
 

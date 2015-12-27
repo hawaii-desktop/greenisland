@@ -31,8 +31,7 @@
 
 #include "nativescreenbackend.h"
 #include "screenbackend_p.h"
-
-Q_LOGGING_CATEGORY(NATIVE_BACKEND, "greenisland.screenbackend.native")
+#include "serverlogging_p.h"
 
 namespace GreenIsland {
 
@@ -70,7 +69,7 @@ void NativeScreenBackend::acquireConfiguration()
 
 void NativeScreenBackend::handleScreenAdded(QScreen *qscreen)
 {
-    qCDebug(NATIVE_BACKEND) << "Screen added" << qscreen->name() << qscreen->availableGeometry();
+    qCDebug(gLcNativeScreenBackend) << "Screen added" << qscreen->name() << qscreen->availableGeometry();
 
     Screen *screen = new Screen(this);
     ScreenPrivate *screenPrivate = Screen::get(screen);
@@ -103,7 +102,7 @@ void NativeScreenBackend::handleScreenAdded(QScreen *qscreen)
 
 void NativeScreenBackend::handleScreenRemoved(QScreen *qscreen)
 {
-    qCDebug(NATIVE_BACKEND) << "Screen removed" << qscreen->name() << qscreen->availableGeometry();
+    qCDebug(gLcNativeScreenBackend) << "Screen removed" << qscreen->name() << qscreen->availableGeometry();
 
     QList<Screen *> list = ScreenBackend::get(this)->screens;
     auto it = list.begin();
@@ -119,7 +118,7 @@ void NativeScreenBackend::handleScreenRemoved(QScreen *qscreen)
 
 void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
 {
-    qCDebug(NATIVE_BACKEND) << "Screen" << qscreen->name() << "have been changed";
+    qCDebug(gLcNativeScreenBackend) << "Screen" << qscreen->name() << "have been changed";
 
     ScreenPrivate *screenPrivate = Screen::get(screen);
 

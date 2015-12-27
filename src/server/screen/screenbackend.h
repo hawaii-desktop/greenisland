@@ -27,12 +27,9 @@
 #ifndef GREENISLAND_SCREENBACKEND_H
 #define GREENISLAND_SCREENBACKEND_H
 
-#include <QtCore/QLoggingCategory>
 #include <QtCore/QObject>
 
 #include <GreenIsland/server/greenislandserver_export.h>
-
-Q_DECLARE_LOGGING_CATEGORY(SCREEN_BACKEND)
 
 class QScreen;
 

@@ -34,7 +34,7 @@
 #include "diagnostic_p.h"
 #include "homeapplication.h"
 #include "homeapplication_p.h"
-#include "logging.h"
+#include "serverlogging_p.h"
 
 #if HAVE_SYSTEMD
 #  include <systemd/sd-daemon.h>
@@ -125,7 +125,7 @@ void HomeApplication::setScreenConfiguration(const QString &fileName)
         return;
 
     if (d->initialized) {
-        qCWarning(GREENISLAND_COMPOSITOR) << "Setting HomeApplication::screenConfiguration after initialization has no effect";
+        qCWarning(gLcCore) << "Setting HomeApplication::screenConfiguration after initialization has no effect";
         return;
     }
 
@@ -179,7 +179,7 @@ void HomeApplication::setNotificationEnabled(bool notify)
     Q_EMIT notificationEnabledChanged(notify);
 
 #if !HAVE_SYSTEMD
-    qCWarning(GREENISLAND_COMPOSITOR) << "Toggling notification has no effect when Green Island is not built with systemd support";
+    qCWarning(gLcCore) << "Toggling notification has no effect when Green Island is not built with systemd support";
 #endif
 }
 
@@ -189,7 +189,7 @@ bool HomeApplication::load(const QString &shell)
 
     // Do not run if already running
     if (d->running) {
-        qCWarning(GREENISLAND_COMPOSITOR) << "Compositor already running";
+        qCWarning(gLcCore) << "Compositor already running";
         return false;
     }
 
@@ -212,7 +212,7 @@ bool HomeApplication::load(const QString &shell)
 
         QFileInfo info(file);
         const QString fullPath = info.absoluteDir().absoluteFilePath(fileName);
-        qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << fullPath;
+        qCDebug(gLcCore) << "Loading" << fullPath;
 
         d->engine->load(fullPath);
         d->running = true;
@@ -220,7 +220,7 @@ bool HomeApplication::load(const QString &shell)
 #if HAVE_SYSTEMD
         // Notify systemd when the screen configuration is ready
         if (d->notify) {
-            qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+            qCDebug(gLcCore) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
             sd_notify(0, "READY=1");
         }
 #endif
@@ -228,7 +228,7 @@ bool HomeApplication::load(const QString &shell)
         return true;
     }
 
-    qCWarning(GREENISLAND_COMPOSITOR) << "Couldn't find shell" << shell;
+    qCWarning(gLcCore) << "Couldn't find shell" << shell;
 #if HAVE_SYSTEMD
     if (d->notify)
         sd_notifyf(0, "STATUS=Unable to find %s", qPrintable(shell));
@@ -243,14 +243,14 @@ bool HomeApplication::loadUrl(const QUrl &url)
 
     // Do not run if already running
     if (d->running) {
-        qCWarning(GREENISLAND_COMPOSITOR) << "Compositor already running";
+        qCWarning(gLcCore) << "Compositor already running";
         return false;
     }
 
     // Check whether XDG_RUNTIME_DIR is ok or not
     d->verifyXdgRuntimeDir();
 
-    qCDebug(GREENISLAND_COMPOSITOR) << "Loading" << url.toString();
+    qCDebug(gLcCore) << "Loading" << url.toString();
 
     d->engine->load(url);
     d->running = true;
@@ -258,7 +258,7 @@ bool HomeApplication::loadUrl(const QUrl &url)
 #if HAVE_SYSTEMD
     // Notify systemd when the screen configuration is ready
     if (d->notify) {
-        qCDebug(GREENISLAND_COMPOSITOR) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
+        qCDebug(gLcCore) << "Compositor ready, notify systemd on" << qgetenv("NOTIFY_SOCKET");
         sd_notify(0, "READY=1");
     }
 #endif

@@ -31,9 +31,7 @@
 
 #include "xdgshell.h"
 #include "xdgshell_p.h"
-
-Q_LOGGING_CATEGORY(XDGSHELL_PROTOCOL, "greenisland.protocols.xdgshell")
-Q_LOGGING_CATEGORY(XDGSHELL_TRACE, "greenisland.protocols.xdgshell.trace")
+#include "serverlogging_p.h"
 
 namespace GreenIsland {
 
@@ -49,12 +47,12 @@ XdgShellPrivate::XdgShellPrivate()
     , m_popupClient(Q_NULLPTR)
     , m_initialUp(false)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 void XdgShellPrivate::ping(XdgSurface *surface)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     uint32_t serial = surface->surface()->compositor()->nextSerial();
     ping(serial, surface);
@@ -62,7 +60,7 @@ void XdgShellPrivate::ping(XdgSurface *surface)
 
 void XdgShellPrivate::ping(uint32_t serial, XdgSurface *surface)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     m_pings.insert(serial, surface);
     send_ping(XdgSurfacePrivate::get(surface)->resource()->handle, serial);
@@ -70,7 +68,7 @@ void XdgShellPrivate::ping(uint32_t serial, XdgSurface *surface)
 
 void XdgShellPrivate::addPopup(XdgPopup *popup, QWaylandInputDevice *inputDevice)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     if (m_popups.contains(popup))
         return;
@@ -85,14 +83,14 @@ void XdgShellPrivate::addPopup(XdgPopup *popup, QWaylandInputDevice *inputDevice
 
 void XdgShellPrivate::removePopup(XdgPopup *popup)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     m_popups.removeOne(popup);
 }
 
 void XdgShellPrivate::shell_destroy(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_Q(XdgShell);
 
@@ -118,7 +116,7 @@ void XdgShellPrivate::shell_destroy(Resource *resource)
 
 void XdgShellPrivate::shell_use_unstable_version(Resource *resource, int32_t version)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     if (version != version_current)
         wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
@@ -128,7 +126,7 @@ void XdgShellPrivate::shell_use_unstable_version(Resource *resource, int32_t ver
 
 void XdgShellPrivate::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_Q(XdgShell);
 
@@ -155,7 +153,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
                                           wl_resource *parentResource, wl_resource *seatResource,
                                           uint32_t serial, int32_t x, int32_t y)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(serial);
 
@@ -194,7 +192,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
 
 void XdgShellPrivate::shell_pong(Resource *resource, uint32_t serial)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -202,7 +200,7 @@ void XdgShellPrivate::shell_pong(Resource *resource, uint32_t serial)
     if (!surface.isNull())
         Q_EMIT surface.data()->pong();
     else
-        qCWarning(XDGSHELL_PROTOCOL) << "Received an unexpected pong!";
+        qCWarning(gLcXdgShell) << "Received an unexpected pong!";
 }
 
 /*
@@ -212,18 +210,18 @@ void XdgShellPrivate::shell_pong(Resource *resource, uint32_t serial)
 XdgShell::XdgShell()
     : QWaylandExtensionTemplate<XdgShell>(*new XdgShellPrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 XdgShell::XdgShell(QWaylandCompositor *compositor)
     : QWaylandExtensionTemplate<XdgShell>(compositor, *new XdgShellPrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 void XdgShell::initialize()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgShell);
 
@@ -249,7 +247,7 @@ QByteArray XdgShell::interfaceName()
 #if 0
 XdgPopupGrabber *XdgShell::popupGrabberForDevice(QtWayland::InputDevice *device)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     // Create popup grabbers on demand
     if (!m_popupGrabbers.contains(device))
@@ -273,7 +271,7 @@ XdgSurfacePrivate::XdgSurfacePrivate()
     , m_maximized(false)
     , m_fullScreen(false)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 XdgSurfacePrivate::~XdgSurfacePrivate()
@@ -323,7 +321,7 @@ void XdgSurfacePrivate::sendConfigure(const PendingChange &change)
 
 void XdgSurfacePrivate::surface_destroy_resource(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
     qDebug() << "::::::::::::::::::::::::::::::::::::::::::::::::::::::";
@@ -334,7 +332,7 @@ void XdgSurfacePrivate::surface_destroy_resource(Resource *resource)
 
 void XdgSurfacePrivate::surface_destroy(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
 qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
     wl_resource_destroy(resource->handle);
@@ -342,7 +340,7 @@ qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 
 void XdgSurfacePrivate::surface_set_parent(Resource *resource, wl_resource *parentResource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -368,7 +366,7 @@ void XdgSurfacePrivate::surface_set_parent(Resource *resource, wl_resource *pare
 
 void XdgSurfacePrivate::surface_set_title(Resource *resource, const QString &title)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -382,7 +380,7 @@ void XdgSurfacePrivate::surface_set_title(Resource *resource, const QString &tit
 
 void XdgSurfacePrivate::surface_set_app_id(Resource *resource, const QString &app_id)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -397,7 +395,7 @@ void XdgSurfacePrivate::surface_set_app_id(Resource *resource, const QString &ap
 void XdgSurfacePrivate::surface_show_window_menu(Resource *resource, wl_resource *seat,
                                                  uint32_t serial, int32_t x, int32_t y)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
     Q_UNUSED(serial);
@@ -410,7 +408,7 @@ void XdgSurfacePrivate::surface_show_window_menu(Resource *resource, wl_resource
 
 void XdgSurfacePrivate::surface_move(Resource *resource, wl_resource *seat, uint32_t serial)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
     Q_UNUSED(serial);
@@ -424,7 +422,7 @@ void XdgSurfacePrivate::surface_move(Resource *resource, wl_resource *seat, uint
 void XdgSurfacePrivate::surface_resize(Resource *resource, wl_resource *seat,
                                        uint32_t serial, uint32_t edges)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
     Q_UNUSED(serial);
@@ -437,7 +435,7 @@ void XdgSurfacePrivate::surface_resize(Resource *resource, wl_resource *seat,
 
 void XdgSurfacePrivate::surface_ack_configure(Resource *resource, uint32_t serial)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -469,7 +467,7 @@ void XdgSurfacePrivate::surface_set_window_geometry(Resource *resource,
                                                     int32_t x, int32_t y,
                                                     int32_t width, int32_t height)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -483,7 +481,7 @@ void XdgSurfacePrivate::surface_set_window_geometry(Resource *resource,
 
 void XdgSurfacePrivate::surface_set_maximized(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -514,7 +512,7 @@ void XdgSurfacePrivate::surface_set_maximized(Resource *resource)
 
 void XdgSurfacePrivate::surface_unset_maximized(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -528,7 +526,7 @@ void XdgSurfacePrivate::surface_unset_maximized(Resource *resource)
 
 void XdgSurfacePrivate::surface_set_fullscreen(Resource *resource, wl_resource *outputResource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -563,7 +561,7 @@ void XdgSurfacePrivate::surface_set_fullscreen(Resource *resource, wl_resource *
 
 void XdgSurfacePrivate::surface_unset_fullscreen(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -577,7 +575,7 @@ void XdgSurfacePrivate::surface_unset_fullscreen(Resource *resource)
 
 void XdgSurfacePrivate::surface_set_minimized(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -592,20 +590,20 @@ void XdgSurfacePrivate::surface_set_minimized(Resource *resource)
 XdgSurface::XdgSurface()
     : QWaylandExtensionTemplate<XdgSurface>(*new XdgSurfacePrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface, QWaylandClient *client, uint id)
     : QWaylandExtensionTemplate<XdgSurface>(*new XdgSurfacePrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     initialize(shell, surface, client, id);
 }
 
 void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, QWaylandClient *client, uint id)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgSurface);
     d->m_shell = shell;
@@ -619,7 +617,7 @@ void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, QWaylandC
 
 void XdgSurface::initialize()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     QWaylandExtensionTemplate::initialize();
 }
@@ -691,7 +689,7 @@ void XdgSurface::ping()
 
 QSize XdgSurface::sizeForResize(const QSizeF &size, const QPointF &delta, ResizeEdge edge)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     qreal width = size.width();
     qreal height = size.height();
@@ -710,7 +708,7 @@ QSize XdgSurface::sizeForResize(const QSizeF &size, const QPointF &delta, Resize
 
 void XdgSurface::sendConfigure(const QSize &size)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgSurface);
 
@@ -725,7 +723,7 @@ void XdgSurface::sendConfigure(const QSize &size)
 
 void XdgSurface::close()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgSurface);
     d->send_close();
@@ -752,17 +750,17 @@ XdgPopupPrivate::XdgPopupPrivate()
     , m_surface(Q_NULLPTR)
     , m_inputDevice(Q_NULLPTR)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 XdgPopupPrivate::~XdgPopupPrivate()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 void XdgPopupPrivate::popup_destroy_resource(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
 
@@ -776,7 +774,7 @@ void XdgPopupPrivate::popup_destroy_resource(Resource *resource)
 
 void XdgPopupPrivate::popup_destroy(Resource *resource)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     wl_resource_destroy(resource->handle);
 }
@@ -788,14 +786,14 @@ void XdgPopupPrivate::popup_destroy(Resource *resource)
 XdgPopup::XdgPopup()
     : QWaylandExtensionTemplate<XdgPopup>(*new XdgPopupPrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 XdgPopup::XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
                    QWaylandSurface *surface, QWaylandClient *client, uint id)
     : QWaylandExtensionTemplate<XdgPopup>(*new XdgPopupPrivate())
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     initialize(shell, inputDevice, surface, client, id);
 }
@@ -803,7 +801,7 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
 void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
                           QWaylandSurface *surface, QWaylandClient *client, uint id)
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgPopup);
     d->m_shell = shell;
@@ -819,7 +817,7 @@ void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
 
 void XdgPopup::initialize()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     QWaylandExtensionTemplate::initialize();
 }
@@ -832,7 +830,7 @@ QWaylandSurface *XdgPopup::surface() const
 
 void XdgPopup::sendPopupDone()
 {
-    qCDebug(XDGSHELL_TRACE) << Q_FUNC_INFO;
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_D(XdgPopup);
     d->send_popup_done();

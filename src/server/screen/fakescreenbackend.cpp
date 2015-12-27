@@ -33,8 +33,7 @@
 
 #include "fakescreenbackend.h"
 #include "screenbackend_p.h"
-
-Q_LOGGING_CATEGORY(FAKE_BACKEND, "greenisland.screenbackend.fake")
+#include "serverlogging_p.h"
 
 namespace GreenIsland {
 
@@ -52,11 +51,11 @@ void FakeScreenBackend::setConfiguration(const QString &fileName)
 
 void FakeScreenBackend::acquireConfiguration()
 {
-    qCDebug(FAKE_BACKEND) << "Load configuration from" << m_fileName;
+    qCDebug(gLcFakeScreenBackend) << "Load configuration from" << m_fileName;
 
     QFile file(m_fileName);
     if (!file.open(QFile::ReadOnly)) {
-        qCWarning(FAKE_BACKEND) << "Could not open configuration file"
+        qCWarning(gLcFakeScreenBackend) << "Could not open configuration file"
                                 << m_fileName << "for reading";
         return;
     }
@@ -67,7 +66,7 @@ void FakeScreenBackend::acquireConfiguration()
 
     const QJsonDocument doc = QJsonDocument::fromJson(data);
     if (!doc.isObject()) {
-        qCWarning(FAKE_BACKEND) << "Invalid configuration file, no top-level JSON object";
+        qCWarning(gLcFakeScreenBackend) << "Invalid configuration file, no top-level JSON object";
         return;
     }
 
@@ -78,19 +77,19 @@ void FakeScreenBackend::acquireConfiguration()
 
     for (int i = 0; i < outputs.size(); i++) {
         const QVariantMap outputSettings = outputs.at(i).toObject().toVariantMap();
-        qCDebug(FAKE_BACKEND) << "Output settings:" << outputSettings;
+        qCDebug(gLcFakeScreenBackend) << "Output settings:" << outputSettings;
 
         QString name = outputSettings.value(QStringLiteral("name")).toString();
-        qCDebug(FAKE_BACKEND) << "Output name:" << name;
+        qCDebug(gLcFakeScreenBackend) << "Output name:" << name;
 
         bool primary = outputSettings.value(QStringLiteral("primary")).toBool();
-        qCDebug(FAKE_BACKEND) << "Output primary:" << primary;
+        qCDebug(gLcFakeScreenBackend) << "Output primary:" << primary;
 
         const QVariantMap posValue = outputSettings.value(QStringLiteral("position")).toMap();
         int x = posValue.value(QStringLiteral("x")).toInt();
         int y = posValue.value(QStringLiteral("y")).toInt();
         QPoint pos(x, y);
-        qCDebug(FAKE_BACKEND) << "Output position:" << pos;
+        qCDebug(gLcFakeScreenBackend) << "Output position:" << pos;
 
         const QVariantMap modeValue = outputSettings.value(QStringLiteral("mode")).toMap();
         const QVariantMap sizeValue = modeValue.value(QStringLiteral("size")).toMap();
@@ -98,19 +97,19 @@ void FakeScreenBackend::acquireConfiguration()
         int h = sizeValue.value(QStringLiteral("height")).toInt();
         QSize size = QSize(w, h);
         int refreshRate = modeValue.value(QStringLiteral("refreshRate")).toInt();
-        qCDebug(FAKE_BACKEND) << "Output size:" << size;
-        qCDebug(FAKE_BACKEND) << "Output refresh rate:" << refreshRate;
+        qCDebug(gLcFakeScreenBackend) << "Output size:" << size;
+        qCDebug(gLcFakeScreenBackend) << "Output refresh rate:" << refreshRate;
 
         QSize physicalSize = outputSettings.value(QStringLiteral("physicalSize"), QSize()).toSize();
         if (!physicalSize.isValid()) {
             physicalSize.setWidth(w * 0.26458);
             physicalSize.setHeight(h * 0.26458);
         }
-        qCDebug(FAKE_BACKEND) << "Physical size millimiters:" << size;
+        qCDebug(gLcFakeScreenBackend) << "Physical size millimiters:" << size;
 
         Qt::ScreenOrientation orientation =
                 static_cast<Qt::ScreenOrientation>(outputSettings.value(QStringLiteral("orientation")).toInt());
-        qCDebug(FAKE_BACKEND) << "Output orientation:" << orientation;
+        qCDebug(gLcFakeScreenBackend) << "Output orientation:" << orientation;
 
         Screen *screen = new Screen(this);
         ScreenPrivate *screenPrivate = Screen::get(screen);

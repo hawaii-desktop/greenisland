@@ -29,8 +29,6 @@
 
 #include <GreenIsland/Server/ScreenBackend>
 
-Q_DECLARE_LOGGING_CATEGORY(FAKE_BACKEND)
-
 namespace GreenIsland {
 
 namespace Server {

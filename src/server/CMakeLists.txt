@@ -42,12 +42,12 @@ include(GreenIslandServerConfigExtrasLocal.cmake)
 include(GreenIslandServerMacros.cmake)
 
 set(SOURCES
+    serverlogging_p.cpp
     core/abstractplugin.cpp
     core/applicationmanager.cpp
     core/compositorsettings.cpp
     core/diagnostic_p.cpp
     core/homeapplication.cpp
-    core/logging.cpp
     core/quickoutput.cpp
     input/keybindings.cpp
     input/keymap.cpp
@@ -97,21 +97,6 @@ greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk/gtk-shell.xml
     BASENAME gtk
     PREFIX gtk_
-)
-
-# Logging categories
-include(ECMQtDeclareLoggingCategory)
-ecm_qt_declare_logging_category(SOURCES
-    HEADER extensions/screencasterlogging.h
-    IDENTIFIER GreenIsland::Server::gLcScreencaster
-    CATEGORY_NAME greenisland.protocols.screencaster
-    DEFAULT_SEVERITY Debug
-)
-ecm_qt_declare_logging_category(SOURCES
-    HEADER extensions/taskmanagerlogging.h
-    IDENTIFIER GreenIsland::Server::gLcTaskManager
-    CATEGORY_NAME greenisland.protocols.taskmanager
-    DEFAULT_SEVERITY Debug
 )
 
 add_library(GreenIslandServer SHARED ${SOURCES})

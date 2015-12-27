@@ -34,7 +34,7 @@
 
 #include "screencaster.h"
 #include "screencaster_p.h"
-#include "extensions/screencasterlogging.h"
+#include "serverlogging_p.h"
 
 #define SCREENCASTER_FORMAT WL_SHM_FORMAT_XRGB8888
 

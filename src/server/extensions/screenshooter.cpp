@@ -33,8 +33,7 @@
 
 #include "screenshooter.h"
 #include "screenshooter_p.h"
-
-Q_LOGGING_CATEGORY(SCREENSHOOTER_PROTOCOL, "greenisland.protocols.greenisland.screenshooter")
+#include "serverlogging_p.h"
 
 #define SCREENSHOT_FORMAT WL_SHM_FORMAT_ARGB8888
 
@@ -160,14 +159,14 @@ void ScreenshotPrivate::screenshot_record(Resource *resource,
 
     // Verify the buffer
     if (stride != width * 4) {
-        qCWarning(SCREENSHOOTER_PROTOCOL, "Buffer stride %d doesn't match calculated stride %d",
+        qCWarning(gLcScreenshooter, "Buffer stride %d doesn't match calculated stride %d",
                   stride, width * 4);
         send_failed(error_bad_buffer);
         Q_EMIT q->failed(Screenshot::ErrorBadBuffer);
         return;
     }
     if (format != SCREENSHOT_FORMAT) {
-        qCWarning(SCREENSHOOTER_PROTOCOL, "Wrong buffer format %d, expected %d",
+        qCWarning(gLcScreenshooter, "Wrong buffer format %d, expected %d",
                   format, SCREENSHOT_FORMAT);
         send_failed(error_bad_buffer);
         Q_EMIT q->failed(Screenshot::ErrorBadBuffer);
@@ -180,7 +179,7 @@ void ScreenshotPrivate::screenshot_record(Resource *resource,
     case Screenshot::CaptureOutput:
         // Verify the buffer size
         if (width < output->geometry().width() || height < output->geometry().height()) {
-            qCWarning(SCREENSHOOTER_PROTOCOL, "Buffer size %dx%d doesn't match output size %dx%d",
+            qCWarning(gLcScreenshooter, "Buffer size %dx%d doesn't match output size %dx%d",
                       width, height, output->geometry().width(), output->geometry().height());
             send_failed(error_bad_buffer);
             Q_EMIT q->failed(Screenshot::ErrorBadBuffer);
@@ -236,7 +235,7 @@ void Screenshooter::initialize()
     QWaylandExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
-        qCWarning(SCREENSHOOTER_PROTOCOL) << "Failed to find QWaylandCompositor when initializing Screenshooter";
+        qCWarning(gLcScreenshooter) << "Failed to find QWaylandCompositor when initializing Screenshooter";
         return;
     }
     d->init(compositor->display(), 1);
@@ -273,7 +272,7 @@ void Screenshot::selectSurface(QWaylandSurface *surface)
     Q_D(Screenshot);
 
     if (d->captureType != CaptureActiveWindow || d->captureType != CaptureWindow) {
-        qCWarning(SCREENSHOOTER_PROTOCOL) << "Selecting a surface for a screenshot of an output or an area";
+        qCWarning(gLcScreenshooter) << "Selecting a surface for a screenshot of an output or an area";
         return;
     }
 
@@ -285,7 +284,7 @@ void Screenshot::selectArea(QQuickItem *area)
     Q_D(Screenshot);
 
     if (d->captureType != CaptureArea) {
-        qCWarning(SCREENSHOOTER_PROTOCOL) << "Selecting an area for a screenshot of an output or a window";
+        qCWarning(gLcScreenshooter) << "Selecting an area for a screenshot of an output or a window";
         return;
     }
 
@@ -307,7 +306,7 @@ void Screenshot::setup()
     case CaptureActiveWindow:
     case CaptureWindow:
         if (!d->selectedSurface) {
-            qCWarning(SCREENSHOOTER_PROTOCOL) << "Please select a surface before calling Screenshot::setup()";
+            qCWarning(gLcScreenshooter) << "Please select a surface before calling Screenshot::setup()";
             return;
         }
         width = d->selectedSurface->size().width();
@@ -315,7 +314,7 @@ void Screenshot::setup()
         break;
     case CaptureArea:
         if (!d->selectedSurface) {
-            qCWarning(SCREENSHOOTER_PROTOCOL) << "Please select an area before calling Screenshot::setup()";
+            qCWarning(gLcScreenshooter) << "Please select an area before calling Screenshot::setup()";
             return;
         }
         width = d->selectedArea->width();

@@ -29,9 +29,9 @@
 
 #include "clientwindow.h"
 #include "clientwindow_p.h"
+#include "serverlogging_p.h"
 #include "windowmanager.h"
 #include "windowmanager_p.h"
-#include "core/logging.h"
 #include "core/applicationmanager.h"
 #include "core/applicationmanager_p.h"
 
@@ -105,7 +105,7 @@ void WindowManager::setCompositor(QWaylandCompositor *compositor)
     Q_D(WindowManager);
 
     if (d->initialized) {
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Setting QWaylandCompositor %p on WindowManager %p "
                   "is not supported after WindowManager has been initialized.",
                   compositor, this);
@@ -113,7 +113,7 @@ void WindowManager::setCompositor(QWaylandCompositor *compositor)
     }
 
     if (d->compositor && d->compositor != compositor)
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Possible initialization error. Moving WindowManager %p between compositor instances.",
                   this);
 

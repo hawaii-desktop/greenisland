@@ -30,7 +30,7 @@
 
 #include "applicationmanager.h"
 #include "applicationmanager_p.h"
-#include "logging.h"
+#include "serverlogging_p.h"
 #include "shell/clientwindow.h"
 
 namespace GreenIsland {
@@ -174,7 +174,7 @@ void ApplicationManager::quit(const QString &appId)
     Q_D(ApplicationManager);
 
     if (!d->appIdMap.contains(appId)) {
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Quit requested on the unknown appId %s has no effect",
                   qPrintable(appId));
         return;
@@ -182,14 +182,14 @@ void ApplicationManager::quit(const QString &appId)
 
     ClientWindow *window = d->appIdMap.values(appId).at(0);
     if (!window) {
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Quit requested on the unregistered appId %s has no effect",
                   qPrintable(appId));
         return;
     }
 
     if (!window->surface()) {
-        qCWarning(GREENISLAND_COMPOSITOR,
+        qCWarning(gLcCore,
                   "Quit requested on appId %s has no effect because surface cannot be found",
                   qPrintable(appId));
         return;
