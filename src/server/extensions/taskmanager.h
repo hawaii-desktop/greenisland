@@ -24,36 +24,51 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDWINDOW_H
-#define GREENISLANDWINDOW_H
+#ifndef GREENISLAND_TASKMANAGER_H
+#define GREENISLAND_TASKMANAGER_H
 
-#include <QtCore/QPointer>
-#include <GreenIsland/Compositor/QWaylandGlobalInterface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
-#include "clientwindow.h"
-#include "qwayland-server-greenisland.h"
+#include <GreenIsland/server/greenislandserver_export.h>
 
 namespace GreenIsland {
 
-class GreenIslandWindow : public QtWaylandServer::greenisland_window
+namespace Server {
+
+class TaskItem;
+class TaskItemPrivate;
+class TaskManagerPrivate;
+
+class GREENISLANDSERVER_EXPORT TaskManager : public QWaylandExtensionTemplate<TaskManager>
 {
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(TaskManager)
 public:
-    GreenIslandWindow(wl_client *client, ClientWindow *window);
-    ~GreenIslandWindow();
+    TaskManager();
+    TaskManager(QWaylandCompositor *compositor);
 
-    ClientWindow *window() const;
+    void initialize() Q_DECL_OVERRIDE;
 
-    uint32_t state() const;
-
-    static QtWaylandServer::greenisland_windows::type type2WlType(ClientWindow::Type type);
-
-private:
-    QPointer<ClientWindow> m_window;
-    uint32_t m_state;
-
-    void determineState();
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
 };
 
-}
+class GREENISLANDSERVER_EXPORT TaskItem : public QWaylandExtensionTemplate<TaskItem>
+{
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(TaskItem)
+public:
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
 
-#endif // GREENISLANDWINDOW_H
+private:
+    TaskItem();
+
+    friend class TaskManagerPrivate;
+};
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_TASKMANAGER_H

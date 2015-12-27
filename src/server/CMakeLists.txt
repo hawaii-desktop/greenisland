@@ -64,6 +64,7 @@ set(SOURCES
     extensions/quickxdgpopupitem.cpp
     extensions/quickxdgsurfaceitem.cpp
     extensions/screenshooter.cpp
+    extensions/taskmanager.cpp
 )
 
 greenisland_add_server_protocol(SOURCES
@@ -95,6 +96,15 @@ greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk/gtk-shell.xml
     BASENAME gtk
     PREFIX gtk_
+)
+
+# Logging categories
+include(ECMQtDeclareLoggingCategory)
+ecm_qt_declare_logging_category(SOURCES
+    HEADER extensions/taskmanagerlogging.h
+    IDENTIFIER GreenIsland::Server::gLcTaskManager
+    CATEGORY_NAME greenisland.protocols.taskmanager
+    DEFAULT_SEVERITY Debug
 )
 
 add_library(GreenIslandServer SHARED ${SOURCES})
@@ -178,6 +188,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
         QuickXdgPopupItem
         QuickXdgSurfaceItem
         Screenshooter,Screenshot
+        TaskManager,TaskItem
     PREFIX
         Server
     OUTPUT_DIR
