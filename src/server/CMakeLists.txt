@@ -177,7 +177,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
         XdgShell,XdgSurface,XdgPopup
         QuickXdgPopupItem
         QuickXdgSurfaceItem
-        Screenshooter
+        Screenshooter,Screenshot
     PREFIX
         Server
     OUTPUT_DIR
@@ -224,6 +224,7 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keybindings_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h

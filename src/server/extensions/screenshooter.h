@@ -35,10 +35,15 @@
 
 Q_DECLARE_LOGGING_CATEGORY(SCREENSHOOTER_PROTOCOL)
 
+class QWaylandOutput;
+class QWaylandSurface;
+
 namespace GreenIsland {
 
 namespace Server {
 
+class Screenshot;
+class ScreenshotPrivate;
 class ScreenshooterPrivate;
 
 class GREENISLANDSERVER_EXPORT Screenshooter : public QWaylandExtensionTemplate<Screenshooter>
@@ -55,7 +60,45 @@ public:
     static QByteArray interfaceName();
 
 Q_SIGNALS:
+    void captureRequested(Screenshot *screenshot);
+};
+
+class GREENISLANDSERVER_EXPORT Screenshot : public QWaylandExtensionTemplate<Screenshot>
+{
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(Screenshot)
+    Q_PROPERTY(CaptureType captureType READ captureType CONSTANT)
+public:
+    enum CaptureType {
+        CaptureOutput = 1,
+        CaptureActiveWindow,
+        CaptureWindow,
+        CaptureArea
+    };
+    Q_ENUM(CaptureType)
+
+    enum Error {
+        ErrorBadBuffer = 0
+    };
+    Q_ENUM(Error)
+
+    CaptureType captureType() const;
+
+    Q_INVOKABLE void selectSurface(QWaylandSurface *surface);
+    Q_INVOKABLE void selectArea(QQuickItem *area);
+    Q_INVOKABLE void setup();
+
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
+
+Q_SIGNALS:
     void done();
+    void failed(Error error);
+
+private:
+    explicit Screenshot(CaptureType type);
+
+    friend class ScreenshooterPrivate;
 };
 
 } // namespace Server

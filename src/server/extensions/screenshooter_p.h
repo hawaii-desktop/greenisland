@@ -27,6 +27,10 @@
 #ifndef GREENISLAND_SCREENSHOOTER_P_H
 #define GREENISLAND_SCREENSHOOTER_P_H
 
+#include <QtQuick/QQuickItem>
+
+#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
 
 #include <GreenIsland/Server/Screenshooter>
@@ -42,6 +46,7 @@
 //
 // We mean it.
 //
+
 namespace GreenIsland {
 
 namespace Server {
@@ -54,10 +59,41 @@ class GREENISLANDSERVER_EXPORT ScreenshooterPrivate
 public:
     ScreenshooterPrivate();
 
+    static ScreenshooterPrivate *get(Screenshooter *screenshooter) { return screenshooter->d_func(); }
+
 protected:
-    void screenshooter_shoot(Resource *resource, int32_t what,
-                             wl_resource *outputResource,
-                             wl_resource *bufferResource) Q_DECL_OVERRIDE;
+    void screenshooter_capture_output(Resource *resource,
+                                      uint32_t id,
+                                      struct ::wl_resource *outputResource) Q_DECL_OVERRIDE;
+    void screenshooter_capture_active(Resource *resource,
+                                      uint32_t id) Q_DECL_OVERRIDE;
+    void screenshooter_capture_surface(Resource *resource,
+                                       uint32_t id) Q_DECL_OVERRIDE;
+    void screenshooter_capture_area(Resource *resource,
+                                    uint32_t id) Q_DECL_OVERRIDE;
+};
+
+class GREENISLANDSERVER_EXPORT ScreenshotPrivate
+        : public QWaylandExtensionTemplatePrivate
+        , public QtWaylandServer::greenisland_screenshot
+{
+    Q_DECLARE_PUBLIC(Screenshot)
+public:
+    ScreenshotPrivate();
+
+    QImage grabItem(QQuickItem *item);
+
+    Screenshot::CaptureType captureType;
+    QWaylandOutput *output;
+    QWaylandSurface *selectedSurface;
+    QQuickItem *selectedArea;
+
+    static ScreenshotPrivate *get(Screenshot *screenshot) { return screenshot->d_func(); }
+
+protected:
+    void screenshot_destroy(Resource *resource) Q_DECL_OVERRIDE;
+    void screenshot_record(Resource *resource,
+                           struct ::wl_resource *bufferResource) Q_DECL_OVERRIDE;
 };
 
 } // namespace Server
