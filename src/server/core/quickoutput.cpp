@@ -28,10 +28,13 @@
 #include <QtCore/private/qobject_p.h>
 #include <QtGui/QScreen>
 
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+
 #include <GreenIsland/Platform/EglFSScreen>
 
 #include "quickoutput.h"
 #include "logging.h"
+#include "extensions/screencaster.h"
 #include "screen/screenbackend.h"
 
 namespace GreenIsland {
@@ -316,10 +319,9 @@ void QuickOutput::initialize()
     if (d->nativeScreen)
         quickWindow->setScreen(d->nativeScreen->screen());
 
-    // We want to read contents to make a screenshot
+    // We want to read contents for the screencaster
     connect(quickWindow, &QQuickWindow::afterRendering,
-            this, &QuickOutput::readContent,
-            Qt::DirectConnection);
+            this, &QuickOutput::readContent);
 
     // Set the window visible now
     quickWindow->setVisible(true);
@@ -329,8 +331,16 @@ void QuickOutput::initialize()
 
 void QuickOutput::readContent()
 {
-    // TODO: Update the screencaster protocol with the new API
-    // and record a frame here
+    Q_D(QuickOutput);
+
+    QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window());
+    if (!quickWindow)
+        return;
+
+    QWaylandExtension *e = compositor()->extension(Screencaster::interfaceName());
+    Screencaster *screencaster = qobject_cast<Screencaster *>(e);
+    if (screencaster && screencaster->isInitialized())
+        screencaster->recordFrame(quickWindow);
 }
 
 } // namespace Server
