@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="greenisland_screencaster">
+  <copyright><![CDATA[
+    Copyright (C) 2015 Pier Luigi Fiorini
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 2.1 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  ]]></copyright>
+  <interface name="greenisland_screencaster" version="1">
+    <description summary="capture frames of an output">
+      This interface is used by programs to record screencasts of an output.
+
+      The client asks the compositor to capture an output, as a result a
+      greenisland_screencast object is created to drive the screencast.
+
+      See the documentation of greenisland_screencast for more details.
+    </description>
+
+    <enum name="error">
+      <description summary="greenisland_screencaster error values">
+        These errors can be emitted in response to
+        greenisland_screencaster requests.
+      </description>
+      <entry name="bad_output" value="0" summary="The client passed an invalid output"/>
+    </enum>
+
+    <request name="capture">
+      <description summary="initiate a screencast">
+        This creates a greenisland_screencast object to drive screencasts.
+        See the documentation of greenisland_screencast for more details.
+
+        If the output is not valid, a protocol error will be sent.
+      </description>
+      <arg name="id" type="new_id" interface="greenisland_screencast"/>
+      <arg name="output" type="object" interface="wl_output"/>
+    </request>
+  </interface>
+
+  <interface name="greenisland_screencast" version="1">
+    <description summary="frame capture">
+      This interface drives the frame capture into client-allocated buffers.
+      Immediately after this object is created, the compositor sends
+      the 'setup' event with the buffer size. The client uses this information
+      to allocate a buffer to hold the frame image.
+
+      When the buffer is created, the 'record' request must be invoked each
+      time the client wants to record a frame.
+    </description>
+
+    <enum name="error">
+      <description summary="greenisland_screencast error values">
+        These errors are emitted with the 'failed' event when a
+        capture request fails.
+      </description>
+      <entry name="bad_buffer" value="0" summary="Buffer doesn't match requirements"/>
+    </enum>
+
+    <enum name="transform">
+      <description summary="frame buffer transform">
+        These values are emitted with the 'frame' event and represent
+        the transform that is applied to the frame buffer.
+      </description>
+      <entry name="normal" value="1" summary="No particular transform has been applied"/>
+      <entry name="y_inverted" value="2" summary="Y axis is inverted"/>
+    </enum>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy greenisland_screencast">
+        Destroy this greenisland_screencast object.
+        Pending capture requests will be discarded.
+      </description>
+    </request>
+
+    <request name="record">
+      <description summary="request a frame to be recorded">
+        Ask the compositor to record its next frame, saving contents into the
+        specified buffer. The 'frame' event will be sent after the frame is
+        recorder.
+        Only one frame will be recorder at a time, call this request again
+        in order to record another frame.
+      </description>
+      <arg name="buffer" type="object" interface="wl_buffer" summary="client buffer that will hold the data"/>
+    </request>
+
+    <event name="setup">
+      <description summary="notify buffer size requirements">
+        This event will be sent immediately after creating the
+        greenisland_screencast object.
+
+        The wl_buffer passed to the 'record' request must be big enough to
+        accomodate an image with the given width, height and format.
+        If it's smaller, the compositor will send the 'failed' event.
+
+        The buffer must be a shm buffer, trying to use another type of
+        buffer will result in a failure.
+        The format argument value is defined in the wl_shm::format enum.
+
+        This event might be sent again later in the life-time of the object,
+        should the pending capture requests are canceled.
+      </description>
+      <arg name="width" type="int" description="width of the frame, in pixels"/>
+      <arg name="height" type="int" description="height of the frame, in pixels"/>
+      <arg name="stride" type="int" description="stride of the frame"/>
+      <arg name="format" type="int" desciption="format of the frame"/>
+    </event>
+
+    <event name="frame">
+      <description summary="notify a frame was recorded, or an error">
+        The compositor will send this event after a frame was
+        recorded, or in case an error has happened.
+
+        The 'time' argument is the time the compositor recorded the frame,
+        in milliseconds.
+
+        Clients must call 'record' again to record the next frame.
+      </description>
+      <arg name="buffer" type="object" interface="wl_buffer" summary="client buffer that holds the data"/>
+      <arg name="time" type="uint" summary="when the frame was recorded"/>
+      <arg name="transform" type="int" summary="optional transform applied to the image"/>
+    </event>
+
+    <event name="failed">
+      <description summary="capture failed">
+        The value of the error argument is one of the 'error' enum.
+      </description>
+      <arg name="error" type="int" summary="error that has occurred"/>
+      <arg name="buffer" type="object" interface="wl_buffer" summary="frame buffer"/>
+    </event>
+
+    <event name="cancelled">
+      <description summary="notify a request was cancelled">
+        This event is sent if the client calls 'record' more than once for
+        the same frame. The frame will be recorded using a new buffer.
+        The 'buffer' argument is the old buffer.
+      </description>
+      <arg name="buffer" type="object" interface="wl_buffer" summary="old frame buffer"/>
+    </event>
+  </interface>
+</protocol>
