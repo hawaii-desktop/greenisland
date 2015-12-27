@@ -158,6 +158,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Screen shooter
     qmlRegisterType<Screenshooter>(uri, 1, 0, "Screenshooter");
+    qmlRegisterUncreatableType<Screenshot>(uri, 1, 0, "Screenshot",
+                                           QObject::tr("Cannot create instance of Screenshot"));
 
     // Key bindings
     qmlRegisterUncreatableType<KeyBinding>(uri, 1, 0, "KeyBinding",
