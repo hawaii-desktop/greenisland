@@ -114,9 +114,10 @@ bool ClientWindowViewPrivate::mouseMoveEvent(QMouseEvent *event)
         if (!q->parentItem())
             return false;
 
+        QQuickItem *moveItem = ClientWindowPrivate::get(window)->moveItem;
         QPointF parentPos = q->parentItem()->mapFromItem(Q_NULLPTR, event->windowPos());
         QPointF pos = parentPos - moveState.initialOffset;
-        q->setPosition(pos);
+        moveItem->setPosition(pos);
 
         return true;
     }
