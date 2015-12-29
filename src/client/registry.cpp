@@ -32,6 +32,8 @@
 #include "output_p.h"
 #include "registry.h"
 #include "registry_p.h"
+#include "screencaster.h"
+#include "screencaster_p.h"
 #include "seat.h"
 #include "seat_p.h"
 #include "shm.h"
@@ -59,6 +61,8 @@ static Registry::Interface nameToInterface(const char *interface)
         return Registry::FullscreenShellInterface;
     else if (strcmp(interface, "wl_output") == 0)
         return Registry::OutputInterface;
+    else if (QByteArray(interface) == Screencaster::interfaceName())
+        return Registry::ScreencasterInterface;
     else if (strcmp(interface, "wl_seat") == 0)
         return Registry::SeatInterface;
     else if (strcmp(interface, "wl_shm") == 0)
@@ -75,6 +79,8 @@ static const wl_interface *wlInterface(Registry::Interface interface)
         return &wl_output_interface;
     case Registry::FullscreenShellInterface:
         return &_wl_fullscreen_shell_interface;
+    case Registry::ScreencasterInterface:
+        return &greenisland_screencaster_interface;
     case Registry::SeatInterface:
         return &wl_seat_interface;
     case Registry::ShmInterface:
@@ -87,7 +93,8 @@ static const wl_interface *wlInterface(Registry::Interface interface)
 }
 
 RegistryPrivate::RegistryPrivate()
-    : registry(Q_NULLPTR)
+    : display(Q_NULLPTR)
+    , registry(Q_NULLPTR)
     , callback(Q_NULLPTR)
 {
 }
@@ -143,6 +150,9 @@ void RegistryPrivate::handleAnnounce(const char *interface, quint32 name, quint3
     case Registry::OutputInterface:
         Q_EMIT q->outputAnnounced(name, version);
         break;
+    case Registry::ScreencasterInterface:
+        Q_EMIT q->screencasterAnnounced(name, version);
+        break;
     case Registry::SeatInterface:
         Q_EMIT q->seatAnnounced(name, version);
         break;
@@ -173,6 +183,9 @@ void RegistryPrivate::handleRemove(quint32 name)
                 break;
             case Registry::OutputInterface:
                 Q_EMIT q->outputRemoved(name);
+                break;
+            case Registry::ScreencasterInterface:
+                Q_EMIT q->screencasterRemoved(name);
                 break;
             case Registry::SeatInterface:
                 Q_EMIT q->seatRemoved(name);
@@ -251,12 +264,19 @@ bool Registry::isValid() const
     return d->registry != Q_NULLPTR;
 }
 
+wl_display *Registry::display() const
+{
+    Q_D(const Registry);
+    return d->display;
+}
+
 void Registry::create(wl_display *display)
 {
     Q_D(Registry);
 
     Q_ASSERT(display);
     Q_ASSERT(!isValid());
+    d->display = display;
     d->registry = wl_display_get_registry(display);
     d->callback = wl_display_sync(display);
 }
@@ -307,6 +327,15 @@ Shm *Registry::createShm(quint32 name, quint32 version, QObject *parent)
     Shm *shm = new Shm(parent);
     ShmPrivate::get(shm)->init(d->registry, name, version);
     return shm;
+}
+
+Screencaster *Registry::createScreencaster(Shm *shm, quint32 name, quint32 version, QObject *parent)
+{
+    Q_D(Registry);
+    Screencaster *screencaster = new Screencaster(shm, parent);
+    ScreencasterPrivate::get(screencaster)->registry = this;
+    ScreencasterPrivate::get(screencaster)->init(d->registry, name, version);
+    return screencaster;
 }
 
 QByteArray Registry::interfaceName()

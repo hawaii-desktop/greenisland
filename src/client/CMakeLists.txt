@@ -22,6 +22,7 @@ set(SOURCES
     pointer.cpp
     region.cpp
     registry.cpp
+    screencaster.cpp
     seat.cpp
     shm.cpp
     shmformats_p.cpp
@@ -39,6 +40,11 @@ greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/fullscreen-shell.xml
     BASENAME fullscreen-shell
     PREFIX _wl_
+)
+greenisland_add_client_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screencaster.xml
+    BASENAME greenisland-screencaster
+    PREFIX greenisland_
 )
 
 add_library(GreenIslandClient SHARED ${SOURCES})
@@ -79,6 +85,7 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
         Pointer
         Region
         Registry
+        Screencaster,Screencast
         Seat
         Shm
         ShmPool
@@ -103,6 +110,7 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/region_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/screencaster_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shm_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shmformats_p.h
@@ -111,8 +119,10 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-client-protocol.h
     OUTPUT_DIR
         ${CMAKE_BINARY_DIR}/headers/GreenIsland/client
 )

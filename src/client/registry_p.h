@@ -62,6 +62,7 @@ public:
     template <typename T>
     T *bind(Registry::Interface interface);
 
+    wl_display *display;
     wl_registry *registry;
     wl_callback *callback;
 

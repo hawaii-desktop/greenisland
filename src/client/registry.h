@@ -41,6 +41,7 @@ class Compositor;
 class FullScreenShell;
 class Output;
 class RegistryPrivate;
+class Screencaster;
 class Seat;
 class Shm;
 
@@ -54,6 +55,7 @@ public:
         CompositorInterface,
         FullscreenShellInterface,
         OutputInterface,
+        ScreencasterInterface,
         SeatInterface,
         ShmInterface
     };
@@ -63,6 +65,8 @@ public:
 
     bool isValid() const;
 
+    wl_display *display() const;
+
     void create(wl_display *display);
     void setup();
 
@@ -71,6 +75,9 @@ public:
     Output *createOutput(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Seat *createSeat(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Shm *createShm(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+
+    Screencaster *createScreencaster(Shm *shm, quint32 name, quint32 version,
+                                     QObject *parent = Q_NULLPTR);
 
     static QByteArray interfaceName();
 
@@ -95,6 +102,9 @@ Q_SIGNALS:
 
     void shmAnnounced(quint32 name, quint32 version);
     void shmRemoved(quint32 name);
+
+    void screencasterAnnounced(quint32 name, quint32 version);
+    void screencasterRemoved(quint32 name);
 };
 
 } // namespace Client
