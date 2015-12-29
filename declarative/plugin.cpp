@@ -47,6 +47,7 @@
 #include <GreenIsland/Server/QuickXdgSurfaceItem>
 #include <GreenIsland/Server/XdgShell>
 #include <GreenIsland/Server/Screen>
+#include <GreenIsland/Server/Screencaster>
 #include <GreenIsland/Server/Screenshooter>
 #include <GreenIsland/Server/TaskManager>
 #include <GreenIsland/Server/QuickScreenManager>
@@ -155,6 +156,11 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");
     qmlRegisterUncreatableType<TaskItem>(uri, 1, 0, "TaskItem",
                                          QObject::tr("Cannot create instance of TaskItem"));
+
+    // Screencaster
+    qmlRegisterType<Screencaster>(uri, 1, 0, "Screencaster");
+    qmlRegisterUncreatableType<Screencast>(uri, 1, 0, "Screencast",
+                                           QObject::tr("Cannot create instance of Screencast"));
 
     // Screen shooter
     qmlRegisterType<Screenshooter>(uri, 1, 0, "Screenshooter");
