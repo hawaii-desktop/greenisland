@@ -1,10 +1,10 @@
 /****************************************************************************
  * This file is part of Green Island.
  *
- * Copyright (C) 2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+ * Copyright (C) 2015 Pier Luigi Fiorini
  *
  * Author(s):
- *    Pier Luigi Fiorini
+ *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
  *
  * $BEGIN_LICENSE:LGPL2.1+$
  *
@@ -24,50 +24,28 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLANDCLIENT_SHMPOOL_H
-#define GREENISLANDCLIENT_SHMPOOL_H
+#ifndef GREENISLANDCLIENT_SHMFORMATS_P_H
+#define GREENISLANDCLIENT_SHMFORMATS_P_H
 
-#include <QtCore/QObject>
+#include <QtGui/QImage>
 
-#include <GreenIsland/Client/Buffer>
-#include <GreenIsland/Client/Shm>
+#include <GreenIsland/client/greenislandclient_export.h>
+
+#include <wayland-client.h>
 
 namespace GreenIsland {
 
 namespace Client {
 
-class ShmPoolPrivate;
-
-class GREENISLANDCLIENT_EXPORT ShmPool : public QObject
+class GREENISLANDCLIENT_EXPORT ShmFormats
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(ShmPool)
 public:
-    Shm *shm() const;
-
-    void *address() const;
-
-    BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride,
-                           const void *source = Q_NULLPTR,
-                           Shm::Format format = Shm::Format_ARGB32);
-
-    BufferPtr findBuffer(const QSize &size, quint32 stride,
-                         Shm::Format format = Shm::Format_ARGB32);
-
-    static QByteArray interfaceName();
-
-Q_SIGNALS:
-    void resized();
-
-private:
-    ShmPool(Shm *shm);
-
-    friend class Shm;
+    static wl_shm_format fromQt(QImage::Format format);
+    static QImage::Format fromWayland(wl_shm_format format);
 };
 
 } // namespace Client
 
 } // namespace GreenIsland
 
-#endif // GREENISLANDCLIENT_SHMPOOL_H
+#endif // GREENISLANDCLIENT_SHMFORMATS_P_H

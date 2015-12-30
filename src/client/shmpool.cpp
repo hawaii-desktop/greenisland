@@ -27,8 +27,8 @@
 #include <QtGui/QImage>
 
 #include "buffer_p.h"
-#include "shm.h"
 #include "shm_p.h"
+#include "shmformats_p.h"
 #include "shmpool.h"
 #include "shmpool_p.h"
 
@@ -37,38 +37,6 @@ Q_LOGGING_CATEGORY(WLSHMPOOL, "greenisland.client.shmpool")
 namespace GreenIsland {
 
 namespace Client {
-
-static QtWayland::wl_shm::format formatToWayland(Buffer::Format format)
-{
-    switch (format) {
-    case Buffer::Format_ARGB32:
-        return QtWayland::wl_shm::format_argb8888;
-    case Buffer::Format_RGBA32:
-        return QtWayland::wl_shm::format_rgba8888;
-    case Buffer::Format_RGB32:
-        return QtWayland::wl_shm::format_rgb888;
-    }
-
-    Q_UNREACHABLE();
-}
-
-static Buffer::Format formatToBuffer(QImage::Format format)
-{
-    switch (format) {
-    case QImage::Format_ARGB32:
-    case QImage::Format_ARGB32_Premultiplied:
-        return Buffer::Format_ARGB32;
-    case QImage::Format_RGBA8888:
-        return Buffer::Format_RGBA32;
-    case QImage::Format_RGB32:
-        return Buffer::Format_RGB32;
-    default:
-        break;
-    }
-
-    qCWarning(WLSHMPOOL) << "Unsupported image format" << format << "fallback to ARGB32 but rendering errors are expected";
-    return Buffer::Format_RGB32;
-}
 
 /*
  * ShmPoolPrivate
@@ -166,7 +134,9 @@ bool ShmPoolPrivate::resizePool(size_t newSize)
     return true;
 }
 
-QVector<BufferSharedPtr>::iterator ShmPoolPrivate::reuseBuffer(const QSize &s, qint32 stride, Buffer::Format format)
+QVector<BufferSharedPtr>::iterator ShmPoolPrivate::reuseBuffer(const QSize &s,
+                                                               qint32 stride,
+                                                               Shm::Format format)
 {
     Q_Q(ShmPool);
 
@@ -198,7 +168,7 @@ QVector<BufferSharedPtr>::iterator ShmPoolPrivate::reuseBuffer(const QSize &s, q
 
     // No buffer can be reused, create a new one and advance the offset
     wl_buffer *nativeBuffer =
-            create_buffer(offset, s.width(), s.height(), stride, formatToWayland(format));
+            create_buffer(offset, s.width(), s.height(), stride, format);
     if (!nativeBuffer)
         return Q_NULLPTR;
     Buffer *buffer = new Buffer(q, s, stride, offset, format);
@@ -236,14 +206,15 @@ BufferPtr ShmPool::createBuffer(const QImage &image)
     if (image.isNull())
         return BufferPtr();
 
-    auto it = d->reuseBuffer(image.size(), image.bytesPerLine(), formatToBuffer(image.format()));
+    auto it = d->reuseBuffer(image.size(), image.bytesPerLine(),
+                             static_cast<Shm::Format>(ShmFormats::fromQt(image.format())));
     if (it == d->buffers.end())
         return BufferPtr();
     (*it)->copy(image.bits());
     return BufferPtr(*it);
 }
 
-BufferPtr ShmPool::createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format)
+BufferPtr ShmPool::createBuffer(const QSize &size, quint32 stride, const void *source, Shm::Format format)
 {
     Q_D(ShmPool);
 
@@ -258,7 +229,7 @@ BufferPtr ShmPool::createBuffer(const QSize &size, quint32 stride, const void *s
     return BufferPtr(*it);
 }
 
-BufferPtr ShmPool::findBuffer(const QSize &size, quint32 stride, Buffer::Format format)
+BufferPtr ShmPool::findBuffer(const QSize &size, quint32 stride, Shm::Format format)
 {
     Q_D(ShmPool);
 

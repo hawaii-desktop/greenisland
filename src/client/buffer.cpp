@@ -42,7 +42,7 @@ namespace Client {
 BufferPrivate::BufferPrivate()
     : QtWayland::wl_buffer()
     , pool(Q_NULLPTR)
-    , format(Buffer::Format_ARGB32)
+    , format(Shm::Format_ARGB32)
     , stride(0)
     , released(false)
     , used(false)
@@ -60,7 +60,7 @@ Buffer *BufferPrivate::fromWlBuffer(struct ::wl_buffer *buffer)
  * Buffer
  */
 
-Buffer::Buffer(ShmPool *pool, const QSize &size, qint32 stride, qint32 offset, Format format)
+Buffer::Buffer(ShmPool *pool, const QSize &size, qint32 stride, qint32 offset, Shm::Format format)
     : QObject(*new BufferPrivate(), pool)
 {
     d_func()->pool = pool;
@@ -76,7 +76,7 @@ uchar *Buffer::address() const
     return reinterpret_cast<uchar *>(d->pool->address()) + d->offset;
 }
 
-Buffer::Format Buffer::format() const
+Shm::Format Buffer::format() const
 {
     Q_D(const Buffer);
     return d->format;
@@ -97,7 +97,7 @@ qint32 Buffer::stride() const
 QImage Buffer::image() const
 {
     Q_D(const Buffer);
-    QImage::Format f = d->format == Buffer::Format_ARGB32
+    QImage::Format f = d->format == Shm::Format_ARGB32
             ? QImage::Format_ARGB32 : QImage::Format_RGB32;
     return QImage(address(), d->size.width(), d->size.height(), d->stride, f);
 }

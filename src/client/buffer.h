@@ -29,7 +29,7 @@
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/client/greenislandclient_export.h>
+#include <GreenIsland/Client/Shm>
 
 namespace GreenIsland {
 
@@ -44,22 +44,15 @@ class GREENISLANDCLIENT_EXPORT Buffer : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Buffer)
     Q_PROPERTY(uchar *address READ address CONSTANT)
-    Q_PROPERTY(Format format READ format CONSTANT)
+    Q_PROPERTY(Shm::Format format READ format CONSTANT)
     Q_PROPERTY(QSize size READ size CONSTANT)
     Q_PROPERTY(quint32 stride READ stride CONSTANT)
     Q_PROPERTY(QImage image READ image CONSTANT)
     Q_PROPERTY(bool released READ isReleased WRITE setReleased NOTIFY releasedChanged)
     Q_PROPERTY(bool used READ isUsed WRITE setUsed NOTIFY usedChanged)
 public:
-    enum Format {
-        Format_ARGB32,
-        Format_RGBA32,
-        Format_RGB32
-    };
-    Q_ENUM(Format)
-
     uchar *address() const;
-    Format format() const;
+    Shm::Format format() const;
     QSize size() const;
     qint32 stride() const;
     QImage image() const;
@@ -77,7 +70,8 @@ Q_SIGNALS:
     void usedChanged();
 
 private:
-    explicit Buffer(ShmPool *pool, const QSize &size, qint32 stride, qint32 offset, Format format);
+    explicit Buffer(ShmPool *pool, const QSize &size, qint32 stride,
+                    qint32 offset, Shm::Format format);
 
     friend class ShmPoolPrivate;
 };

@@ -24,6 +24,7 @@ set(SOURCES
     registry.cpp
     seat.cpp
     shm.cpp
+    shmformats_p.cpp
     shmpool.cpp
     surface.cpp
     touch.cpp
@@ -104,6 +105,7 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shm_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shmformats_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shmpool_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/surface_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h

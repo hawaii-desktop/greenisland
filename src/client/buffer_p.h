@@ -60,7 +60,7 @@ public:
     static BufferPrivate *get(Buffer *buffer) { return buffer->d_func(); }
 
     ShmPool *pool;
-    Buffer::Format format;
+    Shm::Format format;
     QSize size;
     qint32 stride;
     qint32 offset;

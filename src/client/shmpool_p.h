@@ -66,7 +66,7 @@ public:
     bool createPool(Shm *shm, size_t createSize);
     bool resizePool(size_t newSize);
 
-    QVector<BufferSharedPtr>::iterator reuseBuffer(const QSize &s, qint32 stride, Buffer::Format format);
+    QVector<BufferSharedPtr>::iterator reuseBuffer(const QSize &s, qint32 stride, Shm::Format format);
 
     static ShmPoolPrivate *get(ShmPool *pool) { return pool->d_func(); }
 
