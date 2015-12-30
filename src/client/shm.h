@@ -110,6 +110,7 @@ public:
 
     ShmPool *createPool(size_t size);
 
+    static QString formatToString(Format format);
     static QByteArray interfaceName();
 
 Q_SIGNALS:
