@@ -95,7 +95,6 @@ void EglFSWaylandIntegration::platformInit()
     });
 
     // Connect to the compositor
-    m_connection->setSocketName(QString::fromLocal8Bit(qgetenv("WAYLAND_DISPLAY")));
     m_connection->synchronousConnection();
     if (!m_connection->isConnected()) {
         qCWarning(gLcEglFSWayland) << "Connection to" << m_connection->socketName() << "failed";
