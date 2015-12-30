@@ -33,6 +33,8 @@
 #include <GreenIsland/Client/Buffer>
 #include <GreenIsland/Client/Output>
 
+class QWindow;
+
 namespace GreenIsland {
 
 namespace Client {
@@ -66,6 +68,8 @@ public:
 
     void setBufferTransform(Output::Transform transform);
     void setBufferScale(qint32 scale);
+
+    static Surface *fromQt(QWindow *window, QObject *parent = Q_NULLPTR);
 
     static QByteArray interfaceName();
 

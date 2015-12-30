@@ -60,6 +60,8 @@ public:
     void initializeConnection();
     void synchronousConnection();
 
+    static ClientConnection *fromQt(QObject *parent = Q_NULLPTR);
+
 public Q_SLOTS:
     void forceRoundTrip();
     void flushRequests();

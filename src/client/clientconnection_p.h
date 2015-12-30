@@ -60,6 +60,7 @@ public:
     static ClientConnectionPrivate *get(ClientConnection *conn) { return conn->d_func(); }
 
     wl_display *display;
+    bool displayFromQt;
     int fd;
     QString socketName;
     QScopedPointer<QSocketNotifier> socketNotifier;

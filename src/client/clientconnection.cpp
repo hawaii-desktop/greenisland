@@ -27,6 +27,8 @@
 #include <QtCore/QAbstractEventDispatcher>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QSocketNotifier>
+#include <QtGui/QGuiApplication>
+#include <QtGui/qpa/qplatformnativeinterface.h>
 
 #include "clientconnection.h"
 #include "clientconnection_p.h"
@@ -43,13 +45,14 @@ namespace Client {
 
 ClientConnectionPrivate::ClientConnectionPrivate()
     : display(Q_NULLPTR)
+    , displayFromQt(false)
     , fd(-1)
 {
 }
 
 ClientConnectionPrivate::~ClientConnectionPrivate()
 {
-    if (display) {
+    if (display && !displayFromQt) {
         wl_display_flush(display);
         wl_display_disconnect(display);
     }
@@ -113,9 +116,11 @@ ClientConnection::ClientConnection(QObject *parent)
     : QObject(*new ClientConnectionPrivate(), parent)
 {
     connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::aboutToBlock,
-            this, &ClientConnection::flushRequests);
+            this, &ClientConnection::flushRequests,
+            Qt::DirectConnection);
     connect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::awake,
-            this, &ClientConnection::flushRequests);
+            this, &ClientConnection::flushRequests,
+            Qt::DirectConnection);
 }
 
 bool ClientConnection::isConnected() const
@@ -172,13 +177,42 @@ void ClientConnection::setSocketName(const QString &socketName)
 
 void ClientConnection::initializeConnection()
 {
+    Q_D(ClientConnection);
+
+    if (d->displayFromQt)
+        return;
     QMetaObject::invokeMethod(this, "_q_initConnection", Qt::QueuedConnection);
 }
 
 void ClientConnection::synchronousConnection()
 {
     Q_D(ClientConnection);
+
+    if (d->displayFromQt)
+        return;
     d->_q_initConnection();
+}
+
+ClientConnection *ClientConnection::fromQt(QObject *parent)
+{
+    if (!QGuiApplication::platformName().startsWith(QLatin1String("wayland")))
+        return Q_NULLPTR;
+
+    QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
+    if (!native)
+        return Q_NULLPTR;
+
+    wl_display *display = reinterpret_cast<wl_display *>(
+                native->nativeResourceForIntegration(QByteArrayLiteral("wl_display")));
+    if (!display)
+        return Q_NULLPTR;
+
+    ClientConnection *connection = new ClientConnection(parent);
+    ClientConnectionPrivate::get(connection)->display = display;
+    ClientConnectionPrivate::get(connection)->displayFromQt = true;
+    disconnect(QCoreApplication::eventDispatcher(), &QAbstractEventDispatcher::awake,
+               connection, &ClientConnection::flushRequests);
+    return connection;
 }
 
 void ClientConnection::forceRoundTrip()
@@ -198,12 +232,14 @@ void ClientConnection::flushRequests()
     if (!d->display)
         return;
 
-    if (wl_display_prepare_read(d->display) == 0)
-        wl_display_read_events(d->display);
+    if (!d->displayFromQt) {
+        if (wl_display_prepare_read(d->display) == 0)
+            wl_display_read_events(d->display);
 
-    if (wl_display_dispatch_pending(d->display) < 0) {
-        d->checkError();
-        ::exit(1);
+        if (wl_display_dispatch_pending(d->display) < 0) {
+            d->checkError();
+            ::exit(1);
+        }
     }
 
     wl_display_flush(d->display);

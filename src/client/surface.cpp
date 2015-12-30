@@ -24,6 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
+#include <QtGui/QWindow>
+#include <QtGui/qpa/qplatformnativeinterface.h>
+
 #include "buffer_p.h"
 #include "output_p.h"
 #include "region.h"
@@ -212,6 +216,25 @@ void Surface::setBufferScale(qint32 scale)
         return;
 
     d->set_buffer_scale(scale);
+}
+
+Surface *Surface::fromQt(QWindow *window, QObject *parent)
+{
+    if (!QGuiApplication::platformName().startsWith(QLatin1String("wayland")))
+        return Q_NULLPTR;
+
+    QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
+    if (!native)
+        return Q_NULLPTR;
+
+    wl_surface *surface = reinterpret_cast<wl_surface *>(
+                native->nativeResourceForWindow(QByteArrayLiteral("surface"), window));
+    if (!surface)
+        return Q_NULLPTR;
+
+    Surface *s = new Surface(parent);
+    SurfacePrivate::get(s)->init(surface);
+    return s;
 }
 
 QByteArray Surface::interfaceName()

@@ -2,6 +2,7 @@ include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
+    ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
 include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerConfigExtrasLocal.cmake)

@@ -24,6 +24,10 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
+#include <QtGui/QScreen>
+#include <QtGui/qpa/qplatformnativeinterface.h>
+
 #include "output.h"
 #include "output_p.h"
 
@@ -290,6 +294,25 @@ Output::Transform Output::transform() const
 {
     Q_D(const Output);
     return d->transformValue;
+}
+
+Output *Output::fromQt(QScreen *screen, QObject *parent)
+{
+    if (!QGuiApplication::platformName().startsWith(QLatin1String("wayland")))
+        return Q_NULLPTR;
+
+    QPlatformNativeInterface *native = QGuiApplication::platformNativeInterface();
+    if (!native)
+        return Q_NULLPTR;
+
+    wl_output *output = reinterpret_cast<wl_output *>(
+                native->nativeResourceForScreen(QByteArrayLiteral("output"), screen));
+    if (!output)
+        return Q_NULLPTR;
+
+    Output *o = new Output(parent);
+    OutputPrivate::get(o)->init(output);
+    return o;
 }
 
 QByteArray Output::interfaceName()

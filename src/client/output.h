@@ -32,6 +32,8 @@
 
 #include <GreenIsland/client/greenislandclient_export.h>
 
+class QScreen;
+
 namespace GreenIsland {
 
 namespace Client {
@@ -100,6 +102,8 @@ public:
     QList<Mode> modes() const;
     Subpixel subpixel() const;
     Transform transform() const;
+
+    static Output *fromQt(QScreen *screen, QObject *parent = Q_NULLPTR);
 
     static QByteArray interfaceName();
 
