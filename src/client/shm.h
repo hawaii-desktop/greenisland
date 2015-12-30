@@ -43,7 +43,6 @@ class GREENISLANDCLIENT_EXPORT Shm : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Shm)
-    Q_PROPERTY(Formats formats READ formats NOTIFY formatsChanged)
 public:
     enum Format {
         Format_ARGB32 = 0,
@@ -106,16 +105,15 @@ public:
         Format_YVU444 = 0x34325659
     };
     Q_ENUM(Format)
-    Q_DECLARE_FLAGS(Formats, Format)
 
-    Formats formats() const;
+    QList<Format> formats() const;
 
     ShmPool *createPool(size_t size);
 
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void formatsChanged();
+    void formatAdded(Shm::Format format);
 
 private:
     explicit Shm(QObject *parent = Q_NULLPTR);

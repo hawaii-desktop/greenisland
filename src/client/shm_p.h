@@ -55,9 +55,9 @@ class GREENISLANDCLIENT_EXPORT ShmPrivate
 public:
     ShmPrivate();
 
-    static ShmPrivate *get(Shm *shm) { return shm->d_func(); }
+    QVector<Shm::Format> formats;
 
-    Shm::Formats formats;
+    static ShmPrivate *get(Shm *shm) { return shm->d_func(); }
 
 protected:
     void shm_format(uint32_t format) Q_DECL_OVERRIDE;

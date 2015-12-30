@@ -46,8 +46,9 @@ void ShmPrivate::shm_format(uint32_t format)
 {
     Q_Q(Shm);
 
-    formats = static_cast<Shm::Formats>(format);
-    Q_EMIT q->formatsChanged();
+    Shm::Format f = static_cast<Shm::Format>(format);
+    formats.append(f);
+    Q_EMIT q->formatAdded(f);
 }
 
 /*
@@ -59,10 +60,10 @@ Shm::Shm(QObject *parent)
 {
 }
 
-Shm::Formats Shm::formats() const
+QList<Shm::Format> Shm::formats() const
 {
     Q_D(const Shm);
-    return d->formats;
+    return d->formats.toList();
 }
 
 ShmPool *Shm::createPool(size_t size)
