@@ -47,7 +47,10 @@ ClientConnectionPrivate::ClientConnectionPrivate()
     : display(Q_NULLPTR)
     , displayFromQt(false)
     , fd(-1)
+    , socketName(QString::fromUtf8(qgetenv("WAYLAND_DISPLAY")))
 {
+    if (socketName.isEmpty())
+        socketName = QLatin1String("wayland-0");
 }
 
 ClientConnectionPrivate::~ClientConnectionPrivate()
