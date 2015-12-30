@@ -48,9 +48,12 @@ public:
     void *address() const;
 
     BufferPtr createBuffer(const QImage &image);
-    BufferPtr createBuffer(const QSize &size, quint32 stride, const void *source, Buffer::Format format = Buffer::Format_ARGB32);
+    BufferPtr createBuffer(const QSize &size, quint32 stride,
+                           const void *source = Q_NULLPTR,
+                           Buffer::Format format = Buffer::Format_ARGB32);
 
-    BufferPtr findBuffer(const QSize &size, quint32 stride, Buffer::Format format = Buffer::Format_ARGB32);
+    BufferPtr findBuffer(const QSize &size, quint32 stride,
+                         Buffer::Format format = Buffer::Format_ARGB32);
 
     static QByteArray interfaceName();
 

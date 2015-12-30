@@ -288,8 +288,7 @@ void CursorTheme::changeCursor(CursorShape shape)
         wl_buffer *wlBuffer = wl_cursor_image_get_buffer(image);
         if (!wlBuffer)
             return;
-        Buffer *buffer = new Buffer();
-        BufferPrivate::get(buffer)->init(wlBuffer);
+        Buffer *buffer = BufferPrivate::fromWlBuffer(wlBuffer);
 
         if (!d->cursorSurface)
             d->cursorSurface = d->compositor->createSurface(this);

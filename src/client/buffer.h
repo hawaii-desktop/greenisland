@@ -53,11 +53,10 @@ class GREENISLANDCLIENT_EXPORT Buffer : public QObject
 public:
     enum Format {
         Format_ARGB32,
+        Format_RGBA32,
         Format_RGB32
     };
     Q_ENUM(Format)
-
-    Buffer(QObject *parent = Q_NULLPTR);
 
     uchar *address() const;
     Format format() const;

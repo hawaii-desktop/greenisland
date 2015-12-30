@@ -60,11 +60,6 @@ Buffer *BufferPrivate::fromWlBuffer(struct ::wl_buffer *buffer)
  * Buffer
  */
 
-Buffer::Buffer(QObject *parent)
-    : QObject(*new BufferPrivate(), parent)
-{
-}
-
 Buffer::Buffer(ShmPool *pool, const QSize &size, qint32 stride, qint32 offset, Format format)
     : QObject(*new BufferPrivate(), pool)
 {

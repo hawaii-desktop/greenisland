@@ -43,12 +43,13 @@ static QtWayland::wl_shm::format formatToWayland(Buffer::Format format)
     switch (format) {
     case Buffer::Format_ARGB32:
         return QtWayland::wl_shm::format_argb8888;
+    case Buffer::Format_RGBA32:
+        return QtWayland::wl_shm::format_rgba8888;
     case Buffer::Format_RGB32:
-        return QtWayland::wl_shm::format_xrgb8888;
+        return QtWayland::wl_shm::format_rgb888;
     }
 
-    qCWarning(WLSHMPOOL) << "Unsupported buffer format" << format << "fallback to ARGB8888 but rendering errors are expected";
-    return QtWayland::wl_shm::format_argb8888;
+    Q_UNREACHABLE();
 }
 
 static Buffer::Format formatToBuffer(QImage::Format format)
@@ -57,6 +58,8 @@ static Buffer::Format formatToBuffer(QImage::Format format)
     case QImage::Format_ARGB32:
     case QImage::Format_ARGB32_Premultiplied:
         return Buffer::Format_ARGB32;
+    case QImage::Format_RGBA8888:
+        return Buffer::Format_RGBA32;
     case QImage::Format_RGB32:
         return Buffer::Format_RGB32;
     default:
@@ -250,7 +253,8 @@ BufferPtr ShmPool::createBuffer(const QSize &size, quint32 stride, const void *s
     auto it = d->reuseBuffer(size, stride, format);
     if (it == d->buffers.end())
         return BufferPtr();
-    (*it)->copy(source);
+    if (source)
+        (*it)->copy(source);
     return BufferPtr(*it);
 }
 
