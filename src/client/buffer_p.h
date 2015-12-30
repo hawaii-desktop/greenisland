@@ -56,6 +56,7 @@ class GREENISLANDCLIENT_EXPORT BufferPrivate
 public:
     BufferPrivate();
 
+    static Buffer *fromWlBuffer(struct ::wl_buffer *buffer);
     static BufferPrivate *get(Buffer *buffer) { return buffer->d_func(); }
 
     ShmPool *pool;

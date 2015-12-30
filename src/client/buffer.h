@@ -47,6 +47,7 @@ class GREENISLANDCLIENT_EXPORT Buffer : public QObject
     Q_PROPERTY(Format format READ format CONSTANT)
     Q_PROPERTY(QSize size READ size CONSTANT)
     Q_PROPERTY(quint32 stride READ stride CONSTANT)
+    Q_PROPERTY(QImage image READ image CONSTANT)
     Q_PROPERTY(bool released READ isReleased WRITE setReleased NOTIFY releasedChanged)
     Q_PROPERTY(bool used READ isUsed WRITE setUsed NOTIFY usedChanged)
 public:
@@ -62,6 +63,7 @@ public:
     Format format() const;
     QSize size() const;
     qint32 stride() const;
+    QImage image() const;
 
     bool isReleased() const;
     void setReleased(bool released);

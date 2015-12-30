@@ -24,6 +24,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QImage>
+
 #include "buffer.h"
 #include "buffer_p.h"
 
@@ -45,6 +47,13 @@ BufferPrivate::BufferPrivate()
     , released(false)
     , used(false)
 {
+}
+
+Buffer *BufferPrivate::fromWlBuffer(struct ::wl_buffer *buffer)
+{
+    QtWayland::wl_buffer *wlBuffer =
+            static_cast<QtWayland::wl_buffer *>(wl_buffer_get_user_data(buffer));
+    return static_cast<BufferPrivate *>(wlBuffer)->q_func();
 }
 
 /*
@@ -88,6 +97,14 @@ qint32 Buffer::stride() const
 {
     Q_D(const Buffer);
     return d->stride;
+}
+
+QImage Buffer::image() const
+{
+    Q_D(const Buffer);
+    QImage::Format f = d->format == Buffer::Format_ARGB32
+            ? QImage::Format_ARGB32 : QImage::Format_RGB32;
+    return QImage(address(), d->size.width(), d->size.height(), d->stride, f);
 }
 
 bool Buffer::isReleased() const
