@@ -55,10 +55,7 @@ ShmPoolPrivate::ShmPoolPrivate()
 
 ShmPoolPrivate::~ShmPoolPrivate()
 {
-    for (auto it = buffers.begin(); it != buffers.end();) {
-        delete (*it).data();
-        it = buffers.erase(it);
-    }
+    buffers.clear();
 
     if (data) {
         ::munmap(data, size);
