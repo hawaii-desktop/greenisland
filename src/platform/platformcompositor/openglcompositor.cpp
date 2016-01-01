@@ -281,3 +281,5 @@ void OpenGLCompositor::changeWindowIndex(OpenGLCompositorWindow *window, int new
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_openglcompositor.cpp"

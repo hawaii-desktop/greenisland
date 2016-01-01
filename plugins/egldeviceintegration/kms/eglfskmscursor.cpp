@@ -221,3 +221,5 @@ void EglFSKmsCursor::initCursorAtlas()
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_eglfskmscursor.cpp"

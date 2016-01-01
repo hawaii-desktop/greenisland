@@ -133,3 +133,5 @@ LibInputHandler *LibInputManager::handler() const
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_libinputmanager_p.cpp"

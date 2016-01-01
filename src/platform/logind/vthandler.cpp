@@ -411,3 +411,5 @@ void VtHandler::suspend()
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_vthandler.cpp"

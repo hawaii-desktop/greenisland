@@ -166,3 +166,5 @@ QByteArray Keyboard::interfaceName()
 } // namespace Client
 
 } // namespace GreenIsland
+
+#include "moc_keyboard.cpp"

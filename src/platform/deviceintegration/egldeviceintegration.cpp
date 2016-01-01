@@ -292,3 +292,5 @@ void *EGLDeviceIntegration::wlDisplay() const
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_egldeviceintegration.cpp"

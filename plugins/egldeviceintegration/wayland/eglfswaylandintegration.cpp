@@ -300,3 +300,5 @@ void EglFSWaylandIntegration::touchRemoved()
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_eglfswaylandintegration.cpp"

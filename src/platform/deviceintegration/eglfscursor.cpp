@@ -496,3 +496,5 @@ void EglFSCursor::draw(const QRectF &r)
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_eglfscursor.cpp"

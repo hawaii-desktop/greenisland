@@ -298,3 +298,5 @@ EglFSWaylandWindow *EglFSWaylandWindow::fromSurface(Client::Surface *surface)
 } // namespace Platform
 
 } // namespace GreenIsland
+
+#include "moc_eglfswaylandwindow.cpp"

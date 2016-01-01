@@ -300,3 +300,5 @@ QByteArray GtkSurface::interfaceName()
 } // namespace Server
 
 } // namespace GreenIsland
+
+#include "moc_gtkshell.cpp"
