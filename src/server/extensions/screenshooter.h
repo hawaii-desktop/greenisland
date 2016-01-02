@@ -47,6 +47,13 @@ class GREENISLANDSERVER_EXPORT Screenshooter : public QWaylandExtensionTemplate<
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshooter)
 public:
+    enum Effect {
+        EffectPointer = 1,
+        EffectBorder
+    };
+    Q_ENUM(Effect)
+    Q_DECLARE_FLAGS(Effects, Effect)
+
     Screenshooter();
     Screenshooter(QWaylandCompositor *compositor);
 
@@ -64,6 +71,7 @@ class GREENISLANDSERVER_EXPORT Screenshot : public QWaylandExtensionTemplate<Scr
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshot)
     Q_PROPERTY(CaptureType captureType READ captureType CONSTANT)
+    Q_PROPERTY(Screenshooter::Effects effects READ effects CONSTANT)
 public:
     enum CaptureType {
         CaptureOutput = 1,
@@ -79,6 +87,7 @@ public:
     Q_ENUM(Error)
 
     CaptureType captureType() const;
+    Screenshooter::Effects effects() const;
 
     Q_INVOKABLE void selectSurface(QWaylandSurface *surface);
     Q_INVOKABLE void selectArea(QQuickItem *area);
@@ -92,7 +101,7 @@ Q_SIGNALS:
     void failed(Error error);
 
 private:
-    explicit Screenshot(CaptureType type);
+    explicit Screenshot(CaptureType type, Screenshooter::Effects effects);
 
     friend class ScreenshooterPrivate;
 };

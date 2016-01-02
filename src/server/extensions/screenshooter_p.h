@@ -64,13 +64,17 @@ public:
 protected:
     void screenshooter_capture_output(Resource *resource,
                                       uint32_t id,
-                                      struct ::wl_resource *outputResource) Q_DECL_OVERRIDE;
+                                      struct ::wl_resource *outputResource,
+                                      wl_array *effects) Q_DECL_OVERRIDE;
     void screenshooter_capture_active(Resource *resource,
-                                      uint32_t id) Q_DECL_OVERRIDE;
+                                      uint32_t id,
+                                      wl_array *effects) Q_DECL_OVERRIDE;
     void screenshooter_capture_surface(Resource *resource,
-                                       uint32_t id) Q_DECL_OVERRIDE;
+                                       uint32_t id,
+                                       wl_array *effects) Q_DECL_OVERRIDE;
     void screenshooter_capture_area(Resource *resource,
-                                    uint32_t id) Q_DECL_OVERRIDE;
+                                    uint32_t id,
+                                    wl_array *effects) Q_DECL_OVERRIDE;
 };
 
 class GREENISLANDSERVER_EXPORT ScreenshotPrivate
@@ -84,6 +88,7 @@ public:
     QImage grabItem(QQuickItem *item);
 
     Screenshot::CaptureType captureType;
+    Screenshooter::Effects effects;
     QWaylandOutput *output;
     QWaylandSurface *selectedSurface;
     QQuickItem *selectedArea;

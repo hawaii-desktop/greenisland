@@ -53,11 +53,19 @@ ScreenshooterPrivate::ScreenshooterPrivate()
 
 void ScreenshooterPrivate::screenshooter_capture_output(Resource *resource,
                                                         uint32_t id,
-                                                        struct ::wl_resource *outputResource)
+                                                        struct ::wl_resource *outputResource,
+                                                        wl_array *e)
 {
     Q_Q(Screenshooter);
 
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureOutput);
+    Screenshooter::Effects effects = 0;
+
+    void *pos;
+    wl_array_for_each(pos, e) {
+        effects &= static_cast<Screenshooter::Effect>(*reinterpret_cast<quint32 *>(pos));
+    }
+
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureOutput, effects);
     ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
     dScreenshot->output = QWaylandOutput::fromResource(outputResource);
     screenshot->setExtensionContainer(q);
@@ -67,11 +75,19 @@ void ScreenshooterPrivate::screenshooter_capture_output(Resource *resource,
 }
 
 void ScreenshooterPrivate::screenshooter_capture_active(Resource *resource,
-                                                        uint32_t id)
+                                                        uint32_t id,
+                                                        wl_array *e)
 {
     Q_Q(Screenshooter);
 
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureActiveWindow);
+    Screenshooter::Effects effects = 0;
+
+    void *pos;
+    wl_array_for_each(pos, e) {
+        effects &= static_cast<Screenshooter::Effect>(*reinterpret_cast<quint32 *>(pos));
+    }
+
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureActiveWindow, effects);
     ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
     screenshot->setExtensionContainer(q);
     screenshot->initialize();
@@ -80,11 +96,19 @@ void ScreenshooterPrivate::screenshooter_capture_active(Resource *resource,
 }
 
 void ScreenshooterPrivate::screenshooter_capture_surface(Resource *resource,
-                                                         uint32_t id)
+                                                         uint32_t id,
+                                                         wl_array *e)
 {
     Q_Q(Screenshooter);
 
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureWindow);
+    Screenshooter::Effects effects = 0;
+
+    void *pos;
+    wl_array_for_each(pos, e) {
+        effects &= static_cast<Screenshooter::Effect>(*reinterpret_cast<quint32 *>(pos));
+    }
+
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureWindow, effects);
     ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
     screenshot->setExtensionContainer(q);
     screenshot->initialize();
@@ -93,11 +117,19 @@ void ScreenshooterPrivate::screenshooter_capture_surface(Resource *resource,
 }
 
 void ScreenshooterPrivate::screenshooter_capture_area(Resource *resource,
-                                                      uint32_t id)
+                                                      uint32_t id,
+                                                      wl_array *e)
 {
     Q_Q(Screenshooter);
 
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureArea);
+    Screenshooter::Effects effects = 0;
+
+    void *pos;
+    wl_array_for_each(pos, e) {
+        effects &= static_cast<Screenshooter::Effect>(*reinterpret_cast<quint32 *>(pos));
+    }
+
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureArea, effects);
     ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
     screenshot->setExtensionContainer(q);
     screenshot->initialize();
@@ -255,16 +287,23 @@ QByteArray Screenshooter::interfaceName()
  * Screenshot
  */
 
-Screenshot::Screenshot(CaptureType type)
+Screenshot::Screenshot(CaptureType type, Screenshooter::Effects effects)
     : QWaylandExtensionTemplate<Screenshot>(*new ScreenshotPrivate())
 {
     d_func()->captureType = type;
+    d_func()->effects = effects;
 }
 
 Screenshot::CaptureType Screenshot::captureType() const
 {
     Q_D(const Screenshot);
     return d->captureType;
+}
+
+Screenshooter::Effects Screenshot::effects() const
+{
+    Q_D(const Screenshot);
+    return d->effects;
 }
 
 void Screenshot::selectSurface(QWaylandSurface *surface)
