@@ -30,12 +30,37 @@
       See the documentation of greenisland_screencast for more details.
     </description>
 
+    <enum name="effects">
+      <description summary="effects of the screenshot">
+        The different effects for the screenshot.
+
+        Desktop environments may extend this enum by taking up a range of
+        values and documenting the range they chose in this description.
+        They are not required to document the values for the range that they
+        chose. Ideally, any good extensions from a desktop environment should
+        make its way into standardization into this enum.
+
+        The current reserved ranges are:
+
+        0x0000 - 0x0FFF: greenisland-screenshooter core values, documented below.
+      </description>
+      <entry name="pointer" value="1" summary="include the pointer">
+        Include the mouse pointer in the screenshot when capturing an output
+        or a surface.
+      </entry>
+      <entry name="border" value="2" summary="include the window border">
+        Include the window border when capturing a window. This is only relevant
+        to compositors that implement server-side decorations.
+      </entry>
+    </enum>
+
     <request name="capture_output">
       <description summary="take a screenshot of an entire output">
         Asks the compositor to capture an entire output.
       </description>
       <arg name="id" type="new_id" interface="greenisland_screenshot"/>
       <arg name="output" type="object" interface="wl_output"/>
+      <arg name="effects" type="array" summary="effects to apply for this capture"/>
     </request>
 
     <request name="capture_active">
@@ -43,6 +68,7 @@
         Asks the compositor to take a screenshot of the active window.
       </description>
       <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+      <arg name="effects" type="array" summary="effects to apply for this capture"/>
     </request>
 
     <request name="capture_surface">
@@ -51,6 +77,7 @@
         selected by the user.
       </description>
       <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+      <arg name="effects" type="array" summary="effects to apply for this capture"/>
     </request>
 
     <request name="capture_area">
@@ -60,6 +87,7 @@
         be captured.
       </description>
       <arg name="id" type="new_id" interface="greenisland_screenshot"/>
+      <arg name="effects" type="array" summary="effects to apply for this capture"/>
     </request>
   </interface>
 
