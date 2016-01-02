@@ -57,6 +57,7 @@ public:
     ScreenshooterPrivate();
     ~ScreenshooterPrivate();
 
+    QByteArray effectsArray(Screenshooter::Effects effects);
     void removeRequest(Screenshot *screenshot);
 
     Registry *registry;
@@ -78,6 +79,7 @@ public:
     ~ScreenshotPrivate();
 
     Screenshot::CaptureType type;
+    Screenshooter::Effects effects;
     Screenshooter *screenshooter;
     Output *output;
     BufferPtr buffer;

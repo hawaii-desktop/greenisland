@@ -52,6 +52,26 @@ ScreenshooterPrivate::~ScreenshooterPrivate()
     delete shmPool;
 }
 
+QByteArray ScreenshooterPrivate::effectsArray(Screenshooter::Effects effects)
+{
+    wl_array array;
+    quint32 *e;
+
+    wl_array_init(&array);
+    if (effects.testFlag(Screenshooter::EffectPointer)) {
+        e = (quint32 *)wl_array_add(&array, sizeof(*e));
+        *e = ScreenshooterPrivate::effects_pointer;
+    }
+    if (effects.testFlag(Screenshooter::EffectBorder)) {
+        e = (quint32 *)wl_array_add(&array, sizeof(*e));
+        *e = ScreenshooterPrivate::effects_border;
+    }
+    QByteArray data((const char *)array.data, array.size);
+    wl_array_release(&array);
+
+    return data;
+}
+
 void ScreenshooterPrivate::removeRequest(Screenshot *screenshot)
 {
     QMutexLocker locker(&requestsMutex);
@@ -69,39 +89,47 @@ Screenshooter::Screenshooter(Shm *shm, QObject *parent)
     d_func()->shmPool = shm->createPool(1024);
 }
 
-Screenshot *Screenshooter::captureOutput(Output *output)
+Screenshot *Screenshooter::captureOutput(Output *output, Effects effects)
 {
     Q_D(Screenshooter);
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureOutput, this);
-    ScreenshotPrivate::get(screenshot)->output = output;
-    ScreenshotPrivate::get(screenshot)->init(d->capture_output(OutputPrivate::get(output)->object()));
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureOutput,
+                                            effects, this);
+    ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
+    dScreenshot->output = output;
+    dScreenshot->init(d->capture_output(OutputPrivate::get(output)->object(), d->effectsArray(effects)));
     d->requests.append(screenshot);
     return screenshot;
 }
 
-Screenshot *Screenshooter::captureActiveWindow()
+Screenshot *Screenshooter::captureActiveWindow(Effects effects)
 {
     Q_D(Screenshooter);
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureActiveWindow, this);
-    ScreenshotPrivate::get(screenshot)->init(d->capture_active());
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureActiveWindow,
+                                            effects, this);
+    ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
+    dScreenshot->init(d->capture_active(d->effectsArray(effects)));
     d->requests.append(screenshot);
     return screenshot;
 }
 
-Screenshot *Screenshooter::captureWindow()
+Screenshot *Screenshooter::captureWindow(Effects effects)
 {
     Q_D(Screenshooter);
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureWindow, this);
-    ScreenshotPrivate::get(screenshot)->init(d->capture_surface());
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureWindow,
+                                            effects, this);
+    ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
+    dScreenshot->init(d->capture_surface(d->effectsArray(effects)));
     d->requests.append(screenshot);
     return screenshot;
 }
 
-Screenshot *Screenshooter::captureArea()
+Screenshot *Screenshooter::captureArea(Effects effects)
 {
     Q_D(Screenshooter);
-    Screenshot *screenshot = new Screenshot(Screenshot::CaptureArea, this);
-    ScreenshotPrivate::get(screenshot)->init(d->capture_area());
+    Screenshot *screenshot = new Screenshot(Screenshot::CaptureArea,
+                                            effects, this);
+    ScreenshotPrivate *dScreenshot = ScreenshotPrivate::get(screenshot);
+    dScreenshot->init(d->capture_area(d->effectsArray(effects)));
     d->requests.append(screenshot);
     return screenshot;
 }
@@ -177,16 +205,23 @@ void ScreenshotPrivate::screenshot_failed(int32_t error)
  * Screenshot
  */
 
-Screenshot::Screenshot(CaptureType type, QObject *parent)
+Screenshot::Screenshot(CaptureType type, Screenshooter::Effects effects, QObject *parent)
     : QObject(*new ScreenshotPrivate(static_cast<Screenshooter *>(parent)), parent)
 {
     d_func()->type = type;
+    d_func()->effects = effects;
 }
 
 Screenshot::CaptureType Screenshot::captureType() const
 {
     Q_D(const Screenshot);
     return d->type;
+}
+
+Screenshooter::Effects Screenshot::effects() const
+{
+    Q_D(const Screenshot);
+    return d->effects;
 }
 
 Output *Screenshot::output() const

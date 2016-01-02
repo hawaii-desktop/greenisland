@@ -47,10 +47,17 @@ class GREENISLANDCLIENT_EXPORT Screenshooter : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshooter)
 public:
-    Screenshot *captureOutput(Output *output);
-    Screenshot *captureActiveWindow();
-    Screenshot *captureWindow();
-    Screenshot *captureArea();
+    enum Effect {
+        EffectPointer = 1,
+        EffectBorder
+    };
+    Q_ENUM(Effect)
+    Q_DECLARE_FLAGS(Effects, Effect)
+
+    Screenshot *captureOutput(Output *output, Effects effects);
+    Screenshot *captureActiveWindow(Effects effects);
+    Screenshot *captureWindow(Effects effects);
+    Screenshot *captureArea(Effects effects);
 
     static QByteArray interfaceName();
 
@@ -65,6 +72,7 @@ class GREENISLANDCLIENT_EXPORT Screenshot : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshot)
     Q_PROPERTY(CaptureType captureType READ captureType CONSTANT)
+    Q_PROPERTY(Screenshooter::Effects effects READ effects CONSTANT)
     Q_PROPERTY(Output *output READ output CONSTANT)
 public:
     enum CaptureType {
@@ -81,6 +89,7 @@ public:
     Q_ENUM(Error)
 
     CaptureType captureType() const;
+    Screenshooter::Effects effects() const;
     Output *output() const;
 
     static QByteArray interfaceName();
@@ -93,7 +102,8 @@ Q_SIGNALS:
     void failed(Error error);
 
 private:
-    Screenshot(CaptureType type, QObject *parent = Q_NULLPTR);
+    Screenshot(CaptureType type, Screenshooter::Effects effects,
+               QObject *parent = Q_NULLPTR);
 
     friend class Screenshooter;
 };
