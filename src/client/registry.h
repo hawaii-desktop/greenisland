@@ -42,6 +42,7 @@ class FullScreenShell;
 class Output;
 class RegistryPrivate;
 class Screencaster;
+class Screenshooter;
 class Seat;
 class Shm;
 
@@ -56,6 +57,7 @@ public:
         FullscreenShellInterface,
         OutputInterface,
         ScreencasterInterface,
+        ScreenshooterInterface,
         SeatInterface,
         ShmInterface
     };
@@ -78,6 +80,8 @@ public:
 
     Screencaster *createScreencaster(Shm *shm, quint32 name, quint32 version,
                                      QObject *parent = Q_NULLPTR);
+    Screenshooter *createScreenshooter(Shm *shm, quint32 name, quint32 version,
+                                       QObject *parent = Q_NULLPTR);
 
     static QByteArray interfaceName();
 
@@ -105,6 +109,9 @@ Q_SIGNALS:
 
     void screencasterAnnounced(quint32 name, quint32 version);
     void screencasterRemoved(quint32 name);
+
+    void screenshooterAnnounced(quint32 name, quint32 version);
+    void screenshooterRemoved(quint32 name);
 };
 
 } // namespace Client
