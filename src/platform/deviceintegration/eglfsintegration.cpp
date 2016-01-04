@@ -117,10 +117,14 @@ void EglFSIntegration::initialize()
     if (!eglInitialize(m_display, &major, &minor))
         qFatal("Failed to initialize EGL display");
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QString icStr = QPlatformInputContextFactory::requested();
     if (icStr.isNull())
         icStr = QLatin1String("compose");
     m_inputContext = QPlatformInputContextFactory::create(icStr);
+#else
+    m_inputContext = QPlatformInputContextFactory::create();
+#endif
 
     if (egl_device_integration()->usesVtHandler())
         m_vtHandler.reset(new VtHandler);
@@ -145,10 +149,12 @@ void EglFSIntegration::initialize()
     else
         egl_device_integration()->screenInit();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     // Set the first screen as primary
     QScreen *firstScreen = QGuiApplication::screens().at(0);
     if (firstScreen && firstScreen->handle())
         setPrimaryScreen(firstScreen->handle());
+#endif
 }
 
 void EglFSIntegration::destroy()

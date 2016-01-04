@@ -291,7 +291,9 @@ void EglFSWaylandIntegration::touchAdded()
 
 void EglFSWaylandIntegration::touchRemoved()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QWindowSystemInterface::unregisterTouchDevice(m_touchDevice);
+#endif
     delete m_touchDevice;
     m_touchDevice = Q_NULLPTR;
     m_input->setTouchDevice(m_touchDevice);

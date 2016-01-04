@@ -68,7 +68,9 @@ public:
     virtual QSizeF physicalScreenSize() const;
     virtual QSize screenSize() const;
     virtual QDpi logicalDpi() const;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     virtual qreal pixelDensity() const;
+#endif
     virtual Qt::ScreenOrientation nativeOrientation() const;
     virtual Qt::ScreenOrientation orientation() const;
     virtual int screenDepth() const;

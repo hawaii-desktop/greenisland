@@ -62,7 +62,9 @@ public:
 
     QSizeF physicalSize() const Q_DECL_OVERRIDE;
     QDpi logicalDpi() const Q_DECL_OVERRIDE;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     qreal pixelDensity() const Q_DECL_OVERRIDE;
+#endif
     Qt::ScreenOrientation nativeOrientation() const Q_DECL_OVERRIDE;
     Qt::ScreenOrientation orientation() const Q_DECL_OVERRIDE;
 

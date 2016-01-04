@@ -161,10 +161,12 @@ QDpi EGLDeviceIntegration::logicalDpi() const
         return QDpi(100, 100);
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 qreal EGLDeviceIntegration::pixelDensity() const
 {
     return logicalDpi().first / qreal(100);
 }
+#endif
 
 Qt::ScreenOrientation EGLDeviceIntegration::nativeOrientation() const
 {
