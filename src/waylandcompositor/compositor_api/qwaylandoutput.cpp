@@ -249,15 +249,19 @@ void QWaylandOutput::initialize()
     Q_ASSERT(!d->initialized);
     Q_ASSERT(d->compositor);
     Q_ASSERT(d->compositor->isCreated());
-    Q_ASSERT(d->window);
 
-    d->mode.size = d->window->size();
+    if (d->window)
+        d->mode.size = d->window->size();
+    else
+        d->sizeFollowsWindow = false;
 
     QWaylandCompositorPrivate::get(d->compositor)->addOutput(this);
 
-    QObject::connect(d->window, &QWindow::widthChanged, this, &QWaylandOutput::setWidth);
-    QObject::connect(d->window, &QWindow::heightChanged, this, &QWaylandOutput::setHeight);
-    QObject::connect(d->window, &QObject::destroyed, this, &QWaylandOutput::handleWindowDestroyed);
+    if (d->window) {
+        QObject::connect(d->window, &QWindow::widthChanged, this, &QWaylandOutput::setWidth);
+        QObject::connect(d->window, &QWindow::heightChanged, this, &QWaylandOutput::setHeight);
+        QObject::connect(d->window, &QObject::destroyed, this, &QWaylandOutput::handleWindowDestroyed);
+    }
 
     d->init(d->compositor->display(), 2);
 
@@ -733,7 +737,7 @@ void QWaylandOutput::setScaleFactor(int scale)
  * This property controls whether the size of the WaylandOutput matches the
  * size of its window.
  *
- * The default is true.
+ * The default is true if this WaylandOutput has a window.
  */
 
 /*!
@@ -742,7 +746,7 @@ void QWaylandOutput::setScaleFactor(int scale)
  * This property controls whether the size of the QWaylandOutput matches the
  * size of its window.
  *
- * The default is true.
+ * The default is true if this QWaylandOutput has a window.
  */
 bool QWaylandOutput::sizeFollowsWindow() const
 {
@@ -752,6 +756,12 @@ bool QWaylandOutput::sizeFollowsWindow() const
 void QWaylandOutput::setSizeFollowsWindow(bool follow)
 {
     Q_D(QWaylandOutput);
+
+    if (!d->window) {
+        qWarning("Setting QWaylandOutput::sizeFollowsWindow without a window has no effect");
+        return;
+    }
+
     if (follow != d->sizeFollowsWindow) {
         if (follow) {
             QObject::connect(d->window, &QWindow::widthChanged, this, &QWaylandOutput::setWidth);
