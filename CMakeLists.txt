@@ -154,7 +154,7 @@ else()
     add_subdirectory(qpa)
     add_subdirectory(shells)
     add_subdirectory(src)
-    #add_subdirectory(tests)
+    add_subdirectory(tests)
     add_subdirectory(tools)
 endif()
 
