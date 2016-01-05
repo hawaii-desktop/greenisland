@@ -59,6 +59,7 @@ public:
     ~TouchPrivate();
 
     Seat *seat;
+    quint32 seatVersion;
     bool active;
     QVector<TouchPoint *> points;
 

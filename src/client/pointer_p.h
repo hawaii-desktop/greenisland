@@ -60,6 +60,7 @@ public:
     ~PointerPrivate();
 
     Seat *seat;
+    quint32 seatVersion;
     Surface *cursorSurface;
     Surface *focusSurface;
     quint32 enterSerial;

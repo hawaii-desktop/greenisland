@@ -41,6 +41,7 @@ namespace Client {
 PointerPrivate::PointerPrivate()
     : QtWayland::wl_pointer()
     , seat(Q_NULLPTR)
+    , seatVersion(0)
     , cursorSurface(Q_NULLPTR)
     , focusSurface(Q_NULLPTR)
     , enterSerial(0)
@@ -49,7 +50,7 @@ PointerPrivate::PointerPrivate()
 
 PointerPrivate::~PointerPrivate()
 {
-    if (seat->version() >= 3)
+    if (seatVersion >= 3)
         release();
 }
 
@@ -146,6 +147,7 @@ Pointer::Pointer(Seat *seat)
     qRegisterMetaType<Qt::MouseButton>("Qt::MouseButton");
 
     d_func()->seat = seat;
+    d_func()->seatVersion = seat->version();
 }
 
 Surface *Pointer::focusSurface() const

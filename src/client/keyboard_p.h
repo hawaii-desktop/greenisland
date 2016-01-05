@@ -58,6 +58,7 @@ public:
     ~KeyboardPrivate();
 
     Seat *seat;
+    quint32 seatVersion;
     Surface *focusSurface;
     quint32 repeatRate;
     quint32 repeatDelay;

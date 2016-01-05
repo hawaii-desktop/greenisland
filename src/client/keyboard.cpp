@@ -42,6 +42,7 @@ namespace Client {
 KeyboardPrivate::KeyboardPrivate()
     : QtWayland::wl_keyboard()
     , seat(Q_NULLPTR)
+    , seatVersion(0)
     , focusSurface(Q_NULLPTR)
     , repeatRate(0)
     , repeatDelay(0)
@@ -50,7 +51,7 @@ KeyboardPrivate::KeyboardPrivate()
 
 KeyboardPrivate::~KeyboardPrivate()
 {
-    if (seat->version() >= 3)
+    if (seatVersion >= 3)
         release();
 }
 
@@ -136,6 +137,7 @@ void KeyboardPrivate::keyboard_repeat_info(int32_t rate, int32_t delay)
 Keyboard::Keyboard(Seat *seat)
     : QObject(*new KeyboardPrivate(), seat)
 {
+    d_func()->seatVersion = seat->version();
 }
 
 Surface *Keyboard::focusSurface() const

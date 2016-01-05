@@ -41,13 +41,14 @@ namespace Client {
 TouchPrivate::TouchPrivate()
     : QtWayland::wl_touch()
     , seat(Q_NULLPTR)
+    , seatVersion(0)
     , active(false)
 {
 }
 
 TouchPrivate::~TouchPrivate()
 {
-    if (seat->version() >= 3)
+    if (seatVersion >= 3)
         release();
 }
 
@@ -157,6 +158,7 @@ TouchPointPrivate::TouchPointPrivate()
 Touch::Touch(Seat *seat)
     : QObject(*new TouchPrivate(), seat)
 {
+    d_func()->seatVersion = seat->version();
 }
 
 QByteArray Touch::interfaceName()
