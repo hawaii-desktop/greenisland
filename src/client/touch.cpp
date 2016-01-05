@@ -158,6 +158,7 @@ TouchPointPrivate::TouchPointPrivate()
 Touch::Touch(Seat *seat)
     : QObject(*new TouchPrivate(), seat)
 {
+    d_func()->seat = seat;
     d_func()->seatVersion = seat->version();
 }
 
