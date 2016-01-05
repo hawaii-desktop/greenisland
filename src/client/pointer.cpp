@@ -51,8 +51,6 @@ PointerPrivate::~PointerPrivate()
 {
     if (seat->version() >= 3)
         release();
-    else
-        wl_pointer_destroy(object());
 }
 
 Pointer *PointerPrivate::fromWlPointer(struct ::wl_pointer *pointer)

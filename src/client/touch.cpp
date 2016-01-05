@@ -49,8 +49,6 @@ TouchPrivate::~TouchPrivate()
 {
     if (seat->version() >= 3)
         release();
-    else
-        wl_touch_destroy(object());
 }
 
 TouchPoint *TouchPrivate::getPressedPoint(qint32 id) const

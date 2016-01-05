@@ -52,8 +52,6 @@ KeyboardPrivate::~KeyboardPrivate()
 {
     if (seat->version() >= 3)
         release();
-    else
-        wl_keyboard_destroy(object());
 }
 
 Keyboard *KeyboardPrivate::fromWlKeyboard(struct ::wl_keyboard *keyboard)
