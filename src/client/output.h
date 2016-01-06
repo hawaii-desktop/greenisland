@@ -118,6 +118,7 @@ Q_SIGNALS:
     void scaleChanged();
     void subpixelChanged();
     void transformChanged();
+    void outputChanged();
     void modeAdded(const Output::Mode &mode);
     void modeChanged(const Output::Mode &mode);
 

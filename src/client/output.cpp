@@ -197,9 +197,11 @@ void OutputPrivate::output_mode(uint32_t flags, int32_t width, int32_t height,
 
 void OutputPrivate::output_done()
 {
+    Q_Q(Output);
+
     // The done event is sent by the server in order to make
-    // properties changes feel like they are atomic. We are not
-    // particularly interested in this.
+    // properties changes feel like they are atomic
+    Q_EMIT q->outputChanged();
 }
 
 void OutputPrivate::output_scale(int32_t factor)
