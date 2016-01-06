@@ -66,4 +66,5 @@ before_script:
   - if [ "$X11" == "0" ]; then cmake -DENABLE_XWAYLAND:BOOL=OFF -DENABLE_EGLDEVICEINTEGRATION_X11:BOOL=OFF ..; fi
   - if [ "$X11" == "1" ]; then cmake -DENABLE_XWAYLAND:BOOL=ON -DENABLE_EGLDEVICEINTEGRATION_X11:BOOL=ON ..; fi
 
-script: make
+#script: make
+script: true
