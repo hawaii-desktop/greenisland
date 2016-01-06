@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2014-2015 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
+** Copyright (C) 2014-2016 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
 ** Copyright (C) 2015 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
@@ -103,10 +103,10 @@ public:
     void addView(QWaylandView *view, QWaylandSurface *surface);
     void removeView(QWaylandView *view, QWaylandSurface *surface);
     void sendGeometryInfo();
+    void sendModesInfo();
 
 protected:
     void output_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
-
 
 private:
     QWaylandCompositor *compositor;
@@ -114,7 +114,9 @@ private:
     QString manufacturer;
     QString model;
     QPoint position;
-    QWaylandOutput::Mode mode;
+    QVector<QWaylandOutput::Mode> modes;
+    int currentMode;
+    int preferredMode;
     QRect availableGeometry;
     QVector<QWaylandSurfaceViewMapper> surfaceViews;
     QSize physicalSize;
