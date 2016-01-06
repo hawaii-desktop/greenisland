@@ -65,6 +65,10 @@ If you enable Vivante device integration you also need:
 
 * [mx6q](https://community.freescale.com/docs/DOC-95560)
 
+If you enable XWayland support you also need:
+
+* [xcb-util-cursor](http://cgit.freedesktop.org/xcb/util-cursor)
+
 ### qtwayland
 
 Make sure qtwayland is built with the QtCompositor API, please read
