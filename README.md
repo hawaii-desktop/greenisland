@@ -45,6 +45,7 @@ The following modules and their dependencies are required:
 * [ECM >= 1.4.0](http://quickgit.kde.org/?p=extra-cmake-modules.git)
 * [udev](http://www.freedesktop.org/software/systemd/libudev/)
 * [libinput >= 0.12](http://www.freedesktop.org/wiki/Software/libinput/)
+* [xcb-util-cursor](http://cgit.freedesktop.org/xcb/util-cursor)
 
 Optional dependencies:
 
