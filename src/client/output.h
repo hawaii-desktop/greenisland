@@ -132,4 +132,6 @@ private:
 
 } // namespace GreenIsland
 
+Q_DECLARE_METATYPE(GreenIsland::Client::Output::Mode)
+
 #endif // GREENISLANDCLIENT_OUTPUT_H
