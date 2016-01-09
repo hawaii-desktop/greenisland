@@ -119,8 +119,8 @@ Q_SIGNALS:
     void subpixelChanged();
     void transformChanged();
     void outputChanged();
-    void modeAdded(const Output::Mode &mode);
-    void modeChanged(const Output::Mode &mode);
+    void modeAdded(const GreenIsland::Client::Output::Mode &mode);
+    void modeChanged(const GreenIsland::Client::Output::Mode &mode);
 
 private:
     Output(QObject *parent = Q_NULLPTR);
