@@ -147,50 +147,40 @@ void OutputPrivate::output_mode(uint32_t flags, int32_t width, int32_t height,
     Q_Q(Output);
 
     Output::Mode mode;
-    mode.flags = 0;
+    mode.flags = Output::ModeFlags(flags);
     mode.size = QSize(width, height);
     mode.refreshRate = qreal(refresh) / 1000;
-
-    if (flags & QtWayland::wl_output::mode_current)
-        mode.flags |= Output::CurrentMode;
-    if (flags & QtWayland::wl_output::mode_preferred)
-        mode.flags |= Output::PreferredMode;
 
     bool found = false;
     bool changed = false;
 
-    // Current mode has been changed
-    if (flags & QtWayland::wl_output::mode_current) {
-        for (auto it = modes.begin(); it != modes.end();) {
-            Output::Mode &m = (*it);
+    for (auto it = modes.begin(); it != modes.end(); it++) {
+        Output::Mode &m = (*it);
 
-            // Remove the current mode flag from the previous mode
-            if (m.flags.testFlag(Output::CurrentMode)) {
-                m.flags &= ~Output::ModeFlags(Output::CurrentMode);
+        if (m.size == mode.size && m.refreshRate == mode.refreshRate) {
+            found = true;
+
+            // Update flags if the mode is already present
+            if (m.flags != mode.flags) {
+                m.flags = mode.flags;
                 changed = true;
-            }
-
-            // Remove an existing mode if it has the same size and refresh rate
-            if (m.size == mode.size && m.refreshRate == mode.refreshRate) {
-                it = modes.erase(it);
-                found = true;
-            } else {
-                ++it;
             }
         }
     }
 
     // Append the mode
-    auto it = modes.insert(modes.end(), mode);
-    if (flags & QtWayland::wl_output::mode_current)
-        currentMode = it;
+    if (!found) {
+        auto it = modes.insert(modes.end(), mode);
+        if (mode.flags.testFlag(Output::CurrentMode))
+            currentMode = it;
+    }
 
     if (changed)
         Q_EMIT q->modeChanged(mode);
     else if (!found)
         Q_EMIT q->modeAdded(mode);
 
-    if (changed || !found) {
+    if (changed || (!found || mode.flags.testFlag(Output::CurrentMode))) {
         Q_EMIT q->sizeChanged();
         Q_EMIT q->geometryChanged();
         Q_EMIT q->refreshRateChanged();
