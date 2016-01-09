@@ -181,7 +181,9 @@ void OutputPrivate::output_mode(uint32_t flags, int32_t width, int32_t height,
     }
 
     // Append the mode
-    currentMode = modes.insert(modes.end(), mode);
+    auto it = modes.insert(modes.end(), mode);
+    if (flags & QtWayland::wl_output::mode_current)
+        currentMode = it;
 
     if (changed)
         Q_EMIT q->modeChanged(mode);
