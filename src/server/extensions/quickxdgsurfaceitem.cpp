@@ -62,8 +62,6 @@ void QuickXdgSurfaceItem::setShellSurface(XdgSurface *shellSurface)
                    this, &QuickXdgSurfaceItem::handleStartMove);
         disconnect(d->shellSurface, &XdgSurface::startResize,
                    this, &QuickXdgSurfaceItem::handleStartResize);
-        disconnect(this, &QuickXdgSurfaceItem::focusChanged,
-                   d->shellSurface, &XdgSurface::setActive);
     }
 
     d->shellSurface = shellSurface;
@@ -72,8 +70,6 @@ void QuickXdgSurfaceItem::setShellSurface(XdgSurface *shellSurface)
                 this, &QuickXdgSurfaceItem::handleStartMove);
         connect(d->shellSurface, &XdgSurface::startResize,
                 this, &QuickXdgSurfaceItem::handleStartResize);
-        connect(this, &QuickXdgSurfaceItem::focusChanged,
-                d->shellSurface, &XdgSurface::setActive);
     }
 
     Q_EMIT shellSurfaceChanged();
