@@ -175,6 +175,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
         shellSurfaceItem->setShellSurface(shellSurface);
 
         d->setShellSurfaceItem(shellSurfaceItem);
+        shellSurfaceItem->setFocusOnClick(true);
         shellSurfaceItem->setMoveItem(dWindow->moveItem);
     } else if (dWindow->interfaceName == XdgSurface::interfaceName()) {
         XdgSurface *shellSurface = XdgSurface::findIn(dWindow->surface);
@@ -189,6 +190,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
         shellSurfaceItem->setShellSurface(shellSurface);
 
         d->setShellSurfaceItem(shellSurfaceItem);
+        shellSurfaceItem->setFocusOnClick(true);
         shellSurfaceItem->setMoveItem(dWindow->moveItem);
     } else if (dWindow->interfaceName == XdgPopup::interfaceName()) {
         XdgPopup *shellSurface = XdgPopup::findIn(dWindow->surface);
@@ -203,6 +205,7 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
         shellSurfaceItem->setShellSurface(shellSurface);
 
         d->setShellSurfaceItem(shellSurfaceItem);
+        shellSurfaceItem->setFocusOnClick(true);
     } else {
         qCWarning(gLcCore, "Surface implements an unknown interface");
         return;
@@ -214,17 +217,8 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
     dWindow->views.append(this);
 
     // Activate window when it has focus
-    connect(this, &QWaylandQuickItem::focusChanged, this, [this, d](bool focused) {
-        ClientWindowPrivate::get(d->window)->setActive(focused);
-    });
     connect(shellSurfaceItem(), &QWaylandQuickItem::focusChanged, this, [this, d](bool focused) {
         ClientWindowPrivate::get(d->window)->setActive(focused);
-    });
-
-    // Lock the buffer when the surface is being destroyed
-    // so QtQuick has a chance to animate destruction
-    connect(window->surface(), &QWaylandSurface::surfaceDestroyed, this, [this] {
-        shellSurfaceItem()->view()->setBufferLock(true);
     });
 
     // Finish initialization

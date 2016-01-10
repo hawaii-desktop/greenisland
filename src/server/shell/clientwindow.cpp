@@ -425,6 +425,13 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     d->surface = surface;
     d->pid = surface->client()->processId();
 
+    // Lock the buffer when the surface is being destroyed
+    // so QtQuick has a chance to animate destruction
+    connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, d] {
+        Q_FOREACH (ClientWindowView *view, d->views)
+            view->shellSurfaceItem()->view()->setBufferLock(true);
+    });
+
     // Move
     connect(d->moveItem, &QQuickItem::xChanged, this, [this, d] {
         setX(d->moveItem->x());
@@ -551,15 +558,9 @@ void ClientWindow::setActive(bool active)
     // private version of setActive which will set the active flag
     // and raise the window
     Q_FOREACH (ClientWindow *window, dWM->windowsList) {
-        if (window == this) {
-            // Give or take focus to the views of this window
-            Q_FOREACH (ClientWindowView *view, d->views)
-                view->setFocus(active);
-        } else {
-            // Take or give focus to the views of other windows
-            Q_FOREACH (ClientWindowView *view, ClientWindowPrivate::get(window)->views)
-                view->setFocus(!active);
-        }
+        // Give or take focus to the views of this window
+        Q_FOREACH (ClientWindowView *view, ClientWindowPrivate::get(window)->views)
+            view->shellSurfaceItem()->setFocus(active && window == this);
     }
 
     // Set keyboard focus to the surface of this window
