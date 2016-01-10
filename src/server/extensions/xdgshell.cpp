@@ -138,7 +138,7 @@ void XdgShellPrivate::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_
 
     // TODO: Implement the surface role pattern.
     if (0) {
-        wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
+        wl_resource_post_error(resource->handle, XdgShellPrivate::error_role,
                                "wl_surface@%d is already a xdg_surface", id);
         return;
     }
@@ -162,7 +162,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
     QWaylandSurface *parent = QWaylandSurface::fromResource(parentResource);
     if (!parent) {
         int id = wl_resource_get_id(surfaceResource);
-        wl_resource_post_error(resource->handle, QtWaylandServer::xdg_popup::error_invalid_parent,
+        wl_resource_post_error(resource->handle, XdgPopupPrivate::error_invalid_parent,
                                "Invalid parent surface for popup wl_surface@%d", id);
         return;
     }
@@ -172,7 +172,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
 
     XdgPopup *popup = XdgPopup::findIn(surface);
     if (popup) {
-        wl_resource_post_error(resource->handle, QtWaylandServer::xdg_shell::error_role,
+        wl_resource_post_error(resource->handle, XdgShellPrivate::error_role,
                                "wl_surface@%d surface is already a xdg_popup", id);
         return;
     }
@@ -294,20 +294,20 @@ void XdgSurfacePrivate::sendConfigure(const PendingChange &change)
 
     if (change.maximized) {
         s = (uint32_t *)wl_array_add(&states, sizeof *s);
-        *s = QtWaylandServer::xdg_surface::state_maximized;
+        *s = XdgSurfacePrivate::state_maximized;
     } else if (change.fullScreen) {
         s = (uint32_t *)wl_array_add(&states, sizeof *s);
-        *s = QtWaylandServer::xdg_surface::state_fullscreen;
+        *s = XdgSurfacePrivate::state_fullscreen;
     }
 
     if (change.resizing) {
         s = (uint32_t *)wl_array_add(&states, sizeof *s);
-        *s = QtWaylandServer::xdg_surface::state_resizing;
+        *s = XdgSurfacePrivate::state_resizing;
     }
 
     if (change.activated) {
         s = (uint32_t *)wl_array_add(&states, sizeof *s);
-        *s = QtWaylandServer::xdg_surface::state_activated;
+        *s = XdgSurfacePrivate::state_activated;
     }
 
     uint32_t serial = m_surface->compositor()->nextSerial();
