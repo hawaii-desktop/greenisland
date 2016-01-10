@@ -139,7 +139,7 @@ void XdgShellPrivate::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_
     // TODO: Implement the surface role pattern.
     if (0) {
         wl_resource_post_error(resource->handle, XdgShellPrivate::error_role,
-                               "wl_surface@%d is already a xdg_surface", id);
+                               "wl_surface@%d already has a role", id);
         return;
     }
 
