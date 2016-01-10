@@ -83,7 +83,7 @@ private Q_SLOTS:
     void setTopLevel();
     void setWlTransient(QWaylandSurface *parentSurface,
                         const QPoint &relativeToParent,
-                        QWaylandShellSurface::FocusPolicy focusPolicy);
+                        QWaylandShellSurface::FocusPolicy policy);
     void setWlPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface,
                     const QPoint &relativeToParent);
     void setXdgTransient(QWaylandSurface *parentSurface);

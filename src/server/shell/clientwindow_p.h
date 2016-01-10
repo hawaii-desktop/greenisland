@@ -109,7 +109,9 @@ public:
     void unsetFullScreen();
 
     void setTopLevel();
-    void setTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent);
+    void setTransient(ClientWindow *parentWindow,
+                      const QPoint &relativeToParent,
+                      bool keyboardFocus);
     void setPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface, const QPoint &relativeToParent);
 
     QString findDesktopFile(const QString &appId);

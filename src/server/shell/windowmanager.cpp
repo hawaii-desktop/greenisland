@@ -421,7 +421,7 @@ void WindowManager::setTopLevel()
 
 void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
                                    const QPoint &relativeToParent,
-                                   QWaylandShellSurface::FocusPolicy)
+                                   QWaylandShellSurface::FocusPolicy policy)
 {
     Q_D(WindowManager);
 
@@ -433,7 +433,17 @@ void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
     ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
     Q_ASSERT(dWindow);
 
-    dWindow->setTransient(parentSurface, relativeToParent);
+    ClientWindow *parentWindow = d->windowForSurface(parentSurface);
+    Q_ASSERT(parentWindow);
+
+    QPoint pos = relativeToParent;
+    if (pos.isNull()) {
+        pos.setX((parentSurface->size().width() - shellSurface->surface()->size().width()) / 2);
+        pos.setY((parentSurface->size().height() - shellSurface->surface()->size().height()) / 2);
+    }
+
+    dWindow->setTransient(parentWindow, pos,
+                          policy == QWaylandShellSurface::DefaultFocus);
 }
 
 void WindowManager::setWlPopup(QWaylandInputDevice *inputDevice,
@@ -465,7 +475,14 @@ void WindowManager::setXdgTransient(QWaylandSurface *parentSurface)
     ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
     Q_ASSERT(dWindow);
 
-    dWindow->setTransient(parentSurface, QPoint());
+    ClientWindow *parentWindow = d->windowForSurface(parentSurface);
+    Q_ASSERT(parentWindow);
+
+    QPoint pos;
+    pos.setX((parentSurface->size().width() - shellSurface->surface()->size().width()) / 2);
+    pos.setY((parentSurface->size().height() - shellSurface->surface()->size().height()) / 2);
+
+    dWindow->setTransient(parentWindow, pos, true);
 }
 
 void WindowManager::setMaximized(QWaylandOutput *output)

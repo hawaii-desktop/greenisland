@@ -329,25 +329,18 @@ void ClientWindowPrivate::setTopLevel()
     q->setActive(true);
 }
 
-void ClientWindowPrivate::setTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent)
+void ClientWindowPrivate::setTransient(ClientWindow *parentWindow,
+                                       const QPoint &relativeToParent,
+                                       bool keyboardFocus)
 {
     Q_Q(ClientWindow);
 
     setType(ClientWindow::Transient);
 
-    ClientWindow *parentWindow =
-            WindowManagerPrivate::get(wm)->windowForSurface(parentSurface);
-    Q_ASSERT(parentWindow);
+    moveItem->setX(parentWindow->x() + relativeToParent.x());
+    moveItem->setY(parentWindow->y() + relativeToParent.y());
 
-    if (parentWindow) {
-        moveItem->setX(parentWindow->x() + relativeToParent.x());
-        moveItem->setY(parentWindow->y() + relativeToParent.y());
-    } else {
-        moveItem->setX((surface->compositor()->defaultOutput()->position().x() - surface->size().width()) / 2);
-        moveItem->setY((surface->compositor()->defaultOutput()->position().y() - surface->size().height()) / 2);
-    }
-
-    q->setActive(true);
+    q->setActive(keyboardFocus);
 }
 
 void ClientWindowPrivate::setPopup(QWaylandInputDevice *inputDevice,
