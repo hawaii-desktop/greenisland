@@ -344,8 +344,11 @@ void ClientWindowPrivate::setTransient(ClientWindow *parentWindow,
 }
 
 void ClientWindowPrivate::setPopup(QWaylandInputDevice *inputDevice,
-                                   QWaylandSurface *parentSurface, const QPoint &relativeToParent)
+                                   QWaylandSurface *parentSurface,
+                                   const QPoint &relativeToParent)
 {
+    Q_UNUSED(inputDevice);
+
     setType(ClientWindow::Popup);
 
     ClientWindow *parentWindow =
