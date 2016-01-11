@@ -324,7 +324,6 @@ void XdgSurfacePrivate::surface_destroy_resource(Resource *resource)
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     Q_UNUSED(resource);
-    qDebug() << "::::::::::::::::::::::::::::::::::::::::::::::::::::::";
 
     Q_Q(XdgSurface);
     delete q;
@@ -334,7 +333,6 @@ void XdgSurfacePrivate::surface_destroy(Resource *resource)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
-qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
     wl_resource_destroy(resource->handle);
 }
 
@@ -765,10 +763,6 @@ void XdgPopupPrivate::popup_destroy_resource(Resource *resource)
     Q_UNUSED(resource);
 
     Q_Q(XdgPopup);
-
-    if (m_shell)
-        XdgShellPrivate::get(m_shell)->removePopup(q);
-
     delete q;
 }
 
