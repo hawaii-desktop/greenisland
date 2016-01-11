@@ -124,6 +124,8 @@ public:
 
     Q_INVOKABLE void close();
 
+    static XdgSurface *fromResource(wl_resource *res);
+
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
 

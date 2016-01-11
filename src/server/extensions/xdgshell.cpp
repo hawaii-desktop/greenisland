@@ -344,9 +344,9 @@ void XdgSurfacePrivate::surface_set_parent(Resource *resource, wl_resource *pare
 
     Q_Q(XdgSurface);
 
-    QWaylandSurface *parentSurface = Q_NULLPTR;
+    XdgSurface *parentSurface = Q_NULLPTR;
     if (parentResource)
-        parentSurface = QWaylandSurface::fromResource(parentResource);
+        parentSurface = XdgSurface::fromResource(parentResource);
 
     if (parentSurface) {
         //XdgSurface *parentXdgSurface = XdgSurface::findIn(parentSurface);
@@ -355,7 +355,7 @@ void XdgSurfacePrivate::surface_set_parent(Resource *resource, wl_resource *pare
         // TODO:
 
         m_transient = true;
-        Q_EMIT q->setTransient(parentSurface);
+        Q_EMIT q->setTransient(parentSurface->surface());
     } else {
         m_transient = false;
         Q_EMIT q->setDefaultToplevel();
@@ -725,6 +725,11 @@ void XdgSurface::close()
 
     Q_D(XdgSurface);
     d->send_close();
+}
+
+XdgSurface *XdgSurface::fromResource(wl_resource *res)
+{
+    return static_cast<XdgSurfacePrivate *>(XdgSurfacePrivate::Resource::fromResource(res)->surface_object)->q_func();
 }
 
 const struct wl_interface *XdgSurface::interface()
