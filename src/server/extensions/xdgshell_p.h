@@ -98,7 +98,7 @@ public:
             , fullScreen(false)
             , resizing(false)
             , activated(false)
-            , size(QSize())
+            , size(QSize(0, 0))
             , output(Q_NULLPTR)
         {}
 
