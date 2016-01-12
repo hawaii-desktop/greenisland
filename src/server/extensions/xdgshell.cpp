@@ -167,6 +167,15 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
         return;
     }
 
+    if (!XdgSurface::findIn(parent) && !XdgPopup::findIn(parent)) {
+        int id = wl_resource_get_id(surfaceResource);
+        int parentId = wl_resource_get_id(parentResource);
+        wl_resource_post_error(resource->handle, XdgPopupPrivate::error_invalid_parent,
+                               "wl_surface@%d parent of wl_surface@%d is neither xdg_surface nor xdg_popup",
+                               parentId, id);
+        return;
+    }
+
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
