@@ -59,6 +59,7 @@ public:
         , shellSurfaceItem(Q_NULLPTR)
         , grabberState(DefaultState)
     {}
+    ~ClientWindowViewPrivate();
 
     void setShellSurfaceItem(QWaylandQuickItem *item);
 

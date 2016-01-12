@@ -46,6 +46,11 @@ namespace Server {
  * ClientWindowViewPrivate
  */
 
+ClientWindowViewPrivate::~ClientWindowViewPrivate()
+{
+    delete shellSurfaceItem;
+}
+
 void ClientWindowViewPrivate::setShellSurfaceItem(QWaylandQuickItem *item)
 {
     Q_Q(ClientWindowView);
