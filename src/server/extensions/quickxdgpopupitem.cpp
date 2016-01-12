@@ -35,14 +35,64 @@ namespace GreenIsland {
 
 namespace Server {
 
+/*
+ * QuickXdgPopupItemPrivate
+ */
+
+QuickXdgPopupItemPrivate::QuickXdgPopupItemPrivate()
+    : QWaylandQuickItemPrivate()
+    , window(Q_NULLPTR)
+    , shellSurface(Q_NULLPTR)
+{
+}
+
+QuickXdgPopupItemPrivate::~QuickXdgPopupItemPrivate()
+{
+    Q_Q(QuickXdgPopupItem);
+
+    if (window)
+        window->removeEventFilter(q);
+}
+
+bool QuickXdgPopupItemPrivate::processMousePressEvent(QMouseEvent *event)
+{
+    Q_Q(QuickXdgPopupItem);
+
+    if (!shellSurface || !window)
+        return false;
+
+    XdgPopupPrivate *popupPrivate = XdgPopupPrivate::get(shellSurface);
+    XdgShellPrivate *shellPrivate = XdgShellPrivate::get(popupPrivate->getShell());
+
+    QPointF scenePos = window->contentItem()->mapToItem(q, event->windowPos());
+
+    // Close popup menu if user clicked outside otherwise do not
+    // filter the event so it will be received by the popup
+    if (!q->contains(scenePos)) {
+        shellSurface->sendPopupDone();
+        shellPrivate->removePopup(shellSurface);
+        return true;
+    }
+
+    return false;
+}
+
+/*
+ * QuickXdgPopupItem
+ */
+
 QuickXdgPopupItem::QuickXdgPopupItem(QQuickItem *parent)
     : QWaylandQuickItem(*new QuickXdgPopupItemPrivate(), parent)
 {
+    connect(this, &QuickXdgPopupItem::windowChanged,
+            this, &QuickXdgPopupItem::handleWindowChanged);
 }
 
 QuickXdgPopupItem::QuickXdgPopupItem(QuickXdgPopupItemPrivate &dd, QQuickItem *parent)
     : QWaylandQuickItem(dd, parent)
 {
+    connect(this, &QuickXdgPopupItem::windowChanged,
+            this, &QuickXdgPopupItem::handleWindowChanged);
 }
 
 XdgPopup *QuickXdgPopupItem::shellSurface() const
@@ -62,24 +112,21 @@ void QuickXdgPopupItem::setShellSurface(XdgPopup *shellSurface)
     Q_EMIT shellSurfaceChanged();
 }
 
-void QuickXdgPopupItem::mousePressEvent(QMouseEvent *event)
+bool QuickXdgPopupItem::eventFilter(QObject *object, QEvent *event)
 {
     Q_D(QuickXdgPopupItem);
 
-    if (shellSurface()) {
-        XdgPopupPrivate *popupPrivate =
-                XdgPopupPrivate::get(shellSurface());
-        XdgShellPrivate *shellPrivate =
-                XdgShellPrivate::get(popupPrivate->getShell());
+    if (object == this)
+        return QObject::eventFilter(object, event);
 
-        if (shellPrivate->isPopupInitialUp()) {
-            shellSurface()->sendPopupDone();
-            shellPrivate->removePopup(shellSurface());
-            //shellPrivate->m_popups.clear();
-        }
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+        return d->processMousePressEvent(static_cast<QMouseEvent *>(event));
+    default:
+        break;
     }
 
-    QWaylandQuickItem::mousePressEvent(event);
+    return QObject::eventFilter(object, event);
 }
 
 void QuickXdgPopupItem::mouseReleaseEvent(QMouseEvent *event)
@@ -117,6 +164,20 @@ void QuickXdgPopupItem::componentComplete()
         setShellSurface(new XdgPopup());
 
     QWaylandQuickItem::componentComplete();
+}
+
+void QuickXdgPopupItem::handleWindowChanged(QQuickWindow *window)
+{
+    Q_D(QuickXdgPopupItem);
+
+    // Remove event filter from the previous window
+    if (d->window)
+        d->window->removeEventFilter(this);
+
+    // Install event filter on the new window
+    d->window = window;
+    if (d->window)
+        d->window->installEventFilter(this);
 }
 
 void QuickXdgPopupItem::adjustOffsetForNextFrame(const QPointF &offset)

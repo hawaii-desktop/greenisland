@@ -29,6 +29,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandquickitem_p.h>
 
+#include <GreenIsland/Server/QuickXdgPopupItem>
 #include <GreenIsland/Server/XdgShell>
 
 //
@@ -48,6 +49,7 @@ namespace Server {
 
 class GREENISLANDSERVER_EXPORT QuickXdgPopupItemPrivate : public QWaylandQuickItemPrivate
 {
+    Q_DECLARE_PUBLIC(QuickXdgPopupItem)
 public:
     enum GrabberState {
         DefaultState,
@@ -55,12 +57,12 @@ public:
         MoveState
     };
 
-    QuickXdgPopupItemPrivate()
-        : QWaylandQuickItemPrivate()
-        , shellSurface(Q_NULLPTR)
-    {
-    }
+    QuickXdgPopupItemPrivate();
+    ~QuickXdgPopupItemPrivate();
 
+    bool processMousePressEvent(QMouseEvent *event);
+
+    QQuickWindow *window;
     XdgPopup *shellSurface;
 };
 

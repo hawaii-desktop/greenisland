@@ -58,12 +58,13 @@ protected:
     void surfaceChangedEvent(QWaylandSurface *newSurface,
                              QWaylandSurface *oldSurface) Q_DECL_OVERRIDE;
 
-    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    bool eventFilter(QObject *object, QEvent *event) Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
     void componentComplete() Q_DECL_OVERRIDE;
 
 private Q_SLOTS:
+    void handleWindowChanged(QQuickWindow *window);
     void adjustOffsetForNextFrame(const QPointF &offset);
 };
 
