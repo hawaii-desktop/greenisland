@@ -228,6 +228,11 @@ XdgShell::XdgShell(QWaylandCompositor *compositor)
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
+XdgShell::~XdgShell()
+{
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
+}
+
 void XdgShell::initialize()
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
@@ -608,6 +613,11 @@ XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface, QWaylandClient
     initialize(shell, surface, client, id);
 }
 
+XdgSurface::~XdgSurface()
+{
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
+}
+
 void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, QWaylandClient *client, uint id)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
@@ -806,6 +816,11 @@ XdgPopup::XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
     initialize(shell, inputDevice, surface, parentSurface, client, id);
+}
+
+XdgPopup::~XdgPopup()
+{
+    qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
 void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,

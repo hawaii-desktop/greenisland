@@ -51,6 +51,7 @@ class GREENISLANDSERVER_EXPORT XdgShell : public QWaylandExtensionTemplate<XdgSh
 public:
     XdgShell();
     XdgShell(QWaylandCompositor *compositor);
+    ~XdgShell();
 
     void initialize() Q_DECL_OVERRIDE;
 
@@ -103,6 +104,7 @@ public:
     XdgSurface();
     XdgSurface(XdgShell *shell, QWaylandSurface *surface,
                QWaylandClient *client, uint id);
+    ~XdgSurface();
 
     Q_INVOKABLE void initialize(XdgShell *shell, QWaylandSurface *surface,
                                 QWaylandClient *client, uint id);
@@ -170,6 +172,7 @@ public:
     XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
              QWaylandSurface *surface, QWaylandSurface *parentSurface,
              QWaylandClient *client, uint id);
+    ~XdgPopup();
 
     Q_INVOKABLE void initialize(XdgShell *shell,
                                 QWaylandInputDevice *inputDevice,
