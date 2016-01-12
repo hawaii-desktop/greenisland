@@ -293,7 +293,7 @@ void WindowManager::createXdgPopup(QWaylandInputDevice *inputDevice,
 {
     Q_D(WindowManager);
 
-    new XdgPopup(d->xdgShell, inputDevice, surface, client, id);
+    new XdgPopup(d->xdgShell, inputDevice, surface, parentSurface, client, id);
 
     ClientWindow *window = new ClientWindow(surface, this);
     d->windowsList.append(window);

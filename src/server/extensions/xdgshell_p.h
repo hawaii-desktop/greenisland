@@ -201,6 +201,7 @@ protected:
 private:
     XdgShell *m_shell;
     QWaylandSurface *m_surface;
+    QWaylandSurface *m_parentSurface;
     QWaylandInputDevice *m_inputDevice;
 };
 

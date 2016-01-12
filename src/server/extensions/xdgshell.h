@@ -164,17 +164,20 @@ class GREENISLANDSERVER_EXPORT XdgPopup : public QWaylandExtensionTemplate<XdgPo
     Q_OBJECT
     Q_DECLARE_PRIVATE(XdgPopup)
     Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(QWaylandSurface *parentSurface READ parentSurface NOTIFY parentSurfaceChanged)
 public:
     XdgPopup();
     XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
-             QWaylandSurface *surface, QWaylandClient *client, uint id);
+             QWaylandSurface *surface, QWaylandSurface *parentSurface,
+             QWaylandClient *client, uint id);
 
     Q_INVOKABLE void initialize(XdgShell *shell,
                                 QWaylandInputDevice *inputDevice,
-                                QWaylandSurface *surface,
+                                QWaylandSurface *surface, QWaylandSurface *parentSurface,
                                 QWaylandClient *client, uint id);
 
     QWaylandSurface *surface() const;
+    QWaylandSurface *parentSurface() const;
 
     Q_INVOKABLE void sendPopupDone();
 
@@ -183,6 +186,7 @@ public:
 
 Q_SIGNALS:
     void surfaceChanged();
+    void parentSurfaceChanged();
 
 private:
     void initialize();

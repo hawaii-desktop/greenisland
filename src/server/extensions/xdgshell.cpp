@@ -760,6 +760,7 @@ XdgPopupPrivate::XdgPopupPrivate()
     , QtWaylandServer::xdg_popup()
     , m_shell(Q_NULLPTR)
     , m_surface(Q_NULLPTR)
+    , m_parentSurface(Q_NULLPTR)
     , m_inputDevice(Q_NULLPTR)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
@@ -798,16 +799,18 @@ XdgPopup::XdgPopup()
 }
 
 XdgPopup::XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
-                   QWaylandSurface *surface, QWaylandClient *client, uint id)
+                   QWaylandSurface *surface, QWaylandSurface *parentSurface,
+                   QWaylandClient *client, uint id)
     : QWaylandExtensionTemplate<XdgPopup>(*new XdgPopupPrivate())
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
-    initialize(shell, inputDevice, surface, client, id);
+    initialize(shell, inputDevice, surface, parentSurface, client, id);
 }
 
 void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
-                          QWaylandSurface *surface, QWaylandClient *client, uint id)
+                          QWaylandSurface *surface, QWaylandSurface *parentSurface,
+                          QWaylandClient *client, uint id)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
@@ -815,9 +818,11 @@ void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
     d->m_shell = shell;
     d->m_inputDevice = inputDevice;
     d->m_surface = surface;
+    d->m_parentSurface = parentSurface;
     d->init(client->client(), id, 1);
     setExtensionContainer(surface);
     Q_EMIT surfaceChanged();
+    Q_EMIT parentSurfaceChanged();
     QWaylandExtension::initialize();
 
     XdgShellPrivate::get(shell)->addPopup(this, inputDevice);
@@ -834,6 +839,12 @@ QWaylandSurface *XdgPopup::surface() const
 {
     Q_D(const XdgPopup);
     return d->m_surface;
+}
+
+QWaylandSurface *XdgPopup::parentSurface() const
+{
+    Q_D(const XdgPopup);
+    return d->m_parentSurface;
 }
 
 void XdgPopup::sendPopupDone()
