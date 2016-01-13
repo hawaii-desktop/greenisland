@@ -56,6 +56,7 @@ public:
         : wm(Q_NULLPTR)
         , surface(Q_NULLPTR)
         , type(ClientWindow::Unknown)
+        , parentWindow(Q_NULLPTR)
         , pid(0)
         , x(0)
         , y(0)
@@ -73,6 +74,7 @@ public:
     QByteArray interfaceName;
     QWaylandSurface *surface;
     ClientWindow::Type type;
+    ClientWindow *parentWindow;
     QString title;
     QString appId;
     qint64 pid;
@@ -98,6 +100,7 @@ public:
 
     void setSurface(QWaylandSurface *surface);
     void setType(ClientWindow::Type type);
+    void setParentWindow(ClientWindow *window);
     void setTitle(const QString &title);
     void setAppId(const QString &appId);
     void setActive(bool active);

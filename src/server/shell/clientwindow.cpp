@@ -163,6 +163,17 @@ void ClientWindowPrivate::setType(ClientWindow::Type type)
     Q_EMIT q->typeChanged();
 }
 
+void ClientWindowPrivate::setParentWindow(ClientWindow *window)
+{
+    Q_Q(ClientWindow);
+
+    if (parentWindow == window)
+        return;
+
+    parentWindow = window;
+    Q_EMIT q->parentWindowChanged();
+}
+
 void ClientWindowPrivate::setTitle(const QString &title)
 {
     Q_Q(ClientWindow);
@@ -226,8 +237,14 @@ void ClientWindowPrivate::setActive(bool active)
     if (shellSurface)
         shellSurface->setActive(active);
 
-    if (active)
+    if (active) {
+        // Raise parent
+        if (type == ClientWindow::Transient && parentWindow)
+            parentWindow->raise();
+
+        // Raise this window
         q->raise();
+    }
 }
 
 void ClientWindowPrivate::setWindowGeometry(const QRect &geometry)
@@ -319,6 +336,7 @@ void ClientWindowPrivate::setTopLevel()
     Q_Q(ClientWindow);
 
     setType(ClientWindow::TopLevel);
+    setParentWindow(Q_NULLPTR);
     unsetMaximized();
     unsetFullScreen();
 
@@ -336,6 +354,7 @@ void ClientWindowPrivate::setTransient(ClientWindow *parentWindow,
     Q_Q(ClientWindow);
 
     setType(ClientWindow::Transient);
+    setParentWindow(parentWindow);
 
     moveItem->setX(parentWindow->x() + relativeToParent.x());
     moveItem->setY(parentWindow->y() + relativeToParent.y());
@@ -354,6 +373,7 @@ void ClientWindowPrivate::setPopup(QWaylandInputDevice *inputDevice,
     ClientWindow *parentWindow =
             WindowManagerPrivate::get(wm)->windowForSurface(parentSurface);
     Q_ASSERT(parentWindow);
+    setParentWindow(parentWindow);
     ClientWindowPrivate *dParentWindow = ClientWindowPrivate::get(parentWindow);
     Q_ASSERT(dParentWindow);
 
@@ -447,6 +467,12 @@ ClientWindow::Type ClientWindow::type() const
 {
     Q_D(const ClientWindow);
     return d->type;
+}
+
+ClientWindow *ClientWindow::parentWindow() const
+{
+    Q_D(const ClientWindow);
+    return d->parentWindow;
 }
 
 QString ClientWindow::title() const

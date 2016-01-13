@@ -47,6 +47,7 @@ class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
     Q_DECLARE_PRIVATE(ClientWindow)
     Q_PROPERTY(QWaylandSurface *surface READ surface CONSTANT)
     Q_PROPERTY(Type type READ type NOTIFY typeChanged)
+    Q_PROPERTY(GreenIsland::Server::ClientWindow *parentWindow READ parentWindow NOTIFY parentWindowChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
     Q_PROPERTY(qint64 processId READ processId CONSTANT)
@@ -75,6 +76,8 @@ public:
     QWaylandSurface *surface() const;
 
     Type type() const;
+
+    ClientWindow *parentWindow() const;
 
     QString title() const;
     QString appId() const;
@@ -108,6 +111,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void typeChanged();
+    void parentWindowChanged();
     void titleChanged();
     void appIdChanged();
     void iconNameChanged();
