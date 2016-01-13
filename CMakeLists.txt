@@ -70,7 +70,7 @@ if ("${ECM_VERSION}" VERSION_LESS "1.7.0")
 endif()
 
 # Find Qt5
-set(REQUIRED_QT_VERSION 5.4.0)
+set(REQUIRED_QT_VERSION 5.5.0)
 find_package(Qt5 ${REQUIRED_QT_VERSION} CONFIG REQUIRED Core DBus Gui Qml Quick)
 
 # OpenGL
