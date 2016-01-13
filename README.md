@@ -38,7 +38,6 @@ Qt >= 5.5 with at least the following modules is required:
 
 * [qtbase](http://code.qt.io/cgit/qt/qtbase.git)
 * [qtdeclarative](http://code.qt.io/cgit/qt/qtdeclarative.git)
-* [qtwayland](http://code.qt.io/cgit/qt/qtwayland.git)
 
 The following modules and their dependencies are required:
 
@@ -68,11 +67,6 @@ If you enable Vivante device integration you also need:
 If you enable XWayland support you also need:
 
 * [xcb-util-cursor](http://cgit.freedesktop.org/xcb/util-cursor)
-
-### qtwayland
-
-Make sure qtwayland is built with the QtCompositor API, please read
-upstream [documentation](http://code.qt.io/cgit/qt/qtwayland.git/tree/README?h=5.5).
 
 ## Build
 
