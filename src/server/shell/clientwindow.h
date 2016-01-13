@@ -72,6 +72,7 @@ public:
     Q_ENUM(Type)
 
     ClientWindow(QWaylandSurface *surface, QObject *parent = Q_NULLPTR);
+    ~ClientWindow();
 
     QWaylandSurface *surface() const;
 

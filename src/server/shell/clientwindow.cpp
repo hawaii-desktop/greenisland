@@ -457,6 +457,15 @@ ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
     });
 }
 
+ClientWindow::~ClientWindow()
+{
+    Q_D(ClientWindow);
+
+    // Activate the parent window
+    if (d->type == Transient && d->parentWindow)
+        ClientWindowPrivate::get(d->parentWindow)->setActive(true);
+}
+
 QWaylandSurface *ClientWindow::surface() const
 {
     Q_D(const ClientWindow);
