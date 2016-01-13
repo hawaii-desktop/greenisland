@@ -461,16 +461,16 @@ void XdgSurfacePrivate::surface_ack_configure(Resource *resource, uint32_t seria
     PendingChange change = m_pendingChanges.take(serial);
 
     // Set state
-    if (change.maximized) {
-        m_maximized = true;
+    if (change.maximized != m_maximized) {
+        m_maximized = change.maximized;
         Q_EMIT q->maximizedChanged(change.output);
     }
-    if (change.fullScreen) {
-        m_fullScreen = true;
+    if (change.fullScreen != m_fullScreen) {
+        m_fullScreen = change.fullScreen;
         Q_EMIT q->fullScreenChanged(change.output);
     }
-    if (change.activated && !m_active) {
-        m_active = true;
+    if (change.activated != m_active) {
+        m_active = change.activated;
         Q_EMIT q->activeChanged();
     }
 }
@@ -514,6 +514,7 @@ void XdgSurfacePrivate::surface_set_maximized(Resource *resource)
 
     // Ask to resize the surface
     PendingChange change;
+    change.maximized = true;
     change.fullScreen = m_fullScreen;
     change.resizing = true;
     change.activated = m_active;
@@ -530,9 +531,11 @@ void XdgSurfacePrivate::surface_unset_maximized(Resource *resource)
 
     // Restore the saved state
     PendingChange change;
+    change.maximized = false;
     change.fullScreen = m_fullScreen;
     change.resizing = true;
     change.activated = m_active;
+    change.size = m_maximizedSize;
     sendConfigure(change);
 }
 
@@ -564,6 +567,7 @@ void XdgSurfacePrivate::surface_set_fullscreen(Resource *resource, wl_resource *
     // Ask to resize the surface
     PendingChange change;
     change.maximized = m_maximized;
+    change.fullScreen = true;
     change.resizing = true;
     change.activated = m_active;
     change.size = output->geometry().size();
@@ -580,8 +584,10 @@ void XdgSurfacePrivate::surface_unset_fullscreen(Resource *resource)
     // Ask to resize the surface
     PendingChange change;
     change.maximized = m_maximized;
+    change.fullScreen = false;
     change.resizing = true;
     change.activated = m_active;
+    change.size = m_fullScreenSize;
     sendConfigure(change);
 }
 
