@@ -60,6 +60,7 @@ QString systemInformation()
         << "]\n";
     str << "Architecture: " << QSysInfo::currentCpuArchitecture() << "; ";
     str << "features:";
+#if defined(Q_PROCESSOR_X86)
     DUMP_CPU_FEATURE(SSE2, "SSE2");
     DUMP_CPU_FEATURE(SSE3, "SSE3");
     DUMP_CPU_FEATURE(SSSE3, "SSSE3");
@@ -69,9 +70,12 @@ QString systemInformation()
     DUMP_CPU_FEATURE(AVX2, "AVX2");
     DUMP_CPU_FEATURE(RTM, "RTM");
     DUMP_CPU_FEATURE(HLE, "HLE");
+#elif defined(Q_PROCESSOR_ARM)
     DUMP_CPU_FEATURE(ARM_NEON, "Neon");
+#elif defined(Q_PROCESSOR_MIPS)
     DUMP_CPU_FEATURE(DSP, "DSP");
     DUMP_CPU_FEATURE(DSPR2, "DSPR2");
+#endif
     str << '\n';
     return result;
 }
