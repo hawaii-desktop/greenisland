@@ -176,16 +176,25 @@ from the build directory.
 ## Plugins
 
 Green Island can be extend with plugins.
-Specify a colon separated list of plugins with the ``GREENISLAND_PLUGINS``
-environment variable.
+Specify a colon separated list of plugin file names (extension included)
+with the ``GREENISLAND_PLUGINS`` environment variable.
 
 List of plugins:
 
-* **plasma:** Wayland protocols for Plasma
-* **xwayland:** XWayland compatibility
+* **plasma.so:** Wayland protocols for Plasma
+* **xwayland.so:** XWayland compatibility
 
 xwayland plugin status is currently alpha, not everything
 is guaranteed to work.
+
+Plugins are searched from the QT_PLUGIN_PATH/greenisland directory.
+
+For example to load Plasma protocols and XWayland compatibility, set the
+variable before launching a compositor powered by Green Island like this:
+
+```sh
+export GREENISLAND_PLUGINS=plasma.so:xwayland.so
+```
 
 ## Logging categories
 
