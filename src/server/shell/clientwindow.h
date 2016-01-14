@@ -56,7 +56,7 @@ class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
     Q_PROPERTY(qreal y READ y WRITE setY NOTIFY yChanged)
     Q_PROPERTY(QRect windowGeometry READ windowGeometry NOTIFY windowGeometryChanged)
     Q_PROPERTY(bool active READ isActive WRITE setActive NOTIFY activeChanged)
-    Q_PROPERTY(bool minimized READ isMinimized NOTIFY minimizedChanged)
+    Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized NOTIFY minimizedChanged)
     Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
     Q_PROPERTY(bool fullScreen READ isFullScreen NOTIFY fullScreenChanged)
     Q_PROPERTY(QWaylandOutput *designedOutput READ designedOutput NOTIFY designedOutputChanged)
@@ -100,6 +100,8 @@ public:
     void setActive(bool active);
 
     bool isMinimized() const;
+    void setMinimized(bool minimized);
+
     bool isMaximized() const;
     bool isFullScreen() const;
 

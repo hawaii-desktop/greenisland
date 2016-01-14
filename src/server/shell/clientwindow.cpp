@@ -258,17 +258,6 @@ void ClientWindowPrivate::setWindowGeometry(const QRect &geometry)
     Q_EMIT q->windowGeometryChanged();
 }
 
-void ClientWindowPrivate::setMinimized(bool minimized)
-{
-    Q_Q(ClientWindow);
-
-    if (this->minimized == minimized)
-        return;
-
-    this->minimized = minimized;
-    Q_EMIT q->minimizedChanged();
-}
-
 void ClientWindowPrivate::setMaximized(QWaylandOutput *output)
 {
     Q_Q(ClientWindow);
@@ -603,6 +592,17 @@ bool ClientWindow::isMinimized() const
 {
     Q_D(const ClientWindow);
     return d->minimized;
+}
+
+void ClientWindow::setMinimized(bool minimized)
+{
+    Q_D(ClientWindow);
+
+    if (d->minimized == minimized)
+        return;
+
+    d->minimized = minimized;
+    Q_EMIT minimizedChanged();
 }
 
 bool ClientWindow::isMaximized() const

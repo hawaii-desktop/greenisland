@@ -105,7 +105,6 @@ public:
     void setAppId(const QString &appId);
     void setActive(bool active);
     void setWindowGeometry(const QRect &geometry);
-    void setMinimized(bool minimized);
     void setMaximized(QWaylandOutput *output);
     void unsetMaximized();
     void setFullScreen(QWaylandOutput *output);
