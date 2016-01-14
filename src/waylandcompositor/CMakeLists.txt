@@ -61,6 +61,7 @@ set(SOURCES
     compositor_api/qwaylandsurfaceview.cpp
     compositor_api/qwaylandtexturebufferattacher.cpp
     windowmanagerprotocol/waylandwindowmanagerintegration.cpp
+    shared/qwaylandxkb.cpp
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
