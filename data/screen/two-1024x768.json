@@ -25,6 +25,7 @@
             },
             "name": "Fake2",
             "orientation": 2,
+            "primary": true,
             "position": {
                 "x": 1024,
                 "y": 0
