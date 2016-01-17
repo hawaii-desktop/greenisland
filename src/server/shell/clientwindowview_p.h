@@ -53,12 +53,7 @@ public:
         MoveState
     };
 
-    ClientWindowViewPrivate()
-        : initialized(false)
-        , output(Q_NULLPTR)
-        , shellSurfaceItem(Q_NULLPTR)
-        , grabberState(DefaultState)
-    {}
+    ClientWindowViewPrivate();
     ~ClientWindowViewPrivate();
 
     void setShellSurfaceItem(QWaylandQuickItem *item);
@@ -72,6 +67,7 @@ public:
     bool initialized;
     QWaylandQuickOutput *output;
     QWaylandQuickItem *shellSurfaceItem;
+    QQmlPropertyMap *savedProperties;
     ClientWindow *window;
 
     GrabberState grabberState;

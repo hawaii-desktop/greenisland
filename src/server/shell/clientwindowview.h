@@ -27,6 +27,8 @@
 #ifndef GREENISLAND_CLIENTWINDOWVIEW_H
 #define GREENISLAND_CLIENTWINDOWVIEW_H
 
+#include <QtQml/QQmlPropertyMap>
+
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 
@@ -45,17 +47,20 @@ class GREENISLANDSERVER_EXPORT ClientWindowView : public QQuickItem
     Q_DECLARE_PRIVATE(ClientWindowView)
     Q_PROPERTY(QWaylandQuickOutput *output READ output NOTIFY outputChanged)
     Q_PROPERTY(QWaylandQuickItem *shellSurfaceItem READ shellSurfaceItem NOTIFY shellSurfaceItemChanged)
+    Q_PROPERTY(QQmlPropertyMap *savedProperties READ savedProperties NOTIFY savedPropertiesChanged)
 public:
     ClientWindowView(QQuickItem *parent = Q_NULLPTR);
 
     QWaylandQuickOutput *output() const;
     QWaylandQuickItem *shellSurfaceItem() const;
+    QQmlPropertyMap *savedProperties() const;
 
     Q_INVOKABLE void initialize(GreenIsland::Server::ClientWindow *window, QWaylandQuickOutput *output);
 
 Q_SIGNALS:
     void outputChanged();
     void shellSurfaceItemChanged();
+    void savedPropertiesChanged();
 
 protected:
     bool childMouseEventFilter(QQuickItem *item, QEvent *event) Q_DECL_OVERRIDE;

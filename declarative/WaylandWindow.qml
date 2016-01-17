@@ -30,14 +30,6 @@ import GreenIsland 1.0
 ClientWindowView {
     property QtObject window
     property bool animationsEnabled: true
-    property QtObject savedProperties: QtObject {
-        property bool saved: false
-        property real x
-        property real y
-        property real width
-        property real height
-        property real scale
-    }
 
     id: view
     transform: [

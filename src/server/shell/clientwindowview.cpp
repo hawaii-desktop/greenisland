@@ -46,9 +46,24 @@ namespace Server {
  * ClientWindowViewPrivate
  */
 
+ClientWindowViewPrivate::ClientWindowViewPrivate()
+    : initialized(false)
+    , output(Q_NULLPTR)
+    , shellSurfaceItem(Q_NULLPTR)
+    , savedProperties(new QQmlPropertyMap())
+    , grabberState(DefaultState)
+{
+    savedProperties->insert(QStringLiteral("x"), qreal(0));
+    savedProperties->insert(QStringLiteral("y"), qreal(0));
+    savedProperties->insert(QStringLiteral("width"), qreal(0));
+    savedProperties->insert(QStringLiteral("height"), qreal(0));
+    savedProperties->insert(QStringLiteral("scale"), qreal(0));
+}
+
 ClientWindowViewPrivate::~ClientWindowViewPrivate()
 {
     delete shellSurfaceItem;
+    delete savedProperties;
 }
 
 void ClientWindowViewPrivate::setShellSurfaceItem(QWaylandQuickItem *item)
@@ -140,6 +155,10 @@ ClientWindowView::ClientWindowView(QQuickItem *parent)
     setAcceptHoverEvents(false);
     setAcceptedMouseButtons(Qt::AllButtons);
     setFiltersChildMouseEvents(true);
+
+    Q_D(ClientWindowView);
+    connect(d->savedProperties, &QQmlPropertyMap::valueChanged,
+            this, &ClientWindowView::savedPropertiesChanged);
 }
 
 QWaylandQuickOutput *ClientWindowView::output() const
@@ -152,6 +171,12 @@ QWaylandQuickItem *ClientWindowView::shellSurfaceItem() const
 {
     Q_D(const ClientWindowView);
     return d->shellSurfaceItem;
+}
+
+QQmlPropertyMap *ClientWindowView::savedProperties() const
+{
+    Q_D(const ClientWindowView);
+    return d->savedProperties;
 }
 
 void ClientWindowView::initialize(ClientWindow *window, QWaylandQuickOutput *output)
