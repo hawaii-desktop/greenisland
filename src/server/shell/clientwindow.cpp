@@ -562,6 +562,23 @@ QRect ClientWindow::windowGeometry() const
     return d->windowGeometry;
 }
 
+QRect ClientWindow::taskIconGeometry() const
+{
+    Q_D(const ClientWindow);
+    return d->taskIconGeometry;
+}
+
+void ClientWindow::setTaskIconGeometry(const QRect &rect)
+{
+    Q_D(ClientWindow);
+
+    if (d->taskIconGeometry == rect)
+        return;
+
+    d->taskIconGeometry = rect;
+    Q_EMIT taskIconGeometryChanged();
+}
+
 bool ClientWindow::isActive() const
 {
     Q_D(const ClientWindow);

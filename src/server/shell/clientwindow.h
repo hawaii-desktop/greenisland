@@ -55,6 +55,7 @@ class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
     Q_PROPERTY(qreal x READ x WRITE setX NOTIFY xChanged)
     Q_PROPERTY(qreal y READ y WRITE setY NOTIFY yChanged)
     Q_PROPERTY(QRect windowGeometry READ windowGeometry NOTIFY windowGeometryChanged)
+    Q_PROPERTY(QRect taskIconGeometry READ taskIconGeometry WRITE setTaskIconGeometry NOTIFY taskIconGeometryChanged)
     Q_PROPERTY(bool active READ isActive WRITE setActive NOTIFY activeChanged)
     Q_PROPERTY(bool minimized READ isMinimized WRITE setMinimized NOTIFY minimizedChanged)
     Q_PROPERTY(bool maximized READ isMaximized NOTIFY maximizedChanged)
@@ -96,6 +97,9 @@ public:
 
     QRect windowGeometry() const;
 
+    QRect taskIconGeometry() const;
+    void setTaskIconGeometry(const QRect &rect);
+
     bool isActive() const;
     void setActive(bool active);
 
@@ -121,6 +125,7 @@ Q_SIGNALS:
     void xChanged();
     void yChanged();
     void windowGeometryChanged();
+    void taskIconGeometryChanged();
     void activeChanged();
     void minimizedChanged();
     void maximizedChanged();

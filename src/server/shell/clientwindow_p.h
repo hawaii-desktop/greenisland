@@ -62,6 +62,7 @@ public:
         , y(0)
         , savedMaximized(QPointF(0, 0))
         , savedFullScreen(QPointF(0, 0))
+        , taskIconGeometry(QRect(0, 0, 32, 32))
         , active(false)
         , minimized(false)
         , maximized(false)
@@ -83,6 +84,7 @@ public:
     QPointF savedMaximized;
     QPointF savedFullScreen;
     QRect windowGeometry;
+    QRect taskIconGeometry;
     bool active;
     bool minimized;
     bool maximized;
