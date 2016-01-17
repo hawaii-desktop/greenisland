@@ -93,6 +93,12 @@ ClientWindowView {
             pingTimer.stop();
             d.unresponsive = false;
         }
+        onMinimizedChanged: {
+            if (window.minimized)
+                minimizeAnimation.start();
+            else
+                unminimizeAnimation.start();
+        }
         onWindowMenuRequested: {
             console.log("Window menu requested at " + position.x + "," + position.y);
         }
@@ -365,6 +371,76 @@ ClientWindowView {
             script: {
                 view.destroy();
             }
+        }
+    }
+
+    /*
+     * Minimize animations
+     */
+
+    ParallelAnimation {
+        id: minimizeAnimation
+
+        NumberAnimation {
+            target: view
+            property: "x"
+            easing.type: Easing.OutQuad
+            to: window.taskIconGeometry.x - (view.output ? view.output.position.x : 0)
+            duration: 350
+        }
+        NumberAnimation {
+            target: view
+            property: "y"
+            easing.type: Easing.OutQuad
+            to: window.taskIconGeometry.y - (view.output ? view.output.position.y : 0)
+            duration: 350
+        }
+        NumberAnimation {
+            target: view
+            property: "scale"
+            easing.type: Easing.OutQuad
+            to: 0.0
+            duration: 500
+        }
+        NumberAnimation {
+            target: view
+            property: "opacity"
+            easing.type: Easing.Linear
+            to: 0.0
+            duration: 500
+        }
+    }
+
+    ParallelAnimation {
+        id: unminimizeAnimation
+
+        NumberAnimation {
+            target: view
+            property: "x"
+            easing.type: Easing.OutQuad
+            to: window.x - (view.output ? view.output.position.x : 0)
+            duration: 350
+        }
+        NumberAnimation {
+            target: view
+            property: "y"
+            easing.type: Easing.OutQuad
+            to: window.y - (view.output ? view.output.position.y : 0)
+            duration: 350
+        }
+        NumberAnimation {
+            target: view
+            property: "scale"
+            easing.type: Easing.OutQuad
+            to: 1.0
+            duration: 500
+        }
+        NumberAnimation {
+            target: view
+            property: "opacity"
+            easing.type: Easing.Linear
+            to: 1.0
+            duration: 500
         }
     }
 }
