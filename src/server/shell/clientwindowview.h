@@ -28,6 +28,7 @@
 #define GREENISLAND_CLIENTWINDOWVIEW_H
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -42,15 +43,15 @@ class GREENISLANDSERVER_EXPORT ClientWindowView : public QQuickItem
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ClientWindowView)
-    Q_PROPERTY(QWaylandOutput *output READ output NOTIFY outputChanged)
+    Q_PROPERTY(QWaylandQuickOutput *output READ output NOTIFY outputChanged)
     Q_PROPERTY(QWaylandQuickItem *shellSurfaceItem READ shellSurfaceItem NOTIFY shellSurfaceItemChanged)
 public:
     ClientWindowView(QQuickItem *parent = Q_NULLPTR);
 
-    QWaylandOutput *output() const;
+    QWaylandQuickOutput *output() const;
     QWaylandQuickItem *shellSurfaceItem() const;
 
-    Q_INVOKABLE void initialize(GreenIsland::Server::ClientWindow *window, QWaylandOutput *output);
+    Q_INVOKABLE void initialize(GreenIsland::Server::ClientWindow *window, QWaylandQuickOutput *output);
 
 Q_SIGNALS:
     void outputChanged();

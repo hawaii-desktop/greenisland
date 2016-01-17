@@ -70,7 +70,7 @@ public:
     static ClientWindowViewPrivate *get(ClientWindowView *view) { return view->d_func(); }
 
     bool initialized;
-    QWaylandOutput *output;
+    QWaylandQuickOutput *output;
     QWaylandQuickItem *shellSurfaceItem;
     ClientWindow *window;
 

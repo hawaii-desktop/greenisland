@@ -142,7 +142,7 @@ ClientWindowView::ClientWindowView(QQuickItem *parent)
     setFiltersChildMouseEvents(true);
 }
 
-QWaylandOutput *ClientWindowView::output() const
+QWaylandQuickOutput *ClientWindowView::output() const
 {
     Q_D(const ClientWindowView);
     return d->output;
@@ -154,7 +154,7 @@ QWaylandQuickItem *ClientWindowView::shellSurfaceItem() const
     return d->shellSurfaceItem;
 }
 
-void ClientWindowView::initialize(ClientWindow *window, QWaylandOutput *output)
+void ClientWindowView::initialize(ClientWindow *window, QWaylandQuickOutput *output)
 {
     Q_D(ClientWindowView);
 
