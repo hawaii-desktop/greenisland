@@ -98,12 +98,10 @@ HomeApplication::HomeApplication(QObject *parent)
     Q_D(HomeApplication);
 
     // Diagnostic output
-    std::wstring output;
-    output += DiagnosticOutput::systemInformation().toStdWString();
-    //output += DiagnosticOutput::openGlContext().toStdWString();
-    output += DiagnosticOutput::framework().toStdWString();
-    output += DiagnosticOutput::environment().toStdWString();
-    std::wcout << output;
+    qInfo("%s", qPrintable(DiagnosticOutput::systemInformation()));
+    qInfo("%s", qPrintable(DiagnosticOutput::openGlContext()));
+    qInfo("%s", qPrintable(DiagnosticOutput::framework()));
+    qInfo("%s", qPrintable(DiagnosticOutput::environment()));
 
     // Reroute the signal
     d->engine = new QQmlApplicationEngine(this);
