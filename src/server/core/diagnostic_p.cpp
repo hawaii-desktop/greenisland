@@ -124,24 +124,28 @@ QString openGlContext()
         }
 
         QWindow window;
+        if (QGuiApplication::platformName() == QLatin1String("greenisland"))
+            window.setFlags(Qt::Desktop);
         window.setSurfaceType(QSurface::OpenGLSurface);
+        //window.setScreen(QGuiApplication::primaryScreen());
         window.create();
-        context.makeCurrent(&window);
-        QOpenGLFunctions functions(&context);
+        if (context.makeCurrent(&window)) {
+            QOpenGLFunctions functions(&context);
 
-        str << " Vendor: " << reinterpret_cast<const char *>(functions.glGetString(GL_VENDOR))
-            << "\nRenderer: " << reinterpret_cast<const char *>(functions.glGetString(GL_RENDERER))
-            << "\nVersion: " << reinterpret_cast<const char *>(functions.glGetString(GL_VERSION))
-            << "\nGLSL version: " << reinterpret_cast<const char *>(functions.glGetString(GL_SHADING_LANGUAGE_VERSION))
-            << "\nFormat: " << context.format();
+            str << " Vendor: " << reinterpret_cast<const char *>(functions.glGetString(GL_VENDOR))
+                << "\nRenderer: " << reinterpret_cast<const char *>(functions.glGetString(GL_RENDERER))
+                << "\nVersion: " << reinterpret_cast<const char *>(functions.glGetString(GL_VERSION))
+                << "\nGLSL version: " << reinterpret_cast<const char *>(functions.glGetString(GL_SHADING_LANGUAGE_VERSION))
+                << "\nFormat: " << context.format();
 
-        QList<QByteArray> extensionList = context.extensions().toList();
-        std::sort(extensionList.begin(), extensionList.end());
-        str << " \nFound " << extensionList.size() << " extensions:\n";
-        Q_FOREACH (const QByteArray &e, extensionList)
-            str << "  " << e << '\n';
+            QList<QByteArray> extensionList = context.extensions().toList();
+            std::sort(extensionList.begin(), extensionList.end());
+            str << " \nFound " << extensionList.size() << " extensions:\n";
+            Q_FOREACH (const QByteArray &e, extensionList)
+                str << "  " << e << '\n';
 
-        context.doneCurrent();
+            context.doneCurrent();
+        }
         window.destroy();
     } else {
         str << "Unable to create an Open GL context.\n";
