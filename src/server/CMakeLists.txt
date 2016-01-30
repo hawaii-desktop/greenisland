@@ -109,7 +109,7 @@ target_link_libraries(GreenIslandServer
         Qt5::Gui
         Qt5::Quick
         Wayland::Server
-        GreenIslandCompositor
+        GreenIsland::Compositor
         GreenIsland::Platform
     PRIVATE
         Wayland::Cursor
