@@ -108,7 +108,6 @@ target_link_libraries(GreenIslandServer
         Qt5::Core
         Qt5::Gui
         Qt5::Quick
-        Wayland::Client
         Wayland::Server
         GreenIslandCompositor
         GreenIsland::Platform
