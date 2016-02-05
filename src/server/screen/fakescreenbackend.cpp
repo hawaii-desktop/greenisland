@@ -85,6 +85,11 @@ void FakeScreenBackend::acquireConfiguration()
         bool primary = outputSettings.value(QStringLiteral("primary")).toBool();
         qCDebug(gLcFakeScreenBackend) << "Output primary:" << primary;
 
+        int scale = outputSettings.value(QStringLiteral("scale")).toInt();
+        if (scale <= 0)
+            scale = 1;
+        qCDebug(gLcFakeScreenBackend) << "Scale:" << scale;
+
         const QVariantMap posValue = outputSettings.value(QStringLiteral("position")).toMap();
         int x = posValue.value(QStringLiteral("x")).toInt();
         int y = posValue.value(QStringLiteral("y")).toInt();
@@ -120,8 +125,7 @@ void FakeScreenBackend::acquireConfiguration()
         screenPrivate->setPosition(pos);
         screenPrivate->setSize(size);
         screenPrivate->setRefreshRate(refreshRate);
-        // TODO: How do we get the scale factor from QScreen?
-        screenPrivate->setScaleFactor(1);
+        screenPrivate->setScaleFactor(scale);
 
         switch (orientation) {
         case Qt::PortraitOrientation:
