@@ -1,5 +1,6 @@
 set(FILES
     four-960x540.json
+    fullhd-hidpi.json
     one-1024x768.json
     one-1920x1080.json
     one-960x540.json
