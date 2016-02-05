@@ -9,6 +9,7 @@ set(FILES
     rotation-inverted.json
     rotation-left.json
     rotation-right.json
+    tablet-2048x1536.json
     two-1024x768.json
     two-rotated.json
     two-uneven.json
