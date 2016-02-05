@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/qmath.h>
 #include <QtCore/QRect>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
@@ -126,8 +127,7 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
     screenPrivate->setSize(qscreen->availableGeometry().size());
     screenPrivate->setRefreshRate(qscreen->refreshRate() * 1000);
     screenPrivate->setPhysicalSize(qscreen->physicalSize());
-    // TODO: How do we get the scale factor from QScreen?
-    screenPrivate->setScaleFactor(1);
+    screenPrivate->setScaleFactor(qFloor(qscreen->devicePixelRatio()));
 
     switch (qscreen->orientation()) {
     case Qt::PortraitOrientation:
