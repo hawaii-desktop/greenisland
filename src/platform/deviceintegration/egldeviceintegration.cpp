@@ -164,7 +164,7 @@ QDpi EGLDeviceIntegration::logicalDpi() const
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 qreal EGLDeviceIntegration::pixelDensity() const
 {
-    return logicalDpi().first / qreal(100);
+    return qRound(logicalDpi().first / qreal(100));
 }
 #endif
 
