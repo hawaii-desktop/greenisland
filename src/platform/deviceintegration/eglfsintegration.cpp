@@ -110,12 +110,16 @@ void EglFSIntegration::initialize()
     egl_device_integration()->platformInit();
 
     m_display = eglGetDisplay(nativeDisplay());
-    if (m_display == EGL_NO_DISPLAY)
+    if (Q_UNLIKELY(m_display == EGL_NO_DISPLAY)) {
         qFatal("Failed to open EGL display");
+        return;
+    }
 
     EGLint major, minor;
-    if (!eglInitialize(m_display, &major, &minor))
+    if (Q_UNLIKELY(!eglInitialize(m_display, &major, &minor))) {
         qFatal("Failed to initialize EGL display");
+        return;
+    }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QString icStr = QPlatformInputContextFactory::requested();

@@ -127,8 +127,10 @@ void LibInputHandlerPrivate::initialize()
     udev = new Udev;
     li = libinput_udev_create_context(&liInterface, Q_NULLPTR,
                                       UdevPrivate::get(udev)->udev);
-    if (!li)
+    if (Q_UNLIKELY(!li)) {
         qFatal("Unable to get libinput context");
+        return;
+    }
 
     // Setup log handler
     libinput_log_set_handler(li, logHandler);
@@ -143,8 +145,10 @@ void LibInputHandlerPrivate::initialize()
 
     // Assign current seat, relies on XDG_SEAT being set correctly as
     // this would be the case of a session initiated by pam_systemd
-    if (libinput_udev_assign_seat(li, qgetenv("XDG_SEAT").constData()) != 0)
+    if (Q_UNLIKELY(libinput_udev_assign_seat(li, qgetenv("XDG_SEAT").constData()) != 0)) {
         qFatal("Failed to assign seat to libinput");
+        return;
+    }
     qCDebug(lcInput, "Assigned seat \"%s\" to udev", qgetenv("XDG_SEAT").constData());
 
     keyboard = new LibInputKeyboard(q);

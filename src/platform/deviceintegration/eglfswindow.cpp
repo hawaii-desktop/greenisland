@@ -131,8 +131,10 @@ void EglFSWindow::create()
         context->setShareContext(qt_gl_global_share_context());
         context->setFormat(m_format);
         context->setScreen(window()->screen());
-        if (!context->create())
+        if (Q_UNLIKELY(!context->create())) {
             qFatal("EGLFS: Failed to create compositing context");
+            return;
+        }
         compositor->setTarget(context, window());
     }
 }
@@ -176,10 +178,11 @@ void EglFSWindow::resetSurface()
     EGLDisplay display = nativeScreen->display();
     m_window = egl_device_integration()->createNativeWindow(this, nativeScreen->geometry().size(), m_format);
     m_surface = eglCreateWindowSurface(display, m_config, m_window, NULL);
-    if (m_surface == EGL_NO_SURFACE) {
+    if (Q_UNLIKELY(m_surface == EGL_NO_SURFACE)) {
         EGLint error = eglGetError();
         eglTerminate(display);
         qFatal("EGL Error : Could not create the egl surface: error = 0x%x\n", error);
+        return;
     }
 }
 

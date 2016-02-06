@@ -94,9 +94,10 @@ void EGLDeviceIntegration::platformInit()
 
     framebuffer = qt_safe_open(fbDev, O_RDONLY);
 
-    if (framebuffer == -1) {
+    if (Q_UNLIKELY(framebuffer == -1)) {
         qCWarning(lcDeviceIntegration, "Failed to open %s", fbDev.constData());
         qFatal("Can't continue without a display");
+        return;
     }
 
 #ifdef FBIOBLANK
