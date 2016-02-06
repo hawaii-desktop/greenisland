@@ -57,12 +57,15 @@ public:
 
     void handleButton(libinput_event_pointer *e);
     void handleMotion(libinput_event_pointer *e);
+    void handleAbsoluteMotion(libinput_event_pointer *e);
     void handleAxis(libinput_event_pointer *e);
 
 private:
     LibInputHandler *m_handler;
     QPoint m_pt;
     Qt::MouseButtons m_buttons;
+
+    void processMotion(const QPoint &pos);
 };
 
 } // namespace Platform

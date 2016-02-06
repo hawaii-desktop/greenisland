@@ -261,6 +261,9 @@ void LibInputHandlerPrivate::_q_liEventHandler()
         case LIBINPUT_EVENT_POINTER_MOTION:
             pointer->handleMotion(libinput_event_get_pointer_event(event));
             break;
+        case LIBINPUT_EVENT_POINTER_MOTION_ABSOLUTE:
+            pointer->handleAbsoluteMotion(libinput_event_get_pointer_event(event));
+            break;
             // Touch
         case LIBINPUT_EVENT_TOUCH_UP:
             touch->handleTouchUp(libinput_event_get_touch_event(event));
