@@ -149,7 +149,16 @@ QImage::Format EglFSKmsScreen::format() const
 
 QSizeF EglFSKmsScreen::physicalSize() const
 {
-    return m_output.physical_size;
+    // Some connectors report empty physical size, this happens especially
+    // on virtual machines resulting in NaN DPI breaking font rendering,
+    // icons and other things: calculate a physical size for 100 DPI
+    QSizeF size = m_output.physical_size;
+    if (Q_UNLIKELY(size.isEmpty())) {
+        // pixelsPerMm is 25.4 (mm per inch) divided by 100 (default physical DPI)
+        const qreal pixelsPerMm = 0.254;
+        size = QSizeF(geometry().size().width() * pixelsPerMm, geometry().size().height() * pixelsPerMm);
+    }
+    return size;
 }
 
 QDpi EglFSKmsScreen::logicalDpi() const
