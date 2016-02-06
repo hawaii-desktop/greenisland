@@ -145,6 +145,7 @@ void LibInputHandlerPrivate::initialize()
     // this would be the case of a session initiated by pam_systemd
     if (libinput_udev_assign_seat(li, qgetenv("XDG_SEAT").constData()) != 0)
         qFatal("Failed to assign seat to libinput");
+    qCDebug(lcInput, "Assigned seat \"%s\" to udev", qgetenv("XDG_SEAT").constData());
 
     keyboard = new LibInputKeyboard(q);
     pointer = new LibInputPointer(q);
