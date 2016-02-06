@@ -24,6 +24,7 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/qmath.h>
 #include <QtCore/QFile>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
@@ -105,10 +106,13 @@ void FakeScreenBackend::acquireConfiguration()
         qCDebug(gLcFakeScreenBackend) << "Output size:" << size;
         qCDebug(gLcFakeScreenBackend) << "Output refresh rate:" << refreshRate;
 
-        QSize physicalSize = outputSettings.value(QStringLiteral("physicalSize"), QSize()).toSize();
+        const QVariantMap physicalSizeValue = outputSettings.value(QStringLiteral("physicalSize")).toMap();
+        QSize physicalSize;
+        physicalSize.setWidth(physicalSizeValue.value(QStringLiteral("width"), -1).toInt());
+        physicalSize.setHeight(physicalSizeValue.value(QStringLiteral("height"), -1).toInt());
         if (!physicalSize.isValid()) {
-            physicalSize.setWidth(w * 0.26458);
-            physicalSize.setHeight(h * 0.26458);
+            physicalSize.setWidth(qFloor(w * 0.26458));
+            physicalSize.setHeight(qFloor(h * 0.26458));
         }
         qCDebug(gLcFakeScreenBackend) << "Physical size millimiters:" << size;
 
