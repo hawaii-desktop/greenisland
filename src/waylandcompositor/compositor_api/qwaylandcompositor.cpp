@@ -309,9 +309,11 @@ void QWaylandCompositorPrivate::compositor_create_region(wl_compositor::Resource
 
 void QWaylandCompositorPrivate::subcompositor_get_subsurface(wl_subcompositor::Resource *resource, uint32_t id, wl_resource *surface, wl_resource *parent)
 {
-    qDebug() << Q_FUNC_INFO << resource << id << surface << parent;
+    Q_Q(QWaylandCompositor);
     QWaylandSurface *childSurface = QWaylandSurface::fromResource(surface);
-    QWaylandSurfacePrivate::get(childSurface)->initSubsurface(resource->client(), id, 1);
+    QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parent);
+    QWaylandSurfacePrivate::get(childSurface)->initSubsurface(parentSurface, resource->client(), id, 1);
+    emit q->subsurfaceChanged(childSurface, parentSurface);
 }
 
 /*!

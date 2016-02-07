@@ -113,7 +113,9 @@ public:
     static bool hasUninitializedSurface();
 #endif
 
-    void initSubsurface(struct ::wl_client *client, int id, int version);
+    void initSubsurface(QWaylandSurface *parent, struct ::wl_client *client, int id, int version);
+    bool isSubsurface() const { return subsurface; }
+    QWaylandSurfacePrivate *parentSurface() const { return subsurface ? subsurface->parentSurface : nullptr; }
 
 protected:
     void surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
@@ -187,7 +189,10 @@ protected: //member variables
         void subsurface_set_desync(wl_subsurface::Resource *resource);
 
     private:
+        friend class QWaylandSurfacePrivate;
         QWaylandSurfacePrivate *surface;
+        QWaylandSurfacePrivate *parentSurface;
+        QPoint position;
     };
 
     Subsurface *subsurface;

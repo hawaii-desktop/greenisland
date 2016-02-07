@@ -778,34 +778,48 @@ void QWaylandSurfacePrivate::derefView(QWaylandView *view)
     }
 }
 
-void QWaylandSurfacePrivate::initSubsurface(wl_client *client, int id, int version)
+void QWaylandSurfacePrivate::initSubsurface(QWaylandSurface *parent, wl_client *client, int id, int version)
 {
+    Q_Q(QWaylandSurface);
+    QWaylandSurface *oldParent = 0; // TODO: implement support for switching parents
+
     subsurface = new Subsurface(this);
     subsurface->init(client, id, version);
+    subsurface->parentSurface = parent->d_func();
+    emit q->parentChanged(parent, oldParent);
+    emit parent->childAdded(q);
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_set_position(wl_subsurface::Resource *resource, int32_t x, int32_t y)
 {
-    qDebug() << Q_FUNC_INFO << x << y;
+    Q_UNUSED(resource);
+    position = QPoint(x,y);
+    emit surface->q_func()->subsurfacePositionChanged(position);
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_place_above(wl_subsurface::Resource *resource, struct wl_resource *sibling)
 {
-    qDebug() << Q_FUNC_INFO << sibling;
+    Q_UNUSED(resource);
+    emit surface->q_func()->subsurfacePlaceAbove(QWaylandSurface::fromResource(sibling));
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_place_below(wl_subsurface::Resource *resource, struct wl_resource *sibling)
 {
-    qDebug() << Q_FUNC_INFO << sibling;
+    Q_UNUSED(resource);
+    emit surface->q_func()->subsurfacePlaceBelow(QWaylandSurface::fromResource(sibling));
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_set_sync(wl_subsurface::Resource *resource)
 {
+    Q_UNUSED(resource);
+    // TODO: sync/desync implementation
     qDebug() << Q_FUNC_INFO;
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_set_desync(wl_subsurface::Resource *resource)
 {
+    Q_UNUSED(resource);
+    // TODO: sync/desync implementation
     qDebug() << Q_FUNC_INFO;
 }
 
