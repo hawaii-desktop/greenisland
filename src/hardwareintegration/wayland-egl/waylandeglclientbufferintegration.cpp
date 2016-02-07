@@ -123,6 +123,7 @@ public:
         buffer_destroy_listener *destroy_listener = reinterpret_cast<buffer_destroy_listener *>(listener);
         WaylandEglClientBufferIntegrationPrivate *self = destroy_listener->d;
         struct ::wl_resource *buffer = static_cast<struct ::wl_resource *>(data);
+        wl_list_remove(&listener->link);
         if (!self->buffers.contains(buffer))
             return;
 
@@ -252,7 +253,6 @@ void WaylandEglClientBufferIntegration::initializeBuffer(struct ::wl_resource *b
     if (!buffer || d->buffers.contains(buffer))
         return;
 
-    wl_list_remove(&d->destroy_listener.listener.link);
     wl_signal_add(&buffer->destroy_signal, &d->destroy_listener.listener);
 }
 
