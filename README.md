@@ -5,12 +5,42 @@ Green Island
 [![GitHub issues](https://img.shields.io/github/issues/greenisland/greenisland.svg)](https://github.com/greenisland/greenisland/issues)
 [![IRC Network](https://img.shields.io/badge/irc-freenode-blue.svg "IRC Freenode")](https://webchat.freenode.net/?channels=hawaii-desktop)
 
-QtQuick-based Wayland compositor in library form.
+Green Island provides a full blown Wayland compositor for QtQuick as well as
+pluggable hardware abstraction, extensions, tools and a Qt-style API for Wayland clients.
 
 The name comes from [Kure Atoll, Hawaii](http://en.wikipedia.org/wiki/Green_Island,_Hawaii).
 
-The API extends QtCompositor with additional features needed by any real world
-Wayland compositor.
+It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop),
+however it can be used by any desktop environment that wish to implement
+its compositor by using QML or for shells deeply integrated with the compositor
+in the same process.
+
+## Overview
+
+Green Island includes:
+
+* A QtWaylandCompositor API copy
+* Compositor extensions for xdg-shell, screenshots, screencast,
+  applicaion manager, task manager
+* Support for Plasma 5
+* XWayland support
+* Multiple screen support
+* Qt-style API for udev, logind and libinput
+* Launcher for various hardware configurations
+* QPA plugin
+* Pluggable hardware abstraction with support for:
+  * X11
+  * Wayland
+  * DRM/KMS
+  * All Raspberry Pi boards
+  * Mali
+  * Vivante
+* Compositor to run your UX
+* Minimal desktop compositor and shell
+* Qt-style API for Wayland clients
+
+The server-side API extends QtWaylandCompositor with additional features needed by any
+real world Wayland compositor.
 
 Green Island offers multiple screen support and it also implements specific
 protocols such as xdg-shell, gtk-shell and those for Plasma 5.
@@ -22,10 +52,16 @@ Also include a launcher that executes the compositor on different hardware,
 a screencaster protocol and command line application, plus a
 minimal Wayland compositor and shell written with QML.
 
-It is primarily developed for the [Hawaii desktop environment](https://github.com/hawaii-desktop),
-however it can be used by any desktop environment that wish to implement
-its compositor by using QML or for shells deeply integrated with the compositor
-in the same process.
+## License
+
+Licensed under the terms of the GNU Lesser General Public License
+version 3 (see LICENSE.LGPLv3), except for the following parts which are
+licensed under the terms of the GNU General Public License version 3
+(see LICENSE.GPLv3):
+
+* greenisland
+* greenisland-launcher
+* greenisland-screencaster
 
 ## Dependencies
 
@@ -34,7 +70,7 @@ Compiler requirements:
 * [gcc >= 4.8](https://gcc.gnu.org/gcc-4.8/) or
 * [Clang](http://clang.llvm.org/)
 
-Qt >= 5.5 with at least the following modules is required:
+Qt >= 5.5 (Qt >= 5.6 is recommended) with at least the following modules is required:
 
 * [qtbase](http://code.qt.io/cgit/qt/qtbase.git)
 * [qtdeclarative](http://code.qt.io/cgit/qt/qtdeclarative.git)
@@ -68,7 +104,7 @@ If you enable XWayland support you also need:
 
 * [xcb-util-cursor](http://cgit.freedesktop.org/xcb/util-cursor)
 
-## Build
+## Build and installation
 
 Building Green Island is a piece of cake.
 
@@ -96,13 +132,24 @@ cmake -DCMAKE_INSTALL_PREFIX=/opt/hawaii -DCMAKE_BUILD_TYPE=Release ..
 If not passed, the `CMAKE_INSTALL_PREFIX` parameter defaults to /usr/local.
 You have to specify a path that fits your needs, /opt/hawaii is just an example.
 
-Package maintainers would pass `-DCMAKE_INSTALL_PREFIX=/usr`.
-
 The `CMAKE_BUILD_TYPE` parameter allows the following values:
 
 * **Debug:** debug build
 * **Release:** release build
 * **RelWithDebInfo:** release build with debugging information
+
+### System-wide installation
+
+Those who want to perform a system-wide installation, such as package
+maintainers, should pass different arguments to cmake:
+
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DKDE_INSTALL_USE_QT_SYS_PATHS=ON ..
+```
+
+Feel free to choose whatever `CMAKE_BUILD_TYPE` value you desire.
 
 ### Configuration arguments
 
