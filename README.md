@@ -54,14 +54,12 @@ minimal Wayland compositor and shell written with QML.
 
 ## License
 
-Licensed under the terms of the GNU Lesser General Public License
-version 3 (see LICENSE.LGPLv3), except for the following parts which are
-licensed under the terms of the GNU General Public License version 3
-(see LICENSE.GPLv3):
+Licensed under either of the following licenses:
 
-* greenisland
-* greenisland-launcher
-* greenisland-screencaster
+* GNU Lesser General Public License version 3.0
+* GNU General Public License version 2.0 or (at your option)
+  version 3.0 or any later version approved by the
+  KDE Free Qt Foundation.
 
 ## Dependencies
 
