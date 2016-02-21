@@ -178,9 +178,9 @@ install(FILES ${PRI_FILENAME}
 
 # pkg-config file
 include(ECMGeneratePkgConfigFile)
-ecm_generate_pkgconfig_file(BASE_NAME GreenIslandClient
-                            LIB_NAME GreenIslandClient
-                            DEPS "Qt5Core Qt5Gui"
-                            FILENAME_VAR PKGCONFIG_FILENAME
-                            INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}"
-                            INSTALL)
+#ecm_generate_pkgconfig_file(BASE_NAME GreenIslandClient
+#                            LIB_NAME GreenIslandClient
+#                            DEPS "Qt5Core Qt5Gui"
+#                            FILENAME_VAR PKGCONFIG_FILENAME
+#                            INCLUDE_INSTALL_DIR "${HAWAII_INCLUDEDIR} ${GREENISLAND_INCLUDEDIR}"
+#                            INSTALL)
