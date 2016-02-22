@@ -50,7 +50,6 @@ install(TARGETS greenislandplugin LIBRARY
 
 set(MODULE_FILES
     qmldir
-    WaylandScreen.qml
     WaylandWindow.qml
 )
 install(FILES ${MODULE_FILES}

@@ -1,7 +1,3 @@
 module GreenIsland
 plugin greenislandplugin
-WaylandCursorItem 1.0 WaylandCursorItem.qml
-WaylandScreen 1.0 WaylandScreen.qml
 WaylandWindow 1.0 WaylandWindow.qml
-WindowManager 1.0 WindowManager.qml
-XdgSurfaceWindow 1.0 XdgSurfaceWindow.qml
