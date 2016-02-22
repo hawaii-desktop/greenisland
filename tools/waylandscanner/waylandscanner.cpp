@@ -704,6 +704,7 @@ void process(QXmlStreamReader &xml, const QByteArray &headerPath, const QByteArr
             printf("        wl_resource_set_implementation(handle, %s, resource, destroy_func);", interfaceMember.constData());
             printf("\n");
             printf("        resource->handle = handle;\n");
+            printf("        m_resource = resource;\n");
             printf("        %s_bind_resource(resource);\n", interfaceNameStripped);
             printf("        return resource;\n");
             printf("    }\n");
