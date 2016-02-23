@@ -52,7 +52,7 @@ class QWaylandInputDevice;
 class QWaylandOutput;
 class QWaylandSurfaceRole;
 
-class Q_COMPOSITOR_EXPORT QWaylandShell : public QWaylandExtensionTemplate<QWaylandShell>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandShell : public QWaylandExtensionTemplate<QWaylandShell>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandShell)
@@ -69,7 +69,7 @@ Q_SIGNALS:
     void createShellSurface(QWaylandSurface *surface, const QWaylandResource &resource);
 };
 
-class Q_COMPOSITOR_EXPORT QWaylandShellSurface : public QWaylandExtensionTemplate<QWaylandShellSurface>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandShellSurface : public QWaylandExtensionTemplate<QWaylandShellSurface>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandShellSurface)
@@ -125,6 +125,10 @@ public:
     Q_INVOKABLE QSize sizeForResize(const QSizeF &size, const QPointF &delta, ResizeEdge edges);
     Q_INVOKABLE void sendConfigure(const QSize &size, ResizeEdge edges);
     Q_INVOKABLE void sendPopupDone();
+
+public Q_SLOTS:
+    void ping();
+
 Q_SIGNALS:
     void surfaceChanged();
     void titleChanged();
