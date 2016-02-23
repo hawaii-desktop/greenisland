@@ -111,9 +111,6 @@ public:
         , gl_egl_image_target_texture_2d(0)
         , funcs(Q_NULLPTR)
     {
-        destroy_listener.d = this;
-        destroy_listener.listener.notify = destroy_listener_callback;
-        wl_list_init(&destroy_listener.listener.link);
     }
 
     static void destroy_listener_callback(wl_listener *listener, void *data) {
@@ -123,7 +120,10 @@ public:
         buffer_destroy_listener *destroy_listener = reinterpret_cast<buffer_destroy_listener *>(listener);
         WaylandEglClientBufferIntegrationPrivate *self = destroy_listener->d;
         struct ::wl_resource *buffer = static_cast<struct ::wl_resource *>(data);
+
         wl_list_remove(&listener->link);
+        delete listener;
+
         if (!self->buffers.contains(buffer))
             return;
 
@@ -139,11 +139,18 @@ public:
             self->funcs->destroy_stream(self->egl_display, state.egl_stream);
     }
 
+    void create_destroy_listener(struct ::wl_resource *buffer) {
+        buffer_destroy_listener *newListener = new buffer_destroy_listener;
+        newListener->d = this;
+        newListener->listener.notify = destroy_listener_callback;
+
+        wl_signal_add(&buffer->destroy_signal, &newListener->listener);
+    }
+
     EGLDisplay egl_display;
     bool valid;
     bool display_bound;
     QHash<struct ::wl_resource *, BufferState> buffers;
-    buffer_destroy_listener destroy_listener;
 
     PFNEGLBINDWAYLANDDISPLAYWL egl_bind_wayland_display;
     PFNEGLUNBINDWAYLANDDISPLAYWL egl_unbind_wayland_display;
@@ -253,7 +260,7 @@ void WaylandEglClientBufferIntegration::initializeBuffer(struct ::wl_resource *b
     if (!buffer || d->buffers.contains(buffer))
         return;
 
-    wl_signal_add(&buffer->destroy_signal, &d->destroy_listener.listener);
+    d->create_destroy_listener(buffer);
 }
 
 int WaylandEglClientBufferIntegration::textureTargetForBuffer(struct ::wl_resource *buffer) const
