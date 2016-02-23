@@ -162,6 +162,8 @@ protected:
 
     void surface_set_minimized(Resource *resource) Q_DECL_OVERRIDE;
 
+    static QWaylandSurfaceRole s_role;
+
 private:
     XdgShell *m_shell;
     QWaylandSurface *m_surface;
@@ -198,6 +200,8 @@ public:
 protected:
     void popup_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
     void popup_destroy(Resource *resource) Q_DECL_OVERRIDE;
+
+    static QWaylandSurfaceRole s_role;
 
 private:
     XdgShell *m_shell;

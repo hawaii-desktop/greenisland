@@ -189,13 +189,12 @@ void WindowManager::initialize()
 }
 
 void WindowManager::createWlShellSurface(QWaylandSurface *surface,
-                                         QWaylandClient *client,
-                                         uint id)
+                                         const QWaylandResource &resource)
 {
     Q_D(WindowManager);
 
     QWaylandShellSurface *shellSurface =
-            new QWaylandShellSurface(d->wlShell, surface, client, id);
+            new QWaylandShellSurface(d->wlShell, surface, resource);
 
     ClientWindow *window = new ClientWindow(surface, this);
     d->windowsList.append(window);
@@ -236,13 +235,12 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
 }
 
 void WindowManager::createXdgSurface(QWaylandSurface *surface,
-                                     QWaylandClient *client,
-                                     uint id)
+                                     const QWaylandResource &resource)
 {
     Q_D(WindowManager);
 
     XdgSurface *shellSurface =
-            new XdgSurface(d->xdgShell, surface, client, id);
+            new XdgSurface(d->xdgShell, surface, resource);
 
     ClientWindow *window = new ClientWindow(surface, this);
     d->windowsList.append(window);
@@ -290,11 +288,11 @@ void WindowManager::createXdgPopup(QWaylandInputDevice *inputDevice,
                                    QWaylandSurface *surface,
                                    QWaylandSurface *parentSurface,
                                    const QPoint &relativeToParent,
-                                   QWaylandClient *client, uint id)
+                                   const QWaylandResource &resource)
 {
     Q_D(WindowManager);
 
-    new XdgPopup(d->xdgShell, inputDevice, surface, parentSurface, client, id);
+    new XdgPopup(d->xdgShell, inputDevice, surface, parentSurface, resource);
 
     ClientWindow *window = new ClientWindow(surface, this);
     d->windowsList.append(window);

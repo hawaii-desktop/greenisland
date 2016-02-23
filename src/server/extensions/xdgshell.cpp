@@ -38,6 +38,9 @@ namespace GreenIsland {
 
 namespace Server {
 
+QWaylandSurfaceRole XdgSurfacePrivate::s_role("xdg_surface");
+QWaylandSurfaceRole XdgPopupPrivate::s_role("xdg_popup");
+
 /*
  * XdgShellPrivate
  */
@@ -144,10 +147,18 @@ void XdgShellPrivate::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_
         return;
     }
 
-    QWaylandClient *client = QWaylandClient::fromWlClient(compositor, resource->client());
-    Q_ASSERT(client);
-
-    Q_EMIT q->createSurface(surface, client, id);
+    wl_resource *res = wl_resource_create(resource->client(), &xdg_surface_interface,
+                                          wl_resource_get_version(resource->handle), id);
+    // XXX FIXME
+    // The role concept was formalized in wayland 1.7, so that release adds one error
+    // code for each interface that implements a role, and we are supposed to pass here
+    // the newly constructed resource and the correct error code so that if setting the
+    // role fails, a proper error can be sent to the client.
+    // However we're still using wayland 1.4, which doesn't have interface specific role
+    // errors, so the best we can do is to use wl_display's object_id error.
+    wl_resource *displayRes = wl_client_get_object(resource->client(), 1);
+    if (surface->setRole(XdgSurface::role(), displayRes, WL_DISPLAY_ERROR_INVALID_OBJECT))
+        Q_EMIT q->createSurface(surface, QWaylandResource(res));
 }
 
 void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_resource *surfaceResource,
@@ -193,11 +204,19 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(q->extensionContainer());
     Q_ASSERT(compositor);
 
-    QWaylandClient *client = QWaylandClient::fromWlClient(compositor, resource->client());
-    Q_ASSERT(client);
-
-    Q_EMIT q->createPopup(inputDevice, surface, parent,
-                          QPoint(x, y), client, id);
+    wl_resource *res = wl_resource_create(resource->client(), &xdg_popup_interface,
+                                          wl_resource_get_version(resource->handle), id);
+    // XXX FIXME
+    // The role concept was formalized in wayland 1.7, so that release adds one error
+    // code for each interface that implements a role, and we are supposed to pass here
+    // the newly constructed resource and the correct error code so that if setting the
+    // role fails, a proper error can be sent to the client.
+    // However we're still using wayland 1.4, which doesn't have interface specific role
+    // errors, so the best we can do is to use wl_display's object_id error.
+    wl_resource *displayRes = wl_client_get_object(resource->client(), 1);
+    if (surface->setRole(XdgSurface::role(), displayRes, WL_DISPLAY_ERROR_INVALID_OBJECT))
+        Q_EMIT q->createPopup(inputDevice, surface, parent,
+                              QPoint(x, y), QWaylandResource(res));
 }
 
 void XdgShellPrivate::shell_pong(Resource *resource, uint32_t serial)
@@ -612,12 +631,12 @@ XdgSurface::XdgSurface()
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
-XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface, QWaylandClient *client, uint id)
+XdgSurface::XdgSurface(XdgShell *shell, QWaylandSurface *surface, const QWaylandResource &resource)
     : QWaylandExtensionTemplate<XdgSurface>(*new XdgSurfacePrivate())
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
-    initialize(shell, surface, client, id);
+    initialize(shell, surface, resource);
 }
 
 XdgSurface::~XdgSurface()
@@ -625,7 +644,7 @@ XdgSurface::~XdgSurface()
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 }
 
-void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, QWaylandClient *client, uint id)
+void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, const QWaylandResource &resource)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
@@ -633,7 +652,7 @@ void XdgSurface::initialize(XdgShell *shell, QWaylandSurface *surface, QWaylandC
     d->m_shell = shell;
     d->m_surface = surface;
     d->m_windowGeometry = QRect(QPoint(0, 0), surface->size());
-    d->init(client->client(), id, 1);
+    d->init(resource.resource());
     setExtensionContainer(surface);
     Q_EMIT surfaceChanged();
     QWaylandExtension::initialize();
@@ -768,6 +787,11 @@ QByteArray XdgSurface::interfaceName()
     return XdgSurfacePrivate::interfaceName();
 }
 
+QWaylandSurfaceRole *XdgSurface::role()
+{
+    return &XdgSurfacePrivate::s_role;
+}
+
 /*
  * XdgPopupPrivate
  */
@@ -817,12 +841,12 @@ XdgPopup::XdgPopup()
 
 XdgPopup::XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
                    QWaylandSurface *surface, QWaylandSurface *parentSurface,
-                   QWaylandClient *client, uint id)
+                   const QWaylandResource &resource)
     : QWaylandExtensionTemplate<XdgPopup>(*new XdgPopupPrivate())
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
-    initialize(shell, inputDevice, surface, parentSurface, client, id);
+    initialize(shell, inputDevice, surface, parentSurface, resource);
 }
 
 XdgPopup::~XdgPopup()
@@ -832,7 +856,7 @@ XdgPopup::~XdgPopup()
 
 void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
                           QWaylandSurface *surface, QWaylandSurface *parentSurface,
-                          QWaylandClient *client, uint id)
+                          const QWaylandResource &resource)
 {
     qCDebug(gLcXdgShellTrace) << Q_FUNC_INFO;
 
@@ -841,7 +865,7 @@ void XdgPopup::initialize(XdgShell *shell, QWaylandInputDevice *inputDevice,
     d->m_inputDevice = inputDevice;
     d->m_surface = surface;
     d->m_parentSurface = parentSurface;
-    d->init(client->client(), id, 1);
+    d->init(resource.resource());
     setExtensionContainer(surface);
     Q_EMIT surfaceChanged();
     Q_EMIT parentSurfaceChanged();
@@ -885,6 +909,11 @@ const struct wl_interface *XdgPopup::interface()
 QByteArray XdgPopup::interfaceName()
 {
     return XdgPopupPrivate::interfaceName();
+}
+
+QWaylandSurfaceRole *XdgPopup::role()
+{
+    return &XdgPopupPrivate::s_role;
 }
 
 } // namespace Server

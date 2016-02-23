@@ -35,6 +35,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 
 #include <GreenIsland/Server/ApplicationManager>
@@ -112,6 +113,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                     QObject::tr("Cannot create instance of WaylandInputDevice"));
     qmlRegisterUncreatableType<QWaylandCompositor>(uri, 1, 0, "WaylandCompositorBase",
                                                    QObject::tr("Cannot create instance of WaylandCompositorBase, use WaylandCompositor instead"));
+    qmlRegisterUncreatableType<QWaylandResource>(uri, 1, 0, "WaylandResource",
+                                                 QObject::tr("Cannot create instance of WaylandResource"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",
                                                 QObject::tr("Cannot create instance of WaylandSurfaceBase, use WaylandSurface instead"));
 

@@ -32,6 +32,7 @@
 
 #include <GreenIsland/server/greenislandserver_export.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 
 class QWaylandClient;
 class QWaylandInputDevice;
@@ -61,12 +62,12 @@ public:
 
 Q_SIGNALS:
     void createSurface(QWaylandSurface *surface,
-                       QWaylandClient *client, uint id);
+                       const QWaylandResource &resource);
     void createPopup(QWaylandInputDevice *inputDevice,
                      QWaylandSurface *surface,
                      QWaylandSurface *parentSurface,
                      const QPoint &relativeToParent,
-                     QWaylandClient *client, uint id);
+                     const QWaylandResource &resource);
 };
 
 class GREENISLANDSERVER_EXPORT XdgSurface : public QWaylandExtensionTemplate<XdgSurface>
@@ -104,11 +105,11 @@ public:
 
     XdgSurface();
     XdgSurface(XdgShell *shell, QWaylandSurface *surface,
-               QWaylandClient *client, uint id);
+               const QWaylandResource &resource);
     ~XdgSurface();
 
     Q_INVOKABLE void initialize(XdgShell *shell, QWaylandSurface *surface,
-                                QWaylandClient *client, uint id);
+                                const QWaylandResource &resource);
 
     QWaylandSurface *surface() const;
 
@@ -131,6 +132,7 @@ public:
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
+    static QWaylandSurfaceRole *role();
 
 public Q_SLOTS:
     void ping();
@@ -172,13 +174,13 @@ public:
     XdgPopup();
     XdgPopup(XdgShell *shell, QWaylandInputDevice *inputDevice,
              QWaylandSurface *surface, QWaylandSurface *parentSurface,
-             QWaylandClient *client, uint id);
+             const QWaylandResource &resource);
     ~XdgPopup();
 
     Q_INVOKABLE void initialize(XdgShell *shell,
                                 QWaylandInputDevice *inputDevice,
                                 QWaylandSurface *surface, QWaylandSurface *parentSurface,
-                                QWaylandClient *client, uint id);
+                                const QWaylandResource &resource);
 
     QWaylandSurface *surface() const;
     QWaylandSurface *parentSurface() const;
@@ -187,6 +189,7 @@ public:
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
+    static QWaylandSurfaceRole *role();
 
 Q_SIGNALS:
     void surfaceChanged();

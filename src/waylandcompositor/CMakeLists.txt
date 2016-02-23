@@ -50,6 +50,7 @@ set(SOURCES
     compositor_api/qwaylandquickitem.cpp
     compositor_api/qwaylandquickoutput.cpp
     compositor_api/qwaylandquicksurface.cpp
+    compositor_api/qwaylandresource.cpp
     compositor_api/qwaylandsurface.cpp
     compositor_api/qwaylandtouch.cpp
     compositor_api/qwaylandview.cpp
@@ -179,6 +180,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandQuickItem
         QWaylandQuickOutput
         QWaylandQuickSurface
+        QWaylandResource
         QWaylandSurface
         QWaylandTouch
         QWaylandView

@@ -68,13 +68,13 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void createWlShellSurface(QWaylandSurface *surface,
-                              QWaylandClient *client, uint id);
+                              const QWaylandResource &resource);
     void createXdgSurface(QWaylandSurface *surface,
-                          QWaylandClient *client, uint id);
+                          const QWaylandResource &resource);
     void createXdgPopup(QWaylandInputDevice *inputDevice,
                         QWaylandSurface *surface, QWaylandSurface *parentSurface,
                         const QPoint &relativeToParent,
-                        QWaylandClient *client, uint id);
+                        const QWaylandResource &resource);
     void createGtkShellSurface(QWaylandSurface *surface,
                                QWaylandClient *client, uint id);
 
