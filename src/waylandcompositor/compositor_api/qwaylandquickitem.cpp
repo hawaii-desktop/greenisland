@@ -472,10 +472,21 @@ void QWaylandQuickItem::handleSubsurfaceAdded(QWaylandSurface *childSurface)
         childItem->setSurface(childSurface);
         childItem->setVisible(true);
         childItem->setParentItem(this);
-        connect(childSurface, &QWaylandSurface::subsurfacePositionChanged, childItem, &QWaylandQuickItem::setPosition);
+        connect(childSurface, &QWaylandSurface::subsurfacePositionChanged, childItem, &QWaylandQuickItem::handleSubsurfacePosition);
     } else {
         QMetaObject::invokeMethod(d->subsurfaceHandler, "handleSubsurface", Q_ARG(QWaylandSurface *, childSurface));
     }
+}
+
+/*!
+ * \internal
+ *
+ * Sets the position of this item relative to the parent item.
+ */
+void QWaylandQuickItem::handleSubsurfacePosition(const QPoint &pos)
+{
+    setX(pos.x());
+    setY(pos.y());
 }
 
 
