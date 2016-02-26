@@ -464,6 +464,60 @@ void QWaylandQuickItem::surfaceChangedEvent(QWaylandSurface *newSurface, QWaylan
     Q_UNUSED(oldSurface);
 }
 
+void QWaylandQuickItem::handleSubsurfaceAdded(QWaylandSurface *childSurface)
+{
+    Q_D(QWaylandQuickItem);
+    if (d->subsurfaceHandler.isNull()) {
+        QWaylandQuickItem *childItem = new QWaylandQuickItem;
+        childItem->setSurface(childSurface);
+        childItem->setVisible(true);
+        childItem->setParentItem(this);
+        connect(childSurface, &QWaylandSurface::subsurfacePositionChanged, childItem, &QWaylandQuickItem::setPosition);
+    } else {
+        QMetaObject::invokeMethod(d->subsurfaceHandler, "handleSubsurface", Q_ARG(QWaylandSurface *, childSurface));
+    }
+}
+
+
+
+/*!
+  \qmlproperty bool QtWaylandCompositor::WaylandQuickItem::subsurfaceHandler
+
+  This property provides a way to override the default subsurface behavior.
+
+  By default, Qt will create a new SurfaceItem as a child of this item, and maintain the correct position.
+
+  To override the default, assign a handler object to this property. The handler should implement
+  a handleSubsurfaceAdded(WaylandSurface) function.
+
+  \code
+  ShellSurfaceItem {
+      subsurfaceHandler: QtObject {
+      function handleSubsurfaceAdded(child) {
+        //create custom surface item, and connect the subsurfacePositionChanged signal
+      }
+  }
+  \endcode
+
+  The default value of this property is \c null.
+ */
+
+
+QObject *QWaylandQuickItem::subsurfaceHandler() const
+{
+    Q_D(const QWaylandQuickItem);
+    return d->subsurfaceHandler.data();
+}
+
+void QWaylandQuickItem::setSubsurfaceHandler(QObject *handler)
+{
+    Q_D(QWaylandQuickItem);
+    if (d->subsurfaceHandler.data() != handler) {
+        d->subsurfaceHandler = handler;
+        emit subsurfaceHandlerChanged();
+    }
+}
+
 /*!
  * \internal
  */
@@ -476,6 +530,7 @@ void QWaylandQuickItem::handleSurfaceChanged()
         disconnect(d->oldSurface, &QWaylandSurface::sizeChanged, this, &QWaylandQuickItem::updateSize);
         disconnect(d->oldSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         disconnect(d->oldSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
+        disconnect(d->oldSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
     }
     if (QWaylandSurface *newSurface = d->view->surface()) {
         connect(newSurface, &QWaylandSurface::mappedChanged, this, &QWaylandQuickItem::surfaceMappedChanged);
@@ -483,6 +538,7 @@ void QWaylandQuickItem::handleSurfaceChanged()
         connect(newSurface, &QWaylandSurface::sizeChanged, this, &QWaylandQuickItem::updateSize);
         connect(newSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         connect(newSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
+        connect(newSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
         if (d->sizeFollowsSurface) {
             setWidth(newSurface->size().width());
             setHeight(newSurface->size().height());
