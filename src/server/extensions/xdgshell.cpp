@@ -171,7 +171,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
         return;
     }
 
-    if (!XdgSurface::findIn(parent) && !XdgPopup::findIn(parent)) {
+    if (parent->role() != XdgSurface::role() && parent->role() != XdgPopup::role()) {
         int id = wl_resource_get_id(surfaceResource);
         int parentId = wl_resource_get_id(parentResource);
         wl_resource_post_error(resource->handle, XdgPopupPrivate::error_invalid_parent,
@@ -183,8 +183,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
     Q_ASSERT(surface);
 
-    XdgPopup *popup = XdgPopup::findIn(surface);
-    if (popup) {
+    if (surface->role() == XdgPopup::role()) {
         wl_resource_post_error(resource->handle, XdgShellPrivate::error_role,
                                "wl_surface@%d surface is already a xdg_popup", id);
         return;
