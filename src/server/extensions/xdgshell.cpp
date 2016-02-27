@@ -139,13 +139,6 @@ void XdgShellPrivate::shell_get_xdg_surface(Resource *resource, uint32_t id, wl_
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(q->extensionContainer());
     Q_ASSERT(compositor);
 
-    // TODO: Implement the surface role pattern.
-    if (0) {
-        wl_resource_post_error(resource->handle, XdgShellPrivate::error_role,
-                               "wl_surface@%d already has a role", id);
-        return;
-    }
-
     wl_resource *res = wl_resource_create(resource->client(), &xdg_surface_interface,
                                           wl_resource_get_version(resource->handle), id);
     // XXX FIXME
