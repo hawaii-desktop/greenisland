@@ -489,6 +489,78 @@ void QWaylandQuickItem::handleSubsurfacePosition(const QPoint &pos)
     setY(pos.y());
 }
 
+void QWaylandQuickItem::handlePlaceAbove(QWaylandSurface *siblingSurface)
+{
+    Q_D(QWaylandQuickItem);
+    QWaylandQuickItem *parent = qobject_cast<QWaylandQuickItem*>(parentItem());
+    if (!parent)
+        return;
+
+    //### does not handle changes in z value if parent is a subsurface
+
+    if (parent->surface() == siblingSurface) {
+        setZ(parent->z());
+        d->belowParent = false;
+        //stack below first sibling above parent
+        Q_FOREACH (QQuickItem *item, parent->childItems()) {
+            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
+            if (sibling && !sibling->d_func()->belowParent) {
+                stackAfter(sibling);
+                break;
+            }
+        }
+    } else {
+        Q_FOREACH (QQuickItem *item, parent->childItems()) {
+            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
+            if (sibling && sibling->surface() == siblingSurface) {
+                stackBefore(sibling);
+                setZ(sibling->z());
+                d->belowParent = sibling->d_func()->belowParent;
+                break;
+            }
+        }
+    }
+}
+
+void QWaylandQuickItem::handlePlaceBelow(QWaylandSurface *siblingSurface)
+{
+    Q_D(QWaylandQuickItem);
+    QWaylandQuickItem *parent = qobject_cast<QWaylandQuickItem*>(parentItem());
+    if (!parent)
+        return;
+
+    //### does not handle changes in z value if parent is a subsurface
+
+    if (parent->surface() == siblingSurface) {
+        setZ(parent->z() - 1.0);
+        d->belowParent = true;
+        //stack above last sibling below parent
+        QWaylandQuickItem *siblingBelow = nullptr;
+        Q_FOREACH (QQuickItem *item, parent->childItems()) {
+            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
+            if (!sibling)
+                continue;
+            if (sibling->d_func()->belowParent) {
+                siblingBelow = sibling;
+            } else { // first sibling above parent
+                if (siblingBelow)
+                    stackAfter(siblingBelow);
+                break;
+            }
+        }
+    } else {
+        Q_FOREACH (QQuickItem *item, parent->childItems()) {
+            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
+            if (sibling && sibling->surface() == siblingSurface) {
+                stackBefore(sibling);
+                setZ(sibling->z());
+                d->belowParent = sibling->d_func()->belowParent;
+                break;
+            }
+        }
+    }
+}
+
 
 
 /*!

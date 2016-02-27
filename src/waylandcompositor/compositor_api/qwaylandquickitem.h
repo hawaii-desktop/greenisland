@@ -135,6 +135,8 @@ private Q_SLOTS:
     void beforeSync();
     void handleSubsurfaceAdded(QWaylandSurface *childSurface);
     void handleSubsurfacePosition(const QPoint &pos);
+    void handlePlaceAbove(QWaylandSurface *siblingSurface);
+    void handlePlaceBelow(QWaylandSurface *siblingSurface);
 
 Q_SIGNALS:
     void surfaceChanged();

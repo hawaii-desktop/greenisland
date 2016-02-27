@@ -72,6 +72,7 @@ public:
         , newTexture(false)
         , focusOnClick(true)
         , sizeFollowsSurface(true)
+        , belowParent(false)
         , connectedWindow(Q_NULLPTR)
         , origin(QWaylandSurface::OriginTopLeft)
     {
@@ -116,6 +117,7 @@ public:
     bool newTexture;
     bool focusOnClick;
     bool sizeFollowsSurface;
+    bool belowParent;
 
     QQuickWindow *connectedWindow;
     QWaylandSurface::Origin origin;
