@@ -104,17 +104,15 @@ void XdgShellPrivate::shell_destroy(Resource *resource)
     QWaylandClient *client = QWaylandClient::fromWlClient(compositor, resource->client());
     Q_ASSERT(client);
 
-    // Count how many XdgSurfaces are left
-    int xdgSurfaces = 0;
+    // A client cannot destroy a bound xdg_shell if surfaces with xdg_surface role
+    // are still alive, in that case we send a protocol error
     Q_FOREACH (QWaylandSurface *surface, compositor->surfacesForClient(client)) {
-        if (surface->role() == XdgSurface::role())
-            xdgSurfaces++;
+        if (surface->role() == XdgSurface::role()) {
+            wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
+                                   "Client must destroy surfaces before calling xdg_shell_destroy");
+            return;
+        }
     }
-
-    // All xdg surfaces must be destroyed before xdg shell
-    if (xdgSurfaces > 0)
-        wl_resource_post_error(resource->handle, WL_DISPLAY_ERROR_INVALID_OBJECT,
-                               "Client must destroy surfaces before calling xdg_shell_destroy");
 }
 
 void XdgShellPrivate::shell_use_unstable_version(Resource *resource, int32_t version)
