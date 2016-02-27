@@ -205,7 +205,7 @@ void XdgShellPrivate::shell_get_xdg_popup(Resource *resource, uint32_t id, wl_re
     // However we're still using wayland 1.4, which doesn't have interface specific role
     // errors, so the best we can do is to use wl_display's object_id error.
     wl_resource *displayRes = wl_client_get_object(resource->client(), 1);
-    if (surface->setRole(XdgSurface::role(), displayRes, WL_DISPLAY_ERROR_INVALID_OBJECT))
+    if (surface->setRole(XdgPopup::role(), displayRes, WL_DISPLAY_ERROR_INVALID_OBJECT))
         Q_EMIT q->createPopup(inputDevice, surface, parent,
                               QPoint(x, y), QWaylandResource(res));
 }
