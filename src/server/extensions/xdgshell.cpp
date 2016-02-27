@@ -107,8 +107,7 @@ void XdgShellPrivate::shell_destroy(Resource *resource)
     // Count how many XdgSurfaces are left
     int xdgSurfaces = 0;
     Q_FOREACH (QWaylandSurface *surface, compositor->surfacesForClient(client)) {
-        XdgSurface *xdgSurface = XdgSurface::findIn(surface);
-        if (xdgSurface)
+        if (surface->role() == XdgSurface::role())
             xdgSurfaces++;
     }
 
