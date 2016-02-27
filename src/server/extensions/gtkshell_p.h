@@ -60,7 +60,6 @@ public:
 
 protected:
     void shell_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
-    void shell_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 
     void shell_get_gtk_surface(Resource *resource, uint32_t id,
                                wl_resource *surfaceResource)  Q_DECL_OVERRIDE;

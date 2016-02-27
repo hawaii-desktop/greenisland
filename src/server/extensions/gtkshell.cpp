@@ -54,16 +54,6 @@ void GtkShellPrivate::shell_bind_resource(Resource *resource)
     send_capabilities(resource->handle, 0);
 }
 
-void GtkShellPrivate::shell_destroy_resource(Resource *resource)
-{
-    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
-
-    Q_UNUSED(resource);
-
-    Q_Q(GtkShell);
-    delete q;
-}
-
 void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_resource *surfaceResource)
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
