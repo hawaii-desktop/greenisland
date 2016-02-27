@@ -113,6 +113,8 @@ void XdgShellPrivate::shell_destroy(Resource *resource)
             return;
         }
     }
+
+    wl_resource_destroy(resource->handle);
 }
 
 void XdgShellPrivate::shell_use_unstable_version(Resource *resource, int32_t version)
