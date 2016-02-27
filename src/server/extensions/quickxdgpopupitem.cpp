@@ -62,7 +62,12 @@ bool QuickXdgPopupItemPrivate::processMousePressEvent(QMouseEvent *event)
     if (!shellSurface || !window)
         return false;
 
+    // The popup is going to be destroyed so we don't want to enter here again
+    window->removeEventFilter(q);
+
     XdgPopupPrivate *popupPrivate = XdgPopupPrivate::get(shellSurface);
+    if (!popupPrivate)
+        return false;
     XdgShellPrivate *shellPrivate = XdgShellPrivate::get(popupPrivate->getShell());
 
     QPointF scenePos = window->contentItem()->mapToItem(q, event->windowPos());
