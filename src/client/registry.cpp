@@ -41,7 +41,7 @@
 #include "seat_p.h"
 #include "shm.h"
 #include "shm_p.h"
-#include "qwayland-fullscreen-shell.h"
+#include "qwayland-fullscreen-shell-unstable-v1.h"
 
 #include <wayland-client.h>
 #include <wayland-server.h>
