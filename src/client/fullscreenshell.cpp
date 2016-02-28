@@ -43,20 +43,20 @@ namespace Client {
  */
 
 FullScreenShellPrivate::FullScreenShellPrivate()
-    : QtWayland::_wl_fullscreen_shell()
+    : QtWayland::zwp_fullscreen_shell_v1()
     , capabilities(FullScreenShell::NoCapability)
 {
 }
 
-void FullScreenShellPrivate::fullscreen_shell_capability(uint32_t capability)
+void FullScreenShellPrivate::fullscreen_shell_v1_capability(uint32_t capability)
 {
     Q_Q(FullScreenShell);
 
     FullScreenShell::Capabilities oldCapabilities = capabilities;
 
-    if (capability & QtWayland::_wl_fullscreen_shell::capability_arbitrary_modes)
+    if (capability & FullScreenShellPrivate::capability_arbitrary_modes)
         capabilities |= FullScreenShell::ArbitraryModes;
-    if (capability & QtWayland::_wl_fullscreen_shell::capability_cursor_plane)
+    if (capability & FullScreenShellPrivate::capability_cursor_plane)
         capabilities |= FullScreenShell::CursorPlane;
 
     if (oldCapabilities != capabilities)
@@ -91,7 +91,7 @@ void FullScreenShell::hideOutput(Output *output)
 {
     Q_D(FullScreenShell);
     d->present_surface(Q_NULLPTR,
-                       QtWayland::_wl_fullscreen_shell::present_method_default,
+                       FullScreenShellPrivate::present_method_default,
                        OutputPrivate::get(output)->object());
 }
 

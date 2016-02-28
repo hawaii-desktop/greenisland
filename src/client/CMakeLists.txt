@@ -38,9 +38,9 @@ greenisland_add_client_protocol(SOURCES
     PREFIX wl_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/fullscreen-shell.xml
-    BASENAME fullscreen-shell
-    PREFIX _wl_
+    PROTOCOL ${WAYLAND_PROTOCOLS_DIR}/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml
+    BASENAME fullscreen-shell-unstable-v1
+    PREFIX zwp_
 )
 greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screencaster.xml

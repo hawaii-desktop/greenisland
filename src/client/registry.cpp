@@ -60,7 +60,7 @@ static Registry::Interface nameToInterface(const char *interface)
 {
     if (strcmp(interface, "wl_compositor") == 0)
         return Registry::CompositorInterface;
-    else if (strcmp(interface, "_wl_fullscreen_shell") == 0)
+    else if (strcmp(interface, "zwp_fullscreen_shell_v1") == 0)
         return Registry::FullscreenShellInterface;
     else if (strcmp(interface, "wl_output") == 0)
         return Registry::OutputInterface;
@@ -83,7 +83,7 @@ static const wl_interface *wlInterface(Registry::Interface interface)
     case Registry::OutputInterface:
         return &wl_output_interface;
     case Registry::FullscreenShellInterface:
-        return &_wl_fullscreen_shell_interface;
+        return &zwp_fullscreen_shell_v1_interface;
     case Registry::ScreencasterInterface:
         return &greenisland_screencaster_interface;
     case Registry::ScreenshooterInterface:

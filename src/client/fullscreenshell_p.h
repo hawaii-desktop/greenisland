@@ -53,7 +53,7 @@ namespace Client {
 
 class GREENISLANDCLIENT_EXPORT FullScreenShellPrivate
         : public QObjectPrivate
-        , public QtWayland::_wl_fullscreen_shell
+        , public QtWayland::zwp_fullscreen_shell_v1
 {
     Q_DECLARE_PUBLIC(FullScreenShell)
 public:
@@ -64,7 +64,7 @@ public:
     static FullScreenShellPrivate *get(FullScreenShell *fsh) { return fsh->d_func(); }
 
 protected:
-    void fullscreen_shell_capability(uint32_t capabilty) Q_DECL_OVERRIDE;
+    void fullscreen_shell_v1_capability(uint32_t capabilty) Q_DECL_OVERRIDE;
 };
 
 } // namespace Client
