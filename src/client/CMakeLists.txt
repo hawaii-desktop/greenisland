@@ -39,7 +39,7 @@ greenisland_add_client_protocol(SOURCES
 )
 greenisland_add_client_protocol(SOURCES
     PROTOCOL ${WAYLAND_PROTOCOLS_DIR}/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml
-    BASENAME fullscreen-shell-unstable-v1
+    BASENAME fullscreen-shell
     PREFIX zwp_
 )
 greenisland_add_client_protocol(SOURCES
