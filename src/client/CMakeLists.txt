@@ -125,7 +125,7 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/surface_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell-unstable-v1.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
