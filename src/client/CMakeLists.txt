@@ -154,12 +154,18 @@ install(
         Devel
 )
 
+# CMake package version
+ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX GREENISLAND
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandClientConfigVersion.cmake"
+                  SOVERSION ${PROJECT_SOVERSION})
+
 # CMake package config
 set(GreenIslandClient_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandClient")
 ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandClientConfig.cmake.in"
                                   "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandClientConfig.cmake"
                                   INSTALL_DESTINATION ${GreenIslandClient_CMAKECONFIG_INSTALL_DIR})
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandClientConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandClientConfigVersion.cmake"
         DESTINATION "${GreenIslandClient_CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 install(EXPORT GreenIslandClientTargets

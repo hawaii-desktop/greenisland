@@ -302,12 +302,18 @@ install(
         Devel
 )
 
+# CMake package version
+ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX GREENISLAND
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfigVersion.cmake"
+                  SOVERSION ${PROJECT_SOVERSION})
+
 # CMake package config
 set(GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandCompositor")
 ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandCompositorConfig.cmake.in"
                                   "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfig.cmake"
                                   INSTALL_DESTINATION ${GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR})
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfigVersion.cmake"
         DESTINATION "${GreenIslandCompositor_CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 install(EXPORT GreenIslandCompositorTargets

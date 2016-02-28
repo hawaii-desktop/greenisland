@@ -266,12 +266,18 @@ install(
         Devel
 )
 
+# CMake package version
+ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX GREENISLAND
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfigVersion.cmake"
+                  SOVERSION ${PROJECT_SOVERSION})
+
 # CMake package config
 set(GreenIslandServer_CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/GreenIslandServer")
 ecm_configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerConfig.cmake.in"
                                   "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfig.cmake"
                                   INSTALL_DESTINATION ${GreenIslandServer_CMAKECONFIG_INSTALL_DIR})
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandServerConfigVersion.cmake"
               "${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerConfigExtras.cmake"
               "${CMAKE_CURRENT_SOURCE_DIR}/GreenIslandServerMacros.cmake"
         DESTINATION "${GreenIslandServer_CMAKECONFIG_INSTALL_DIR}"
