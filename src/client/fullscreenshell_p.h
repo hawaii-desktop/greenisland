@@ -32,7 +32,7 @@
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/Client/FullScreenShell>
-#include <GreenIsland/client/private/qwayland-fullscreen-shell.h>
+#include <GreenIsland/client/private/qwayland-fullscreen-shell-unstable-v1.h>
 
 //
 //  W A R N I N G
