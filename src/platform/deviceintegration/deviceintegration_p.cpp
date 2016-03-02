@@ -108,7 +108,7 @@ public:
 DeviceIntegration::DeviceIntegration()
     : m_integration(Q_NULLPTR)
 {
-    const QString preferred = HardwareDetector::detectHardware();
+    QString preferred = HardwareDetector::detectHardware();
     QObject *lastInstance = Q_NULLPTR;
     QString lastKey;
 
@@ -116,6 +116,9 @@ DeviceIntegration::DeviceIntegration()
     qCDebug(lcDeviceIntegration)
             << "EGL device integration plugin lookup paths:"
             << qPrintable(paths.join(' '));
+
+    if (qEnvironmentVariableIsSet("GREENISLAND_QPA_INTEGRATION"))
+        preferred = QString::fromLatin1(qgetenv("GREENISLAND_QPA_INTEGRATION"));
 
     qCDebug(lcDeviceIntegration)
             << "Preferred EGL device integration based on the hardware configuration:"
