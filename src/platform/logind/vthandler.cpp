@@ -250,7 +250,7 @@ public:
                 const char *escape = enable
                         ? "\033[9;15]\033[?33h\033[?25h\033[?0c"
                         : "\033[9;0]\033[?33l\033[?25l\033[?1c";
-                ::write(fd, escape, ::strlen(escape) + 1);
+                (void)::write(fd, escape, ::strlen(escape) + 1);
                 ::close(fd);
                 return;
             }
