@@ -153,6 +153,18 @@ QSize Screen::size() const
     return d->m_size;
 }
 
+int Screen::width() const
+{
+    Q_D(const Screen);
+    return d->m_size.width();
+}
+
+int Screen::height() const
+{
+    Q_D(const Screen);
+    return d->m_size.height();
+}
+
 int Screen::refreshRate() const
 {
     Q_D(const Screen);

@@ -50,6 +50,8 @@ class GREENISLANDSERVER_EXPORT Screen : public QObject
     Q_PROPERTY(QString model READ model CONSTANT)
     Q_PROPERTY(QPoint position READ position NOTIFY positionChanged)
     Q_PROPERTY(QSize size READ size NOTIFY sizeChanged)
+    Q_PROPERTY(int width READ width NOTIFY sizeChanged)
+    Q_PROPERTY(int height READ height NOTIFY sizeChanged)
     Q_PROPERTY(int refreshRate READ refreshRate NOTIFY refreshRateChanged)
     Q_PROPERTY(QSizeF physicalSize READ physicalSize NOTIFY physicalSizeChanged)
     Q_PROPERTY(Subpixel subpixel READ subpixel NOTIFY subpixelChanged)
@@ -87,6 +89,8 @@ public:
 
     QPoint position() const;
     QSize size() const;
+    int width() const;
+    int height() const;
     int refreshRate() const;
     QSizeF physicalSize() const;
     Subpixel subpixel() const;
