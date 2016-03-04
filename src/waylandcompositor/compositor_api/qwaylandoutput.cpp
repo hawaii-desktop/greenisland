@@ -1012,7 +1012,7 @@ void QWaylandOutput::handleSetWidth(int newWidth)
 {
     Q_D(QWaylandOutput);
 
-    if (!d->window || !d->sizeFollowsWindow)
+    if (!d->window || !d->sizeFollowsWindow || d->currentMode < 0)
         return;
 
     Mode newMode = d->modes.at(d->currentMode);
@@ -1028,7 +1028,7 @@ void QWaylandOutput::handleSetHeight(int newHeight)
 {
     Q_D(QWaylandOutput);
 
-    if (!d->window || !d->sizeFollowsWindow)
+    if (!d->window || !d->sizeFollowsWindow || d->currentMode < 0)
         return;
 
     Mode newMode = d->modes.at(d->currentMode);
