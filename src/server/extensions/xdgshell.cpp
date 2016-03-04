@@ -494,10 +494,14 @@ void XdgSurfacePrivate::surface_set_window_geometry(Resource *resource,
 
     Q_UNUSED(resource);
 
+    QRect geometry(x, y, width, height);
+    if (geometry == m_windowGeometry)
+        return;
+
     Q_Q(XdgSurface);
 
     if (width > 0 && height > 0) {
-        m_windowGeometry = QRect(QPoint(x, y), QSize(width, height));
+        m_windowGeometry = geometry;
         Q_EMIT q->windowGeometryChanged();
     }
 }
