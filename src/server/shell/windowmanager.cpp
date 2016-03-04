@@ -205,7 +205,10 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
     dWindow->interfaceName = QWaylandShellSurface::interfaceName();
     dWindow->moveItem->setParentItem(d->rootItem);
     dWindow->setAppId(QString());
+    dWindow->setWindowGeometry(QRect(QPoint(0, 0), surface->size()));
 
+    connect(surface, &QWaylandSurface::sizeChanged,
+            this, &WindowManager::setWlWindowGeometry);
     connect(surface, &QWaylandSurface::surfaceDestroyed,
             this, &WindowManager::surfaceDestroyed);
 
@@ -379,6 +382,21 @@ void WindowManager::setTitle()
 
     if (xdgShellSurface)
         dWindow->setTitle(xdgShellSurface->title());
+}
+
+void WindowManager::setWlWindowGeometry()
+{
+    Q_D(WindowManager);
+
+    QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
+    Q_ASSERT(surface);
+
+    ClientWindow *window = d->windowForSurface(surface);
+    Q_ASSERT(window);
+    ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
+    Q_ASSERT(dWindow);
+
+    dWindow->setWindowGeometry(QRect(QPoint(0, 0), surface->size()));
 }
 
 void WindowManager::setXdgWindowGeometry()

@@ -80,6 +80,7 @@ private Q_SLOTS:
 
     void setAppId();
     void setTitle();
+    void setWlWindowGeometry();
     void setXdgWindowGeometry();
     void setTopLevel();
     void setWlTransient(QWaylandSurface *parentSurface,
