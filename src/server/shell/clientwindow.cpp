@@ -687,6 +687,18 @@ void ClientWindow::move(const QPoint &position)
     d->moveItem->setY(position.y());
 }
 
+void ClientWindow::close()
+{
+    Q_D(ClientWindow);
+
+    if (d->surface->role() == XdgSurface::role())
+        XdgSurface::findIn(d->surface)->close();
+    else if (d->surface->role() == XdgPopup::role())
+        XdgPopup::findIn(d->surface)->sendPopupDone();
+    else
+        d->surface->destroy();
+}
+
 } // namespace Server
 
 } // namespace GreenIsland

@@ -116,6 +116,7 @@ public Q_SLOTS:
     void lower();
     void raise();
     void move(const QPoint &position);
+    void close();
 
 Q_SIGNALS:
     void typeChanged();
