@@ -59,7 +59,7 @@ set(SOURCES
     platformcompositor/openglcompositor.cpp
 )
 
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
+if(NOT ${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
     set(SOURCES
         ${SOURCES}
         eglconvenience/eglpbuffer.cpp
