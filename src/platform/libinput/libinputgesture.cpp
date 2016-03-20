@@ -38,8 +38,8 @@ namespace GreenIsland {
 namespace Platform {
 
 LibInputGesture::LibInputGesture(LibInputHandler *handler)
-    : m_handler(handler)
 {
+    Q_UNUSED(handler);
 }
 
 void LibInputGesture::handlePinchBegin(libinput_event_gesture *event)

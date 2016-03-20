@@ -59,9 +59,6 @@ public:
     void handleSwipeBegin(libinput_event_gesture *event);
     void handleSwipeEnd(libinput_event_gesture *event);
     void handleSwipeUpdate(libinput_event_gesture *event);
-
-private:
-    LibInputHandler *m_handler;
 };
 
 } // namespace Platform
