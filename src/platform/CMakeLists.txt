@@ -42,6 +42,8 @@ set(SOURCES
     deviceintegration/eglfswindow.cpp
     deviceintegration/eglfsxkb.cpp
     eglconvenience/eglconvenience.cpp
+    eglconvenience/eglpbuffer.cpp
+    eglconvenience/eglplatformcontext.cpp
     eglconvenience/eglstreamconvenience.cpp
     udev/udev.cpp
     udev/udevdevice.cpp
@@ -58,14 +60,6 @@ set(SOURCES
     platformcompositor/openglcompositorbackingstore.cpp
     platformcompositor/openglcompositor.cpp
 )
-
-if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    set(SOURCES
-        ${SOURCES}
-        eglconvenience/eglpbuffer.cpp
-        eglconvenience/eglplatformcontext.cpp
-    )
-endif()
 
 qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 
