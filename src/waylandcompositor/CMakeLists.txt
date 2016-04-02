@@ -181,7 +181,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandQuickOutput
         QWaylandQuickSurface
         QWaylandResource
-        QWaylandSurface
+        QWaylandSurface,QWaylandSurfaceRole
         QWaylandTouch
         QWaylandView
     PREFIX
