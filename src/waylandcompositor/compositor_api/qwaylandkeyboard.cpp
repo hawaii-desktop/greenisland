@@ -147,7 +147,7 @@ void QWaylandKeyboardPrivate::focused(QWaylandSurface *surface)
 void QWaylandKeyboardPrivate::keyboard_bind_resource(wl_keyboard::Resource *resource)
 {
     // Send repeat information
-    if (resource->version() >= 4)
+    if (resource->version() >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
         send_repeat_info(resource->handle, repeatRate, repeatDelay);
 
 #ifndef QT_NO_WAYLAND_XKB
@@ -375,7 +375,7 @@ void QWaylandKeyboardPrivate::createXKBKeymap()
 void QWaylandKeyboardPrivate::sendRepeatInfo()
 {
     Q_FOREACH (wl_keyboard::Resource *resource, resourceMap()) {
-        if (resource->version() >= 4)
+        if (resource->version() >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
             send_repeat_info(resource->handle, repeatRate, repeatDelay);
     }
 }
