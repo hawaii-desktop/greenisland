@@ -489,10 +489,10 @@ void QWaylandKeyboard::setRepeatRate(quint32 rate)
     if (d->repeatRate == rate)
         return;
 
+    d->sendRepeatInfo();
+
     d->repeatRate = rate;
     Q_EMIT repeatRateChanged(rate);
-
-    d->sendRepeatInfo();
 }
 
 /*!
@@ -514,10 +514,10 @@ void QWaylandKeyboard::setRepeatDelay(quint32 delay)
     if (d->repeatDelay == delay)
         return;
 
+    d->sendRepeatInfo();
+
     d->repeatDelay = delay;
     Q_EMIT repeatDelayChanged(delay);
-
-    d->sendRepeatInfo();
 }
 
 /*!
