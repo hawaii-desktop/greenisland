@@ -36,7 +36,6 @@
 
 #include "brcmeglintegration.h"
 #include "brcmbuffer.h"
-#include <GreenIsland/QtWaylandCompositor/private/qwlsurface_p.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
 #include <qpa/qplatformnativeinterface.h>
 #include <QtGui/QGuiApplication>
@@ -77,7 +76,7 @@ BrcmEglIntegration::BrcmEglIntegration()
 {
 }
 
-void BrcmEglIntegration::initializeHardware(QtWayland::Display *waylandDisplay)
+void BrcmEglIntegration::initializeHardware(struct ::wl_display *waylandDisplay)
 {
     Q_D(BrcmEglIntegration);
 
@@ -115,7 +114,7 @@ void BrcmEglIntegration::initializeHardware(QtWayland::Display *waylandDisplay)
             return;
         }
         d->valid = true;
-        init(waylandDisplay->handle(), 1);
+        init(display, 1);
     }
 }
 
@@ -146,11 +145,6 @@ void BrcmEglIntegration::bindTextureToBuffer(struct ::wl_resource *buffer)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
     d->eglDestroyImageKHR(d->egl_display, image);
-}
-
-bool BrcmEglIntegration::isYInverted(struct ::wl_resource *) const
-{
-    return false;
 }
 
 void BrcmEglIntegration::brcm_bind_resource(Resource *)
