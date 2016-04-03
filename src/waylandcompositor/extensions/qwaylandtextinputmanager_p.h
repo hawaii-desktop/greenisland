@@ -1,6 +1,5 @@
 /****************************************************************************
 **
-** Copyright (C) 2014 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
 ** Contact: http://www.qt.io/licensing/
 **
@@ -35,52 +34,36 @@
 **
 ****************************************************************************/
 
-#include "qwlinputpanelsurface_p.h"
+#ifndef QWAYLANDTEXTINPUTMANAGER_P_H
+#define QWAYLANDTEXTINPUTMANAGER_P_H
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
-#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text-input-v2.h>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 QT_BEGIN_NAMESPACE
 
-namespace QtWayland {
-
-InputPanelSurface::InputPanelSurface(wl_client *client, int id, QWaylandSurface *surface)
-    : QtWaylandServer::wl_input_panel_surface(client, id, 1)
-    , m_surface(surface)
-    , m_type(Invalid)
-    , m_output(0)
-    , m_position()
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputManagerPrivate : public QWaylandExtensionTemplatePrivate, public QtWaylandServer::zwp_text_input_manager_v2
 {
-    QWaylandSurfacePrivate::get(surface)->setInputPanelSurface(this);
-}
+    Q_DECLARE_PUBLIC(QWaylandTextInputManager)
+public:
+    QWaylandTextInputManagerPrivate();
 
-InputPanelSurface::Type InputPanelSurface::type() const
-{
-    return m_type;
-}
-
-QWaylandOutput *InputPanelSurface::output() const
-{
-    return m_output;
-}
-
-QtWaylandServer::wl_input_panel_surface::position InputPanelSurface::position() const
-{
-    return m_position;
-}
-
-void InputPanelSurface::input_panel_surface_set_overlay_panel(Resource *)
-{
-    m_type = OverlayPanel;
-}
-
-void InputPanelSurface::input_panel_surface_set_toplevel(Resource *, wl_resource *output_resource, uint32_t position)
-{
-    m_type = Toplevel;
-    m_output = QWaylandOutput::fromResource(output_resource);
-    m_position = static_cast<wl_input_panel_surface::position>(position);
-}
+protected:
+    void zwp_text_input_manager_v2_get_text_input(Resource *resource, uint32_t id, struct ::wl_resource *seat) Q_DECL_OVERRIDE;
+};
 
 QT_END_NAMESPACE
 
-} // namespace QtWayland
+#endif // QWAYLANDTEXTINPUTMANAGER_P_H

@@ -102,6 +102,11 @@ public:
     QObject *subsurfaceHandler() const;
     void setSubsurfaceHandler(QObject*);
 
+#ifndef QT_NO_IM
+    QVariant inputMethodQuery(Qt::InputMethodQuery query) const Q_DECL_OVERRIDE;
+    Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
+#endif
+
 protected:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -118,6 +123,10 @@ protected:
     void mouseUngrabEvent() Q_DECL_OVERRIDE;
 
     virtual void surfaceChangedEvent(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
+
+#ifndef QT_NO_IM
+    void inputMethodEvent(QInputMethodEvent *event) Q_DECL_OVERRIDE;
+#endif
 
 public Q_SLOTS:
     virtual void takeFocus(QWaylandInputDevice *device = 0);
@@ -137,6 +146,9 @@ private Q_SLOTS:
     void handleSubsurfacePosition(const QPoint &pos);
     void handlePlaceAbove(QWaylandSurface *siblingSurface);
     void handlePlaceBelow(QWaylandSurface *siblingSurface);
+#ifndef QT_NO_IM
+    void updateInputMethod(Qt::InputMethodQueries queries);
+#endif
 
 Q_SIGNALS:
     void surfaceChanged();

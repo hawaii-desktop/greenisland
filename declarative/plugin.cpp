@@ -37,6 +37,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
 
 #include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
@@ -70,6 +71,8 @@ using namespace GreenIsland::Server;
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShellSurface)
+
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandTextInputManager)
 
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkSurface)
@@ -124,6 +127,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<QWaylandShellQuickData>(uri, 1, 0, "Shell");
     qmlRegisterType<QWaylandShellSurfaceQuickData>(uri, 1, 0, "ShellSurface");
     qmlRegisterType<QWaylandQuickShellSurfaceItem>(uri, 1, 0, "ShellSurfaceItem");
+
+    // Text input manager
+    qmlRegisterType<QWaylandTextInputManagerQuickData>(uri, 1, 0, "TextInputManager");
 
     // gtk-shell
     qmlRegisterType<GtkShellQuickData>(uri, 1, 0, "GtkShell");

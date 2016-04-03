@@ -34,50 +34,65 @@
 **
 ****************************************************************************/
 
-#include "qwaylandinputpanel.h"
+#include "qwaylandtextinputmanager.h"
+#include "qwaylandtextinputmanager_p.h"
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
-#include <private/qobject_p.h>
-
-#include "qwlinputpanel_p.h"
+#include "qwaylandtextinput.h"
 
 QT_BEGIN_NAMESPACE
 
-QWaylandInputPanel::QWaylandInputPanel(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate(compositor, *new QWaylandInputPanelPrivate(compositor))
+QWaylandTextInputManagerPrivate::QWaylandTextInputManagerPrivate()
+    : QWaylandExtensionTemplatePrivate()
+    , QtWaylandServer::zwp_text_input_manager_v2()
 {
 }
 
-QWaylandSurface *QWaylandInputPanel::focus() const
+void QWaylandTextInputManagerPrivate::zwp_text_input_manager_v2_get_text_input(Resource *resource, uint32_t id, struct ::wl_resource *seat)
 {
-   Q_D(const QWaylandInputPanel);
-
-    return d->focus();
+    Q_Q(QWaylandTextInputManager);
+    QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(q->extensionContainer());
+    QWaylandInputDevice *inputDevice = QWaylandInputDevice::fromSeatResource(seat);
+    QWaylandTextInput *textInput = QWaylandTextInput::findIn(inputDevice);
+    if (!textInput) {
+        textInput = new QWaylandTextInput(inputDevice, compositor);
+    }
+    textInput->add(resource->client(), id, 1);
 }
 
-bool QWaylandInputPanel::visible() const
+QWaylandTextInputManager::QWaylandTextInputManager()
+    : QWaylandExtensionTemplate<QWaylandTextInputManager>(*new QWaylandTextInputManagerPrivate)
 {
-    Q_D(const QWaylandInputPanel);
-
-    return d->inputPanelVisible();
 }
 
-QRect QWaylandInputPanel::cursorRectangle() const
+QWaylandTextInputManager::QWaylandTextInputManager(QWaylandCompositor *compositor)
+    : QWaylandExtensionTemplate<QWaylandTextInputManager>(compositor, *new QWaylandTextInputManagerPrivate)
 {
-    Q_D(const QWaylandInputPanel);
-
-    return d->cursorRectangle();
 }
 
-const struct wl_interface *QWaylandInputPanel::interface()
+void QWaylandTextInputManager::initialize()
 {
-    return QWaylandInputPanelPrivate::interface();
+    Q_D(QWaylandTextInputManager);
+
+    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
+    if (!compositor) {
+        qWarning() << "Failed to find QWaylandCompositor when initializing QWaylandTextInputManager";
+        return;
+    }
+    d->init(compositor->display(), 1);
 }
 
-QByteArray QWaylandInputPanel::interfaceName()
+const wl_interface *QWaylandTextInputManager::interface()
 {
-    return QWaylandInputPanelPrivate::interfaceName();
+    return QWaylandTextInputManagerPrivate::interface();
+}
+
+QByteArray QWaylandTextInputManager::interfaceName()
+{
+    return QWaylandTextInputManagerPrivate::interfaceName();
 }
 
 QT_END_NAMESPACE

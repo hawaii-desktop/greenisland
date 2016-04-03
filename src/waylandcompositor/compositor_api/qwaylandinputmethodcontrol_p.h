@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2016 Klarälvdalens Datakonsult AB (KDAB).
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -34,11 +34,8 @@
 **
 ****************************************************************************/
 
-#ifndef QTWAYLAND_QWLTEXTINPUTMANAGER_P_H
-#define QTWAYLAND_QWLTEXTINPUTMANAGER_P_H
-
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text.h>
+#ifndef QWAYLANDINPUTMETHODCONTROL_P_H
+#define QWAYLANDINPUTMETHODCONTROL_P_H
 
 //
 //  W A R N I N G
@@ -51,28 +48,33 @@
 // We mean it.
 //
 
+#include <QtWaylandCompositor/qwaylandexport.h>
+#include <QtWaylandCompositor/qwaylandinputmethodcontrol.h>
+
+#include <QtCore/private/qobject_p.h>
+
 QT_BEGIN_NAMESPACE
 
 class QWaylandCompositor;
+class QWaylandInputDevice;
+class QWaylandSurface;
+class QWaylandTextInput;
 
-namespace QtWayland {
-
-class TextInputManager : public QWaylandExtensionTemplate<TextInputManager>, public QtWaylandServer::wl_text_input_manager
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandInputMethodControlPrivate : public QObjectPrivate
 {
-    Q_OBJECT
+    Q_DECLARE_PUBLIC(QWaylandInputMethodControl)
+
 public:
-    TextInputManager(QWaylandCompositor *compositor);
-    ~TextInputManager();
+    explicit QWaylandInputMethodControlPrivate(QWaylandSurface *surface);
 
-protected:
-    void text_input_manager_create_text_input(Resource *resource, uint32_t id) Q_DECL_OVERRIDE;
+    QWaylandTextInput *textInput() const;
 
-private:
-    QWaylandCompositor *m_compositor;
+    QWaylandCompositor *compositor;
+    QWaylandInputDevice *inputDevice;
+    QWaylandSurface *surface;
+    bool enabled;
 };
-
-} // namespace QtWayland
 
 QT_END_NAMESPACE
 
-#endif // QTWAYLAND_QWLTEXTINPUTMANAGER_P_H
+#endif // QWAYLANDINPUTMETHODCONTROL_P_H

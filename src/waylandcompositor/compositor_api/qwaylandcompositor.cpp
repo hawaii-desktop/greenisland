@@ -77,6 +77,8 @@
 
 #include <QDebug>
 
+Q_LOGGING_CATEGORY(qLcCompositorInputMethods, "qt.compositor.input.methods")
+
 QT_BEGIN_NAMESPACE
 
 namespace QtWayland {

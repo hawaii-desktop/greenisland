@@ -37,6 +37,8 @@
 #include "qwaylandquickitem.h"
 #include "qwaylandquickitem_p.h"
 #include "qwaylandquicksurface.h"
+#include "qwaylandinputmethodcontrol.h"
+#include "qwaylandtextinput.h"
 #include <GreenIsland/QtWaylandCompositor/qwaylandcompositor.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
@@ -54,6 +56,7 @@
 
 #include <wayland-server.h>
 #include <QThread>
+
 QT_BEGIN_NAMESPACE
 
 QMutex *QWaylandQuickItemPrivate::mutex = 0;
@@ -468,6 +471,21 @@ void QWaylandQuickItem::surfaceChangedEvent(QWaylandSurface *newSurface, QWaylan
     Q_UNUSED(oldSurface);
 }
 
+#ifndef QT_NO_IM
+/*!
+ * \internal
+ */
+void QWaylandQuickItem::inputMethodEvent(QInputMethodEvent *event)
+{
+    Q_D(QWaylandQuickItem);
+    if (d->shouldSendInputEvents()) {
+        d->oldSurface->inputMethodControl()->inputMethodEvent(event);
+    } else {
+        event->ignore();
+    }
+}
+#endif
+
 void QWaylandQuickItem::handleSubsurfaceAdded(QWaylandSurface *childSurface)
 {
     Q_D(QWaylandQuickItem);
@@ -618,6 +636,9 @@ void QWaylandQuickItem::handleSurfaceChanged()
         disconnect(d->oldSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         disconnect(d->oldSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
         disconnect(d->oldSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
+#ifndef QT_NO_IM
+        disconnect(d->oldSurface->inputMethodControl(), &QWaylandInputMethodControl::updateInputMethod, this, &QWaylandQuickItem::updateInputMethod);
+#endif
     }
     if (QWaylandSurface *newSurface = d->view->surface()) {
         connect(newSurface, &QWaylandSurface::mappedChanged, this, &QWaylandQuickItem::surfaceMappedChanged);
@@ -626,6 +647,9 @@ void QWaylandQuickItem::handleSurfaceChanged()
         connect(newSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         connect(newSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
         connect(newSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
+#ifndef QT_NO_IM
+        connect(newSurface->inputMethodControl(), &QWaylandInputMethodControl::updateInputMethod, this, &QWaylandQuickItem::updateInputMethod);
+#endif
         if (d->sizeFollowsSurface) {
             setWidth(newSurface->size().width());
             setHeight(newSurface->size().height());
@@ -641,6 +665,9 @@ void QWaylandQuickItem::handleSurfaceChanged()
     }
     surfaceChangedEvent(d->view->surface(), d->oldSurface);
     d->oldSurface = d->view->surface();
+#ifndef QT_NO_IM
+    updateInputMethod(Qt::ImQueryInput);
+#endif
 }
 
 /*!
@@ -649,7 +676,7 @@ void QWaylandQuickItem::handleSurfaceChanged()
  */
 void QWaylandQuickItem::takeFocus(QWaylandInputDevice *device)
 {
-    setFocus(true);
+    forceActiveFocus();
 
     if (!surface())
         return;
@@ -659,6 +686,9 @@ void QWaylandQuickItem::takeFocus(QWaylandInputDevice *device)
         target = compositor()->defaultInputDevice();
     }
     target->setKeyboardFocus(surface());
+    QWaylandTextInput *textInput = QWaylandTextInput::findIn(target);
+    if (textInput)
+        textInput->setFocus(view());
 }
 
 /*!
@@ -771,6 +801,23 @@ void QWaylandQuickItem::setSizeFollowsSurface(bool sizeFollowsSurface)
     emit sizeFollowsSurfaceChanged();
 }
 
+#ifndef QT_NO_IM
+QVariant QWaylandQuickItem::inputMethodQuery(Qt::InputMethodQuery query) const
+{
+    return inputMethodQuery(query, QVariant());
+}
+
+QVariant QWaylandQuickItem::inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const
+{
+    Q_D(const QWaylandQuickItem);
+
+    if (query == Qt::ImEnabled)
+        return QVariant((flags() & ItemAcceptsInputMethod) != 0);
+
+    return d->oldSurface->inputMethodControl()->inputMethodQuery(query, argument);
+}
+#endif
+
 /*!
     \qmlproperty bool QtWayland::QWaylandSurfaceItem::paintEnabled
 
@@ -836,6 +883,17 @@ void QWaylandQuickItem::beforeSync()
         update();
     }
 }
+
+#ifndef QT_NO_IM
+void QWaylandQuickItem::updateInputMethod(Qt::InputMethodQueries queries)
+{
+    Q_D(QWaylandQuickItem);
+
+    setFlag(QQuickItem::ItemAcceptsInputMethod,
+            d->oldSurface ? d->oldSurface->inputMethodControl()->enabled() : false);
+    QQuickItem::updateInputMethod(queries | Qt::ImEnabled);
+}
+#endif
 
 QSGNode *QWaylandQuickItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *)
 {

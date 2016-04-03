@@ -34,72 +34,54 @@
 **
 ****************************************************************************/
 
-#ifndef QTWAYLAND_QWLINPUTMETHOD_H
-#define QTWAYLAND_QWLINPUTMETHOD_H
+#ifndef QWAYLANDTEXTINPUT_H
+#define QWAYLANDTEXTINPUT_H
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
-
-#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-input-method.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
-
-#include <QObject>
-#include <QScopedPointer>
-
-#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
 QT_BEGIN_NAMESPACE
 
-class QWaylandInputDevice;
-class QWaylandCompositor;
+class QWaylandTextInputPrivate;
 
-namespace QtWayland {
+class QInputMethodEvent;
+class QKeyEvent;
+class QWaylandSurface;
+class QWaylandView;
 
-class InputMethodContext;
-class TextInput;
-
-class InputMethod : public QWaylandExtensionTemplate<InputMethod> , public QtWaylandServer::wl_input_method
+class QWaylandTextInput : public QWaylandExtensionTemplate<QWaylandTextInput>
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(QWaylandTextInput)
 public:
-    explicit InputMethod(QWaylandInputDevice *seat);
-    ~InputMethod();
+    explicit QWaylandTextInput(QWaylandObject *container, QWaylandCompositor *compositor);
+    ~QWaylandTextInput();
 
-    QWaylandCompositor *compositor() const { return m_seat->compositor(); }
+    void sendInputMethodEvent(QInputMethodEvent *event);
+    void sendKeyEvent(QKeyEvent *event);
 
-    void activate(TextInput *textInput);
-    void deactivate();
+    QVariant inputMethodQuery(Qt::InputMethodQuery property, QVariant argument) const;
 
-    bool isBound() const;
+    QWaylandView *focus() const;
+    void setFocus(QWaylandView *view);
 
-    InputMethodContext *context() const;
-    TextInput *textInput() const;
+    bool isSurfaceEnabled(QWaylandSurface *surface) const;
 
-protected:
-    void input_method_bind_resource(Resource *resource);
-    void input_method_destroy_resource(Resource *resource);
+    void add(::wl_client *client, uint32_t id, int version);
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
 
-private Q_SLOTS:
-    void focusChanged(QWaylandSurface *surface);
+Q_SIGNALS:
+    void updateInputMethod(Qt::InputMethodQueries queries);
+    void surfaceEnabled(QWaylandSurface *surface);
+    void surfaceDisabled(QWaylandSurface *surface);
 
 private:
-    QWaylandInputDevice *m_seat;
-    Resource *m_resource;
-    TextInput *m_textInput;
-    InputMethodContext *m_context;
+    void focusSurfaceDestroyed(void *);
+    void sendInputPanelState();
+    void sendTextDirection();
+    void sendLocale();
 };
-
-} // namespace QtWayland
 
 QT_END_NAMESPACE
 
-#endif // QTWAYLAND_QWLINPUTMETHOD_H
+#endif // QWAYLANDTEXTINPUT_H

@@ -38,16 +38,17 @@
 #include "qwaylandinput_p.h"
 
 #include "qwaylandcompositor.h"
+#include "qwaylandinputmethodcontrol.h"
 #include "qwaylandview.h"
 #include <GreenIsland/QtWaylandCompositor/QWaylandDrag>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTouch>
 #include <GreenIsland/QtWaylandCompositor/QWaylandPointer>
-#include <GreenIsland/QtWaylandCompositor/private/qwlinputmethod_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwldatadevice_p.h>
 
 #include "extensions/qwlqtkey_p.h"
+#include "extensions/qwaylandtextinput.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -290,9 +291,19 @@ void QWaylandInputDevice::sendFullTouchEvent(QTouchEvent *event)
 void QWaylandInputDevice::sendFullKeyEvent(QKeyEvent *event)
 {
     Q_D(QWaylandInputDevice);
+
     if (!keyboardFocus()) {
         qWarning("Cannot send key event, no keyboard focus, fix the compositor");
         return;
+    }
+
+    if (keyboardFocus()->inputMethodControl()->enabled()
+            && event->nativeScanCode() == 0) {
+        QWaylandTextInput *textInput = QWaylandTextInput::findIn(this);
+        if (textInput) {
+            textInput->sendKeyEvent(event);
+            return;
+        }
     }
 
     QtWayland::QtKeyExtensionGlobal *ext = QtWayland::QtKeyExtensionGlobal::findIn(d->compositor);
