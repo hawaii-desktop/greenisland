@@ -794,6 +794,7 @@ QWaylandInputDevice *QWaylandCompositor::inputDeviceFor(QInputEvent *inputEvent)
     return dev;
 }
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
 /*!
  * \qmlproperty bool QtWaylandCompositor::WaylandCompositor::useHardwareIntegrationExtension
  *
@@ -829,5 +830,6 @@ void QWaylandCompositor::setUseHardwareIntegrationExtension(bool use)
     d->use_hw_integration_extension = use;
     useHardwareIntegrationExtensionChanged();
 }
+#endif
 
 QT_END_NAMESPACE

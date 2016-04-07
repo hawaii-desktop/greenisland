@@ -74,7 +74,9 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandCompositor : public QWaylandObject
     Q_PROPERTY(QByteArray socketName READ socketName WRITE setSocketName)
     Q_PROPERTY(bool retainedSelection READ retainedSelectionEnabled WRITE setRetainedSelectionEnabled)
     Q_PROPERTY(QWaylandOutput *defaultOutput READ defaultOutput WRITE setDefaultOutput NOTIFY defaultOutputChanged)
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     Q_PROPERTY(bool useHardwareIntegrationExtension READ useHardwareIntegrationExtension WRITE setUseHardwareIntegrationExtension NOTIFY useHardwareIntegrationExtensionChanged)
+#endif
     Q_PROPERTY(QWaylandInputDevice *defaultInputDevice READ defaultInputDevice NOTIFY defaultInputDeviceChanged)
 
 public:
@@ -115,8 +117,10 @@ public:
 
     QWaylandInputDevice *inputDeviceFor(QInputEvent *inputEvent);
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
     bool useHardwareIntegrationExtension() const;
     void setUseHardwareIntegrationExtension(bool use);
+#endif
 
 public Q_SLOTS:
     void processWaylandEvents();
