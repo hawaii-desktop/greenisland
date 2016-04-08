@@ -36,6 +36,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWindowManagerExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
 
@@ -69,6 +70,9 @@
 using namespace GreenIsland::Server;
 
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
+
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWindowManagerExtension)
+
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShellSurface)
 
@@ -120,6 +124,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                  QObject::tr("Cannot create instance of WaylandResource"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",
                                                 QObject::tr("Cannot create instance of WaylandSurfaceBase, use WaylandSurface instead"));
+
+    // Qt window manager
+    qmlRegisterType<QWaylandWindowManagerExtensionQuickData>(uri, 1, 0, "WindowManager");
 
     // wl-shell
     qmlRegisterUncreatableType<QWaylandWlShellSurface>(uri, 1, 0, "WlShellSurfaceBase",
