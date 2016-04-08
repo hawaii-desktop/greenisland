@@ -54,8 +54,8 @@ set(SOURCES
     compositor_api/qwaylandsurface.cpp
     compositor_api/qwaylandtouch.cpp
     compositor_api/qwaylandview.cpp
-    extensions/qwaylandquickshellsurfaceitem.cpp
-    extensions/qwaylandshell.cpp
+    extensions/qwaylandquickwlshellsurfaceitem.cpp
+    extensions/qwaylandwlshell.cpp
     extensions/qwaylandwindowmanagerextension.cpp
     extensions/qwaylandtextinput.cpp
     extensions/qwaylandtextinputmanager.cpp
@@ -187,8 +187,8 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
 
 generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     HEADER_NAMES
-        QWaylandShell,QWaylandShellSurface
-        QWaylandQuickShellSurfaceItem
+        QWaylandWlShell,QWaylandWlShellSurface
+        QWaylandQuickWlShellSurfaceItem
         QWaylandTextInput
         QWaylandTextInputManager
     PREFIX
@@ -230,8 +230,8 @@ private_headers(GreenIslandCompositor_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandtouch_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandview_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandinputmethodcontrol_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandquickshellsurfaceitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandshell_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandquickwlshellsurfaceitem_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwindowmanagerextension_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinput_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinputmanager_p.h

@@ -80,7 +80,7 @@ WindowManager::WindowManager(QObject *parent)
     : QObject(*new WindowManagerPrivate(), parent)
 {
     Q_D(WindowManager);
-    d->wlShell = new QWaylandShell();
+    d->wlShell = new QWaylandWlShell();
     d->xdgShell = new XdgShell();
     d->gtkShell = new GtkShell();
 }
@@ -90,7 +90,7 @@ WindowManager::WindowManager(QWaylandCompositor *compositor, QObject *parent)
 {
     Q_D(WindowManager);
     d->compositor = compositor;
-    d->wlShell = new QWaylandShell(compositor);
+    d->wlShell = new QWaylandWlShell(compositor);
     d->xdgShell = new XdgShell(compositor);
     d->gtkShell = new GtkShell(compositor);
 }
@@ -168,7 +168,7 @@ void WindowManager::initialize()
     if (d->initialized)
         return;
 
-    connect(d->wlShell, &QWaylandShell::createShellSurface,
+    connect(d->wlShell, &QWaylandWlShell::createShellSurface,
             this, &WindowManager::createWlShellSurface);
     connect(d->xdgShell, &XdgShell::createSurface,
             this, &WindowManager::createXdgSurface);
@@ -193,8 +193,8 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
 {
     Q_D(WindowManager);
 
-    QWaylandShellSurface *shellSurface =
-            new QWaylandShellSurface(d->wlShell, surface, resource);
+    QWaylandWlShellSurface *shellSurface =
+            new QWaylandWlShellSurface(d->wlShell, surface, resource);
 
     ClientWindow *window = new ClientWindow(surface, this);
     d->windowsList.append(window);
@@ -202,7 +202,7 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
 
     ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
     dWindow->wm = this;
-    dWindow->interfaceName = QWaylandShellSurface::interfaceName();
+    dWindow->interfaceName = QWaylandWlShellSurface::interfaceName();
     dWindow->moveItem->setParentItem(d->rootItem);
     dWindow->setAppId(QString());
     dWindow->setWindowGeometry(QRect(QPoint(0, 0), surface->size()));
@@ -219,21 +219,21 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
 
     Q_EMIT windowCreated(window);
 
-    connect(shellSurface, &QWaylandShellSurface::classNameChanged,
+    connect(shellSurface, &QWaylandWlShellSurface::classNameChanged,
             this, &WindowManager::setAppId);
-    connect(shellSurface, &QWaylandShellSurface::titleChanged,
+    connect(shellSurface, &QWaylandWlShellSurface::titleChanged,
             this, &WindowManager::setTitle);
-    connect(shellSurface, &QWaylandShellSurface::setDefaultToplevel,
+    connect(shellSurface, &QWaylandWlShellSurface::setDefaultToplevel,
             this, &WindowManager::setTopLevel);
-    connect(shellSurface, &QWaylandShellSurface::setTransient,
+    connect(shellSurface, &QWaylandWlShellSurface::setTransient,
             this, &WindowManager::setWlTransient);
-    connect(shellSurface, &QWaylandShellSurface::setPopup,
+    connect(shellSurface, &QWaylandWlShellSurface::setPopup,
             this, &WindowManager::setWlPopup);
-    connect(shellSurface, &QWaylandShellSurface::setMaximized,
+    connect(shellSurface, &QWaylandWlShellSurface::setMaximized,
             this, &WindowManager::setMaximized);
-    connect(shellSurface, &QWaylandShellSurface::setFullScreen,
+    connect(shellSurface, &QWaylandWlShellSurface::setFullScreen,
             this, &WindowManager::setWlFullScreen);
-    connect(shellSurface, &QWaylandShellSurface::pong,
+    connect(shellSurface, &QWaylandWlShellSurface::pong,
             window, &ClientWindow::pong);
 }
 
@@ -338,7 +338,7 @@ void WindowManager::setAppId()
 
     QWaylandSurface *surface = Q_NULLPTR;
 
-    QWaylandShellSurface *wlShellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     if (wlShellSurface)
         surface = wlShellSurface->surface();
 
@@ -364,7 +364,7 @@ void WindowManager::setTitle()
 
     QWaylandSurface *surface = Q_NULLPTR;
 
-    QWaylandShellSurface *wlShellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     if (wlShellSurface)
         surface = wlShellSurface->surface();
 
@@ -420,7 +420,7 @@ void WindowManager::setTopLevel()
 
     QWaylandSurface *surface = Q_NULLPTR;
 
-    QWaylandShellSurface *wlShellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     if (wlShellSurface)
         surface = wlShellSurface->surface();
 
@@ -438,11 +438,11 @@ void WindowManager::setTopLevel()
 
 void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
                                    const QPoint &relativeToParent,
-                                   QWaylandShellSurface::FocusPolicy policy)
+                                   QWaylandWlShellSurface::FocusPolicy policy)
 {
     Q_D(WindowManager);
 
-    QWaylandShellSurface *shellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
 
     ClientWindow *window = d->windowForSurface(shellSurface->surface());
@@ -460,7 +460,7 @@ void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
     }
 
     dWindow->setTransient(parentWindow, pos,
-                          policy == QWaylandShellSurface::DefaultFocus);
+                          policy == QWaylandWlShellSurface::DefaultFocus);
 }
 
 void WindowManager::setWlPopup(QWaylandInputDevice *inputDevice,
@@ -469,7 +469,7 @@ void WindowManager::setWlPopup(QWaylandInputDevice *inputDevice,
 {
     Q_D(WindowManager);
 
-    QWaylandShellSurface *shellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
 
     ClientWindow *window = d->windowForSurface(shellSurface->surface());
@@ -508,7 +508,7 @@ void WindowManager::setMaximized(QWaylandOutput *output)
 
     QWaylandSurface *surface = Q_NULLPTR;
 
-    QWaylandShellSurface *wlShellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     if (wlShellSurface)
         surface = wlShellSurface->surface();
 
@@ -524,12 +524,12 @@ void WindowManager::setMaximized(QWaylandOutput *output)
     dWindow->setMaximized(output);
 }
 
-void WindowManager::setWlFullScreen(QWaylandShellSurface::FullScreenMethod,
+void WindowManager::setWlFullScreen(QWaylandWlShellSurface::FullScreenMethod,
                                     uint, QWaylandOutput *output)
 {
     Q_D(WindowManager);
 
-    QWaylandShellSurface *shellSurface = qobject_cast<QWaylandShellSurface *>(sender());
+    QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
 
     ClientWindow *window = d->windowForSurface(shellSurface->surface());

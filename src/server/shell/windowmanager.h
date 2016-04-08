@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_WINDOWMANAGER_H
 #define GREENISLAND_WINDOWMANAGER_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 
 #include <GreenIsland/Server/ClientWindow>
 
@@ -85,12 +85,12 @@ private Q_SLOTS:
     void setTopLevel();
     void setWlTransient(QWaylandSurface *parentSurface,
                         const QPoint &relativeToParent,
-                        QWaylandShellSurface::FocusPolicy policy);
+                        QWaylandWlShellSurface::FocusPolicy policy);
     void setWlPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface,
                     const QPoint &relativeToParent);
     void setXdgTransient(QWaylandSurface *parentSurface);
     void setMaximized(QWaylandOutput *output);
-    void setWlFullScreen(QWaylandShellSurface::FullScreenMethod method,
+    void setWlFullScreen(QWaylandWlShellSurface::FullScreenMethod method,
                          uint framerate, QWaylandOutput *output);
     void setXdgFullScreen(QWaylandOutput *output);
 

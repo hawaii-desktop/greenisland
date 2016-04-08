@@ -30,7 +30,7 @@
 
 #include <QtCore/private/qobject_p.h>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 
 #include <GreenIsland/Server/WindowManager>
 #include <GreenIsland/Server/XdgShell>
@@ -85,7 +85,7 @@ public:
     bool initialized;
     QWaylandCompositor *compositor;
     QQuickItem *rootItem;
-    QWaylandShell *wlShell;
+    QWaylandWlShell *wlShell;
     XdgShell *xdgShell;
     GtkShell *gtkShell;
     QVector<ClientWindow *> windowsList;

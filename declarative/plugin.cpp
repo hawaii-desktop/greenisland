@@ -33,10 +33,10 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
-#include <GreenIsland/QtWaylandCompositor/QWaylandShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
 
 #include <GreenIsland/Server/ApplicationManager>
@@ -69,8 +69,8 @@
 using namespace GreenIsland::Server;
 
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShell)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandShellSurface)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShell)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShellSurface)
 
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandTextInputManager)
 
@@ -122,11 +122,11 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                 QObject::tr("Cannot create instance of WaylandSurfaceBase, use WaylandSurface instead"));
 
     // wl-shell
-    qmlRegisterUncreatableType<QWaylandShellSurface>(uri, 1, 0, "ShellSurfaceBase",
-                                                     QObject::tr("Cannot create instance of ShellSurfaceBase, use ShellSurface instead"));
-    qmlRegisterType<QWaylandShellQuickData>(uri, 1, 0, "Shell");
-    qmlRegisterType<QWaylandShellSurfaceQuickData>(uri, 1, 0, "ShellSurface");
-    qmlRegisterType<QWaylandQuickShellSurfaceItem>(uri, 1, 0, "ShellSurfaceItem");
+    qmlRegisterUncreatableType<QWaylandWlShellSurface>(uri, 1, 0, "WlShellSurfaceBase",
+                                                       QObject::tr("Cannot create instance of WlShellSurfaceBase, use WlShellSurface instead"));
+    qmlRegisterType<QWaylandWlShellQuickData>(uri, 1, 0, "WlShell");
+    qmlRegisterType<QWaylandWlShellSurfaceQuickData>(uri, 1, 0, "WlShellSurface");
+    qmlRegisterType<QWaylandQuickWlShellSurfaceItem>(uri, 1, 0, "WlShellSurfaceItem");
 
     // Text input manager
     qmlRegisterType<QWaylandTextInputManagerQuickData>(uri, 1, 0, "TextInputManager");

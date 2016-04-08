@@ -31,7 +31,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandInput>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
 
 #include "clientwindow.h"
 #include "clientwindow_p.h"

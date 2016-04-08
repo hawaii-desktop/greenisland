@@ -27,7 +27,7 @@
 
 #include <QtGui/QGuiApplication>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
 
 #include "clientwindow.h"
 #include "clientwindow_p.h"
@@ -192,16 +192,16 @@ void ClientWindowView::initialize(ClientWindow *window, QWaylandQuickOutput *out
     ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
 
     // Create the shell surface item
-    if (dWindow->interfaceName == QWaylandShellSurface::interfaceName()) {
-        QWaylandShellSurface *shellSurface =
-                QWaylandShellSurface::findIn(dWindow->surface);
+    if (dWindow->interfaceName == QWaylandWlShellSurface::interfaceName()) {
+        QWaylandWlShellSurface *shellSurface =
+                QWaylandWlShellSurface::findIn(dWindow->surface);
         if (!shellSurface) {
             qCWarning(gLcCore, "Shell surface not found");
             return;
         }
 
-        QWaylandQuickShellSurfaceItem *shellSurfaceItem =
-                new QWaylandQuickShellSurfaceItem();
+        QWaylandQuickWlShellSurfaceItem *shellSurfaceItem =
+                new QWaylandQuickWlShellSurfaceItem();
         shellSurfaceItem->setSurface(dWindow->surface);
         shellSurfaceItem->setShellSurface(shellSurface);
 
