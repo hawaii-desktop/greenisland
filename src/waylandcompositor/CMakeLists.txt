@@ -191,6 +191,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandQuickWlShellSurfaceItem
         QWaylandTextInput
         QWaylandTextInputManager
+        QWaylandWindowManagerExtension
     PREFIX
         QtWaylandCompositor
     OUTPUT_DIR
