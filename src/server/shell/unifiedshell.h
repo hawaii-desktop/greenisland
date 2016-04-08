@@ -25,8 +25,8 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_WINDOWMANAGER_H
-#define GREENISLAND_WINDOWMANAGER_H
+#ifndef GREENISLAND_UNIFIEDSHELL_H
+#define GREENISLAND_UNIFIEDSHELL_H
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 
@@ -40,17 +40,17 @@ namespace GreenIsland {
 
 namespace Server {
 
-class WindowManagerPrivate;
+class UnifiedShellPrivate;
 
-class GREENISLANDSERVER_EXPORT WindowManager : public QObject
+class GREENISLANDSERVER_EXPORT UnifiedShell : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(WindowManager)
+    Q_DECLARE_PRIVATE(UnifiedShell)
     Q_PROPERTY(QWaylandCompositor *compositor READ compositor WRITE setCompositor NOTIFY compositorChanged)
-    Q_PRIVATE_PROPERTY(WindowManager::d_func(), QQmlListProperty<GreenIsland::Server::ClientWindow> windows READ windows NOTIFY windowsChanged)
+    Q_PRIVATE_PROPERTY(UnifiedShell::d_func(), QQmlListProperty<GreenIsland::Server::ClientWindow> windows READ windows NOTIFY windowsChanged)
 public:
-    WindowManager(QObject *parent = Q_NULLPTR);
-    WindowManager(QWaylandCompositor *compositor, QObject *parent = Q_NULLPTR);
+    UnifiedShell(QObject *parent = Q_NULLPTR);
+    UnifiedShell(QWaylandCompositor *compositor, QObject *parent = Q_NULLPTR);
 
     QWaylandCompositor *compositor() const;
     void setCompositor(QWaylandCompositor *compositor);
@@ -101,4 +101,4 @@ private Q_SLOTS:
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_WINDOWMANAGER_H
+#endif // GREENISLAND_UNIFIEDSHELL_H

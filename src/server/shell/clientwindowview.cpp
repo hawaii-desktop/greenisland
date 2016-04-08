@@ -34,8 +34,6 @@
 #include "clientwindowview.h"
 #include "clientwindowview_p.h"
 #include "serverlogging_p.h"
-#include "windowmanager.h"
-#include "windowmanager_p.h"
 #include "extensions/quickxdgpopupitem.h"
 #include "extensions/quickxdgsurfaceitem.h"
 

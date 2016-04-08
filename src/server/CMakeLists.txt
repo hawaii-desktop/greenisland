@@ -58,7 +58,7 @@ set(SOURCES
     screen/screenmanager.cpp
     shell/clientwindow.cpp
     shell/clientwindowview.cpp
-    shell/windowmanager.cpp
+    shell/unifiedshell.cpp
     extensions/gtkshell.cpp
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
@@ -210,7 +210,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
         ClientWindow
         ClientWindowView
-        WindowManager
+        UnifiedShell
     PREFIX
         Server
     OUTPUT_DIR
@@ -235,7 +235,7 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowview_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shell/windowmanager_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/shell/unifiedshell_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h

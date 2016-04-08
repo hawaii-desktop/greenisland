@@ -38,8 +38,8 @@
 #include "clientwindowview.h"
 #include "clientwindowview_p.h"
 #include "serverlogging_p.h"
-#include "windowmanager.h"
-#include "windowmanager_p.h"
+#include "unifiedshell.h"
+#include "unifiedshell_p.h"
 #include "extensions/quickxdgsurfaceitem.h"
 #include "extensions/quickxdgpopupitem.h"
 
@@ -361,7 +361,7 @@ void ClientWindowPrivate::setPopup(QWaylandInputDevice *inputDevice,
     setType(ClientWindow::Popup);
 
     ClientWindow *parentWindow =
-            WindowManagerPrivate::get(wm)->windowForSurface(parentSurface);
+            UnifiedShellPrivate::get(wm)->windowForSurface(parentSurface);
     Q_ASSERT(parentWindow);
     setParentWindow(parentWindow);
     ClientWindowPrivate *dParentWindow = ClientWindowPrivate::get(parentWindow);
@@ -590,7 +590,7 @@ void ClientWindow::setActive(bool active)
 {
     Q_D(ClientWindow);
 
-    WindowManagerPrivate *dWM = WindowManagerPrivate::get(d->wm);
+    UnifiedShellPrivate *dWM = UnifiedShellPrivate::get(d->wm);
 
     // Set focus on all windows, this will make the view call the
     // private version of setActive which will set the active flag

@@ -31,8 +31,8 @@
 #include "clientwindow.h"
 #include "clientwindow_p.h"
 #include "serverlogging_p.h"
-#include "windowmanager.h"
-#include "windowmanager_p.h"
+#include "unifiedshell.h"
+#include "unifiedshell_p.h"
 #include "core/applicationmanager.h"
 #include "core/applicationmanager_p.h"
 
@@ -41,10 +41,10 @@ namespace GreenIsland {
 namespace Server {
 
 /*
- * WindowManagerPrivate
+ * UnifiedShellPrivate
  */
 
-ClientWindow *WindowManagerPrivate::windowForSurface(QWaylandSurface *surface) const
+ClientWindow *UnifiedShellPrivate::windowForSurface(QWaylandSurface *surface) const
 {
     Q_FOREACH (ClientWindow *window, windowsList) {
         if (window->surface() == surface)
@@ -54,68 +54,68 @@ ClientWindow *WindowManagerPrivate::windowForSurface(QWaylandSurface *surface) c
     return Q_NULLPTR;
 }
 
-QQmlListProperty<ClientWindow> WindowManagerPrivate::windows()
+QQmlListProperty<ClientWindow> UnifiedShellPrivate::windows()
 {
-    Q_Q(WindowManager);
+    Q_Q(UnifiedShell);
     return QQmlListProperty<ClientWindow>(q, Q_NULLPTR, windowsCount, windowsAt);
 }
 
-int WindowManagerPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
+int UnifiedShellPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
 {
-    WindowManager *that = static_cast<WindowManager *>(prop->object);
-    return WindowManagerPrivate::get(that)->windowsList.count();
+    UnifiedShell *that = static_cast<UnifiedShell *>(prop->object);
+    return UnifiedShellPrivate::get(that)->windowsList.count();
 }
 
-ClientWindow *WindowManagerPrivate::windowsAt(QQmlListProperty<ClientWindow> *prop, int index)
+ClientWindow *UnifiedShellPrivate::windowsAt(QQmlListProperty<ClientWindow> *prop, int index)
 {
-    WindowManager *that = static_cast<WindowManager *>(prop->object);
-    return WindowManagerPrivate::get(that)->windowsList.at(index);
+    UnifiedShell *that = static_cast<UnifiedShell *>(prop->object);
+    return UnifiedShellPrivate::get(that)->windowsList.at(index);
 }
 
 /*
- * WindowManager
+ * UnifiedShell
  */
 
-WindowManager::WindowManager(QObject *parent)
-    : QObject(*new WindowManagerPrivate(), parent)
+UnifiedShell::UnifiedShell(QObject *parent)
+    : QObject(*new UnifiedShellPrivate(), parent)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
     d->wlShell = new QWaylandWlShell();
     d->xdgShell = new XdgShell();
     d->gtkShell = new GtkShell();
 }
 
-WindowManager::WindowManager(QWaylandCompositor *compositor, QObject *parent)
-    : QObject(*new WindowManagerPrivate(), parent)
+UnifiedShell::UnifiedShell(QWaylandCompositor *compositor, QObject *parent)
+    : QObject(*new UnifiedShellPrivate(), parent)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
     d->compositor = compositor;
     d->wlShell = new QWaylandWlShell(compositor);
     d->xdgShell = new XdgShell(compositor);
     d->gtkShell = new GtkShell(compositor);
 }
 
-QWaylandCompositor *WindowManager::compositor() const
+QWaylandCompositor *UnifiedShell::compositor() const
 {
-    Q_D(const WindowManager);
+    Q_D(const UnifiedShell);
     return d->compositor;
 }
 
-void WindowManager::setCompositor(QWaylandCompositor *compositor)
+void UnifiedShell::setCompositor(QWaylandCompositor *compositor)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     if (d->initialized) {
         qCWarning(gLcCore,
-                  "Setting QWaylandCompositor %p on WindowManager %p "
-                  "is not supported after WindowManager has been initialized.",
+                  "Setting QWaylandCompositor %p on UnifiedShell %p "
+                  "is not supported after UnifiedShell has been initialized.",
                   compositor, this);
         return;
     }
 
     if (d->compositor && d->compositor != compositor)
         qCWarning(gLcCore,
-                  "Possible initialization error. Moving WindowManager %p between compositor instances.",
+                  "Possible initialization error. Moving UnifiedShell %p between compositor instances.",
                   this);
 
     d->compositor = compositor;
@@ -127,9 +127,9 @@ void WindowManager::setCompositor(QWaylandCompositor *compositor)
     Q_EMIT compositorChanged();
 }
 
-QVariantList WindowManager::windowsForOutput(QWaylandOutput *desiredOutput) const
+QVariantList UnifiedShell::windowsForOutput(QWaylandOutput *desiredOutput) const
 {
-    Q_D(const WindowManager);
+    Q_D(const UnifiedShell);
 
     if (!d->compositor)
         return QVariantList();
@@ -145,9 +145,9 @@ QVariantList WindowManager::windowsForOutput(QWaylandOutput *desiredOutput) cons
     return list;
 }
 
-void WindowManager::recalculateVirtualGeometry()
+void UnifiedShell::recalculateVirtualGeometry()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     if (!d->compositor || !d->initialized)
         return;
@@ -161,21 +161,21 @@ void WindowManager::recalculateVirtualGeometry()
     d->rootItem->setSize(geometry.size());
 }
 
-void WindowManager::initialize()
+void UnifiedShell::initialize()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     if (d->initialized)
         return;
 
     connect(d->wlShell, &QWaylandWlShell::createShellSurface,
-            this, &WindowManager::createWlShellSurface);
+            this, &UnifiedShell::createWlShellSurface);
     connect(d->xdgShell, &XdgShell::createSurface,
-            this, &WindowManager::createXdgSurface);
+            this, &UnifiedShell::createXdgSurface);
     connect(d->xdgShell, &XdgShell::createPopup,
-            this, &WindowManager::createXdgPopup);
+            this, &UnifiedShell::createXdgPopup);
     connect(d->gtkShell, &GtkShell::createSurface,
-            this, &WindowManager::createGtkShellSurface);
+            this, &UnifiedShell::createGtkShellSurface);
 
     d->wlShell->initialize();
     d->xdgShell->initialize();
@@ -188,10 +188,10 @@ void WindowManager::initialize()
     recalculateVirtualGeometry();
 }
 
-void WindowManager::createWlShellSurface(QWaylandSurface *surface,
+void UnifiedShell::createWlShellSurface(QWaylandSurface *surface,
                                          const QWaylandResource &resource)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandWlShellSurface *shellSurface =
             new QWaylandWlShellSurface(d->wlShell, surface, resource);
@@ -208,9 +208,9 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
     dWindow->setWindowGeometry(QRect(QPoint(0, 0), surface->size()));
 
     connect(surface, &QWaylandSurface::sizeChanged,
-            this, &WindowManager::setWlWindowGeometry);
+            this, &UnifiedShell::setWlWindowGeometry);
     connect(surface, &QWaylandSurface::surfaceDestroyed,
-            this, &WindowManager::surfaceDestroyed);
+            this, &UnifiedShell::surfaceDestroyed);
 
     if (!d->appMan)
         d->appMan = ApplicationManager::findIn(d->compositor);
@@ -220,27 +220,27 @@ void WindowManager::createWlShellSurface(QWaylandSurface *surface,
     Q_EMIT windowCreated(window);
 
     connect(shellSurface, &QWaylandWlShellSurface::classNameChanged,
-            this, &WindowManager::setAppId);
+            this, &UnifiedShell::setAppId);
     connect(shellSurface, &QWaylandWlShellSurface::titleChanged,
-            this, &WindowManager::setTitle);
+            this, &UnifiedShell::setTitle);
     connect(shellSurface, &QWaylandWlShellSurface::setDefaultToplevel,
-            this, &WindowManager::setTopLevel);
+            this, &UnifiedShell::setTopLevel);
     connect(shellSurface, &QWaylandWlShellSurface::setTransient,
-            this, &WindowManager::setWlTransient);
+            this, &UnifiedShell::setWlTransient);
     connect(shellSurface, &QWaylandWlShellSurface::setPopup,
-            this, &WindowManager::setWlPopup);
+            this, &UnifiedShell::setWlPopup);
     connect(shellSurface, &QWaylandWlShellSurface::setMaximized,
-            this, &WindowManager::setMaximized);
+            this, &UnifiedShell::setMaximized);
     connect(shellSurface, &QWaylandWlShellSurface::setFullScreen,
-            this, &WindowManager::setWlFullScreen);
+            this, &UnifiedShell::setWlFullScreen);
     connect(shellSurface, &QWaylandWlShellSurface::pong,
             window, &ClientWindow::pong);
 }
 
-void WindowManager::createXdgSurface(QWaylandSurface *surface,
+void UnifiedShell::createXdgSurface(QWaylandSurface *surface,
                                      const QWaylandResource &resource)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     XdgSurface *shellSurface =
             new XdgSurface(d->xdgShell, surface, resource);
@@ -256,7 +256,7 @@ void WindowManager::createXdgSurface(QWaylandSurface *surface,
     dWindow->setAppId(QString());
 
     connect(surface, &QWaylandSurface::surfaceDestroyed,
-            this, &WindowManager::surfaceDestroyed);
+            this, &UnifiedShell::surfaceDestroyed);
 
     if (!d->appMan)
         d->appMan = ApplicationManager::findIn(d->compositor);
@@ -266,19 +266,19 @@ void WindowManager::createXdgSurface(QWaylandSurface *surface,
     Q_EMIT windowCreated(window);
 
     connect(shellSurface, &XdgSurface::appIdChanged,
-            this, &WindowManager::setAppId);
+            this, &UnifiedShell::setAppId);
     connect(shellSurface, &XdgSurface::titleChanged,
-            this, &WindowManager::setTitle);
+            this, &UnifiedShell::setTitle);
     connect(shellSurface, &XdgSurface::windowGeometryChanged,
-            this, &WindowManager::setXdgWindowGeometry);
+            this, &UnifiedShell::setXdgWindowGeometry);
     connect(shellSurface, &XdgSurface::setDefaultToplevel,
-            this, &WindowManager::setTopLevel);
+            this, &UnifiedShell::setTopLevel);
     connect(shellSurface, &XdgSurface::setTransient,
-            this, &WindowManager::setXdgTransient);
+            this, &UnifiedShell::setXdgTransient);
     connect(shellSurface, &XdgSurface::maximizedChanged,
-            this, &WindowManager::setMaximized);
+            this, &UnifiedShell::setMaximized);
     connect(shellSurface, &XdgSurface::fullScreenChanged,
-            this, &WindowManager::setXdgFullScreen);
+            this, &UnifiedShell::setXdgFullScreen);
     connect(shellSurface, &XdgSurface::pingRequested,
             window, &ClientWindow::pingRequested);
     connect(shellSurface, &XdgSurface::pong,
@@ -287,13 +287,13 @@ void WindowManager::createXdgSurface(QWaylandSurface *surface,
             window, &ClientWindow::windowMenuRequested);
 }
 
-void WindowManager::createXdgPopup(QWaylandInputDevice *inputDevice,
+void UnifiedShell::createXdgPopup(QWaylandInputDevice *inputDevice,
                                    QWaylandSurface *surface,
                                    QWaylandSurface *parentSurface,
                                    const QPoint &relativeToParent,
                                    const QWaylandResource &resource)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     new XdgPopup(d->xdgShell, inputDevice, surface, parentSurface, resource);
 
@@ -307,18 +307,18 @@ void WindowManager::createXdgPopup(QWaylandInputDevice *inputDevice,
     dWindow->setAppId(QString());
 
     connect(surface, &QWaylandSurface::surfaceDestroyed,
-            this, &WindowManager::surfaceDestroyed);
+            this, &UnifiedShell::surfaceDestroyed);
 
     Q_EMIT windowCreated(window);
 
     dWindow->setPopup(inputDevice, parentSurface, relativeToParent);
 }
 
-void WindowManager::createGtkShellSurface(QWaylandSurface *surface,
+void UnifiedShell::createGtkShellSurface(QWaylandSurface *surface,
                                           QWaylandClient *client,
                                           uint id)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     GtkSurface *gtkSurface =
             new GtkSurface(d->gtkShell, surface, client, id);
@@ -332,9 +332,9 @@ void WindowManager::createGtkShellSurface(QWaylandSurface *surface,
     });
 }
 
-void WindowManager::setAppId()
+void UnifiedShell::setAppId()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = Q_NULLPTR;
 
@@ -358,9 +358,9 @@ void WindowManager::setAppId()
         dWindow->setAppId(xdgShellSurface->appId());
 }
 
-void WindowManager::setTitle()
+void UnifiedShell::setTitle()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = Q_NULLPTR;
 
@@ -384,9 +384,9 @@ void WindowManager::setTitle()
         dWindow->setTitle(xdgShellSurface->title());
 }
 
-void WindowManager::setWlWindowGeometry()
+void UnifiedShell::setWlWindowGeometry()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
     Q_ASSERT(surface);
@@ -399,9 +399,9 @@ void WindowManager::setWlWindowGeometry()
     dWindow->setWindowGeometry(QRect(QPoint(0, 0), surface->size()));
 }
 
-void WindowManager::setXdgWindowGeometry()
+void UnifiedShell::setXdgWindowGeometry()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     XdgSurface *shellSurface = qobject_cast<XdgSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -414,9 +414,9 @@ void WindowManager::setXdgWindowGeometry()
     dWindow->setWindowGeometry(shellSurface->windowGeometry());
 }
 
-void WindowManager::setTopLevel()
+void UnifiedShell::setTopLevel()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = Q_NULLPTR;
 
@@ -436,11 +436,11 @@ void WindowManager::setTopLevel()
     dWindow->setTopLevel();
 }
 
-void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
+void UnifiedShell::setWlTransient(QWaylandSurface *parentSurface,
                                    const QPoint &relativeToParent,
                                    QWaylandWlShellSurface::FocusPolicy policy)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -463,11 +463,11 @@ void WindowManager::setWlTransient(QWaylandSurface *parentSurface,
                           policy == QWaylandWlShellSurface::DefaultFocus);
 }
 
-void WindowManager::setWlPopup(QWaylandInputDevice *inputDevice,
+void UnifiedShell::setWlPopup(QWaylandInputDevice *inputDevice,
                                QWaylandSurface *parentSurface,
                                const QPoint &relativeToParent)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -480,9 +480,9 @@ void WindowManager::setWlPopup(QWaylandInputDevice *inputDevice,
     dWindow->setPopup(inputDevice, parentSurface, relativeToParent);
 }
 
-void WindowManager::setXdgTransient(QWaylandSurface *parentSurface)
+void UnifiedShell::setXdgTransient(QWaylandSurface *parentSurface)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     XdgSurface *shellSurface = qobject_cast<XdgSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -502,9 +502,9 @@ void WindowManager::setXdgTransient(QWaylandSurface *parentSurface)
     dWindow->setTransient(parentWindow, pos, true);
 }
 
-void WindowManager::setMaximized(QWaylandOutput *output)
+void UnifiedShell::setMaximized(QWaylandOutput *output)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = Q_NULLPTR;
 
@@ -524,10 +524,10 @@ void WindowManager::setMaximized(QWaylandOutput *output)
     dWindow->setMaximized(output);
 }
 
-void WindowManager::setWlFullScreen(QWaylandWlShellSurface::FullScreenMethod,
+void UnifiedShell::setWlFullScreen(QWaylandWlShellSurface::FullScreenMethod,
                                     uint, QWaylandOutput *output)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandWlShellSurface *shellSurface = qobject_cast<QWaylandWlShellSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -540,9 +540,9 @@ void WindowManager::setWlFullScreen(QWaylandWlShellSurface::FullScreenMethod,
     dWindow->setFullScreen(output);
 }
 
-void WindowManager::setXdgFullScreen(QWaylandOutput *output)
+void UnifiedShell::setXdgFullScreen(QWaylandOutput *output)
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     XdgSurface *shellSurface = qobject_cast<XdgSurface *>(sender());
     Q_ASSERT(shellSurface);
@@ -555,9 +555,9 @@ void WindowManager::setXdgFullScreen(QWaylandOutput *output)
     dWindow->setFullScreen(output);
 }
 
-void WindowManager::surfaceDestroyed()
+void UnifiedShell::surfaceDestroyed()
 {
-    Q_D(WindowManager);
+    Q_D(UnifiedShell);
 
     QWaylandSurface *surface = qobject_cast<QWaylandSurface *>(sender());
 
@@ -580,4 +580,4 @@ void WindowManager::surfaceDestroyed()
 
 } // namespace GreenIsland
 
-#include "moc_windowmanager.cpp"
+#include "moc_unifiedshell.cpp"

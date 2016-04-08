@@ -54,7 +54,7 @@
 #include <GreenIsland/Server/Screenshooter>
 #include <GreenIsland/Server/TaskManager>
 #include <GreenIsland/Server/QuickScreenManager>
-#include <GreenIsland/Server/WindowManager>
+#include <GreenIsland/Server/UnifiedShell>
 
 #include "quickkeybindings.h"
 #include "fpscounter.h"
@@ -153,8 +153,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<Screen>(uri, 1, 0, "Screen",
                                        QObject::tr("Cannot create instance of Screen"));
 
-    // Window manager
-    qmlRegisterType<WindowManager>(uri, 1, 0, "WindowManager");
+    // Unified shell
+    qmlRegisterType<UnifiedShell>(uri, 1, 0, "UnifiedShell");
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
                                              QObject::tr("Cannot create instance of ClientWindow"));
     qmlRegisterType<ClientWindowView>(uri, 1, 0, "ClientWindowView");

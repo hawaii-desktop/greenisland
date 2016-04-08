@@ -81,7 +81,7 @@ WaylandCompositor {
         onActivated: Qt.quit()
     }
 
-    WindowManager {
+    UnifiedShell {
         id: windowManager
         compositor: compositor
         onWindowCreated: {

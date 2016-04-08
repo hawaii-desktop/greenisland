@@ -25,14 +25,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_WINDOWMANAGER_P_H
-#define GREENISLAND_WINDOWMANAGER_P_H
+#ifndef GREENISLAND_UNIFIEDSHELL_P_H
+#define GREENISLAND_UNIFIEDSHELL_P_H
 
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 
-#include <GreenIsland/Server/WindowManager>
+#include <GreenIsland/Server/UnifiedShell>
 #include <GreenIsland/Server/XdgShell>
 #include <GreenIsland/Server/GtkShell>
 
@@ -54,11 +54,11 @@ namespace Server {
 class ApplicationManager;
 class ClientWindow;
 
-class GREENISLANDSERVER_EXPORT WindowManagerPrivate : public QObjectPrivate
+class GREENISLANDSERVER_EXPORT UnifiedShellPrivate : public QObjectPrivate
 {
-    Q_DECLARE_PUBLIC(WindowManager)
+    Q_DECLARE_PUBLIC(UnifiedShell)
 public:
-    WindowManagerPrivate()
+    UnifiedShellPrivate()
         : initialized(false)
         , compositor(Q_NULLPTR)
         , rootItem(new QQuickItem())
@@ -68,7 +68,7 @@ public:
         , appMan(Q_NULLPTR)
     {}
 
-    ~WindowManagerPrivate()
+    ~UnifiedShellPrivate()
     {
         delete rootItem;
     }
@@ -80,7 +80,7 @@ public:
     static int windowsCount(QQmlListProperty<ClientWindow> *prop);
     static ClientWindow *windowsAt(QQmlListProperty<ClientWindow> *prop, int index);
 
-    static WindowManagerPrivate *get(WindowManager *wm) { return wm->d_func(); }
+    static UnifiedShellPrivate *get(UnifiedShell *wm) { return wm->d_func(); }
 
     bool initialized;
     QWaylandCompositor *compositor;
@@ -96,4 +96,4 @@ public:
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_WINDOWMANAGER_P_H
+#endif // GREENISLAND_UNIFIEDSHELL_P_H

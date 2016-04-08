@@ -47,7 +47,7 @@ namespace GreenIsland {
 
 namespace Server {
 
-class WindowManager;
+class UnifiedShell;
 
 class GREENISLANDSERVER_EXPORT ClientWindowPrivate : public QObjectPrivate
 {
@@ -72,7 +72,7 @@ public:
         , designedOutput(Q_NULLPTR)
     {}
 
-    WindowManager *wm;
+    UnifiedShell *wm;
     QByteArray interfaceName;
     QWaylandSurface *surface;
     ClientWindow::Type type;
