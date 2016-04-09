@@ -15,6 +15,12 @@ set_package_properties(Libinput PROPERTIES
 # gio
 pkg_check_modules(gio gio-2.0 REQUIRED)
 
+# libdl
+find_package(Libdl REQUIRED)
+set_package_properties(Libdl PROPERTIES
+    TYPE REQUIRED
+    PURPOSE "Required to load GL functions")
+
 # Qt5PlatformSupport
 find_package(Qt5PlatformSupport REQUIRED)
 find_package(Freetype REQUIRED)
@@ -77,6 +83,7 @@ target_include_directories(GreenIslandPlatform
         ${CMAKE_BINARY_DIR}/headers/GreenIsland
         ${Qt5Core_PRIVATE_INCLUDE_DIRS}
         ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+        ${Libdl_INCLUDE_DIR}
 )
 
 target_link_libraries(GreenIslandPlatform
@@ -90,6 +97,7 @@ target_link_libraries(GreenIslandPlatform
         ${gio_LIBRARIES}
     PRIVATE
         Libinput::Libinput
+        Libdl::Libdl
         ${FONTCONFIG_LIBRARIES}
         ${FREETYPE_LIBRARIES}
         Qt5PlatformSupport::Qt5PlatformSupport

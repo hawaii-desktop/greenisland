@@ -45,6 +45,10 @@
 #include <QtCore/private/qjnihelpers_p.h>
 #endif
 
+#ifndef Q_OS_WIN
+#include <dlfcn.h>
+#endif
+
 #include "logging.h"
 #include "eglplatformcontext.h"
 #include "eglconvenience.h"
@@ -446,7 +450,12 @@ void EGLPlatformContext::swapBuffers(QPlatformSurface *surface)
 QFunctionPointer EGLPlatformContext::getProcAddress(const char *procName)
 {
     eglBindAPI(m_api);
-    return eglGetProcAddress(procName);
+    QFunctionPointer proc = (QFunctionPointer) eglGetProcAddress(procName);
+#ifndef Q_OS_WIN
+    if (!proc)
+        proc = (QFunctionPointer) dlsym(RTLD_DEFAULT, procName);
+#endif
+    return proc;
 }
 #else
 void (*EGLPlatformContext::getProcAddress(const QByteArray &procName)) ()
