@@ -90,6 +90,8 @@ find_package_handle_standard_args(BcmHost
 if(BcmHost_FOUND)
     set(BcmHost_LIBRARY_DIRS "${BcmHost_PREFIX}/lib")
     set(BcmHost_INCLUDE_DIR ${BcmHost_INCLUDE_DIR} ${BcmHost_INCLUDE_DIR}/interface ${BcmHost_INCLUDE_DIR}/interface/vcos/pthreads)
+else()
+    add_definitions(-DWITHOUT_BRCM)
 endif()
 
 if(BcmHost_FOUND)

@@ -56,6 +56,7 @@ public:
         if (!qEnvironmentVariableIsEmpty("DISPLAY"))
             return QStringLiteral("x11");
 
+#ifndef WITHOUT_BRCM
         // Detect Broadcom
         bool found = deviceModel().startsWith(QLatin1String("Raspberry"));
         if (!found) {
@@ -67,6 +68,7 @@ public:
         }
         if (found)
             return QStringLiteral("brcm");
+#endif
 
         // TODO: Detect Mali
         // TODO: Detect Vivante
