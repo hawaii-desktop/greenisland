@@ -57,6 +57,7 @@ public:
     EGLSurface eglSurfaceForPlatformSurface(QPlatformSurface *surface) Q_DECL_OVERRIDE;
     EGLSurface createTemporaryOffscreenSurface() Q_DECL_OVERRIDE;
     void destroyTemporaryOffscreenSurface(EGLSurface surface) Q_DECL_OVERRIDE;
+    void runGLchecks() Q_DECL_OVERRIDE;
     void swapBuffers(QPlatformSurface *surface) Q_DECL_OVERRIDE;
 
 private:

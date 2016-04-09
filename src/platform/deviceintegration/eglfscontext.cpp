@@ -94,6 +94,18 @@ void EglFSContext::destroyTemporaryOffscreenSurface(EGLSurface surface)
     }
 }
 
+void EglFSContext::runGLchecks()
+{
+    // Note that even though there is an EGL context current here,
+    // QOpenGLContext and QOpenGLFunctions are not yet usable at this stage
+
+    const char *renderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+
+    // Warn about limited performances that llvmpipe users might expect
+    if (renderer && strstr(renderer, "llvmpipe"))
+        qCWarning(lcDeviceIntegration, "Running on a software rasterizer (LLVMPipe), expect limited performance.");
+}
+
 void EglFSContext::swapBuffers(QPlatformSurface *surface)
 {
     // draw the cursor
