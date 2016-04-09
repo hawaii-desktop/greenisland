@@ -284,6 +284,12 @@ void EGLPlatformContext::destroyTemporaryOffscreenSurface(EGLSurface surface)
     eglDestroySurface(m_eglDisplay, surface);
 }
 
+void EGLPlatformContext::runGLchecks()
+{
+    // Nothing to do here, subclasses may override in order to perform OpenGL
+    // queries needing a context.
+}
+
 void EGLPlatformContext::updateFormatFromGL()
 {
 #ifndef QT_NO_OPENGL
