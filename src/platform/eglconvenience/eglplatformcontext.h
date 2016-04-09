@@ -70,7 +70,11 @@ public:
     bool makeCurrent(QPlatformSurface *surface) Q_DECL_OVERRIDE;
     void doneCurrent() Q_DECL_OVERRIDE;
     void swapBuffers(QPlatformSurface *surface) Q_DECL_OVERRIDE;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    QFunctionPointer getProcAddress(const char *procName) Q_DECL_OVERRIDE;
+#else
     QFunctionPointer getProcAddress(const QByteArray &procName) Q_DECL_OVERRIDE;
+#endif
 
     QSurfaceFormat format() const Q_DECL_OVERRIDE;
     bool isSharing() const Q_DECL_OVERRIDE { return m_shareContext != EGL_NO_CONTEXT; }

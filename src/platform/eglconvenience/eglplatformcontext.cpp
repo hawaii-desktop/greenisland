@@ -442,11 +442,19 @@ void EGLPlatformContext::swapBuffers(QPlatformSurface *surface)
     }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+QFunctionPointer EGLPlatformContext::getProcAddress(const char *procName)
+{
+    eglBindAPI(m_api);
+    return eglGetProcAddress(procName);
+}
+#else
 void (*EGLPlatformContext::getProcAddress(const QByteArray &procName)) ()
 {
     eglBindAPI(m_api);
     return eglGetProcAddress(procName.constData());
 }
+#endif
 
 QSurfaceFormat EGLPlatformContext::format() const
 {
