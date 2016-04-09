@@ -96,10 +96,15 @@ void LibInputPointer::handleButton(libinput_event_pointer *e)
     case 0x11f: button = Qt::ExtraButton13; break;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+    const bool pressed = libinput_event_pointer_get_button_state(e) == LIBINPUT_BUTTON_STATE_PRESSED;
+    m_buttons.setFlag(button, pressed);
+#else
     if (libinput_event_pointer_get_button_state(e) == LIBINPUT_BUTTON_STATE_PRESSED)
         m_buttons |= button;
     else
         m_buttons &= ~button;
+#endif
 
     LibInputMouseEvent event;
     event.pos = m_pt;
