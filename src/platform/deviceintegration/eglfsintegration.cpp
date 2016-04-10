@@ -230,11 +230,8 @@ QPlatformOpenGLContext *EglFSIntegration::createPlatformOpenGLContext(QOpenGLCon
     if (pctx)
         return pctx;
 
-    // If there is a "root" window into which raster and QOpenGLWidget content is
-    // composited, all other contexts must share with its context.
-    QOpenGLContext *compositingContext = OpenGLCompositor::instance()->context();
     EGLDisplay dpy = context->screen() ? static_cast<EglFSScreen *>(context->screen()->handle())->display() : display();
-    QPlatformOpenGLContext *share = compositingContext ? compositingContext->handle() : context->shareHandle();
+    QPlatformOpenGLContext *share = context->shareHandle();
     QVariant nativeHandle = context->nativeHandle();
 
     EglFSContext *ctx;
