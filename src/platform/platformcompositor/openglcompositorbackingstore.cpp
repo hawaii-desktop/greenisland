@@ -183,10 +183,7 @@ void OpenGLCompositorBackingStore::updateTexture()
 
 void OpenGLCompositorBackingStore::flush(QWindow *window, const QRegion &region, const QPoint &offset)
 {
-    // Called for ordinary raster windows. This is rare since RasterGLSurface
-    // support is claimed which leads to having all QWidget windows marked as
-    // RasterGLSurface instead of just Raster. These go through
-    // compositeAndFlush() instead of this function.
+    // Called for ordinary raster windows.
 
     Q_UNUSED(region);
     Q_UNUSED(offset);
@@ -211,7 +208,7 @@ void OpenGLCompositorBackingStore::composeAndFlush(QWindow *window, const QRegio
                                                     QPlatformTextureList *textures, QOpenGLContext *context,
                                                     bool translucentBackground)
 {
-    // QOpenGLWidget/QQuickWidget content provided as textures. The raster content should go on top.
+    // QOpenGLWidget/QQuickWidget content provided as textures. The raster content goes on top.
 
     Q_UNUSED(region);
     Q_UNUSED(offset);
