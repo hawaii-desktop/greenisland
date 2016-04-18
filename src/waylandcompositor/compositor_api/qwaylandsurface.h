@@ -148,7 +148,6 @@ Q_SIGNALS:
     void sizeChanged();
     void offsetForNextFrame(const QPoint &offset);
     void contentOrientationChanged();
-    void pong();
     void surfaceDestroyed();
     void originChanged();
     void subsurfacePositionChanged(const QPoint &position);
