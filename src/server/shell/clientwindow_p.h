@@ -101,6 +101,9 @@ public:
 
     void findOutputs();
 
+    void resize(const QSize &size);
+    void resizeToFitOutput(QWaylandOutput *output);
+
     void setSurface(QWaylandSurface *surface);
     void setType(ClientWindow::Type type);
     void setParentWindow(ClientWindow *window);

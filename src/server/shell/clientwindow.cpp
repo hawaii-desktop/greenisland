@@ -143,6 +143,27 @@ void ClientWindowPrivate::findOutputs()
     }
 }
 
+void ClientWindowPrivate::resize(const QSize &size)
+{
+    QWaylandWlShellSurface *wlShellSurface =
+            QWaylandWlShellSurface::findIn(surface);
+    if (wlShellSurface) {
+        wlShellSurface->sendConfigure(size, QWaylandWlShellSurface::BottomRightEdge);
+        return;
+    }
+
+    XdgSurface *xdgSurface = XdgSurface::findIn(surface);
+    if (xdgSurface) {
+        xdgSurface->sendConfigure(size);
+        return;
+    }
+}
+
+void ClientWindowPrivate::resizeToFitOutput(QWaylandOutput *output)
+{
+    resize(output->availableGeometry().size());
+}
+
 void ClientWindowPrivate::setSurface(QWaylandSurface *surface)
 {
     if (this->surface) {
@@ -274,6 +295,8 @@ void ClientWindowPrivate::setMaximized(QWaylandOutput *output)
     QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
     moveItem->setX(designedOutput->position().x());
     moveItem->setY(designedOutput->position().y());
+
+    resizeToFitOutput(designedOutput);
 }
 
 void ClientWindowPrivate::unsetMaximized()
