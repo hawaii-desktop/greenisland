@@ -293,8 +293,8 @@ void ClientWindowPrivate::setMaximized(QWaylandOutput *output)
     savedMaximized = QPointF(x, y);
 
     QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
-    moveItem->setX(designedOutput->position().x());
-    moveItem->setY(designedOutput->position().y());
+    moveItem->setX(designedOutput->position().x() + designedOutput->availableGeometry().x());
+    moveItem->setY(designedOutput->position().y() + designedOutput->availableGeometry().y());
 
     resizeToFitOutput(designedOutput);
 }
@@ -328,6 +328,8 @@ void ClientWindowPrivate::setFullScreen(QWaylandOutput *output)
     QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
     moveItem->setX(designedOutput->position().x());
     moveItem->setY(designedOutput->position().y());
+
+    resizeToFitOutput(designedOutput);
 }
 
 void ClientWindowPrivate::unsetFullScreen()
