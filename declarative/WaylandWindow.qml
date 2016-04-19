@@ -53,6 +53,7 @@ ClientWindowView {
         property real x
         property real y
         property bool unresponsive: false
+        property bool started: false
     }
 
     Timer {
@@ -85,6 +86,10 @@ ClientWindowView {
         onPong: {
             pingTimer.stop();
             d.unresponsive = false;
+        }
+        onActiveChanged: {
+            if (window.active && d.started)
+                focusAnimation.start();
         }
         onMinimizedChanged: {
             if (window.minimized)
@@ -159,6 +164,48 @@ ClientWindowView {
     }
 
     /*
+     * Generic animations
+     */
+
+    SequentialAnimation {
+        id: focusAnimation
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: scaleTransform
+                property: "xScale"
+                easing.type: Easing.OutQuad
+                to: 1.02
+                duration: 100
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "yScale"
+                easing.type: Easing.OutQuad
+                to: 1.02
+                duration: 100
+            }
+        }
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: scaleTransform
+                property: "xScale"
+                easing.type: Easing.InOutQuad
+                to: 1.0
+                duration: 100
+            }
+            NumberAnimation {
+                target: scaleTransform
+                property: "yScale"
+                easing.type: Easing.InOutQuad
+                to: 1.0
+                duration: 100
+            }
+        }
+    }
+
+    /*
      * Top level view animations
      */
 
@@ -191,10 +238,22 @@ ClientWindowView {
                 duration: 350
             }
         }
+
+        ScriptAction {
+            script: {
+                d.started = true;
+            }
+        }
     }
 
     SequentialAnimation {
         id: topLevelDestroyAnimation
+
+        ScriptAction {
+            script: {
+                d.started = false;
+            }
+        }
 
         ParallelAnimation {
             NumberAnimation {
@@ -261,10 +320,22 @@ ClientWindowView {
             to: 1.0
             duration: 250
         }
+
+        ScriptAction {
+            script: {
+                d.started = true;
+            }
+        }
     }
 
     SequentialAnimation {
         id: transientDestroyAnimation
+
+        ScriptAction {
+            script: {
+                d.started = false;
+            }
+        }
 
         ParallelAnimation {
             NumberAnimation {
@@ -332,10 +403,22 @@ ClientWindowView {
                 duration: 150
             }
         }
+
+        ScriptAction {
+            script: {
+                d.started = true;
+            }
+        }
     }
 
     ParallelAnimation {
         id: popupDestroyAnimation
+
+        ScriptAction {
+            script: {
+                d.started = false;
+            }
+        }
 
         NumberAnimation {
             target: scaleTransform
