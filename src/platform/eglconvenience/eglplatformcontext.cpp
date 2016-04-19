@@ -202,7 +202,7 @@ void EGLPlatformContext::init(const QSurfaceFormat &format, QPlatformOpenGLConte
 
     static const bool printConfig = qEnvironmentVariableIntValue("GREENISLAND_QPA_DEBUG");
     if (printConfig) {
-        qDebug() << "Created context for format" << format << "with config:";
+        qCInfo(lcEglConvenience) << "Created context for format" << format << "with config:";
         EglUtils::printEglConfig(m_eglDisplay, m_eglConfig);
     }
 

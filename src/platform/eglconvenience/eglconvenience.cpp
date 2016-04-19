@@ -331,7 +331,7 @@ void EglUtils::printEglConfig(EGLDisplay display, EGLConfig config)
     for (index = 0; attrs[index].attr != -1; ++index) {
         EGLint value;
         if (eglGetConfigAttrib(display, config, attrs[index].attr, &value)) {
-            qDebug("\t%s: %d", attrs[index].name, (int)value);
+            qCInfo(lcEglConvenience, "    %s: %d", attrs[index].name, (int)value);
         }
     }
 }
