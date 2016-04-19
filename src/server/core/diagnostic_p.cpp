@@ -48,6 +48,35 @@ namespace GreenIsland {
 
 namespace DiagnosticOutput {
 
+static QByteArray wordWrap(QByteArray string, int length)
+{
+    QByteArray::iterator it = string.begin();
+    QByteArray::iterator lastSpace = string.begin();
+    int distance = 0;
+
+    while (it != string.end()) {
+        while (it != string.end() && distance <= length) {
+            distance++;
+
+            if (*it == ' ') {
+                lastSpace = it;
+                if (length == distance)
+                    *lastSpace = '\n';
+            }
+
+            ++it;
+        }
+
+        if (lastSpace != string.begin())
+            *lastSpace = '\n';
+
+        lastSpace = string.begin();
+        distance = 0;
+    }
+
+    return string;
+}
+
 QString systemInformation()
 {
     QString result;
@@ -140,9 +169,9 @@ QString openGlContext()
 
             QList<QByteArray> extensionList = context.extensions().toList();
             std::sort(extensionList.begin(), extensionList.end());
+            QByteArray extensions = extensionList.join(' ');
             str << " \nFound " << extensionList.size() << " extensions:\n";
-            Q_FOREACH (const QByteArray &e, extensionList)
-                str << "  " << e << '\n';
+            str << wordWrap(extensions, 78);
 
             context.doneCurrent();
         }
