@@ -348,14 +348,21 @@ void ClientWindowPrivate::setTopLevel()
 {
     Q_Q(ClientWindow);
 
-    setType(ClientWindow::TopLevel);
     setParentWindow(Q_NULLPTR);
+
     unsetMaximized();
     unsetFullScreen();
 
-    QPointF pos = randomPosition();
-    moveItem->setX(pos.x());
-    moveItem->setY(pos.y());
+    // When a window is unmaximized we'll be asked to set it as toplevel,
+    // but in that case we don't want to set a random position we just
+    // need to restore the previous location
+    if (type != ClientWindow::TopLevel) {
+        setType(ClientWindow::TopLevel);
+
+        QPointF pos = randomPosition();
+        moveItem->setX(pos.x());
+        moveItem->setY(pos.y());
+    }
 
     q->setActive(true);
 }
