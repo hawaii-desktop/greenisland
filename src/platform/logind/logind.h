@@ -87,6 +87,8 @@ public Q_SLOTS:
     int takeDevice(const QString &fileName);
     void releaseDevice(int fd);
 
+    void pauseDeviceComplete(quint32 devMajor, quint32 devMinor);
+
     void switchTo(quint32 vt);
 
 Q_SIGNALS:
@@ -105,6 +107,9 @@ Q_SIGNALS:
     void inhibited(int fd);
     void uninhibited(int fd);
 
+    void devicePaused(quint32 major, quint32 minor, const QString &type);
+    void deviceResumed(quint32 major, quint32 minor, int fd);
+
 protected:
     explicit Logind(const QDBusConnection &connection, QObject *parent = 0);
 
@@ -112,7 +117,6 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_serviceRegistered())
     Q_PRIVATE_SLOT(d_func(), void _q_serviceUnregistered())
     Q_PRIVATE_SLOT(d_func(), void _q_sessionPropertiesChanged())
-    Q_PRIVATE_SLOT(d_func(), void _q_devicePaused(uint devMajor, uint devMinor, const QString &type))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(Logind::InhibitFlags)

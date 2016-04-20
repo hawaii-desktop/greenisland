@@ -181,20 +181,6 @@ public:
         getVirtualTerminal();
     }
 
-    void _q_devicePaused(uint devMajor, uint devMinor, const QString &type)
-    {
-        if (QString::compare(type, QLatin1String("pause"), Qt::CaseInsensitive) == 0) {
-            QDBusMessage message =
-                    QDBusMessage::createMethodCall(login1Service,
-                                                   sessionPath,
-                                                   login1ManagerInterface,
-                                                   QLatin1String("PauseDeviceComplete"));
-            message.setArguments(QVariantList() << devMajor << devMinor);
-
-            bus.asyncCall(message);
-        }
-    }
-
     void checkServiceRegistration()
     {
         Q_Q(Logind);
@@ -493,7 +479,10 @@ void Logind::takeControl()
 
         d->bus.connect(login1Service, d->sessionPath, login1SessionInterface,
                        QLatin1String("PauseDevice"),
-                       this, SLOT(_q_devicePaused(uint,uint,QString)));
+                       this, SIGNAL(devicePaused(quint32,quint32,QString)));
+        d->bus.connect(login1Service, d->sessionPath, login1SessionInterface,
+                       QLatin1String("ResumeDevice"),
+                       this, SIGNAL(deviceResumed(quint32,quint32,int)));
     });
 }
 
@@ -565,6 +554,20 @@ void Logind::releaseDevice(int fd)
     message.setArguments(QVariantList()
                          << QVariant(major(st.st_rdev))
                          << QVariant(minor(st.st_rdev)));
+
+    d->bus.asyncCall(message);
+}
+
+void Logind::pauseDeviceComplete(quint32 devMajor, quint32 devMinor)
+{
+    Q_D(Logind);
+
+    QDBusMessage message =
+            QDBusMessage::createMethodCall(login1Service,
+                                           d->sessionPath,
+                                           login1SessionInterface,
+                                           QLatin1String("PauseDeviceComplete"));
+    message.setArguments(QVariantList() << devMajor << devMinor);
 
     d->bus.asyncCall(message);
 }
