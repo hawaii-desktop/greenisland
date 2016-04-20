@@ -48,9 +48,6 @@ extern "C" {
 #include <signal.h>
 }
 
-#define RELEASE_SIGNAL      SIGUSR1 //SIGRTMIN
-#define ACQUISITION_SIGNAL  SIGUSR2 //SIGRTMIN + 1
-
 #ifndef KDSKBMUTE
 #define KDSKBMUTE 0x4B51
 #endif
@@ -148,7 +145,7 @@ public:
         }
 
         // Take over VT
-        vt_mode mode = { VT_PROCESS, 0, short(SIGRTMIN), short(ACQUISITION_SIGNAL), 0 };
+        vt_mode mode = { VT_PROCESS, 0, short(SIGRTMIN), short(SIGRTMIN), 0 };
         if (::ioctl(vtFd, VT_SETMODE, &mode) < 0) {
             qCWarning(lcLogind, "Unable to take over VT \"%s\": %s",
                       qPrintable(devName), qPrintable(::strerror(errno)));
@@ -171,7 +168,7 @@ public:
         // used as VT-acquire signal, these must be checked on runtime because
         // their exact values are unknown at compile time; verify if we
         // exceed the limit (POSIX has 32 of them)
-        if (ACQUISITION_SIGNAL > SIGRTMAX) {
+        if (SIGRTMIN > SIGRTMAX) {
             qCWarning(lcLogind, "Not enough RT signals available: %u-%u",
                       SIGRTMIN, SIGRTMAX);
             return false;
@@ -202,23 +199,25 @@ public:
                     Q_EMIT q->aboutToSuspend();
                     toggleKeyboard(true);
                     toggleTtyCursor(true);
-                    q->suspend();
+                    ::kill(::getpid(), SIGSTOP);
                     break;
                 case SIGCONT:
                     toggleKeyboard(false);
                     toggleTtyCursor(false);
                     Q_EMIT q->resumed();
                     break;
-                case RELEASE_SIGNAL:
-                    setActive(false);
-                    ::ioctl(vtFd, VT_RELDISP, 1);
-                    break;
-                case ACQUISITION_SIGNAL:
-                    ::ioctl(vtFd, VT_RELDISP, VT_ACKACQ);
-                    setActive(true);
-                    break;
                 default:
                     break;
+                }
+
+                if (sigNo >= SIGRTMIN && sigNo <= SIGRTMAX) {
+                    if (active) {
+                        setActive(false);
+                        ::ioctl(vtFd, VT_RELDISP, 1);
+                    } else {
+                        ::ioctl(vtFd, VT_RELDISP, VT_ACKACQ);
+                        setActive(true);
+                    }
                 }
             }
 
@@ -233,8 +232,8 @@ public:
         ::sigaction(SIGTSTP, &sa, 0);
         ::sigaction(SIGCONT, &sa, 0);
         ::sigaction(SIGTERM, &sa, 0);
-        ::sigaction(ACQUISITION_SIGNAL, &sa, 0);
-        ::sigaction(RELEASE_SIGNAL, &sa, 0);
+        ::sigaction(SIGRTMIN, &sa, 0);
+        ::sigaction(SIGRTMIN+1, &sa, 0);
 
         return true;
     }
@@ -402,11 +401,6 @@ void VtHandler::activate(quint32 nr)
     qCDebug(lcLogind, "Switching to vt %d", nr);
     d->logind->switchTo(nr);
     d->setActive(false);
-}
-
-void VtHandler::suspend()
-{
-    ::kill(::getpid(), SIGSTOP);
 }
 
 } // namespace Platform

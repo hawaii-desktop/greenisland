@@ -61,10 +61,18 @@ public:
         m_vt = static_cast<EglFSIntegration *>(QGuiApplicationPrivate::platformIntegration())->vtHandler();
         connect(m_vt, &VtHandler::interrupted, this, &EglFSKmsInterruptHandler::restoreVideoMode);
         connect(m_vt, &VtHandler::aboutToSuspend, this, &EglFSKmsInterruptHandler::restoreVideoMode);
+        connect(m_vt, &VtHandler::activeChanged, this, &EglFSKmsInterruptHandler::activeChanged);
     }
 
-public slots:
+public Q_SLOTS:
     void restoreVideoMode() { m_screen->restoreMode(); }
+    void activeChanged(bool active)
+    {
+        if (active)
+            drmSetMaster(m_screen->device()->fd());
+        else
+            drmDropMaster(m_screen->device()->fd());
+    }
 
 private:
     VtHandler *m_vt;
