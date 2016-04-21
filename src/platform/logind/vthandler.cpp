@@ -52,6 +52,12 @@ extern "C" {
 #define KDSKBMUTE 0x4B51
 #endif
 
+#ifndef DRM_MAJOR
+#define DRM_MAJOR 226
+#endif
+
+#define VT_HANDLER_LOGIND 1
+
 namespace GreenIsland {
 
 namespace Platform {
@@ -144,6 +150,7 @@ public:
             return;
         }
 
+#if !VT_HANDLER_LOGIND
         // Take over VT
         vt_mode mode = { VT_PROCESS, 0, short(SIGRTMIN), short(SIGRTMIN), 0 };
         if (::ioctl(vtFd, VT_SETMODE, &mode) < 0) {
@@ -154,6 +161,7 @@ public:
             closeFd();
             return ;
         }
+#endif
 
         vtNumber = nr;
         setActive(true);
@@ -164,6 +172,7 @@ public:
     {
         Q_Q(VtHandler);
 
+#if !VT_HANDLER_LOGIND
         // SIGRTMIN is used as global VT-release signal while SIGRTMIN + 1 is
         // used as VT-acquire signal, these must be checked on runtime because
         // their exact values are unknown at compile time; verify if we
@@ -173,6 +182,7 @@ public:
                       SIGRTMIN, SIGRTMAX);
             return false;
         }
+#endif
 
         if (::socketpair(AF_UNIX, SOCK_STREAM, 0, signalFd)) {
             qCWarning(lcLogind, "Failed to create socket pair: %s",
@@ -210,6 +220,7 @@ public:
                     break;
                 }
 
+#if !VT_HANDLER_LOGIND
                 if (sigNo >= SIGRTMIN && sigNo <= SIGRTMAX) {
                     if (active) {
                         setActive(false);
@@ -219,6 +230,7 @@ public:
                         setActive(true);
                     }
                 }
+#endif
             }
 
             notifier->setEnabled(true);
@@ -232,8 +244,10 @@ public:
         ::sigaction(SIGTSTP, &sa, 0);
         ::sigaction(SIGCONT, &sa, 0);
         ::sigaction(SIGTERM, &sa, 0);
+#if !VT_HANDLER_LOGIND
         ::sigaction(SIGRTMIN, &sa, 0);
-        ::sigaction(SIGRTMIN+1, &sa, 0);
+        ::sigaction(SIGRTMIN + 1, &sa, 0);
+#endif
 
         return true;
     }
@@ -373,6 +387,29 @@ VtHandler::VtHandler(QObject *parent)
     connect(d->logind, &Logind::vtNumberChanged, this, [this, d](int nr) {
         d->setup(nr);
     });
+
+#if VT_HANDLER_LOGIND
+    // Handle pause and resume of DRM devices
+    connect(d->logind, &Logind::devicePaused, this, [this, d]
+            (quint32 devMajor, quint32 devMinor, const QString &type) {
+        qCDebug(lcLogind, "Device with major %d minor %d paused with %s",
+                devMajor, devMinor, qPrintable(type));
+
+        if (type == QLatin1String("pause"))
+            d->logind->pauseDeviceComplete(devMajor, devMinor);
+
+        if (devMajor == DRM_MAJOR)
+            d->setActive(false);
+    });
+    connect(d->logind, &Logind::deviceResumed, this, [this, d]
+            (quint32 devMajor, quint32 devMinor, int) {
+        qCDebug(lcLogind, "Device with major %d minor %d resumed",
+                devMajor, devMinor);
+
+        if (devMajor == DRM_MAJOR)
+            d->setActive(true);
+    });
+#endif
 
     // Take control upon connection
     if (d->logind->isConnected())
