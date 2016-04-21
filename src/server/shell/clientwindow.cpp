@@ -290,7 +290,7 @@ void ClientWindowPrivate::setMaximized(QWaylandOutput *output)
     maximized = true;
     Q_EMIT q->maximizedChanged();
 
-    savedMaximized = QPointF(x, y);
+    savedMaximized = moveItem->position();
 
     QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
     moveItem->setX(designedOutput->position().x() + designedOutput->availableGeometry().x());
@@ -309,8 +309,7 @@ void ClientWindowPrivate::unsetMaximized()
     maximized = false;
     Q_EMIT q->maximizedChanged();
 
-    moveItem->setX(savedMaximized.x());
-    moveItem->setY(savedMaximized.y());
+    moveItem->setPosition(savedMaximized);
 }
 
 void ClientWindowPrivate::setFullScreen(QWaylandOutput *output)
@@ -323,7 +322,7 @@ void ClientWindowPrivate::setFullScreen(QWaylandOutput *output)
     fullScreen = true;
     Q_EMIT q->fullScreenChanged();
 
-    savedFullScreen = QPointF(x, y);
+    savedFullScreen = moveItem->position();
 
     QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
     moveItem->setX(designedOutput->position().x());
@@ -342,8 +341,7 @@ void ClientWindowPrivate::unsetFullScreen()
     fullScreen = false;
     Q_EMIT q->fullScreenChanged();
 
-    moveItem->setX(savedFullScreen.x());
-    moveItem->setY(savedFullScreen.y());
+    moveItem->setPosition(savedFullScreen);
 }
 
 void ClientWindowPrivate::setTopLevel()
