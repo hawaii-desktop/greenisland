@@ -150,7 +150,7 @@ void LibInputPointer::handleAxis(libinput_event_pointer *e)
         const double d =
                 libinput_event_pointer_get_axis_value(e,
                                                       LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL);
-        event.wheelDelta = qRound(120 * d);
+        event.wheelDelta = qRound(-120 * d);
         event.wheelOrientation = Qt::Horizontal;
         Q_EMIT m_handler->mouseWheel(event);
     }
@@ -158,8 +158,8 @@ void LibInputPointer::handleAxis(libinput_event_pointer *e)
     if (libinput_event_pointer_has_axis(e, LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL)) {
         const double d =
                 libinput_event_pointer_get_axis_value(e,
-                                                      LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL);
-        event.wheelDelta = qRound(120 * d);
+                                                      LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL);
+        event.wheelDelta = qRound(-120 * d);
         event.wheelOrientation = Qt::Vertical;
         Q_EMIT m_handler->mouseWheel(event);
     }
