@@ -49,7 +49,6 @@ set(SOURCES
     core/diagnostic_p.cpp
     core/homeapplication.cpp
     core/quickoutput.cpp
-    input/keybindings.cpp
     input/keymap.cpp
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
@@ -160,7 +159,6 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
-        KeyBindings,KeyBinding
         Keymap
     PREFIX
         Server
@@ -229,7 +227,6 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/input/keybindings_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h

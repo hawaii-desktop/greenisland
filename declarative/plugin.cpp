@@ -57,14 +57,10 @@
 #include <GreenIsland/Server/QuickScreenManager>
 #include <GreenIsland/Server/UnifiedShell>
 
-#include "quickkeybindings.h"
 #include "fpscounter.h"
 #include "globalpointertracker.h"
-#include "keybindingsfilter.h"
-#include "keyeventfilter.h"
 #include "localpointertracker.h"
 #include "pointeritem.h"
-#include "keybindingsfilter.h"
 #include "keyeventfilter.h"
 
 using namespace GreenIsland::Server;
@@ -183,12 +179,6 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<Screenshooter>(uri, 1, 0, "Screenshooter");
     qmlRegisterUncreatableType<Screenshot>(uri, 1, 0, "Screenshot",
                                            QObject::tr("Cannot create instance of Screenshot"));
-
-    // Key bindings
-    qmlRegisterUncreatableType<KeyBinding>(uri, 1, 0, "KeyBinding",
-                                           QObject::tr("Cannot create instance of KeyBinding"));
-    qmlRegisterType<QuickKeyBindings>(uri, 1, 0, "KeyBindings");
-    qmlRegisterType<KeyBindingsFilter>(uri, 1, 0, "KeyBindingsFilter");
 
     // Key event filter
     qmlRegisterType<KeyEventFilter>(uri, 1, 0, "KeyEventFilter");
