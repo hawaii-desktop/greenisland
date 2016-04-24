@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Hawaii.
  *
- * Copyright (C) 2015-2016 Pier Luigi Fiorini
+ * Copyright (C) 2016 Pier Luigi Fiorini
  *
  * Author(s):
  *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
@@ -25,17 +25,40 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "serverlogging_p.h"
+#ifndef GREENISLAND_QUICKOUTPUTCONFIGURATION_P_H
+#define GREENISLAND_QUICKOUTPUTCONFIGURATION_P_H
 
-Q_LOGGING_CATEGORY(gLcCore, "greenisland.compositor", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcOutputManagement, "greenisland.outputmanagement", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShell, "greenisland.protocols.gtkshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShellTrace, "greenisland.protocols.gtkshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreencaster, "greenisland.protocols.screencaster", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenshooter, "greenisland.protocols.screenshooter", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcTaskManager, "greenisland.protocols.taskmanager", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShell, "greenisland.protocols.xdgshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShellTrace, "greenisland.protocols.xdgshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenBackend, "greenisland.screenbackend", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcFakeScreenBackend, "greenisland.screenbackend.fake", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcNativeScreenBackend, "greenisland.screenbackend.native", QtDebugMsg)
+#include <GreenIsland/Server/QuickOutputConfiguration>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Green Island API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
+
+namespace GreenIsland {
+
+namespace Server {
+
+class GREENISLANDSERVER_EXPORT QuickOutputConfigurationPrivate : public QObjectPrivate
+{
+    Q_DECLARE_PUBLIC(QuickOutputConfiguration)
+public:
+    QuickOutputConfigurationPrivate();
+
+    QQmlListProperty<OutputChangeset> changes();
+
+    static int changesCount(QQmlListProperty<OutputChangeset> *prop);
+    static OutputChangeset *changesAt(QQmlListProperty<OutputChangeset> *prop, int index);
+};
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_QUICKOUTPUTCONFIGURATION_P_H

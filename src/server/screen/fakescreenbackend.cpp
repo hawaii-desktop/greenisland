@@ -138,13 +138,13 @@ void FakeScreenBackend::acquireConfiguration()
 
         switch (orientation) {
         case Qt::PortraitOrientation:
-            screenPrivate->setTransform(Screen::Transform90);
+            screenPrivate->setTransform(QWaylandOutput::Transform90);
             break;
         case Qt::InvertedLandscapeOrientation:
-            screenPrivate->setTransform(Screen::Transform180);
+            screenPrivate->setTransform(QWaylandOutput::Transform180);
             break;
         case Qt::InvertedPortraitOrientation:
-            screenPrivate->setTransform(Screen::Transform270);
+            screenPrivate->setTransform(QWaylandOutput::Transform270);
             break;
         default:
             break;

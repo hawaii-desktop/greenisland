@@ -19,6 +19,8 @@ set(SOURCES
     keyboard.cpp
     fullscreenshell.cpp
     output.cpp
+    outputconfiguration.cpp
+    outputmanagement.cpp
     pointer.cpp
     region.cpp
     registry.cpp
@@ -50,6 +52,11 @@ greenisland_add_client_protocol(SOURCES
 greenisland_add_client_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screenshooter.xml
     BASENAME greenisland-screenshooter
+    PREFIX greenisland_
+)
+greenisland_add_client_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-outputmanagement.xml
+    BASENAME greenisland-outputmanagement
     PREFIX greenisland_
 )
 
@@ -87,6 +94,8 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
         FullScreenShell
         Keyboard
         Output
+        OutputConfiguration
+        OutputManagement
         Pointer
         Region
         Registry
@@ -113,6 +122,8 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/keyboard_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/fullscreenshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/output_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/outputconfiguration_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/outputmanagement_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/region_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
@@ -126,10 +137,12 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell-unstable-v1.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-outputmanagement.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-client-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-client-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-client-protocol.h
     OUTPUT_DIR

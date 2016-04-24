@@ -152,13 +152,13 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
 
     switch (qscreen->orientation()) {
     case Qt::PortraitOrientation:
-        screenPrivate->setTransform(Screen::Transform90);
+        screenPrivate->setTransform(QWaylandOutput::Transform90);
         break;
     case Qt::InvertedLandscapeOrientation:
-        screenPrivate->setTransform(Screen::Transform180);
+        screenPrivate->setTransform(QWaylandOutput::Transform180);
         break;
     case Qt::InvertedPortraitOrientation:
-        screenPrivate->setTransform(Screen::Transform270);
+        screenPrivate->setTransform(QWaylandOutput::Transform270);
         break;
     default:
         break;
@@ -168,19 +168,19 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
     QPlatformScreen::SubpixelAntialiasingType subpixel = qscreen->handle()->subpixelAntialiasingTypeHint();
     switch (subpixel) {
     case QPlatformScreen::Subpixel_None:
-        screenPrivate->setSubpixel(Screen::SubpixelNone);
+        screenPrivate->setSubpixel(QWaylandOutput::SubpixelNone);
         break;
     case QPlatformScreen::Subpixel_RGB:
-        screenPrivate->setSubpixel(Screen::SubpixelHorizontalRgb);
+        screenPrivate->setSubpixel(QWaylandOutput::SubpixelHorizontalRgb);
         break;
     case QPlatformScreen::Subpixel_BGR:
-        screenPrivate->setSubpixel(Screen::SubpixelHorizontalBgr);
+        screenPrivate->setSubpixel(QWaylandOutput::SubpixelHorizontalBgr);
         break;
     case QPlatformScreen::Subpixel_VRGB:
-        screenPrivate->setSubpixel(Screen::SubpixelVerticalRgb);
+        screenPrivate->setSubpixel(QWaylandOutput::SubpixelVerticalRgb);
         break;
     case QPlatformScreen::Subpixel_VBGR:
-        screenPrivate->setSubpixel(Screen::SubpixelVerticalBgr);
+        screenPrivate->setSubpixel(QWaylandOutput::SubpixelVerticalBgr);
         break;
     default:
         break;

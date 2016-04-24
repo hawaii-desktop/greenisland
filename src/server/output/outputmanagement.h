@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Hawaii.
  *
- * Copyright (C) 2015-2016 Pier Luigi Fiorini
+ * Copyright (C) 2016 Pier Luigi Fiorini
  *
  * Author(s):
  *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
@@ -25,17 +25,43 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "serverlogging_p.h"
+#ifndef GREENISLAND_OUTPUTMANAGEMENT_H
+#define GREENISLAND_OUTPUTMANAGEMENT_H
 
-Q_LOGGING_CATEGORY(gLcCore, "greenisland.compositor", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcOutputManagement, "greenisland.outputmanagement", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShell, "greenisland.protocols.gtkshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShellTrace, "greenisland.protocols.gtkshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreencaster, "greenisland.protocols.screencaster", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenshooter, "greenisland.protocols.screenshooter", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcTaskManager, "greenisland.protocols.taskmanager", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShell, "greenisland.protocols.xdgshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShellTrace, "greenisland.protocols.xdgshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenBackend, "greenisland.screenbackend", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcFakeScreenBackend, "greenisland.screenbackend.fake", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcNativeScreenBackend, "greenisland.screenbackend.native", QtDebugMsg)
+#include <QtCore/QObject>
+
+#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandResource>
+
+#include <GreenIsland/server/greenislandserver_export.h>
+
+namespace GreenIsland {
+
+namespace Server {
+
+class OutputConfiguration;
+class OutputManagementPrivate;
+
+class GREENISLANDSERVER_EXPORT OutputManagement : public QWaylandExtensionTemplate<OutputManagement>
+{
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(OutputManagement)
+public:
+    OutputManagement();
+    explicit OutputManagement(QWaylandCompositor *compositor);
+
+    void initialize() Q_DECL_OVERRIDE;
+
+    static const struct wl_interface *interface();
+    static QByteArray interfaceName();
+
+Q_SIGNALS:
+    void createOutputConfiguration(const QWaylandResource &resource);
+    void outputConfigurationCreated(GreenIsland::Server::OutputConfiguration *configuration);
+};
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_OUTPUTMANAGEMENT_H

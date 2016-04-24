@@ -147,6 +147,7 @@ public:
     QuickOutputPrivate()
         : initialized(false)
         , nativeScreen(Q_NULLPTR)
+        , enabled(true)
         , hotSpotSize(QSize(5, 5))
         , hotSpotThreshold(1000)
         , hotSpotPushTime(50)
@@ -155,6 +156,7 @@ public:
 
     bool initialized;
     Screen *nativeScreen;
+    bool enabled;
     QSize hotSpotSize;
     quint64 hotSpotThreshold;
     quint64 hotSpotPushTime;
@@ -202,6 +204,23 @@ void QuickOutput::setNativeScreen(Screen *screen)
 
     d->nativeScreen = screen;
     Q_EMIT nativeScreenChanged();
+}
+
+bool QuickOutput::isEnabled() const
+{
+    Q_D(const QuickOutput);
+    return d->enabled;
+}
+
+void QuickOutput::setEnabled(bool value)
+{
+    Q_D(QuickOutput);
+
+    if (d->enabled == value)
+        return;
+
+    d->enabled = value;
+    Q_EMIT enabledChanged();
 }
 
 QuickOutput::PowerState QuickOutput::powerState() const
@@ -296,6 +315,11 @@ void QuickOutput::setHotSpotPushTime(quint64 value)
 
     d->hotSpotPushTime = value;
     Q_EMIT hotSpotPushTimeChanged();
+}
+
+QuickOutput *QuickOutput::fromResource(wl_resource *resource)
+{
+    return qobject_cast<QuickOutput *>(QWaylandOutput::fromResource(resource));
 }
 
 void QuickOutput::initialize()

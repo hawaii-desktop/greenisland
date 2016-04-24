@@ -25,6 +25,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtGui/QGuiApplication>
+#include <QtGui/qpa/qplatformintegration.h>
+#include <QtGui/qpa/qwindowsysteminterface.h>
+
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/Platform/EglFSScreen>
+
+#include "output/outputchangeset.h"
 #include "serverlogging_p.h"
 #include "screenbackend.h"
 #include "screenbackend_p.h"
@@ -81,7 +89,7 @@ void ScreenPrivate::setPhysicalSize(const QSizeF &size)
     Q_EMIT q->physicalSizeChanged();
 }
 
-void ScreenPrivate::setSubpixel(Screen::Subpixel subpixel)
+void ScreenPrivate::setSubpixel(QWaylandOutput::Subpixel subpixel)
 {
     Q_Q(Screen);
 
@@ -92,7 +100,7 @@ void ScreenPrivate::setSubpixel(Screen::Subpixel subpixel)
     Q_EMIT q->subpixelChanged();
 }
 
-void ScreenPrivate::setTransform(Screen::Transform transform)
+void ScreenPrivate::setTransform(QWaylandOutput::Transform transform)
 {
     Q_Q(Screen);
 
@@ -207,13 +215,13 @@ QSizeF Screen::physicalSize() const
     return d->m_physicalSize;
 }
 
-Screen::Subpixel Screen::subpixel() const
+QWaylandOutput::Subpixel Screen::subpixel() const
 {
     Q_D(const Screen);
     return d->m_subpixel;
 }
 
-Screen::Transform Screen::transform() const
+QWaylandOutput::Transform Screen::transform() const
 {
     Q_D(const Screen);
     return d->m_transform;
@@ -241,6 +249,44 @@ QList<Screen::Mode> Screen::modes() const
 {
     Q_D(const Screen);
     return d->m_modes;
+}
+
+bool Screen::applyChangeset(OutputChangeset *changeset)
+{
+    Q_D(Screen);
+
+    if (d->m_screen) {
+        Platform::EglFSScreen *eglfsScreen =
+                static_cast<Platform::EglFSScreen *>(d->m_screen->handle());
+        if (eglfsScreen) {
+            if (changeset->isModeIdChanged())
+                eglfsScreen->setCurrentMode(changeset->modeId());
+            if (changeset->isPositionChanged()) {
+                QRect geometry = d->m_screen->geometry();
+                geometry.setTopLeft(changeset->position());
+                QWindowSystemInterface::handleScreenGeometryChange(d->m_screen, geometry, d->m_screen->availableGeometry());
+            }
+        } else {
+            qCWarning(gLcScreenBackend) << "Output changeset can be applied only when using the greenisland QPA plugin";
+            return false;
+        }
+    } else {
+        if (changeset->isTransformChanged())
+            d->setTransform(changeset->transform());
+        if (changeset->isModeIdChanged())
+            d->setCurrentMode(changeset->modeId());
+        if (changeset->isPositionChanged())
+            d->setPosition(changeset->position());
+        if (changeset->isScaleFactorChanged())
+            d->setScaleFactor(changeset->scaleFactor());
+    }
+
+    return true;
+}
+
+void Screen::discardChangeset(OutputChangeset *changeset)
+{
+    Q_UNUSED(changeset);
 }
 
 /*

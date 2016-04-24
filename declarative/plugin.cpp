@@ -44,7 +44,10 @@
 #include <GreenIsland/Server/CompositorSettings>
 #include <GreenIsland/Server/ClientWindow>
 #include <GreenIsland/Server/ClientWindowView>
+#include <GreenIsland/Server/OutputChangeset>
+#include <GreenIsland/Server/OutputManagement>
 #include <GreenIsland/Server/QuickOutput>
+#include <GreenIsland/Server/QuickOutputConfiguration>
 #include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/Keymap>
 #include <GreenIsland/Server/QuickXdgPopupItem>
@@ -80,6 +83,9 @@ Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkSurface)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgPopup)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgShell)
 Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgSurface)
+
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QuickOutputConfiguration)
+Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(OutputManagement)
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -155,6 +161,14 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterType<QuickScreenManager>(uri, 1, 0, "ScreenManager");
     qmlRegisterUncreatableType<Screen>(uri, 1, 0, "Screen",
                                        QObject::tr("Cannot create instance of Screen"));
+
+    // Output management
+    qmlRegisterType<QuickOutputConfigurationQuickData>(uri, 1, 0, "OutputConfiguration");
+    qmlRegisterUncreatableType<OutputManagement>(uri, 1, 0, "OutputManagementBase",
+                                                 QObject::tr("Cannot create instance of OutputManagementBase, use OutputManagement instead"));
+    qmlRegisterType<OutputManagementQuickData>(uri, 1, 0, "OutputManagement");
+    qmlRegisterUncreatableType<OutputChangeset>(uri, 1, 0, "OutputChangeset",
+                                                QObject::tr("Cannot create instance of OutputChangeset"));
 
     // Unified shell
     qmlRegisterType<UnifiedShell>(uri, 1, 0, "UnifiedShell");

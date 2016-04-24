@@ -31,6 +31,8 @@
 #include "fullscreenshell_p.h"
 #include "output.h"
 #include "output_p.h"
+#include "outputmanagement.h"
+#include "outputmanagement_p.h"
 #include "registry.h"
 #include "registry_p.h"
 #include "screencaster.h"
@@ -64,6 +66,8 @@ static Registry::Interface nameToInterface(const char *interface)
         return Registry::FullscreenShellInterface;
     else if (strcmp(interface, "wl_output") == 0)
         return Registry::OutputInterface;
+    else if (QByteArray(interface) == OutputManagement::interfaceName())
+        return Registry::OutputManagementInterface;
     else if (QByteArray(interface) == Screencaster::interfaceName())
         return Registry::ScreencasterInterface;
     else if (QByteArray(interface) == Screenshooter::interfaceName())
@@ -84,6 +88,8 @@ static const wl_interface *wlInterface(Registry::Interface interface)
         return &wl_output_interface;
     case Registry::FullscreenShellInterface:
         return &zwp_fullscreen_shell_v1_interface;
+    case Registry::OutputManagementInterface:
+        return &greenisland_outputmanagement_interface;
     case Registry::ScreencasterInterface:
         return &greenisland_screencaster_interface;
     case Registry::ScreenshooterInterface:
@@ -157,6 +163,9 @@ void RegistryPrivate::handleAnnounce(const char *interface, quint32 name, quint3
     case Registry::OutputInterface:
         Q_EMIT q->outputAnnounced(name, version);
         break;
+    case Registry::OutputManagementInterface:
+        Q_EMIT q->outputManagementAnnounced(name, version);
+        break;
     case Registry::ScreencasterInterface:
         Q_EMIT q->screencasterAnnounced(name, version);
         break;
@@ -193,6 +202,9 @@ void RegistryPrivate::handleRemove(quint32 name)
                 break;
             case Registry::OutputInterface:
                 Q_EMIT q->outputRemoved(name);
+                break;
+            case Registry::OutputManagementInterface:
+                Q_EMIT q->outputManagementRemoved(name);
                 break;
             case Registry::ScreencasterInterface:
                 Q_EMIT q->screencasterRemoved(name);
@@ -340,6 +352,15 @@ Shm *Registry::createShm(quint32 name, quint32 version, QObject *parent)
     Shm *shm = new Shm(parent);
     ShmPrivate::get(shm)->init(d->registry, name, version);
     return shm;
+}
+
+OutputManagement *Registry::createOutputManagement(quint32 name, quint32 version, QObject *parent)
+{
+    Q_D(Registry);
+    OutputManagement *management = new OutputManagement(parent);
+    OutputManagementPrivate::get(management)->registry = this;
+    OutputManagementPrivate::get(management)->init(d->registry, name, version);
+    return management;
 }
 
 Screencaster *Registry::createScreencaster(Shm *shm, quint32 name, quint32 version, QObject *parent)

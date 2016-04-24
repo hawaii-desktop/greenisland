@@ -57,8 +57,8 @@ public:
         : QObjectPrivate()
         , m_screen(Q_NULLPTR)
         , m_refreshRate(60000)
-        , m_subpixel(Screen::SubpixelNone)
-        , m_transform(Screen::TransformNormal)
+        , m_subpixel(QWaylandOutput::SubpixelNone)
+        , m_transform(QWaylandOutput::TransformNormal)
         , m_scaleFactor(1)
         , m_currentMode(-1)
         , m_preferredMode(-1)
@@ -69,8 +69,8 @@ public:
     void setSize(const QSize &size);
     void setRefreshRate(int refreshRate);
     void setPhysicalSize(const QSizeF &size);
-    void setSubpixel(Screen::Subpixel subpixel);
-    void setTransform(Screen::Transform transform);
+    void setSubpixel(QWaylandOutput::Subpixel subpixel);
+    void setTransform(QWaylandOutput::Transform transform);
     void setScaleFactor(int scale);
     void setCurrentMode(int modeId);
     void setPreferredMode(int modeId);
@@ -83,8 +83,8 @@ public:
     QSize m_size;
     int m_refreshRate;
     QSizeF m_physicalSize;
-    Screen::Subpixel m_subpixel;
-    Screen::Transform m_transform;
+    QWaylandOutput::Subpixel m_subpixel;
+    QWaylandOutput::Transform m_transform;
     int m_scaleFactor;
     int m_currentMode;
     int m_preferredMode;

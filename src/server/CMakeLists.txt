@@ -50,6 +50,10 @@ set(SOURCES
     core/homeapplication.cpp
     core/quickoutput.cpp
     input/keymap.cpp
+    output/outputchangeset.cpp
+    output/outputconfiguration.cpp
+    output/outputmanagement.cpp
+    output/quickoutputconfiguration.cpp
     screen/fakescreenbackend.cpp
     screen/nativescreenbackend.cpp
     screen/quickscreenmanager.cpp
@@ -85,6 +89,11 @@ greenisland_add_server_protocol(SOURCES
 greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screenshooter.xml
     BASENAME greenisland-screenshooter
+    PREFIX greenisland_
+)
+greenisland_add_server_protocol(SOURCES
+    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-outputmanagement.xml
+    BASENAME greenisland-outputmanagement
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
@@ -172,6 +181,22 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        OutputChangeset
+        OutputConfiguration
+        OutputManagement
+        QuickOutputConfiguration
+    PREFIX
+        Server
+    OUTPUT_DIR
+        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    REQUIRED_HEADERS
+        GreenIslandServer_HEADERS
+    RELATIVE
+        output
+)
+
+ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
+    HEADER_NAMES
         GtkShell,GtkSurface
         XdgShell,XdgSurface,XdgPopup
         QuickXdgPopupItem
@@ -228,16 +253,22 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputchangeset_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputconfiguration_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputmanagement_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/output/quickoutputconfiguration_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowview_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/unifiedshell_p.h
+        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-outputmanagement.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h
+        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h

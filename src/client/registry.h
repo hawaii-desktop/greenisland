@@ -41,6 +41,7 @@ namespace Client {
 class Compositor;
 class FullScreenShell;
 class Output;
+class OutputManagement;
 class RegistryPrivate;
 class Screencaster;
 class Screenshooter;
@@ -57,6 +58,7 @@ public:
         CompositorInterface,
         FullscreenShellInterface,
         OutputInterface,
+        OutputManagementInterface,
         ScreencasterInterface,
         ScreenshooterInterface,
         SeatInterface,
@@ -78,6 +80,9 @@ public:
     Output *createOutput(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Seat *createSeat(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
     Shm *createShm(quint32 name, quint32 version, QObject *parent = Q_NULLPTR);
+
+    OutputManagement *createOutputManagement(quint32 name, quint32 version,
+                                             QObject *parent = Q_NULLPTR);
 
     Screencaster *createScreencaster(Shm *shm, quint32 name, quint32 version,
                                      QObject *parent = Q_NULLPTR);
@@ -107,6 +112,9 @@ Q_SIGNALS:
 
     void shmAnnounced(quint32 name, quint32 version);
     void shmRemoved(quint32 name);
+
+    void outputManagementAnnounced(quint32 name, quint32 version);
+    void outputManagementRemoved(quint32 name);
 
     void screencasterAnnounced(quint32 name, quint32 version);
     void screencasterRemoved(quint32 name);

@@ -1,7 +1,7 @@
 /****************************************************************************
  * This file is part of Hawaii.
  *
- * Copyright (C) 2015-2016 Pier Luigi Fiorini
+ * Copyright (C) 2016 Pier Luigi Fiorini
  *
  * Author(s):
  *    Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
@@ -25,17 +25,33 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#include "serverlogging_p.h"
+#ifndef GREENISLAND_QUICKOUTPUTCONFIGURATION_H
+#define GREENISLAND_QUICKOUTPUTCONFIGURATION_H
 
-Q_LOGGING_CATEGORY(gLcCore, "greenisland.compositor", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcOutputManagement, "greenisland.outputmanagement", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShell, "greenisland.protocols.gtkshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcGtkShellTrace, "greenisland.protocols.gtkshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreencaster, "greenisland.protocols.screencaster", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenshooter, "greenisland.protocols.screenshooter", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcTaskManager, "greenisland.protocols.taskmanager", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShell, "greenisland.protocols.xdgshell", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcXdgShellTrace, "greenisland.protocols.xdgshell.trace", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcScreenBackend, "greenisland.screenbackend", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcFakeScreenBackend, "greenisland.screenbackend.fake", QtDebugMsg)
-Q_LOGGING_CATEGORY(gLcNativeScreenBackend, "greenisland.screenbackend.native", QtDebugMsg)
+#include <QtQml/QQmlListProperty>
+
+#include <GreenIsland/Server/OutputConfiguration>
+
+namespace GreenIsland {
+
+namespace Server {
+
+class QuickOutputConfigurationPrivate;
+
+class GREENISLANDSERVER_EXPORT QuickOutputConfiguration : public OutputConfiguration
+{
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(QuickOutputConfiguration)
+    Q_PRIVATE_PROPERTY(QuickOutputConfiguration::d_func(), QQmlListProperty<GreenIsland::Server::OutputChangeset> changes READ changes NOTIFY changesChanged)
+public:
+    QuickOutputConfiguration();
+
+Q_SIGNALS:
+    void changesChanged();
+};
+
+} // namespace Server
+
+} // namespace GreenIsland
+
+#endif // GREENISLAND_QUICKOUTPUTCONFIGURATION_H

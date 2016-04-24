@@ -31,6 +31,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QSize>
 
+#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
+
 #include <GreenIsland/server/greenislandserver_export.h>
 
 class QScreen;
@@ -39,6 +41,7 @@ namespace GreenIsland {
 
 namespace Server {
 
+class OutputChangeset;
 class ScreenPrivate;
 class ScreenBackendPrivate;
 
@@ -55,34 +58,12 @@ class GREENISLANDSERVER_EXPORT Screen : public QObject
     Q_PROPERTY(int height READ height NOTIFY sizeChanged)
     Q_PROPERTY(int refreshRate READ refreshRate NOTIFY refreshRateChanged)
     Q_PROPERTY(QSizeF physicalSize READ physicalSize NOTIFY physicalSizeChanged)
-    Q_PROPERTY(Subpixel subpixel READ subpixel NOTIFY subpixelChanged)
-    Q_PROPERTY(Transform transform READ transform NOTIFY transformChanged)
+    Q_PROPERTY(QWaylandOutput::Subpixel subpixel READ subpixel NOTIFY subpixelChanged)
+    Q_PROPERTY(QWaylandOutput::Transform transform READ transform NOTIFY transformChanged)
     Q_PROPERTY(int scaleFactor READ scaleFactor NOTIFY scaleFactorChanged)
     Q_PROPERTY(int currentMode READ currentMode NOTIFY currentModeChanged)
     Q_PROPERTY(int preferredMode READ preferredMode NOTIFY preferredModeChanged)
 public:
-    enum Subpixel {
-      SubpixelUnknown = 0,
-      SubpixelNone,
-      SubpixelHorizontalRgb,
-      SubpixelHorizontalBgr,
-      SubpixelVerticalRgb,
-      SubpixelVerticalBgr
-    };
-    Q_ENUM(Subpixel)
-
-    enum Transform {
-        TransformNormal = 0,
-        Transform90,
-        Transform180,
-        Transform270,
-        TransformFlipped,
-        TransformFlipped90,
-        TransformFlipped180,
-        TransformFlipped270
-    };
-    Q_ENUM(Transform)
-
     struct Mode {
         QSize size;
         qreal refreshRate;
@@ -101,13 +82,16 @@ public:
     int height() const;
     int refreshRate() const;
     QSizeF physicalSize() const;
-    Subpixel subpixel() const;
-    Transform transform() const;
+    QWaylandOutput::Subpixel subpixel() const;
+    QWaylandOutput::Transform transform() const;
     int scaleFactor() const;
 
     int currentMode() const;
     int preferredMode() const;
     QList<Mode> modes() const;
+
+    Q_INVOKABLE bool applyChangeset(GreenIsland::Server::OutputChangeset *changeset);
+    Q_INVOKABLE void discardChangeset(GreenIsland::Server::OutputChangeset *changeset);
 
     static ScreenPrivate *get(Screen *screen) { return screen->d_func(); }
 

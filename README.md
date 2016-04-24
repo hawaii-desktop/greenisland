@@ -312,6 +312,7 @@ to learn how to enable them.
   * **greenisland.compositor:** Core compositor classes
   * **greenisland.screenbackend.native:** Native screen backend
   * **greenisland.screenbackend.fake:** Fake screen backend
+  * **greenisland.outputmanagement:** The greenisland_outputmanagement protocol
   * **greenisland.protocols.gtkshell:** gtk_shell
   * **greenisland.protocols.gtkshell.trace:** gtk_shell trace
   * **greenisland.protocols.recorder:** greenisland_recorder
