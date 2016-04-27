@@ -357,6 +357,36 @@ void EglFSKmsScreen::setPowerState(EglFSScreen::PowerState state)
     m_powerState = state;
 }
 
+QList<EglFSScreen::Mode> EglFSKmsScreen::modes() const
+{
+    QList<EglFSScreen::Mode> list;
+
+    Q_FOREACH (const drmModeModeInfo &info, m_output.modes)
+        list.append({QSize(info.hdisplay, info.vdisplay),
+                     info.vrefresh > 0 ? info.vrefresh : 60});
+
+    return list;
+}
+
+int EglFSKmsScreen::currentMode() const
+{
+    return m_output.mode;
+}
+
+void EglFSKmsScreen::setCurrentMode(int modeId)
+{
+    if (modeId < 0 || modeId >= m_output.modes.size()) {
+        qWarning("Invalid mode passed to EglFSKmsScreen::setCurrentMode()");
+        return;
+    }
+
+    m_output.mode = modeId;
+    m_output.mode_set = false;
+
+    QWindowSystemInterface::handleScreenGeometryChange(QPlatformScreen::screen(), geometry(), availableGeometry());
+    QWindowSystemInterface::handleScreenRefreshRateChange(QPlatformScreen::screen(), refreshRate());
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

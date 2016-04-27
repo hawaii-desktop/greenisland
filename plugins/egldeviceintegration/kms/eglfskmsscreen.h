@@ -117,6 +117,10 @@ public:
     EglFSScreen::PowerState powerState() const Q_DECL_OVERRIDE;
     void setPowerState(EglFSScreen::PowerState state) Q_DECL_OVERRIDE;
 
+    QList<EglFSScreen::Mode> modes() const Q_DECL_OVERRIDE;
+    int currentMode() const Q_DECL_OVERRIDE;
+    void setCurrentMode(int modeId) Q_DECL_OVERRIDE;
+
 private:
     EglFSKmsIntegration *m_integration;
     EglFSKmsDevice *m_device;
