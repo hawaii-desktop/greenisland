@@ -232,6 +232,46 @@ void EglFSScreen::setPowerState(PowerState state)
 }
 #endif
 
+/*!
+  Returns the list of modes.
+
+  The default implementation always returns a list with
+  only one mode from the current screen size and refresh rate.
+
+  \sa QPlatformScreen::geometry
+  \sa QPlatformScreen::refreshRate
+*/
+QList<EglFSScreen::Mode> EglFSScreen::modes() const
+{
+    QList<EglFSScreen::Mode> list;
+    list.append({geometry().size(), refreshRate()});
+    return list;
+}
+
+/*!
+  Returns the index of the current mode from the modes list.
+
+  The default implementation always returns 0.
+
+  \sa QPlatformScreen::modes
+*/
+int EglFSScreen::currentMode() const
+{
+    return 0;
+}
+
+/*!
+  Sets the index of the current mode from the modes list.
+
+  The default implementation does nothing.
+
+  \sa QPlatformScreen::modes
+*/
+void EglFSScreen::setCurrentMode(int modeId)
+{
+    Q_UNUSED(modeId);
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

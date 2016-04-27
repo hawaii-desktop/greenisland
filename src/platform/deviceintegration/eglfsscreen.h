@@ -67,6 +67,11 @@ public:
     };
 #endif
 
+    struct Mode {
+        QSize size;
+        qreal refreshRate;
+    };
+
     EglFSScreen(EGLDisplay display);
     ~EglFSScreen();
 
@@ -98,6 +103,10 @@ public:
     virtual PowerState powerState() const;
     virtual void setPowerState(PowerState state);
 #endif
+
+    virtual QList<Mode> modes() const;
+    virtual int currentMode() const;
+    virtual void setCurrentMode(int modeId);
 
 private:
     void setPrimarySurface(EGLSurface surface);
