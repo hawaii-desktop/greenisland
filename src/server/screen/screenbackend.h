@@ -29,6 +29,7 @@
 #define GREENISLAND_SCREENBACKEND_H
 
 #include <QtCore/QObject>
+#include <QtCore/QSize>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -57,6 +58,7 @@ class GREENISLANDSERVER_EXPORT Screen : public QObject
     Q_PROPERTY(Subpixel subpixel READ subpixel NOTIFY subpixelChanged)
     Q_PROPERTY(Transform transform READ transform NOTIFY transformChanged)
     Q_PROPERTY(int scaleFactor READ scaleFactor NOTIFY scaleFactorChanged)
+    Q_PROPERTY(int currentMode READ currentMode NOTIFY currentModeChanged)
 public:
     enum Subpixel {
       SubpixelUnknown = 0,
@@ -80,6 +82,11 @@ public:
     };
     Q_ENUM(Transform)
 
+    struct Mode {
+        QSize size;
+        qreal refreshRate;
+    };
+
     Screen(QObject *parent = Q_NULLPTR);
 
     QScreen *screen() const;
@@ -97,6 +104,9 @@ public:
     Transform transform() const;
     int scaleFactor() const;
 
+    int currentMode() const;
+    QList<Mode> modes() const;
+
     static ScreenPrivate *get(Screen *screen) { return screen->d_func(); }
 
 Q_SIGNALS:
@@ -107,6 +117,8 @@ Q_SIGNALS:
     void subpixelChanged();
     void transformChanged();
     void scaleFactorChanged();
+    void currentModeChanged();
+    void modesChanged();
 };
 
 class GREENISLANDSERVER_EXPORT ScreenBackend : public QObject

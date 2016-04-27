@@ -31,6 +31,8 @@
 #include <QtGui/QScreen>
 #include <QtGui/qpa/qplatformscreen.h>
 
+#include <GreenIsland/Platform/EglFSScreen>
+
 #include "nativescreenbackend.h"
 #include "screenbackend_p.h"
 #include "serverlogging_p.h"
@@ -129,6 +131,17 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
     screenPrivate->setRefreshRate(qscreen->refreshRate() * 1000);
     screenPrivate->setPhysicalSize(qscreen->physicalSize());
     screenPrivate->setScaleFactor(qFloor(qscreen->devicePixelRatio()));
+
+    Platform::EglFSScreen *eglfsScreen =
+            static_cast<Platform::EglFSScreen *>(qscreen->handle());
+    if (eglfsScreen) {
+        screenPrivate->setCurrentMode(eglfsScreen->currentMode());
+
+        QList<Screen::Mode> modes;
+        Q_FOREACH (const Platform::EglFSScreen::Mode &mode, eglfsScreen->modes())
+            modes.append({mode.size, mode.refreshRate});
+        screenPrivate->setModes(modes);
+    }
 
     switch (qscreen->orientation()) {
     case Qt::PortraitOrientation:

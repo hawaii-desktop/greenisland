@@ -132,6 +132,10 @@ void FakeScreenBackend::acquireConfiguration()
         screenPrivate->setRefreshRate(refreshRate);
         screenPrivate->setScaleFactor(scale);
 
+        QList<Screen::Mode> modes;
+        modes.append({size, refreshRate});
+        screenPrivate->setModes(modes);
+
         switch (orientation) {
         case Qt::PortraitOrientation:
             screenPrivate->setTransform(Screen::Transform90);

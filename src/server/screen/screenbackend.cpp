@@ -114,6 +114,25 @@ void ScreenPrivate::setScaleFactor(int scale)
     Q_EMIT q->scaleFactorChanged();
 }
 
+void ScreenPrivate::setCurrentMode(int modeId)
+{
+    Q_Q(Screen);
+
+    if (m_currentMode == modeId)
+        return;
+
+    m_currentMode = modeId;
+    Q_EMIT q->currentModeChanged();
+}
+
+void ScreenPrivate::setModes(const QList<Screen::Mode> &modes)
+{
+    Q_Q(Screen);
+
+    m_modes = modes;
+    Q_EMIT q->modesChanged();
+}
+
 /*
  * Screen
  */
@@ -193,6 +212,18 @@ int Screen::scaleFactor() const
 {
     Q_D(const Screen);
     return d->m_scaleFactor;
+}
+
+int Screen::currentMode() const
+{
+    Q_D(const Screen);
+    return d->m_currentMode;
+}
+
+QList<Screen::Mode> Screen::modes() const
+{
+    Q_D(const Screen);
+    return d->m_modes;
 }
 
 /*
