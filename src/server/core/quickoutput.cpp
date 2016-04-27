@@ -324,6 +324,15 @@ void QuickOutput::initialize()
     connect(quickWindow, &QQuickWindow::afterRendering,
             this, &QuickOutput::readContent);
 
+    // Add modes
+    if (d->nativeScreen) {
+        Q_FOREACH (const Screen::Mode &mode, d->nativeScreen->modes())
+            addMode(mode.size, Mode::Flags(), mode.refreshRate);
+
+        Screen::Mode currentMode = d->nativeScreen->modes().at(d->nativeScreen->currentMode());
+        setCurrentMode(currentMode.size, currentMode.refreshRate);
+    }
+
     // Set the window visible now
     quickWindow->setVisible(true);
 
