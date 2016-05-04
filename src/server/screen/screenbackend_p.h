@@ -60,7 +60,8 @@ public:
         , m_subpixel(Screen::SubpixelNone)
         , m_transform(Screen::TransformNormal)
         , m_scaleFactor(1)
-        , m_currentMode(0)
+        , m_currentMode(-1)
+        , m_preferredMode(-1)
     {
     }
 
@@ -72,6 +73,7 @@ public:
     void setTransform(Screen::Transform transform);
     void setScaleFactor(int scale);
     void setCurrentMode(int modeId);
+    void setPreferredMode(int modeId);
     void setModes(const QList<Screen::Mode> &modes);
 
     QScreen *m_screen;
@@ -85,6 +87,7 @@ public:
     Screen::Transform m_transform;
     int m_scaleFactor;
     int m_currentMode;
+    int m_preferredMode;
     QList<Screen::Mode> m_modes;
 };
 

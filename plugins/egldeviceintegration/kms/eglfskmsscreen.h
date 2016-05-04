@@ -67,6 +67,7 @@ struct EglFSKmsOutput
     uint32_t crtc_id;
     QSizeF physical_size;
     int mode; // index of selected mode in list below
+    int preferred_mode; // index of preferred mode in list below
     bool mode_set;
     drmModeCrtcPtr saved_crtc;
     QList<drmModeModeInfo> modes;
@@ -118,8 +119,12 @@ public:
     void setPowerState(EglFSScreen::PowerState state) Q_DECL_OVERRIDE;
 
     QList<EglFSScreen::Mode> modes() const Q_DECL_OVERRIDE;
+
     int currentMode() const Q_DECL_OVERRIDE;
     void setCurrentMode(int modeId) Q_DECL_OVERRIDE;
+
+    int preferredMode() const Q_DECL_OVERRIDE;
+    void setPreferredMode(int modeId) Q_DECL_OVERRIDE;
 
 private:
     EglFSKmsIntegration *m_integration;

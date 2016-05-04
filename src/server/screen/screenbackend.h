@@ -59,6 +59,7 @@ class GREENISLANDSERVER_EXPORT Screen : public QObject
     Q_PROPERTY(Transform transform READ transform NOTIFY transformChanged)
     Q_PROPERTY(int scaleFactor READ scaleFactor NOTIFY scaleFactorChanged)
     Q_PROPERTY(int currentMode READ currentMode NOTIFY currentModeChanged)
+    Q_PROPERTY(int preferredMode READ preferredMode NOTIFY preferredModeChanged)
 public:
     enum Subpixel {
       SubpixelUnknown = 0,
@@ -105,6 +106,7 @@ public:
     int scaleFactor() const;
 
     int currentMode() const;
+    int preferredMode() const;
     QList<Mode> modes() const;
 
     static ScreenPrivate *get(Screen *screen) { return screen->d_func(); }
@@ -118,6 +120,7 @@ Q_SIGNALS:
     void transformChanged();
     void scaleFactorChanged();
     void currentModeChanged();
+    void preferredModeChanged();
     void modesChanged();
 };
 

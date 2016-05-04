@@ -325,11 +325,18 @@ void QuickOutput::initialize()
             this, &QuickOutput::readContent);
 
     // Add modes
-    if (d->nativeScreen) {
-        Q_FOREACH (const Screen::Mode &mode, d->nativeScreen->modes())
-            addMode(mode.size, Mode::Flags(), mode.refreshRate);
+    QList<Screen::Mode> modes = d->nativeScreen->modes();
+    if (d->nativeScreen && modes.size() > 0 && !sizeFollowsWindow()) {
+        int modeId = 0;
+        Q_FOREACH (const Screen::Mode &mode, modes) {
+            Mode::Flags flags;
+            if (modeId == d->nativeScreen->preferredMode())
+                flags |= Mode::Flag::Preferred;
+            addMode(mode.size, flags, mode.refreshRate);
+            modeId++;
+        }
 
-        Screen::Mode currentMode = d->nativeScreen->modes().at(d->nativeScreen->currentMode());
+        Screen::Mode currentMode = modes.at(d->nativeScreen->currentMode());
         setCurrentMode(currentMode.size, currentMode.refreshRate);
     }
 

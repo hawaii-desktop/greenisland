@@ -296,6 +296,7 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         crtc_id,
         size,
         selected_mode,
+        preferred,
         false,
         drmModeGetCrtc(m_dri_fd, crtc_id),
         modes,

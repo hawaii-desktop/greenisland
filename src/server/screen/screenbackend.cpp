@@ -125,6 +125,17 @@ void ScreenPrivate::setCurrentMode(int modeId)
     Q_EMIT q->currentModeChanged();
 }
 
+void ScreenPrivate::setPreferredMode(int modeId)
+{
+    Q_Q(Screen);
+
+    if (m_preferredMode == modeId)
+        return;
+
+    m_preferredMode = modeId;
+    Q_EMIT q->preferredModeChanged();
+}
+
 void ScreenPrivate::setModes(const QList<Screen::Mode> &modes)
 {
     Q_Q(Screen);
@@ -218,6 +229,12 @@ int Screen::currentMode() const
 {
     Q_D(const Screen);
     return d->m_currentMode;
+}
+
+int Screen::preferredMode() const
+{
+    Q_D(const Screen);
+    return d->m_preferredMode;
 }
 
 QList<Screen::Mode> Screen::modes() const

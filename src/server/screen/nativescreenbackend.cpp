@@ -134,13 +134,20 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
 
     Platform::EglFSScreen *eglfsScreen =
             static_cast<Platform::EglFSScreen *>(qscreen->handle());
-    if (eglfsScreen) {
-        screenPrivate->setCurrentMode(eglfsScreen->currentMode());
-
+    if (QGuiApplication::platformName() == QLatin1String("greenisland") && eglfsScreen) {
         QList<Screen::Mode> modes;
         Q_FOREACH (const Platform::EglFSScreen::Mode &mode, eglfsScreen->modes())
             modes.append({mode.size, mode.refreshRate});
         screenPrivate->setModes(modes);
+
+        screenPrivate->setCurrentMode(eglfsScreen->currentMode());
+        screenPrivate->setPreferredMode(eglfsScreen->preferredMode());
+    } else {
+        Screen::Mode mode = {screenPrivate->m_size, qreal(screenPrivate->m_refreshRate) / 1000};
+        screenPrivate->setModes(QList<Screen::Mode>() << mode);
+
+        screenPrivate->setCurrentMode(0);
+        screenPrivate->setPreferredMode(0);
     }
 
     switch (qscreen->orientation()) {

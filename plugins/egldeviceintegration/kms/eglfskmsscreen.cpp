@@ -363,7 +363,7 @@ QList<EglFSScreen::Mode> EglFSKmsScreen::modes() const
 
     Q_FOREACH (const drmModeModeInfo &info, m_output.modes)
         list.append({QSize(info.hdisplay, info.vdisplay),
-                     info.vrefresh > 0 ? info.vrefresh : 60});
+                     qreal(info.vrefresh > 0 ? info.vrefresh : 60)});
 
     return list;
 }
@@ -385,6 +385,21 @@ void EglFSKmsScreen::setCurrentMode(int modeId)
 
     QWindowSystemInterface::handleScreenGeometryChange(QPlatformScreen::screen(), geometry(), availableGeometry());
     QWindowSystemInterface::handleScreenRefreshRateChange(QPlatformScreen::screen(), refreshRate());
+}
+
+int EglFSKmsScreen::preferredMode() const
+{
+    return m_output.preferred_mode;
+}
+
+void EglFSKmsScreen::setPreferredMode(int modeId)
+{
+    if (modeId < 0 || modeId >= m_output.modes.size()) {
+        qWarning("Invalid mode passed to EglFSKmsScreen::setPreferredMode()");
+        return;
+    }
+
+    m_output.preferred_mode = modeId;
 }
 
 } // namespace Platform

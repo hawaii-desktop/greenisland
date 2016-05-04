@@ -272,6 +272,30 @@ void EglFSScreen::setCurrentMode(int modeId)
     Q_UNUSED(modeId);
 }
 
+/*!
+  Returns the index of the preferred mode from the modes list.
+
+  The default implementation always returns 0.
+
+  \sa QPlatformScreen::modes
+*/
+int EglFSScreen::preferredMode() const
+{
+    return 0;
+}
+
+/*!
+  Sets the index of the preferred mode from the modes list.
+
+  The default implementation does nothing.
+
+  \sa QPlatformScreen::modes
+*/
+void EglFSScreen::setPreferredMode(int modeId)
+{
+    Q_UNUSED(modeId);
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

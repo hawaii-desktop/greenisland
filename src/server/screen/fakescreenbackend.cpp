@@ -133,7 +133,7 @@ void FakeScreenBackend::acquireConfiguration()
         screenPrivate->setScaleFactor(scale);
 
         QList<Screen::Mode> modes;
-        modes.append({size, refreshRate});
+        modes.append({size, qreal(refreshRate) / 1000});
         screenPrivate->setModes(modes);
 
         switch (orientation) {

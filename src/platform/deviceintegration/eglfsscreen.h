@@ -105,8 +105,12 @@ public:
 #endif
 
     virtual QList<Mode> modes() const;
+
     virtual int currentMode() const;
     virtual void setCurrentMode(int modeId);
+
+    virtual int preferredMode() const;
+    virtual void setPreferredMode(int modeId);
 
 private:
     void setPrimarySurface(EGLSurface surface);
