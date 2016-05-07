@@ -67,6 +67,7 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandOutput : public QWaylandObject
     Q_PROPERTY(QString model READ model WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(QPoint position READ position WRITE setPosition NOTIFY positionChanged)
     Q_PROPERTY(QWaylandOutput::Mode currentMode READ currentMode NOTIFY currentModeChanged)
+    Q_PROPERTY(int currentModeId READ currentModeId WRITE setCurrentModeId NOTIFY currentModeIdChanged)
     Q_PROPERTY(QRect geometry READ geometry NOTIFY geometryChanged)
     Q_PROPERTY(QRect availableGeometry READ availableGeometry WRITE setAvailableGeometry NOTIFY availableGeometryChanged)
     Q_PROPERTY(QSize physicalSize READ physicalSize WRITE setPhysicalSize NOTIFY physicalSizeChanged)
@@ -146,6 +147,9 @@ public:
     Mode currentMode() const;
     void setCurrentMode(const QSize &size, qreal refreshRate = 60);
 
+    int currentModeId() const;
+    void setCurrentModeId(int modeId);
+
     QRect geometry() const;
 
     QRect availableGeometry() const;
@@ -184,6 +188,7 @@ Q_SIGNALS:
     void geometryChanged();
     void modeAdded();
     void currentModeChanged();
+    void currentModeIdChanged();
     void availableGeometryChanged();
     void physicalSizeChanged();
     void scaleFactorChanged();

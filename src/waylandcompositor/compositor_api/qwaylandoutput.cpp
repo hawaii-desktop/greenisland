@@ -596,6 +596,7 @@ void QWaylandOutput::setCurrentMode(const QSize &size, qreal refreshRate)
             d->currentMode = i;
             d->modes.replace(d->currentMode, newMode);
             Q_EMIT currentModeChanged();
+            Q_EMIT currentModeIdChanged();
             Q_EMIT geometryChanged();
             d->sendModesInfo();
             break;
@@ -609,6 +610,36 @@ void QWaylandOutput::setCurrentMode(const QSize &size, qreal refreshRate)
         d->window->setMinimumSize(mode.size);
         d->window->setMaximumSize(mode.size);
     }
+}
+
+/*!
+ * \property QWaylandOutput::currentModeId
+ *
+ * This property holds the current output's mode index of
+ * the modes list.
+ *
+ * \sa QWaylandOutput::modes
+ */
+int QWaylandOutput::currentModeId() const
+{
+    Q_D(const QWaylandOutput);
+    return d->currentMode;
+}
+
+void QWaylandOutput::setCurrentModeId(int modeId)
+{
+    Q_D(QWaylandOutput);
+
+    if (modeId == d->currentMode)
+        return;
+
+    if (modeId < 0 || modeId >= d->modes.size()) {
+        qWarning("Mode %d is not valid, unable to set QWaylandOutput::currentModeId", modeId);
+        return;
+    }
+
+    Mode mode = d->modes.at(modeId);
+    setCurrentMode(mode.size, mode.refreshRate);
 }
 
 /*!
