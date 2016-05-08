@@ -40,6 +40,7 @@
 #include <QtGui/QScreen>
 
 #include <GreenIsland/Platform/EglFSCursor>
+#include <GreenIsland/Platform/EglFSWindow>
 #include <GreenIsland/Platform/Udev>
 #include <GreenIsland/Platform/UdevEnumerate>
 
@@ -136,6 +137,8 @@ EGLNativeWindowType EglFSKmsIntegration::createNativeWindow(QPlatformWindow *pla
     Q_UNUSED(format);
 
     EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(platformWindow->screen());
+    if (screen->isResizing())
+        return reinterpret_cast<EGLNativeWindowType>(screen->createGbmSurface());
     if (screen->surface()) {
         qWarning("Only single window per screen supported!");
         return 0;
@@ -184,10 +187,24 @@ QPlatformCursor *EglFSKmsIntegration::createCursor(QPlatformScreen *screen) cons
         return new EglFSCursor(screen);
 }
 
+bool EglFSKmsIntegration::isResizingSurface(QPlatformSurface *surface) const
+{
+    QWindow *window = static_cast<QWindow *>(surface->surface());
+    EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(window->screen()->handle());
+
+    return screen->isResizing();
+}
+
 void EglFSKmsIntegration::waitForVSync(QPlatformSurface *surface) const
 {
     QWindow *window = static_cast<QWindow *>(surface->surface());
     EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(window->screen()->handle());
+    EglFSWindow *kmsWindow = static_cast<EglFSWindow *>(window->handle());
+
+    if (screen->isResizing()) {
+        gbm_surface *gbmSurface = reinterpret_cast<gbm_surface *>(kmsWindow->resizeSurface());
+        screen->swapSurface(gbmSurface);
+    }
 
     screen->waitForFlip();
 }

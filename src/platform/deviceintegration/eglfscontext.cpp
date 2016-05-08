@@ -108,6 +108,8 @@ void EglFSContext::swapBuffers(QPlatformSurface *surface)
     }
 
     egl_device_integration()->waitForVSync(surface);
+    if (egl_device_integration()->isResizingSurface(surface))
+        EGLPlatformContext::makeCurrent(surface);
     EGLPlatformContext::swapBuffers(surface);
     egl_device_integration()->presentBuffer(surface);
 }

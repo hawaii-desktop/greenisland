@@ -33,8 +33,10 @@
 
 #include <QtCore/QLoggingCategory>
 #include <QtGui/private/qguiapplication_p.h>
+#include <QtGui/qpa/qplatformwindow.h>
 
 #include <GreenIsland/Platform/EglFSIntegration>
+#include <GreenIsland/Platform/EglFSWindow>
 #include <GreenIsland/Platform/VtHandler>
 
 #include "eglfskmsscreen.h"
@@ -118,6 +120,7 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
     : EglFSScreen(eglGetDisplay(reinterpret_cast<EGLNativeDisplayType>(device->device())))
     , m_integration(integration)
     , m_device(device)
+    , m_resizing(false)
     , m_gbm_surface(Q_NULLPTR)
     , m_gbm_bo_current(Q_NULLPTR)
     , m_gbm_bo_next(Q_NULLPTR)
@@ -233,6 +236,15 @@ gbm_surface *EglFSKmsScreen::createSurface()
     return m_gbm_surface;
 }
 
+gbm_surface *EglFSKmsScreen::createGbmSurface()
+{
+    return gbm_surface_create(m_device->device(),
+                              geometry().width(),
+                              geometry().height(),
+                              GBM_FORMAT_XRGB8888,
+                              GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
+}
+
 void EglFSKmsScreen::destroySurface()
 {
     if (m_gbm_bo_current) {
@@ -253,6 +265,10 @@ void EglFSKmsScreen::destroySurface()
 
 void EglFSKmsScreen::waitForFlip()
 {
+    // Skip flip while resizing until we switched to thew new surface
+    if (m_resizing)
+        return;
+
     // Don't lock the mutex unless we actually need to
     if (!m_gbm_bo_next)
         return;
@@ -264,6 +280,10 @@ void EglFSKmsScreen::waitForFlip()
 
 void EglFSKmsScreen::flip()
 {
+    // Skip flip while resizing until we switched to thew new surface
+    if (m_resizing)
+        return;
+
     if (!m_gbm_surface) {
         qCWarning(lcKms, "Cannot sync before platform init!");
         return;
@@ -313,6 +333,13 @@ void EglFSKmsScreen::flipFinished()
 
     m_gbm_bo_current = m_gbm_bo_next;
     m_gbm_bo_next = Q_NULLPTR;
+}
+
+void EglFSKmsScreen::swapSurface(gbm_surface *surface)
+{
+    m_gbm_bo_current = Q_NULLPTR;
+    m_gbm_surface = surface;
+    m_resizing = false;
 }
 
 void EglFSKmsScreen::restoreMode()
@@ -376,8 +403,12 @@ void EglFSKmsScreen::setCurrentMode(int modeId)
     m_output.mode = modeId;
     m_output.mode_set = false;
 
-    QWindowSystemInterface::handleScreenGeometryChange(QPlatformScreen::screen(), geometry(), availableGeometry());
-    QWindowSystemInterface::handleScreenRefreshRateChange(QPlatformScreen::screen(), refreshRate());
+    m_resizing = true;
+
+    QWindowSystemInterface::handleScreenGeometryChange(screen(), geometry(), availableGeometry());
+    QWindowSystemInterface::handleScreenRefreshRateChange(screen(), refreshRate());
+
+    resizeMaximizedWindows();
 }
 
 int EglFSKmsScreen::preferredMode() const

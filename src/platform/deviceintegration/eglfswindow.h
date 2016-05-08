@@ -82,6 +82,7 @@ public:
 
     virtual void invalidateSurface() Q_DECL_OVERRIDE;
     virtual void resetSurface();
+    virtual EGLNativeWindowType resizeSurface();
 
     OpenGLCompositorBackingStore *backingStore() { return m_backingStore; }
     void setBackingStore(OpenGLCompositorBackingStore *backingStore) { m_backingStore = backingStore; }

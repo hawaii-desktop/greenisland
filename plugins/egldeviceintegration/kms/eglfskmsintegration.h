@@ -63,6 +63,7 @@ public:
     void destroyNativeWindow(EGLNativeWindowType window) Q_DECL_OVERRIDE;
     bool hasCapability(QPlatformIntegration::Capability cap) const Q_DECL_OVERRIDE;
     QPlatformCursor *createCursor(QPlatformScreen *screen) const Q_DECL_OVERRIDE;
+    bool isResizingSurface(QPlatformSurface *surface) const Q_DECL_OVERRIDE;
     void waitForVSync(QPlatformSurface *surface) const Q_DECL_OVERRIDE;
     void presentBuffer(QPlatformSurface *surface) Q_DECL_OVERRIDE;
     bool supportsPBuffers() const Q_DECL_OVERRIDE;

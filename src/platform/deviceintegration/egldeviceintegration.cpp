@@ -270,6 +270,12 @@ QPlatformCursor *EGLDeviceIntegration::createCursor(QPlatformScreen *screen) con
     return new EglFSCursor(screen);
 }
 
+bool EGLDeviceIntegration::isResizingSurface(QPlatformSurface *surface) const
+{
+    Q_UNUSED(surface);
+    return false;
+}
+
 void EGLDeviceIntegration::waitForVSync(QPlatformSurface *surface) const
 {
     Q_UNUSED(surface);

@@ -201,6 +201,47 @@ void EglFSWindow::resetSurface()
     }
 }
 
+EGLNativeWindowType EglFSWindow::resizeSurface()
+{
+    if (window()->type() == Qt::Desktop) {
+        QRect fullscreenRect(QPoint(), screen()->availableGeometry().size());
+        QPlatformWindow::setGeometry(fullscreenRect);
+        QWindowSystemInterface::handleGeometryChange(window(), fullscreenRect);
+        return 0;
+    }
+
+    setGeometry(QRect());
+    QWindowSystemInterface::handleExposeEvent(window(), QRect(QPoint(0, 0), geometry().size()));
+
+    EglFSScreen *nativeScreen = static_cast<EglFSScreen *>(screen());
+    EGLDisplay display = nativeScreen->display();
+    EGLNativeWindowType window = egl_device_integration()->createNativeWindow(this, nativeScreen->geometry().size(), m_format);
+    EGLSurface surface = eglCreateWindowSurface(display, m_config, window, NULL);
+    if (Q_UNLIKELY(surface == EGL_NO_SURFACE)) {
+        EGLint error = eglGetError();
+        eglTerminate(display);
+        qFatal("EGL Error : Could not create a new egl surface: error = 0x%x\n", error);
+        return 0;
+    }
+
+    EGLNativeWindowType oldWindow = m_window;
+    EGLSurface oldSurface = m_surface;
+
+    m_window = window;
+    m_surface = surface;
+
+    if (oldSurface != EGL_NO_SURFACE) {
+        EGLDisplay display = static_cast<EglFSScreen *>(screen())->display();
+        eglDestroySurface(display, oldSurface);
+    }
+    egl_device_integration()->destroyNativeWindow(oldWindow);
+
+    EglFSScreen *screen = this->screen();
+    screen->setPrimarySurface(m_surface);
+
+    return window;
+}
+
 void EglFSWindow::setVisible(bool visible)
 {
     OpenGLCompositor *compositor = OpenGLCompositor::instance();

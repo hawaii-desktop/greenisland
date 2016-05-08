@@ -102,6 +102,7 @@ public:
 
     virtual bool filterConfig(EGLDisplay display, EGLConfig config) const;
 
+    virtual bool isResizingSurface(QPlatformSurface *surface) const;
     virtual void waitForVSync(QPlatformSurface *surface) const;
     virtual void presentBuffer(QPlatformSurface *surface);
 
