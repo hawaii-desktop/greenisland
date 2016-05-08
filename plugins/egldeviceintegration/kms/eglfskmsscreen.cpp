@@ -395,7 +395,7 @@ int EglFSKmsScreen::preferredMode() const
 void EglFSKmsScreen::setPreferredMode(int modeId)
 {
     if (modeId < 0 || modeId >= m_output.modes.size()) {
-        qWarning("Invalid mode passed to EglFSKmsScreen::setPreferredMode()");
+        qCWarning(lcKms, "Invalid mode passed to EglFSKmsScreen::setPreferredMode()");
         return;
     }
 
