@@ -212,6 +212,69 @@ from the build directory.
 
 # Notes
 
+## Environment variables
+
+### Qt Platform Abstraction
+
+Green Island leverages the Qt Platform Abstraction available since Qt 5
+to run the compositor without another windowing system such as Wayland or X11.
+The "greenisland" QPA plugin has support for different hardware through EGL
+device integration plugins.
+
+There are a number of environment variables that can influence the QPA
+plugin:
+
+* **GREENISLAND_QPA_DEBUG:** When set, some debugging information is
+  printed on the debug output such as the EGL configuration being used
+  while creating a new context.
+
+* **GREENISLAND_QPA_WIDTH** and **GREENISLAND_QPA_HEIGHT:**
+  Screen width and height in pixels (screen resolution). This variable
+  is used only on platforms where detecting it from the framebuffer device
+  /dev/fb0 fails.
+
+* **GREENISLAND_QPA_DEPTH:** Overrides the color depth for the screen.
+  On platforms where the framebuffer device /dev/fb0 is not available or
+  the query is not successful, the default value of 32 is used.
+  Setting this variable can override any such default.
+  Please note that this affects only the color depth reported by the
+  screen and it is irrelevant to EGL configurations and the color depth
+  used for OpenGL rendering.
+
+* **GREENISLAND_QPA_PHYSICAL_WIDTH** and **GREENISLAND_QPA_PHYSICAL_HEIGHT:**
+  Physical screen width and height in millimiters. On platforms where the
+  /dev/fb0 framebuffer device is not available, or the query is not
+  successful, the values are calculated based on a default DPI of 100.
+  These variables can be used to override such default values.
+
+* **GREENISLAND_QPA_SWAPINTERVAL:** By default a swap interval of 1 will
+  be requested. This enables synchronizing to the display vertical
+  refresh. Passing 0 will disable blocking on swap, resulting in running
+  as fast as it's possible without any synchronization.
+
+* **GREENISLAND_QPA_FORCEVSYNC:** When set, FBIO_WAITFORVSYNC is
+  requested on the framebuffer device.
+
+* **GREENISLAND_QPA_FORCE888:** When set, the red, green and blue color
+  channels are ignored whenever creating a new context, window or
+  offscreen surface. Instead a configuration of 8 bits per channel is
+  requested. Useful on devices where configurations with less than
+  24 or 32 bits per channel are chosen by default but are not suitable,
+  for example due to banding effects. This variable moves the control
+  of color channels from the compositor to a setting that allows a
+  more flexible per-device configuration.
+
+* **GREENISLAND_QPA_ENABLE_TERMINAL_KEYBOARD:** By default terminal
+  keyboard is disabled on compositor startup by setting tty's keyboard
+  mode to K_OFF preventing keystrokes from going to the terminal.
+
+* **GREENISLAND_QPA_INTEGRATION:** EGL device integration to be loaded
+  at compositor startup. By default the QPA plugin autodetects which
+  plugin needs to be loaded, if for some reason autodetection fails
+  a specific plugin can be set with this variable. Set the EGL device
+  integration plugin file name without path and extension (for example
+  "kms" for the DRM/KMS integration, "brcm" for Broadcom etc...).
+
 ## Plugins
 
 Green Island can be extend with plugins.
