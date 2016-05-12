@@ -31,10 +31,14 @@
  * $END_LICENSE$
  ***************************************************************************/
 
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QLoggingCategory>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QStandardPaths>
+#include <QtGui/QGuiApplication>
 #include <QtGui/qpa/qplatformwindow.h>
 #include <QtGui/qpa/qplatformcursor.h>
 #include <QtGui/QScreen>
@@ -71,24 +75,27 @@ EglFSKmsIntegration::EglFSKmsIntegration()
 
 void EglFSKmsIntegration::platformInit()
 {
-    loadConfig();
+    // Autodetect DRM device unless it's specified by the configuration
+    if (m_devicePath.isEmpty()) {
+        Udev *udev = new Udev;
+        UdevEnumerate *udevEnumerate = new UdevEnumerate(UdevDevice::PrimaryVideoDevice |
+                                                         UdevDevice::GenericVideoDevice, udev);
+        QList<UdevDevice *> devices = udevEnumerate->scan();
+        qCDebug(lcKms) << "Found the following video devices:";
+        Q_FOREACH (UdevDevice *device, devices)
+            qCDebug(lcKms) << '\t' << device->deviceNode().toUtf8().constData();
 
-    Udev *udev = new Udev;
-    UdevEnumerate *udevEnumerate = new UdevEnumerate(UdevDevice::PrimaryVideoDevice |
-                                                     UdevDevice::GenericVideoDevice, udev);
-    QList<UdevDevice *> devices = udevEnumerate->scan();
-    qCDebug(lcKms) << "Found the following video devices:";
-    Q_FOREACH (UdevDevice *device, devices)
-        qCDebug(lcKms) << '\t' << device->deviceNode().toUtf8().constData();
+        delete udevEnumerate;
+        delete udev;
 
-    delete udevEnumerate;
-    delete udev;
+        if (devices.isEmpty())
+            qFatal("Could not find DRM device!");
 
-    if (devices.isEmpty())
-        qFatal("Could not find DRM device!");
-
-    m_devicePath = devices.first()->deviceNode();
-    qCDebug(lcKms) << "Using" << m_devicePath;
+        m_devicePath = devices.first()->deviceNode();
+        qCInfo(lcKms) << "Using autodetected" << m_devicePath;
+    } else {
+        qCInfo(lcKms) << "Using" << m_devicePath << "from configuration";
+    }
 
     m_device = new EglFSKmsDevice(this, m_devicePath);
     if (!m_device->open())
@@ -100,6 +107,114 @@ void EglFSKmsIntegration::platformDestroy()
     m_device->close();
     delete m_device;
     m_device = Q_NULLPTR;
+}
+
+void EglFSKmsIntegration::loadConfiguration(const QString &fileName)
+{
+    qCInfo(lcKms) << "Loading configuration from" << fileName;
+
+    QFile file(fileName);
+    if (!file.open(QFile::ReadOnly)) {
+        qCWarning(lcKms) << "Could not open configuration file"
+                         << fileName << "for reading";
+        return;
+    }
+
+    const QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    if (!doc.isObject() || !doc.object().contains(QStringLiteral("kms"))) {
+        qCWarning(lcKms) << "Invalid configuration file" << fileName
+                         << "- no top-level JSON object";
+        return;
+    }
+
+    const QJsonObject object = doc.object().value(QStringLiteral("kms")).toObject();
+
+    m_hwCursor = object.value(QStringLiteral("hwcursor")).toBool(m_hwCursor);
+    m_pbuffers = object.value(QStringLiteral("pbuffers")).toBool(m_pbuffers);
+    m_devicePath = object.value(QStringLiteral("device")).toString();
+    m_separateScreens = object.value(QStringLiteral("separateScreens")).toBool(m_separateScreens);
+
+    const QJsonArray outputs = object.value(QStringLiteral("outputs")).toArray();
+    for (int i = 0; i < outputs.size(); i++) {
+        const QVariantMap outputSettings = outputs.at(i).toObject().toVariantMap();
+
+        if (outputSettings.contains(QStringLiteral("name"))) {
+            const QString name = outputSettings.value(QStringLiteral("name")).toString();
+
+            if (m_outputSettings.contains(name))
+                qCDebug(lcKms) << "Output" << name << "configured multiple times!";
+
+            m_outputSettings.insert(name, outputSettings);
+        }
+    }
+
+    qCDebug(lcKms) << "Configuration:\n"
+                   << "\tdevice:" << m_devicePath << "\n"
+                   << "\thwcursor:" << m_hwCursor << "\n"
+                   << "\tpbuffers:" << m_pbuffers << "\n"
+                   << "\tseparateScreens:" << m_separateScreens << "\n"
+                   << "\toutputs:" << m_outputSettings;
+}
+
+void EglFSKmsIntegration::saveConfiguration(const QString &fileName)
+{
+    qCInfo(lcKms) << "Saving configuration to" << fileName;
+
+    QFileInfo fileInfo(fileName);
+    fileInfo.absoluteDir().mkpath(QLatin1String("."));
+
+    QFile file(fileName);
+    if (!file.open(QFile::ReadWrite)) {
+        qCWarning(lcKms) << "Could not open configuration file"
+                         << fileName << "for writing";
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    QJsonObject rootObject;
+    if (doc.isObject())
+        rootObject = doc.object();
+
+    file.seek(0);
+
+    // Save device only if it was specified by the original configuration,
+    // this will disable autodetect next time the configuration is
+    // loaded: comes in handy on systems with multiple GPUs where the
+    // user wants to pick a specific one instead of the first that
+    // is autodetected
+    QVariantMap map;
+    map[QStringLiteral("hwcursor")] = m_hwCursor;
+    map[QStringLiteral("pbuffers")] = m_pbuffers;
+    const QString devicePath = rootObject.value(QStringLiteral("kms")).toObject().value(QStringLiteral("device")).toString();
+    if (!devicePath.isEmpty())
+        map[QStringLiteral("device")] = devicePath;
+    map[QStringLiteral("separateScreens")] = m_separateScreens;
+
+    QJsonArray outputs;
+    Q_FOREACH (const QScreen *screen, QGuiApplication::screens()) {
+        EglFSKmsScreen *kmsScreen = static_cast<EglFSKmsScreen *>(screen->handle());
+        if (!kmsScreen)
+            continue;
+
+        QVariantMap output;
+        output[QStringLiteral("name")] = screen->name();
+        if (kmsScreen->currentMode() == kmsScreen->preferredMode())
+            output[QStringLiteral("mode")] = QStringLiteral("preferred");
+        else
+            output[QStringLiteral("mode")] = QStringLiteral("%1x%2")
+                    .arg(QString::number(kmsScreen->geometry().size().width()))
+                    .arg(QString::number(kmsScreen->geometry().size().height()));
+
+        outputs.append(QJsonValue::fromVariant(output));
+    }
+    map[QStringLiteral("outputs")] = outputs;
+
+    rootObject[QStringLiteral("kms")] = QJsonValue::fromVariant(map);
+    doc.setObject(rootObject);
+
+    file.write(doc.toJson());
+    file.close();
 }
 
 EGLNativeDisplayType EglFSKmsIntegration::platformDisplay() const
@@ -235,57 +350,6 @@ bool EglFSKmsIntegration::separateScreens() const
 QMap<QString, QVariantMap> EglFSKmsIntegration::outputSettings() const
 {
     return m_outputSettings;
-}
-
-void EglFSKmsIntegration::loadConfig()
-{
-    static QByteArray json = qgetenv("QT_QPA_EGLFS_KMS_CONFIG");
-    if (json.isEmpty())
-        return;
-
-    qCDebug(lcKms) << "Loading KMS setup from" << json;
-
-    QFile file(QString::fromUtf8(json));
-    if (!file.open(QFile::ReadOnly)) {
-        qCDebug(lcKms) << "Could not open config file"
-                       << json << "for reading";
-        return;
-    }
-
-    const QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
-    if (!doc.isObject()) {
-        qCDebug(lcKms) << "Invalid config file" << json
-                       << "- no top-level JSON object";
-        return;
-    }
-
-    const QJsonObject object = doc.object();
-
-    m_hwCursor = object.value(QStringLiteral("hwcursor")).toBool(m_hwCursor);
-    m_pbuffers = object.value(QStringLiteral("pbuffers")).toBool(m_pbuffers);
-    m_devicePath = object.value(QStringLiteral("device")).toString();
-    m_separateScreens = object.value(QStringLiteral("separateScreens")).toBool(m_separateScreens);
-
-    const QJsonArray outputs = object.value(QStringLiteral("outputs")).toArray();
-    for (int i = 0; i < outputs.size(); i++) {
-        const QVariantMap outputSettings = outputs.at(i).toObject().toVariantMap();
-
-        if (outputSettings.contains(QStringLiteral("name"))) {
-            const QString name = outputSettings.value(QStringLiteral("name")).toString();
-
-            if (m_outputSettings.contains(name)) {
-                qCDebug(lcKms) << "Output" << name << "configured multiple times!";
-            }
-
-            m_outputSettings.insert(name, outputSettings);
-        }
-    }
-
-    qCDebug(lcKms) << "Configuration:\n"
-                   << "\thwcursor:" << m_hwCursor << "\n"
-                   << "\tpbuffers:" << m_pbuffers << "\n"
-                   << "\tseparateScreens:" << m_separateScreens << "\n"
-                   << "\toutputs:" << m_outputSettings;
 }
 
 } // namespace Platform

@@ -52,6 +52,8 @@ public:
 
     void platformInit() Q_DECL_OVERRIDE;
     void platformDestroy() Q_DECL_OVERRIDE;
+    void loadConfiguration(const QString &fileName) Q_DECL_OVERRIDE;
+    void saveConfiguration(const QString &fileName) Q_DECL_OVERRIDE;
     EGLNativeDisplayType platformDisplay() const Q_DECL_OVERRIDE;
     bool usesDefaultScreen() Q_DECL_OVERRIDE;
     void screenInit() Q_DECL_OVERRIDE;
@@ -73,8 +75,6 @@ public:
     QMap<QString, QVariantMap> outputSettings() const;
 
 private:
-    void loadConfig();
-
     EglFSKmsDevice *m_device;
     bool m_hwCursor;
     bool m_pbuffers;
