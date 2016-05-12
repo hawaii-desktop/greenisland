@@ -247,6 +247,10 @@ plugin:
   successful, the values are calculated based on a default DPI of 100.
   These variables can be used to override such default values.
 
+* **GREENISLAND_QPA_CONFIG:** Path to the QPA plugin configuration, used
+  only by the kms EGL device integration. By default the path is
+  "~/.config/greenisland/platform.json".
+
 * **GREENISLAND_QPA_SWAPINTERVAL:** By default a swap interval of 1 will
   be requested. This enables synchronizing to the display vertical
   refresh. Passing 0 will disable blocking on swap, resulting in running

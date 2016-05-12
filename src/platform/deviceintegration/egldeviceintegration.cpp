@@ -33,6 +33,7 @@
 
 #include <QtCore/QDir>
 #include <QtCore/QRegularExpression>
+#include <QtCore/QStandardPaths>
 #include <QtCore/private/qcore_unix_p.h>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
@@ -116,6 +117,25 @@ void EGLDeviceIntegration::platformDestroy()
 {
     if (framebuffer != -1)
         close(framebuffer);
+}
+
+QString EGLDeviceIntegration::configurationFileName() const
+{
+    QString configFileName = QString::fromUtf8(qgetenv("GREENISLAND_QPA_CONFIG"));
+    if (configFileName.isEmpty())
+        configFileName = QStringLiteral("%1/greenisland/platform.json")
+                .arg(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation));
+    return configFileName;
+}
+
+void EGLDeviceIntegration::loadConfiguration(const QString &fileName)
+{
+    Q_UNUSED(fileName);
+}
+
+void EGLDeviceIntegration::saveConfiguration(const QString &fileName)
+{
+    Q_UNUSED(fileName);
 }
 
 bool EGLDeviceIntegration::handlesInput()

@@ -114,6 +114,9 @@ VtHandler *EglFSIntegration::vtHandler() const
 
 void EglFSIntegration::initialize()
 {
+    if (!egl_device_integration()->configurationFileName().isEmpty())
+        egl_device_integration()->loadConfiguration(egl_device_integration()->configurationFileName());
+
     egl_device_integration()->platformInit();
 
     m_display = eglGetDisplay(nativeDisplay());
@@ -170,6 +173,9 @@ void EglFSIntegration::initialize()
 
 void EglFSIntegration::destroy()
 {
+    if (!egl_device_integration()->configurationFileName().isEmpty())
+        egl_device_integration()->saveConfiguration(egl_device_integration()->configurationFileName());
+
     Q_FOREACH (QWindow *window, QGuiApplication::topLevelWindows())
         window->destroy();
 

@@ -65,6 +65,10 @@ public:
     virtual void platformInit();
     virtual void platformDestroy();
 
+    virtual QString configurationFileName() const;
+    virtual void loadConfiguration(const QString &fileName);
+    virtual void saveConfiguration(const QString &fileName);
+
     virtual bool handlesInput();
     virtual bool usesVtHandler();
     virtual bool usesDefaultScreen();
