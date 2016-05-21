@@ -99,16 +99,14 @@ public:
 
     gbm_surface *surface() const { return m_gbm_surface; }
     gbm_surface *createSurface();
-    gbm_surface *createGbmSurface();
     void destroySurface();
-
-    bool isResizing() const { return m_resizing; }
 
     void waitForFlip();
     void flip();
     void flipFinished();
 
-    void swapSurface(gbm_surface *surface);
+    bool isResizingSurface() const { return m_pendingMode >= 0; }
+    void resizeSurface();
 
     EglFSKmsOutput &output() { return m_output; }
     void restoreMode();
@@ -127,12 +125,12 @@ public:
 private:
     EglFSKmsIntegration *m_integration;
     EglFSKmsDevice *m_device;
-    bool m_resizing;
     gbm_surface *m_gbm_surface;
 
     gbm_bo *m_gbm_bo_current;
     gbm_bo *m_gbm_bo_next;
 
+    int m_pendingMode;
     EglFSKmsOutput m_output;
     QPoint m_pos;
     QScopedPointer<EglFSKmsCursor> m_cursor;

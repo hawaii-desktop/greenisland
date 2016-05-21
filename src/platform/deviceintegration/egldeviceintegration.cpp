@@ -310,6 +310,11 @@ void EGLDeviceIntegration::waitForVSync(QPlatformSurface *surface) const
 #endif
 }
 
+void EGLDeviceIntegration::resizeSurface(QPlatformSurface *surface)
+{
+    Q_UNUSED(surface);
+}
+
 void EGLDeviceIntegration::presentBuffer(QPlatformSurface *surface)
 {
     Q_UNUSED(surface);

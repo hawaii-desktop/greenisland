@@ -53,7 +53,7 @@ class GREENISLANDPLATFORM_EXPORT EglFSWindow : public QPlatformWindow, public Op
 {
 public:
     EglFSWindow(QWindow *w);
-    ~EglFSWindow();
+    virtual ~EglFSWindow();
 
     void create();
     void destroy();
@@ -82,7 +82,6 @@ public:
 
     virtual void invalidateSurface() Q_DECL_OVERRIDE;
     virtual void resetSurface();
-    virtual EGLNativeWindowType resizeSurface();
 
     OpenGLCompositorBackingStore *backingStore() { return m_backingStore; }
     void setBackingStore(OpenGLCompositorBackingStore *backingStore) { m_backingStore = backingStore; }
@@ -92,7 +91,7 @@ public:
     const QPlatformTextureList *textures() const Q_DECL_OVERRIDE;
     void endCompositing() Q_DECL_OVERRIDE;
 
-private:
+protected:
     OpenGLCompositorBackingStore *m_backingStore;
     bool m_raster;
     WId m_winId;

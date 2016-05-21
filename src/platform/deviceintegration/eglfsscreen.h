@@ -90,6 +90,8 @@ public:
 
     EGLDisplay display() const { return m_dpy; }
 
+    void setPrimarySurface(EGLSurface surface);
+
     void handleCursorMove(const QPoint &pos);
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
@@ -106,14 +108,10 @@ public:
     virtual void setPreferredMode(int modeId);
 
 private:
-    void setPrimarySurface(EGLSurface surface);
-
     EGLDisplay m_dpy;
     QWindow *m_pointerWindow;
     EGLSurface m_surface;
     QPlatformCursor *m_cursor;
-
-    friend class EglFSWindow;
 };
 
 } // namespace Platform

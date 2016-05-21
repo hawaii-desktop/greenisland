@@ -120,10 +120,10 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
     : EglFSScreen(eglGetDisplay(reinterpret_cast<EGLNativeDisplayType>(device->device())))
     , m_integration(integration)
     , m_device(device)
-    , m_resizing(false)
     , m_gbm_surface(Q_NULLPTR)
     , m_gbm_bo_current(Q_NULLPTR)
     , m_gbm_bo_next(Q_NULLPTR)
+    , m_pendingMode(-1)
     , m_output(output)
     , m_pos(position)
     , m_cursor(Q_NULLPTR)
@@ -226,7 +226,10 @@ QPlatformCursor *EglFSKmsScreen::cursor() const
 gbm_surface *EglFSKmsScreen::createSurface()
 {
     if (!m_gbm_surface) {
-        qCDebug(lcKms) << "Creating window for screen" << name();
+        qCDebug(lcKms, "Creating window for screen \"%s\" with size %dx%d",
+                name().toUtf8().constData(),
+                geometry().size().width(),
+                geometry().size().height());
         m_gbm_surface = gbm_surface_create(m_device->device(),
                                            geometry().width(),
                                            geometry().height(),
@@ -234,15 +237,6 @@ gbm_surface *EglFSKmsScreen::createSurface()
                                            GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
     }
     return m_gbm_surface;
-}
-
-gbm_surface *EglFSKmsScreen::createGbmSurface()
-{
-    return gbm_surface_create(m_device->device(),
-                              geometry().width(),
-                              geometry().height(),
-                              GBM_FORMAT_XRGB8888,
-                              GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
 }
 
 void EglFSKmsScreen::destroySurface()
@@ -265,10 +259,6 @@ void EglFSKmsScreen::destroySurface()
 
 void EglFSKmsScreen::waitForFlip()
 {
-    // Skip flip while resizing until we switched to thew new surface
-    if (m_resizing)
-        return;
-
     // Don't lock the mutex unless we actually need to
     if (!m_gbm_bo_next)
         return;
@@ -280,10 +270,6 @@ void EglFSKmsScreen::waitForFlip()
 
 void EglFSKmsScreen::flip()
 {
-    // Skip flip while resizing until we switched to thew new surface
-    if (m_resizing)
-        return;
-
     if (!m_gbm_surface) {
         qCWarning(lcKms, "Cannot sync before platform init!");
         return;
@@ -298,6 +284,12 @@ void EglFSKmsScreen::flip()
     FrameBuffer *fb = framebufferForBufferObject(m_gbm_bo_next);
 
     if (!m_output.mode_set) {
+        qCDebug(lcKms, "Changing mode to %d: %dx%d @ %.2f Hz",
+                m_output.mode,
+                geometry().size().width(),
+                geometry().size().height(),
+                refreshRate());
+
         int ret = drmModeSetCrtc(m_device->fd(),
                                  m_output.crtc_id,
                                  fb->fb,
@@ -335,11 +327,20 @@ void EglFSKmsScreen::flipFinished()
     m_gbm_bo_next = Q_NULLPTR;
 }
 
-void EglFSKmsScreen::swapSurface(gbm_surface *surface)
+void EglFSKmsScreen::resizeSurface()
 {
-    m_gbm_bo_current = Q_NULLPTR;
-    m_gbm_surface = surface;
-    m_resizing = false;
+    m_output.mode = m_pendingMode;
+    m_pendingMode = -1;
+    m_output.mode_set = false;
+
+    destroySurface();
+    createSurface();
+
+    QWindowSystemInterface::handleScreenGeometryChange(screen(), geometry(), availableGeometry());
+    QWindowSystemInterface::handleScreenRefreshRateChange(screen(), refreshRate());
+    QWindowSystemInterface::handleScreenLogicalDotsPerInchChange(screen(), logicalDpi().first, logicalDpi().second);
+
+    resizeMaximizedWindows();
 }
 
 void EglFSKmsScreen::restoreMode()
@@ -396,19 +397,16 @@ int EglFSKmsScreen::currentMode() const
 void EglFSKmsScreen::setCurrentMode(int modeId)
 {
     if (modeId < 0 || modeId >= m_output.modes.size()) {
-        qWarning("Invalid mode passed to EglFSKmsScreen::setCurrentMode()");
+        qCWarning(lcKms, "Invalid mode passed to EglFSKmsScreen::setCurrentMode()");
         return;
     }
 
-    m_output.mode = modeId;
-    m_output.mode_set = false;
+    if (m_pendingMode >= 0) {
+        qCWarning(lcKms, "Cannot change mode when another mode set is pending");
+        return;
+    }
 
-    m_resizing = true;
-
-    QWindowSystemInterface::handleScreenGeometryChange(screen(), geometry(), availableGeometry());
-    QWindowSystemInterface::handleScreenRefreshRateChange(screen(), refreshRate());
-
-    resizeMaximizedWindows();
+    m_pendingMode = modeId;
 }
 
 int EglFSKmsScreen::preferredMode() const

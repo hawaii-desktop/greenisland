@@ -108,6 +108,7 @@ public:
 
     virtual bool isResizingSurface(QPlatformSurface *surface) const;
     virtual void waitForVSync(QPlatformSurface *surface) const;
+    virtual void resizeSurface(QPlatformSurface *surface);
     virtual void presentBuffer(QPlatformSurface *surface);
 
     virtual bool supportsPBuffers() const;

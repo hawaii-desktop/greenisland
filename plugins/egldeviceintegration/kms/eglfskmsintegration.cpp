@@ -52,6 +52,7 @@
 #include "eglfskmsdevice.h"
 #include "eglfskmsscreen.h"
 #include "eglfskmscursor.h"
+#include "eglfskmswindow.h"
 
 #include <xf86drm.h>
 #include <xf86drmMode.h>
@@ -244,6 +245,13 @@ QSurfaceFormat EglFSKmsIntegration::surfaceFormatFor(const QSurfaceFormat &input
     return format;
 }
 
+QPlatformWindow *EglFSKmsIntegration::createPlatformWindow(QWindow *window)
+{
+    EglFSKmsWindow *kmsWindow = new EglFSKmsWindow(window);
+    kmsWindow->create();
+    return kmsWindow;
+}
+
 EGLNativeWindowType EglFSKmsIntegration::createNativeWindow(QPlatformWindow *platformWindow,
                                                             const QSize &size,
                                                             const QSurfaceFormat &format)
@@ -252,8 +260,6 @@ EGLNativeWindowType EglFSKmsIntegration::createNativeWindow(QPlatformWindow *pla
     Q_UNUSED(format);
 
     EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(platformWindow->screen());
-    if (screen->isResizing())
-        return reinterpret_cast<EGLNativeWindowType>(screen->createGbmSurface());
     if (screen->surface()) {
         qWarning("Only single window per screen supported!");
         return 0;
@@ -307,21 +313,25 @@ bool EglFSKmsIntegration::isResizingSurface(QPlatformSurface *surface) const
     QWindow *window = static_cast<QWindow *>(surface->surface());
     EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(window->screen()->handle());
 
-    return screen->isResizing();
+    return screen->isResizingSurface();
 }
 
 void EglFSKmsIntegration::waitForVSync(QPlatformSurface *surface) const
 {
     QWindow *window = static_cast<QWindow *>(surface->surface());
     EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(window->screen()->handle());
-    EglFSWindow *kmsWindow = static_cast<EglFSWindow *>(window->handle());
-
-    if (screen->isResizing()) {
-        gbm_surface *gbmSurface = reinterpret_cast<gbm_surface *>(kmsWindow->resizeSurface());
-        screen->swapSurface(gbmSurface);
-    }
 
     screen->waitForFlip();
+}
+
+void EglFSKmsIntegration::resizeSurface(QPlatformSurface *surface)
+{
+    QWindow *w = static_cast<QWindow *>(surface->surface());
+    EglFSKmsScreen *screen = static_cast<EglFSKmsScreen *>(w->screen()->handle());
+    EglFSKmsWindow *window = static_cast<EglFSKmsWindow *>(w->handle());
+
+    screen->resizeSurface();
+    window->resizeSurface();
 }
 
 void EglFSKmsIntegration::presentBuffer(QPlatformSurface *surface)

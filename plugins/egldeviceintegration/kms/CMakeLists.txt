@@ -19,6 +19,7 @@ set(SOURCES
     eglfskmsdevice.cpp
     eglfskmsintegration.cpp
     eglfskmsscreen.cpp
+    eglfskmswindow.cpp
     main.cpp
 )
 
