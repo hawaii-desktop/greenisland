@@ -39,6 +39,14 @@ Green Island includes:
 * Minimal desktop compositor and shell
 * Qt-style API for Wayland clients
 
+A QtWaylandCompositor API copy is available here and it's built as one of the Green Island
+libraries until the upstream code will be stable, feature complete and available on
+some distributions (Fedora and ArchLinux are the main targets here because they are
+pretty up to date).  Relying on an always changing API that is not available on distros
+made the development harder in the past, to overcome this issue it has been decided
+to ship a copy here until the requirements listed above are not met.  Once the time
+will come we'll remove the copy here and just link to the official library.
+
 The server-side API extends QtWaylandCompositor with additional features needed by any
 real world Wayland compositor.
 
