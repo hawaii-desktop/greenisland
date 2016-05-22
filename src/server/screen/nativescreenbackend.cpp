@@ -78,8 +78,30 @@ void NativeScreenBackend::handleScreenAdded(QScreen *qscreen)
     Screen *screen = new Screen(this);
     ScreenPrivate *screenPrivate = Screen::get(screen);
     screenPrivate->m_screen = qscreen;
-    screenPrivate->m_manufacturer = QStringLiteral("Green Island");
-    screenPrivate->m_model = qscreen->name();
+
+    Platform::EglFSScreen *eglfsScreen =
+            static_cast<Platform::EglFSScreen *>(qscreen->handle());
+    if (QGuiApplication::platformName() == QLatin1String("greenisland") && eglfsScreen) {
+        screenPrivate->m_manufacturer = eglfsScreen->manufacturer();
+        if (screenPrivate->m_manufacturer.isEmpty())
+            screenPrivate->m_manufacturer = QLatin1String("Unknown");
+
+        if (!eglfsScreen->model().isEmpty()) {
+            screenPrivate->m_model = eglfsScreen->model();
+            if (!eglfsScreen->serialNumber().isEmpty()) {
+                screenPrivate->m_model.append('/');
+                screenPrivate->m_model.append(eglfsScreen->serialNumber());
+            }
+        } else if (!eglfsScreen->serialNumber().isEmpty()) {
+            screenPrivate->m_model = eglfsScreen->serialNumber();
+        } else {
+            screenPrivate->m_model = QLatin1String("Unknown");
+        }
+    } else {
+        screenPrivate->m_manufacturer = QLatin1String("Green Island");
+        screenPrivate->m_model = qscreen->name();
+    }
+
     handleScreenChanged(qscreen, screen);
 
     ScreenBackend::get(this)->screens.append(screen);
