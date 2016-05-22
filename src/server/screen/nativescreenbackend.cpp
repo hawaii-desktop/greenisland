@@ -58,7 +58,6 @@ void NativeScreenBackend::acquireConfiguration()
             this, &NativeScreenBackend::handleScreenAdded);
     connect(qGuiApp, &QGuiApplication::screenRemoved,
             this, &NativeScreenBackend::handleScreenRemoved);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     connect(qGuiApp, &QGuiApplication::primaryScreenChanged, this,
             [this](QScreen *qscreen) {
         Q_FOREACH (Screen *screen, screens()) {
@@ -68,7 +67,6 @@ void NativeScreenBackend::acquireConfiguration()
             }
         }
     });
-#endif
 }
 
 void NativeScreenBackend::handleScreenAdded(QScreen *qscreen)
@@ -186,7 +184,6 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
         break;
     }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     QPlatformScreen::SubpixelAntialiasingType subpixel = qscreen->handle()->subpixelAntialiasingTypeHint();
     switch (subpixel) {
     case QPlatformScreen::Subpixel_None:
@@ -207,7 +204,6 @@ void NativeScreenBackend::handleScreenChanged(QScreen *qscreen, Screen *screen)
     default:
         break;
     }
-#endif
 }
 
 } // namespace Server

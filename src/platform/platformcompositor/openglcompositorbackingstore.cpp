@@ -219,9 +219,7 @@ void OpenGLCompositorBackingStore::composeAndFlush(QWindow *window, const QRegio
 
     dstCtx->makeCurrent(dstWin);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QWindowPrivate::get(window)->lastComposeTime.start();
-#endif
 
     m_textures->clear();
     for (int i = 0; i < textures->count(); ++i)

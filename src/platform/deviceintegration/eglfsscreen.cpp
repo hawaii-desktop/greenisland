@@ -86,12 +86,10 @@ QDpi EglFSScreen::logicalDpi() const
     return egl_device_integration()->logicalDpi();
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
 qreal EglFSScreen::pixelDensity() const
 {
     return egl_device_integration()->pixelDensity();
 }
-#endif
 
 Qt::ScreenOrientation EglFSScreen::nativeOrientation() const
 {
@@ -204,26 +202,6 @@ QPixmap EglFSScreen::grabWindow(WId wid, int x, int y, int width, int height) co
 
     return QPixmap();
 }
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
-/*!
-  Returns the current power state.
-
-  The default implementation always returns PowerStateOn.
-*/
-EglFSScreen::PowerState EglFSScreen::powerState() const
-{
-    return PowerStateOn;
-}
-
-/*!
-  Sets the power state for this screen.
-*/
-void EglFSScreen::setPowerState(PowerState state)
-{
-    Q_UNUSED(state);
-}
-#endif
 
 /*!
   Returns the list of modes.

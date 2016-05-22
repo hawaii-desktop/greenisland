@@ -51,15 +51,6 @@ class EglFSWindow;
 class GREENISLANDPLATFORM_EXPORT EglFSScreen : public QPlatformScreen
 {
 public:
-#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
-    enum PowerState {
-        PowerStateOn,
-        PowerStateStandby,
-        PowerStateSuspend,
-        PowerStateOff
-    };
-#endif
-
     struct Mode {
         QSize size;
         qreal refreshRate;
@@ -74,9 +65,7 @@ public:
 
     QSizeF physicalSize() const Q_DECL_OVERRIDE;
     QDpi logicalDpi() const Q_DECL_OVERRIDE;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     qreal pixelDensity() const Q_DECL_OVERRIDE;
-#endif
     Qt::ScreenOrientation nativeOrientation() const Q_DECL_OVERRIDE;
     Qt::ScreenOrientation orientation() const Q_DECL_OVERRIDE;
 
@@ -93,11 +82,6 @@ public:
     void setPrimarySurface(EGLSurface surface);
 
     void handleCursorMove(const QPoint &pos);
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
-    virtual PowerState powerState() const;
-    virtual void setPowerState(PowerState state);
-#endif
 
     virtual QList<Mode> modes() const;
 

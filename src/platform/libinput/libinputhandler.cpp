@@ -137,10 +137,8 @@ void LibInputHandlerPrivate::initialize()
     libinput_log_set_handler(li, logHandler);
     if (lcInput().isDebugEnabled())
         libinput_log_set_priority(li, LIBINPUT_LOG_PRIORITY_DEBUG);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
     else if (lcInput().isInfoEnabled())
         libinput_log_set_priority(li, LIBINPUT_LOG_PRIORITY_INFO);
-#endif
     else if (lcInput().isWarningEnabled())
         libinput_log_set_priority(li, LIBINPUT_LOG_PRIORITY_ERROR);
 
@@ -330,11 +328,7 @@ void LibInputHandlerPrivate::logHandler(libinput *handle, libinput_log_priority 
             qCWarning(lcInput, "%s", buffer);
             break;
         case LIBINPUT_LOG_PRIORITY_INFO:
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
             qCInfo(lcInput, "%s", buffer);
-#else
-            qCDebug(lcInput, "%s", buffer);
-#endif
             break;
         default:
             break;

@@ -142,9 +142,7 @@ protected:
     QScopedPointer<QtWayland::ServerBufferIntegration> server_buffer_integration;
 #endif
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QScopedPointer<QWindowSystemEventHandler> eventHandler;
-#endif
 
     bool retainSelection;
     bool initialized;
