@@ -65,6 +65,16 @@ struct EglFSKmsOutput
     drmModeCrtcPtr saved_crtc;
     QList<drmModeModeInfo> modes;
     drmModePropertyPtr dpms_prop;
+    drmModePropertyBlobPtr edid_blob;
+};
+
+struct EglFSKmsEdid
+{
+    QString identifier;
+    QString manufacturer;
+    QString model;
+    QString serialNumber;
+    QSizeF physicalSize;
 };
 
 class EglFSKmsScreen : public EglFSScreen
@@ -122,6 +132,11 @@ public:
     int preferredMode() const Q_DECL_OVERRIDE;
     void setPreferredMode(int modeId) Q_DECL_OVERRIDE;
 
+    QString identifier() const Q_DECL_OVERRIDE;
+    QString manufacturer() const Q_DECL_OVERRIDE;
+    QString model() const Q_DECL_OVERRIDE;
+    QString serialNumber() const Q_DECL_OVERRIDE;
+
 private:
     EglFSKmsIntegration *m_integration;
     EglFSKmsDevice *m_device;
@@ -131,6 +146,7 @@ private:
     gbm_bo *m_gbm_bo_next;
 
     int m_pendingMode;
+    EglFSKmsEdid m_edid;
     EglFSKmsOutput m_output;
     QPoint m_pos;
     QScopedPointer<EglFSKmsCursor> m_cursor;
@@ -149,6 +165,22 @@ private:
     static QMutex m_waitForFlipMutex;
 
     EglFSKmsInterruptHandler *m_interruptHandler;
+
+    enum EdidDescriptor {
+        EdidDescriptorAlphanumericDataString = 0xfe,
+        EdidDescriptorDisplayProductName = 0xfc,
+        EdidDescriptorDisplayProductSerialNumber = 0xff
+    };
+    enum EdidOffset {
+        EdidOffsetDataBlocks = 0x36,
+        EdidOffsetLastBlock = 0x6c,
+        EdidOffsetPnpId = 0x08,
+        EdidOffsetSerial = 0x0c,
+        EdidOffsetPhysicalWidth = 0x15,
+        EdidOffsetPhysicalHeight = 0x16
+    };
+    bool parseEdid(EglFSKmsEdid &edid);
+    QString parseEdidString(const quint8 *data);
 };
 
 } // namespace Platform

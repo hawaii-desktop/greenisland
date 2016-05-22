@@ -131,6 +131,21 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
     , m_interruptHandler(new EglFSKmsInterruptHandler(this))
 {
     m_siblings << this;
+
+    if (m_output.edid_blob) {
+        if (parseEdid(m_edid))
+            qCDebug(lcKms, "EDID data for output \"%s\": identifier '%s', manufacturer '%s', model '%s', serial '%s', physical size: %.2fx%.2f",
+                    name().toLatin1().constData(),
+                    m_edid.identifier.toLatin1().constData(),
+                    m_edid.manufacturer.toLatin1().constData(),
+                    m_edid.model.toLatin1().constData(),
+                    m_edid.serialNumber.toLatin1().constData(),
+                    m_edid.physicalSize.width(), m_edid.physicalSize.height());
+        else
+            qCWarning(lcKms) << "Failed to parse EDID data for output" << name();
+    } else {
+        qCWarning(lcKms) << "No EDID data for output" << name();
+    }
 }
 
 EglFSKmsScreen::~EglFSKmsScreen()
@@ -138,6 +153,10 @@ EglFSKmsScreen::~EglFSKmsScreen()
     if (m_output.dpms_prop) {
         drmModeFreeProperty(m_output.dpms_prop);
         m_output.dpms_prop = Q_NULLPTR;
+    }
+    if (m_output.edid_blob) {
+        drmModeFreePropertyBlob(m_output.edid_blob);
+        m_output.edid_blob = Q_NULLPTR;
     }
     restoreMode();
     if (m_output.saved_crtc) {
@@ -170,7 +189,7 @@ QSizeF EglFSKmsScreen::physicalSize() const
     // Some connectors report empty physical size, this happens especially
     // on virtual machines resulting in NaN DPI breaking font rendering,
     // icons and other things: calculate a physical size for 100 DPI
-    QSizeF size = m_output.physical_size;
+    QSizeF size = m_edid.physicalSize.isEmpty() ? m_output.physical_size : m_edid.physicalSize;
     if (Q_UNLIKELY(size.isEmpty())) {
         // pixelsPerMm is 25.4 (mm per inch) divided by 100 (default physical DPI)
         const qreal pixelsPerMm = 0.254;
@@ -422,6 +441,99 @@ void EglFSKmsScreen::setPreferredMode(int modeId)
     }
 
     m_output.preferred_mode = modeId;
+}
+
+QString EglFSKmsScreen::identifier() const
+{
+    return m_edid.identifier;
+}
+
+QString EglFSKmsScreen::manufacturer() const
+{
+    return m_edid.manufacturer;
+}
+
+QString EglFSKmsScreen::model() const
+{
+    return m_edid.model;
+}
+
+QString EglFSKmsScreen::serialNumber() const
+{
+    return m_edid.serialNumber;
+}
+
+bool EglFSKmsScreen::parseEdid(EglFSKmsEdid &edid)
+{
+    const quint8 *data = reinterpret_cast<quint8 *>(m_output.edid_blob->data);
+    const size_t length = m_output.edid_blob->length;
+
+    // Verify header
+    if (length < 128)
+        return false;
+    if (data[0] != 0x00 || data[1] != 0xff)
+        return false;
+
+    /* Decode the PNP ID from three 5 bit words packed into 2 bytes
+     * /--08--\/--09--\
+     * 7654321076543210
+     * |\---/\---/\---/
+     * R  C1   C2   C3 */
+    char id[4];
+    id[0] = 'A' + ((data[EdidOffsetPnpId] & 0x7c) / 4) - 1;
+    id[1] = 'A' + ((data[EdidOffsetPnpId] & 0x3) * 8) + ((data[EdidOffsetPnpId + 1] & 0xe0) / 32) - 1;
+    id[2] = 'A' + (data[EdidOffsetPnpId + 1] & 0x1f) - 1;
+    id[3] = '\0';
+    edid.manufacturer = QString::fromLatin1(id, 4);
+
+    // Serial number, will be overwritten by an ASCII descriptor
+    // when and if it will be found
+    quint32 serial = data[EdidOffsetSerial]
+            + (data[EdidOffsetSerial + 1] << 8)
+            + (data[EdidOffsetSerial + 2] << 16)
+            + (data[EdidOffsetSerial + 3] << 24);
+    if (serial > 0)
+        edid.serialNumber = QString::number(serial);
+
+    // Parse EDID data
+    for (int i = 0; i < 5; ++i) {
+        const uint offset = EdidOffsetDataBlocks + i * 18;
+
+        if (data[offset] != 0 || data[offset + 1] != 0 || data[offset + 2] != 0)
+            continue;
+
+        if (data[offset + 3] == EdidDescriptorDisplayProductName)
+            edid.model = parseEdidString(&data[offset + 5]);
+        else if (data[offset + 3] == EdidDescriptorAlphanumericDataString)
+            edid.identifier = parseEdidString(&data[offset + 5]);
+        else if (data[offset + 3] == EdidDescriptorDisplayProductSerialNumber)
+            edid.serialNumber = parseEdidString(&data[offset + 5]);
+    }
+
+    // PNP ID is the same as EISA ID
+    if (edid.identifier.isEmpty())
+        edid.identifier = edid.manufacturer;
+
+    // Physical size
+    edid.physicalSize = QSizeF(data[EdidOffsetPhysicalWidth], data[EdidOffsetPhysicalHeight]) * 10;
+
+    return true;
+}
+
+QString EglFSKmsScreen::parseEdidString(const quint8 *data)
+{
+    QByteArray buffer(reinterpret_cast<const char *>(data), 12);
+
+    // Erase carriage return and line feed
+    buffer = buffer.replace('\r', '\0').replace('\n', '\0');
+
+    // Replace non-printable characters with dash
+    for (int i = 0; i < buffer.count(); ++i) {
+        if (buffer[i] < '\040' && buffer[i] > '\176')
+            buffer[i] = '-';
+    }
+
+    return QString::fromLatin1(buffer.trimmed());
 }
 
 } // namespace Platform

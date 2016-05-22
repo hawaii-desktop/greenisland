@@ -293,7 +293,8 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         false,
         drmModeGetCrtc(m_dri_fd, crtc_id),
         modes,
-        connectorProperty(connector, QByteArrayLiteral("DPMS"))
+        connectorProperty(connector, QByteArrayLiteral("DPMS")),
+        extractEdid(connector)
     };
 
     m_crtc_allocator |= (1 << output.crtc_id);
@@ -316,6 +317,23 @@ drmModePropertyPtr EglFSKmsDevice::connectorProperty(drmModeConnectorPtr connect
     }
 
     return Q_NULLPTR;
+}
+
+drmModePropertyBlobPtr EglFSKmsDevice::extractEdid(drmModeConnectorPtr connector)
+{
+    drmModePropertyPtr prop;
+    drmModePropertyBlobPtr blob = Q_NULLPTR;
+
+    for (int i = 0; i < connector->count_props && !blob; i++) {
+        prop = drmModeGetProperty(m_dri_fd, connector->props[i]);
+        if (!prop)
+            continue;
+        if ((prop->flags & DRM_MODE_PROP_BLOB) && (strcmp(prop->name, "EDID") == 0))
+            blob = drmModeGetPropertyBlob(m_dri_fd, connector->prop_values[i]);
+        drmModeFreeProperty(prop);
+    }
+
+    return blob;
 }
 
 void EglFSKmsDevice::pageFlipHandler(int fd, unsigned int sequence, unsigned int tv_sec, unsigned int tv_usec, void *user_data)

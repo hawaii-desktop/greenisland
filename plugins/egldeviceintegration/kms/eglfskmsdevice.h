@@ -80,6 +80,7 @@ private:
     int crtcForConnector(drmModeResPtr resources, drmModeConnectorPtr connector);
     EglFSKmsScreen *screenForConnector(drmModeResPtr resources, drmModeConnectorPtr connector, QPoint pos);
     drmModePropertyPtr connectorProperty(drmModeConnectorPtr connector, const QByteArray &name);
+    drmModePropertyBlobPtr extractEdid(drmModeConnectorPtr connector);
 
     static void pageFlipHandler(int fd,
                                 unsigned int sequence,
