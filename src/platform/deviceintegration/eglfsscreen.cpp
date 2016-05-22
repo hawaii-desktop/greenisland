@@ -289,6 +289,46 @@ void EglFSScreen::setPreferredMode(int modeId)
     Q_UNUSED(modeId);
 }
 
+/*!
+  Returns the screen identifier.
+
+  The default implementation always returns an empty string.
+*/
+QString EglFSScreen::identifier() const
+{
+    return QString();
+}
+
+/*!
+  Returns the screen manufacturer.
+
+  The default implementation always returns an empty string.
+*/
+QString EglFSScreen::manufacturer() const
+{
+    return QString();
+}
+
+/*!
+  Returns the screen model.
+
+  The default implementation always returns an empty string.
+*/
+QString EglFSScreen::model() const
+{
+    return QString();
+}
+
+/*!
+  Returns the screen serial number.
+
+  The default implementation always returns an empty string.
+*/
+QString EglFSScreen::serialNumber() const
+{
+    return QString();
+}
+
 } // namespace Platform
 
 } // namespace GreenIsland

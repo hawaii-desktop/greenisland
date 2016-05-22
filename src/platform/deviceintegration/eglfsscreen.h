@@ -107,6 +107,11 @@ public:
     virtual int preferredMode() const;
     virtual void setPreferredMode(int modeId);
 
+    virtual QString identifier() const;
+    virtual QString manufacturer() const;
+    virtual QString model() const;
+    virtual QString serialNumber() const;
+
 private:
     EGLDisplay m_dpy;
     QWindow *m_pointerWindow;
