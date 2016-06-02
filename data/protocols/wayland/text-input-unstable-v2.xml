@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<protocol name="text_input_v2">
+<protocol name="text_input_unstable_v2">
   <copyright>
     Copyright © 2012, 2013 Intel Corporation
     Copyright © 2015, 2016 Jan Arne Petersen
@@ -45,12 +45,12 @@
       Lengths are not allowed to contain just a part of an UTF-8 encoded code
       point.
 
-      Serials are used to synchronize the state between the text input and
-      an input method. New serials are sent by the text input in the
-      update_state request and are used by the input method to indicate
-      the known text input state in events like preedit_string, commit_string,
-      and keysym. The text input can then ignore events from the input method
-      which are based on an outdated state (for example after a reset).
+      State is sent by the state requests (set_surrounding_text,
+      set_content_type, set_cursor_rectangle and set_preferred_language) and
+      an update_state request. After an enter or an input_method_change event
+      all state information is invalidated and needs to be resent from the
+      client. A reset or entering a new widget on client side also
+      invalidates all current state information.
     </description>
 
     <request name="destroy" type="destructor">
@@ -205,7 +205,7 @@
 	Defines the reason for sending an updated state.
       </description>
       <entry name="change" value="0" summary="updated state because it changed"/>
-      <entry name="full" value="1" summary="full state after input_method_changed event"/>
+      <entry name="full" value="1" summary="full state after enter or input_method_changed event"/>
       <entry name="reset" value="2" summary="full state after reset"/>
       <entry name="enter" value="3" summary="full state after switching focus to a different widget on client side"/>
     </enum>
@@ -226,9 +226,16 @@
 
 	For "change" it is enough to send the changed state, else the full
 	state should be send.
+
+	Serial should be set to the serial from the last enter or
+	input_method_changed event.
+
+	To make sure to not receive outdated input method events after a
+	reset or switching to a new widget wl_display_sync() should be used
+	after update_state in these cases.
       </description>
-      <arg name="serial" type="uint" summary="used to identify the known state"/>
-      <arg name="flags" type="uint" enum="update_state"/>
+      <arg name="serial" type="uint" summary="serial of the enter or input_method_changed event"/>
+      <arg name="reason" type="uint" enum="update_state"/>
     </request>
 
     <event name="enter">
@@ -238,7 +245,7 @@
 	When the seat has the keyboard capability the text-input focus follows
 	the keyboard focus.
       </description>
-      <arg name="serial" type="uint"/>
+      <arg name="serial" type="uint"  summary="serial to be used by update_state"/>
       <arg name="surface" type="object" interface="wl_surface"/>
     </event>
 
@@ -257,15 +264,6 @@
       <arg name="surface" type="object" interface="wl_surface"/>
     </event>
 
-    <event name="modifiers_map">
-      <description summary="modifiers map">
-	Transfer an array of 0-terminated modifiers names. The position in
-	the array is the index of the modifier as used in the modifiers
-	bitmask in the keysym event.
-      </description>
-      <arg name="map" type="array"/>
-    </event>
-
     <enum name="input_panel_visibility">
     <entry name="hidden" value="0"
 	   summary="the input panel (virtual keyboard) is hidden"/>
@@ -280,7 +278,7 @@
 
 	The rectangle x, y, width, height defines the area overlapped by the
 	input panel (virtual keyboard) on the surface having the text
-	focuscin surface local coordinates.
+	focus in surface local coordinates.
 
 	That can be used to make sure widgets are visible and not covered by
 	a virtual keyboard.
@@ -304,7 +302,6 @@
 	The text input should also handle all preedit_style and preedit_cursor
 	events occurring directly before preedit_string.
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
       <arg name="text" type="string"/>
       <arg name="commit" type="string"/>
     </event>
@@ -358,7 +355,6 @@
 
 	Any previously set composing text should be removed.
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
       <arg name="text" type="string"/>
     </event>
 
@@ -378,16 +374,24 @@
     <event name="delete_surrounding_text">
       <description summary="delete surrounding text">
 	Notify when the text around the current cursor position should be
-	deleted.
-
-	Index is relative to the current cursor (in bytes).
-	Length is the length of deleted text (in bytes).
+	deleted. BeforeLength and afterLength is the length (in bytes) of text
+	before and after the current cursor position (excluding the selection)
+	to delete.
 
 	This event should be handled as part of a following commit_string
 	or preedit_string event.
       </description>
-      <arg name="index" type="int"/>
-      <arg name="length" type="uint"/>
+      <arg name="before_length" type="uint" summary="length of text before current cursor positon"/>
+      <arg name="after_length" type="uint" summary="length of text after current cursor positon"/>
+    </event>
+
+    <event name="modifiers_map">
+      <description summary="modifiers map">
+	Transfer an array of 0-terminated modifiers names. The position in
+	the array is the index of the modifier as used in the modifiers
+	bitmask in the keysym event.
+      </description>
+      <arg name="map" type="array"/>
     </event>
 
     <event name="keysym">
@@ -399,7 +403,6 @@
 	wl_keyboard key_state. Modifiers are a mask for effective modifiers
 	(where the modifier indices are set by the modifiers_map event)
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
       <arg name="time" type="uint"/>
       <arg name="sym" type="uint"/>
       <arg name="state" type="uint"/>
@@ -411,7 +414,6 @@
 	Sets the language of the input text. The "language" argument is a RFC-3066
 	format language tag.
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
       <arg name="language" type="string"/>
     </event>
 
@@ -429,7 +431,6 @@
 	editor when there is no input yet done and making sure neutral
 	direction text is laid out properly.
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
       <arg name="direction" type="uint" enum="text_direction"/>
     </event>
 
@@ -450,7 +451,7 @@
 	the client via state requests (set_surrounding_text,
 	set_content_hint, ...) and update_state.
       </description>
-      <arg name="serial" type="uint" summary="serial of the latest known text input state"/>
+      <arg name="serial" type="uint" summary="serial to be used by update_state"/>
       <arg name="flags" type="uint" summary="currently unused"/>
     </event>
   </interface>

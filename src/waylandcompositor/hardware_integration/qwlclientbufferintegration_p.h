@@ -50,6 +50,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
 #include <QtCore/QSize>
 #include <wayland-server.h>
 
@@ -71,7 +72,8 @@ public:
     virtual void initializeHardware(struct ::wl_display *display) = 0;
 
     virtual void initializeBuffer(struct ::wl_resource *buffer) { Q_UNUSED(buffer); }
-    virtual int textureTargetForBuffer(struct ::wl_resource *buffer) const { Q_UNUSED(buffer); return 0x0DE1; }
+    virtual QWaylandBufferRef::BufferFormatEgl bufferFormat(struct ::wl_resource *buffer) { Q_UNUSED(buffer); return QWaylandBufferRef::BufferFormatEgl_RGBA; }
+    virtual uint textureForBuffer(struct ::wl_resource *buffer, int plane) { Q_UNUSED(buffer); Q_UNUSED(plane); return 0; }
 
     virtual void bindTextureToBuffer(struct ::wl_resource *buffer) = 0;
     virtual void updateTextureForBuffer(struct ::wl_resource *buffer) { Q_UNUSED(buffer); }

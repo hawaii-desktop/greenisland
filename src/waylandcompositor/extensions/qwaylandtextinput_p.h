@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2016 Klarälvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -37,8 +37,8 @@
 #ifndef QWAYLANDTEXTINPUT_P_H
 #define QWAYLANDTEXTINPUT_P_H
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
-#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text-input-v2.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text-input-unstable-v2.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandDestroyListener>
 
 #include <QtCore/QObject>
@@ -46,7 +46,7 @@
 #include <QtCore/QRect>
 #include <QtCore/QVector>
 #include <QtGui/QInputMethod>
-#include <QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
 //
 //  W A R N I N G
@@ -83,7 +83,7 @@ public:
     Qt::InputMethodQueries changedState;
 };
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputPrivate : public QWaylandExtensionTemplatePrivate, public QtWaylandServer::zwp_text_input_v2
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputPrivate : public QWaylandCompositorExtensionPrivate, public QtWaylandServer::zwp_text_input_v2
 {
     Q_DECLARE_PUBLIC(QWaylandTextInput)
 public:
@@ -97,11 +97,11 @@ public:
 
     QVariant inputMethodQuery(Qt::InputMethodQuery property, QVariant argument) const;
 
-    void setFocus(QWaylandView *view);
+    void setFocus(QWaylandSurface *surface);
 
     QWaylandCompositor *compositor;
 
-    QWaylandView *focus;
+    QWaylandSurface *focus;
     Resource *focusResource;
     QWaylandDestroyListener focusDestroyListener;
 

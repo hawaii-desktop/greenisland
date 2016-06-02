@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2013-2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -45,7 +45,7 @@
 QT_BEGIN_NAMESPACE
 
 QWaylandTextInputManagerPrivate::QWaylandTextInputManagerPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::zwp_text_input_manager_v2()
 {
 }
@@ -59,16 +59,16 @@ void QWaylandTextInputManagerPrivate::zwp_text_input_manager_v2_get_text_input(R
     if (!textInput) {
         textInput = new QWaylandTextInput(inputDevice, compositor);
     }
-    textInput->add(resource->client(), id, 1);
+    textInput->add(resource->client(), id, wl_resource_get_version(resource->handle));
 }
 
 QWaylandTextInputManager::QWaylandTextInputManager()
-    : QWaylandExtensionTemplate<QWaylandTextInputManager>(*new QWaylandTextInputManagerPrivate)
+    : QWaylandCompositorExtensionTemplate<QWaylandTextInputManager>(*new QWaylandTextInputManagerPrivate)
 {
 }
 
 QWaylandTextInputManager::QWaylandTextInputManager(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<QWaylandTextInputManager>(compositor, *new QWaylandTextInputManagerPrivate)
+    : QWaylandCompositorExtensionTemplate<QWaylandTextInputManager>(compositor, *new QWaylandTextInputManagerPrivate)
 {
 }
 
@@ -76,7 +76,7 @@ void QWaylandTextInputManager::initialize()
 {
     Q_D(QWaylandTextInputManager);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qWarning() << "Failed to find QWaylandCompositor when initializing QWaylandTextInputManager";

@@ -38,7 +38,7 @@
 #define QWAYLANDCOMPOSITOR_H
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
-#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandcompositorextension.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
 
 #include <QObject>
@@ -64,6 +64,8 @@ class QWaylandView;
 class QWaylandPointer;
 class QWaylandKeyboard;
 class QWaylandTouch;
+class QWaylandSurfaceGrabber;
+class QWaylandBufferRef;
 
 Q_DECLARE_LOGGING_CATEGORY(qLcCompositorInputMethods)
 
@@ -74,13 +76,11 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandCompositor : public QWaylandObject
     Q_PROPERTY(QByteArray socketName READ socketName WRITE setSocketName)
     Q_PROPERTY(bool retainedSelection READ retainedSelectionEnabled WRITE setRetainedSelectionEnabled)
     Q_PROPERTY(QWaylandOutput *defaultOutput READ defaultOutput WRITE setDefaultOutput NOTIFY defaultOutputChanged)
-#ifdef QT_COMPOSITOR_WAYLAND_GL
     Q_PROPERTY(bool useHardwareIntegrationExtension READ useHardwareIntegrationExtension WRITE setUseHardwareIntegrationExtension NOTIFY useHardwareIntegrationExtensionChanged)
-#endif
     Q_PROPERTY(QWaylandInputDevice *defaultInputDevice READ defaultInputDevice NOTIFY defaultInputDeviceChanged)
 
 public:
-    QWaylandCompositor(QObject *parent = 0);
+    QWaylandCompositor(QObject *parent = nullptr);
     virtual ~QWaylandCompositor();
 
     virtual void create();
@@ -117,10 +117,10 @@ public:
 
     QWaylandInputDevice *inputDeviceFor(QInputEvent *inputEvent);
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
     bool useHardwareIntegrationExtension() const;
     void setUseHardwareIntegrationExtension(bool use);
-#endif
+
+    virtual void grabSurface(QWaylandSurfaceGrabber *grabber, const QWaylandBufferRef &buffer);
 
 public Q_SLOTS:
     void processWaylandEvents();
@@ -132,7 +132,7 @@ Q_SIGNALS:
     void subsurfaceChanged(QWaylandSurface *child, QWaylandSurface *parent);
 
     void defaultOutputChanged();
-    void defaultInputDeviceChanged();
+    void defaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice);
 
     void useHardwareIntegrationExtensionChanged();
 protected:
@@ -142,7 +142,7 @@ protected:
     virtual QWaylandKeyboard *createKeyboardDevice(QWaylandInputDevice *inputDevice);
     virtual QWaylandTouch *createTouchDevice(QWaylandInputDevice *inputDevice);
 
-    QWaylandCompositor(QWaylandCompositorPrivate &dptr, QObject *parent = 0);
+    QWaylandCompositor(QWaylandCompositorPrivate &dptr, QObject *parent = nullptr);
 };
 
 QT_END_NAMESPACE

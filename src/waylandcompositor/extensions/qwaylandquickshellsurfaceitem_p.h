@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -34,10 +34,10 @@
 **
 ****************************************************************************/
 
-#ifndef QWAYLANDQUICKWLSHELLSURFACEITEM_P_H
-#define QWAYLANDQUICKWLSHELLSURFACEITEM_P_H
+#ifndef QWAYLANDQUICKSHELLSURFACEITEM_P_H
+#define QWAYLANDQUICKSHELLSURFACEITEM_P_H
 
-#include <QtWaylandCompositor/private/qwaylandquickitem_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandquickitem_p.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -52,41 +52,52 @@ QT_BEGIN_NAMESPACE
 // We mean it.
 //
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickWlShellSurfaceItemPrivate : public QWaylandQuickItemPrivate
+class QWaylandQuickShellIntegration;
+class QWaylandShellSurface;
+
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickShellSurfaceItemPrivate : public QWaylandQuickItemPrivate
 {
 public:
-    enum GrabberState {
-        DefaultState,
-        ResizeState,
-        MoveState
-    };
-
-    QWaylandQuickWlShellSurfaceItemPrivate()
+    QWaylandQuickShellSurfaceItemPrivate()
         : QWaylandQuickItemPrivate()
-        , shellSurface(Q_NULLPTR)
-        , moveItem(Q_NULLPTR)
-        , grabberState(DefaultState)
+        , m_shellIntegration(nullptr)
+        , m_shellSurface(nullptr)
+        , m_moveItem(nullptr)
     {}
+    QWaylandQuickShellIntegration *m_shellIntegration;
+    QWaylandShellSurface *m_shellSurface;
+    QQuickItem *m_moveItem;
+};
 
-    QWaylandWlShellSurface *shellSurface;
-    QQuickItem *moveItem;
+class QWaylandQuickShellIntegration : public QObject
+{
+    Q_OBJECT
+public:
+    QWaylandQuickShellIntegration(QObject *parent = nullptr) : QObject(parent) {}
+    virtual bool mouseMoveEvent(QMouseEvent *) { return false; }
+    virtual bool mouseReleaseEvent(QMouseEvent *) { return false; }
+};
 
-    GrabberState grabberState;
-    struct {
-        QWaylandInputDevice *inputDevice;
-        QPointF initialOffset;
-        bool initialized;
-    } moveState;
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickShellEventFilter : public QObject
+{
+    Q_OBJECT
+public:
+    typedef void (*CallbackFunction)(void);
+    static void startFilter(QWaylandClient *client, CallbackFunction closePopupCallback);
+    static void cancelFilter();
 
-    struct {
-        QWaylandInputDevice *inputDevice;
-        QWaylandWlShellSurface::ResizeEdge resizeEdges;
-        QSizeF initialSize;
-        QPointF initialMousePos;
-        bool initialized;
-    } resizeState;
+private:
+    void stopFilter();
+
+    QWaylandQuickShellEventFilter(QObject *parent = nullptr);
+    bool eventFilter(QObject *, QEvent *) Q_DECL_OVERRIDE;
+    bool eventFilterInstalled;
+    bool waitForRelease;
+    QPointer<QWaylandClient> client;
+    CallbackFunction closePopups;
+    static QWaylandQuickShellEventFilter *self;
 };
 
 QT_END_NAMESPACE
 
-#endif  /*QWAYLANDQUICKWLSHELLSURFACEITEM_P_H*/
+#endif // QWAYLANDQUICKSHELLSURFACEITEM_P_H

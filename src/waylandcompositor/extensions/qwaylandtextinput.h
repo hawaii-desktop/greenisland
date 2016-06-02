@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2013-2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -37,7 +37,9 @@
 #ifndef QWAYLANDTEXTINPUT_H
 #define QWAYLANDTEXTINPUT_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
+
+struct wl_client;
 
 QT_BEGIN_NAMESPACE
 
@@ -46,9 +48,8 @@ class QWaylandTextInputPrivate;
 class QInputMethodEvent;
 class QKeyEvent;
 class QWaylandSurface;
-class QWaylandView;
 
-class QWaylandTextInput : public QWaylandExtensionTemplate<QWaylandTextInput>
+class QWaylandTextInput : public QWaylandCompositorExtensionTemplate<QWaylandTextInput>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandTextInput)
@@ -61,8 +62,8 @@ public:
 
     QVariant inputMethodQuery(Qt::InputMethodQuery property, QVariant argument) const;
 
-    QWaylandView *focus() const;
-    void setFocus(QWaylandView *view);
+    QWaylandSurface *focus() const;
+    void setFocus(QWaylandSurface *surface);
 
     bool isSurfaceEnabled(QWaylandSurface *surface) const;
 

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -34,51 +34,78 @@
 **
 ****************************************************************************/
 
-#ifndef QWAYLANDQUICKWLSHELLSURFACEITEM_H
-#define QWAYLANDQUICKWLSHELLSURFACEITEM_H
+#ifndef QWAYLANDWLSHELLINTEGRATION_H
+#define QWAYLANDWLSHELLINTEGRATION_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandquickshellsurfaceitem_p.h>
+
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 
 QT_BEGIN_NAMESPACE
 
-class QWaylandQuickWlShellSurfaceItemPrivate;
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickWlShellSurfaceItem : public QWaylandQuickItem
+namespace QtWayland {
+
+class WlShellIntegration : public QWaylandQuickShellIntegration
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(QWaylandQuickWlShellSurfaceItem)
-    Q_PROPERTY(QWaylandWlShellSurface *shellSurface READ shellSurface WRITE setShellSurface NOTIFY shellSurfaceChanged)
-    Q_PROPERTY(QQuickItem *moveItem READ moveItem WRITE setMoveItem NOTIFY moveItemChanged)
-
 public:
-    QWaylandQuickWlShellSurfaceItem(QQuickItem *parent = 0);
-
-    static QWaylandQuickWlShellSurfaceItemPrivate *get(QWaylandQuickWlShellSurfaceItem *item) { return item->d_func(); }
-
-    QWaylandWlShellSurface *shellSurface() const;
-    void setShellSurface(QWaylandWlShellSurface *shellSurface);
-
-    QQuickItem *moveItem() const;
-    void setMoveItem(QQuickItem *moveItem);
-Q_SIGNALS:
-    void shellSurfaceChanged();
-    void moveItemChanged();
+    WlShellIntegration(QWaylandQuickShellSurfaceItem *item);
+    bool mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    bool mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 
 private Q_SLOTS:
     void handleStartMove(QWaylandInputDevice *inputDevice);
     void handleStartResize(QWaylandInputDevice *inputDevice, QWaylandWlShellSurface::ResizeEdge edges);
+    void handleSetPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parent, const QPoint &relativeToParent);
+    void handleShellSurfaceDestroyed();
+    void handleSurfaceUnmapped();
     void adjustOffsetForNextFrame(const QPointF &offset);
-protected:
-    QWaylandQuickWlShellSurfaceItem(QWaylandQuickWlShellSurfaceItemPrivate &dd, QQuickItem *parent);
 
-    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
-    void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+private:
+    enum class GrabberState {
+        Default,
+        Resize,
+        Move
+    };
 
-    void surfaceChangedEvent(QWaylandSurface *newSurface, QWaylandSurface *oldSurface) Q_DECL_OVERRIDE;
+    void handlePopupClosed();
+    void handlePopupRemoved();
+
+    static void closePopups();
+
+    QWaylandQuickShellSurfaceItem *m_item;
+    QWaylandWlShellSurface *m_shellSurface;
+    GrabberState grabberState;
+    struct {
+        QWaylandInputDevice *inputDevice;
+        QPointF initialOffset;
+        bool initialized;
+    } moveState;
+    struct {
+        QWaylandInputDevice *inputDevice;
+        QWaylandWlShellSurface::ResizeEdge resizeEdges;
+        QSizeF initialSize;
+        QPointF initialMousePos;
+        bool initialized;
+    } resizeState;
+
+    static QVector<QWaylandWlShellSurface*> popupShellSurfaces;
+    bool isPopup;
 };
+
+}
 
 QT_END_NAMESPACE
 
-#endif  /*QWAYLANDQUICKWLSHELLSURFACEITEM_H*/
+#endif // QWAYLANDWLSHELLINTEGRATION_H

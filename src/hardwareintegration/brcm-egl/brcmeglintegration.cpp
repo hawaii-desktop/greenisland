@@ -46,7 +46,6 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
-#define EGL_EGLEXT_PROTOTYPES
 #include <EGL/eglext_brcm.h>
 
 #include <GLES2/gl2.h>
@@ -76,7 +75,7 @@ BrcmEglIntegration::BrcmEglIntegration()
 {
 }
 
-void BrcmEglIntegration::initializeHardware(struct ::wl_display *waylandDisplay)
+void BrcmEglIntegration::initializeHardware(struct ::wl_display *display)
 {
     Q_D(BrcmEglIntegration);
 
@@ -86,7 +85,7 @@ void BrcmEglIntegration::initializeHardware(struct ::wl_display *waylandDisplay)
         if (!d->egl_display)
             qWarning("Failed to acquire EGL display from platform integration");
 
-        d->eglQueryGlobalImageBRCM = eglQueryGlobalImageBRCM;
+        d->eglQueryGlobalImageBRCM = (PFNEGLQUERYGLOBALIMAGEBRCMPROC) eglGetProcAddress("eglQueryGlobalImageBRCM");
 
         if (!d->eglQueryGlobalImageBRCM) {
             qWarning("Failed to resolve eglQueryGlobalImageBRCM");

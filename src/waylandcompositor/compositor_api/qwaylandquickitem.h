@@ -69,7 +69,7 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickItem : public QQuickItem
     Q_PROPERTY(bool sizeFollowsSurface READ sizeFollowsSurface WRITE setSizeFollowsSurface NOTIFY sizeFollowsSurfaceChanged)
     Q_PROPERTY(QObject *subsurfaceHandler READ subsurfaceHandler WRITE setSubsurfaceHandler NOTIFY subsurfaceHandlerChanged)
 public:
-    QWaylandQuickItem(QQuickItem *parent = 0);
+    QWaylandQuickItem(QQuickItem *parent = nullptr);
     ~QWaylandQuickItem();
 
     QWaylandCompositor *compositor() const;
@@ -80,7 +80,7 @@ public:
 
     QWaylandSurface::Origin origin() const;
 
-    bool isTextureProvider() const Q_DECL_OVERRIDE { return true; }
+    bool isTextureProvider() const Q_DECL_OVERRIDE;
     QSGTextureProvider *textureProvider() const Q_DECL_OVERRIDE;
 
     bool paintEnabled() const;
@@ -99,13 +99,13 @@ public:
     bool sizeFollowsSurface() const;
     void setSizeFollowsSurface(bool sizeFollowsSurface);
 
-    QObject *subsurfaceHandler() const;
-    void setSubsurfaceHandler(QObject*);
-
 #ifndef QT_NO_IM
     QVariant inputMethodQuery(Qt::InputMethodQuery query) const Q_DECL_OVERRIDE;
     Q_INVOKABLE QVariant inputMethodQuery(Qt::InputMethodQuery query, QVariant argument) const;
 #endif
+
+    QObject *subsurfaceHandler() const;
+    void setSubsurfaceHandler(QObject*);
 
 protected:
     void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
@@ -122,14 +122,13 @@ protected:
     void touchEvent(QTouchEvent *event) Q_DECL_OVERRIDE;
     void mouseUngrabEvent() Q_DECL_OVERRIDE;
 
-    virtual void surfaceChangedEvent(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
-
 #ifndef QT_NO_IM
     void inputMethodEvent(QInputMethodEvent *event) Q_DECL_OVERRIDE;
 #endif
 
+    virtual void surfaceChangedEvent(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
 public Q_SLOTS:
-    virtual void takeFocus(QWaylandInputDevice *device = 0);
+    virtual void takeFocus(QWaylandInputDevice *device = nullptr);
     void setPaintEnabled(bool paintEnabled);
     void raise();
     void lower();
@@ -144,11 +143,11 @@ private Q_SLOTS:
     void beforeSync();
     void handleSubsurfaceAdded(QWaylandSurface *childSurface);
     void handleSubsurfacePosition(const QPoint &pos);
-    void handlePlaceAbove(QWaylandSurface *siblingSurface);
-    void handlePlaceBelow(QWaylandSurface *siblingSurface);
 #ifndef QT_NO_IM
     void updateInputMethod(Qt::InputMethodQueries queries);
 #endif
+    void handlePlaceAbove(QWaylandSurface *siblingSurface);
+    void handlePlaceBelow(QWaylandSurface *siblingSurface);
 
 Q_SIGNALS:
     void surfaceChanged();
@@ -164,7 +163,7 @@ Q_SIGNALS:
 protected:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *) Q_DECL_OVERRIDE;
 
-    QWaylandQuickItem(QWaylandQuickItemPrivate &dd, QQuickItem *parent = 0);
+    QWaylandQuickItem(QWaylandQuickItemPrivate &dd, QQuickItem *parent = nullptr);
 };
 
 QT_END_NAMESPACE

@@ -46,6 +46,7 @@
 #include <GreenIsland/QtWaylandCompositor/qwaylandkeyboard.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandpointer.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandtouch.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandsurfacegrabber.h>
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandkeyboard_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
@@ -59,10 +60,10 @@
 #include "hardware_integration/qwlserverbufferintegrationfactory_p.h"
 #include "hardware_integration/qwlhwintegration_p.h"
 
-#include "extensions/qwaylandwindowmanagerextension.h"
+#include "extensions/qwaylandqtwindowmanager.h"
 
-#include "qwaylandxkb.h"
-#include "qwaylandshmformathelper.h"
+#include "qwaylandxkb_p.h"
+#include "qwaylandshmformathelper_p.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
@@ -75,11 +76,16 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/private/qguiapplication_p.h>
 
-#include <QDebug>
-
-Q_LOGGING_CATEGORY(qLcCompositorInputMethods, "qt.compositor.input.methods")
+#ifdef QT_COMPOSITOR_WAYLAND_GL
+#   include <QtGui/private/qopengltextureblitter_p.h>
+#   include <QOpenGLContext>
+#   include <QOpenGLFramebufferObject>
+#   include <QMatrix4x4>
+#endif
 
 QT_BEGIN_NAMESPACE
+
+Q_LOGGING_CATEGORY(qLcCompositorInputMethods, "qt.compositor.input.methods")
 
 namespace QtWayland {
 
@@ -142,7 +148,8 @@ QWaylandCompositorPrivate::QWaylandCompositorPrivate(QWaylandCompositor *composi
     , retainSelection(false)
     , initialized(false)
 {
-    display = static_cast<wl_display*>(QGuiApplication::platformNativeInterface()->nativeResourceForIntegration("server_wl_display"));
+    if (QGuiApplication::platformNativeInterface())
+        display = static_cast<wl_display*>(QGuiApplication::platformNativeInterface()->nativeResourceForIntegration("server_wl_display"));
     if (!display)
         display = wl_display_create();
     eventHandler.reset(new QtWayland::WindowSystemEventHandler(compositor));
@@ -157,11 +164,10 @@ void QWaylandCompositorPrivate::init()
     QStringList arguments = QCoreApplication::instance()->arguments();
 
     if (socket_name.isEmpty()) {
-        int socketArg = arguments.indexOf(QLatin1String("--wayland-socket-name"));
+        const int socketArg = arguments.indexOf(QLatin1String("--wayland-socket-name"));
         if (socketArg != -1 && socketArg + 1 < arguments.size())
             socket_name = arguments.at(socketArg + 1).toLocal8Bit();
     }
-
     wl_compositor::init(display, 3);
     wl_subcompositor::init(display, 1);
 
@@ -346,8 +352,9 @@ void QWaylandCompositorPrivate::initializeHardwareIntegration()
 void QWaylandCompositorPrivate::initializeDefaultInputDevice()
 {
     Q_Q(QWaylandCompositor);
-    inputDevices.append(q->createInputDevice());
-    q->defaultInputDeviceChanged();
+    QWaylandInputDevice *device = q->createInputDevice();
+    inputDevices.append(device);
+    q->defaultInputDeviceChanged(device, nullptr);
 }
 
 void QWaylandCompositorPrivate::loadClientBufferIntegration()
@@ -399,6 +406,7 @@ void QWaylandCompositorPrivate::loadServerBufferIntegration()
 /*!
   \qmltype WaylandCompositor
   \inqmlmodule QtWayland.Compositor
+  \preliminary
   \brief Type managing the Wayland display server.
 
   The WaylandCompositor manages the connections to the clients, as well as the different
@@ -417,6 +425,7 @@ void QWaylandCompositorPrivate::loadServerBufferIntegration()
 /*!
    \class QWaylandCompositor
    \inmodule QtWaylandCompositor
+   \preliminary
    \brief Class managing the Wayland display server.
 
    The QWaylandCompositor manages the connections to the clients, as well as the different \l{QWaylandOutput}{outputs}
@@ -475,7 +484,7 @@ bool QWaylandCompositor::isCreated() const
  * This property holds the socket name used by WaylandCompositor to communicate with
  * clients. It must be set before the component is completed.
  *
- * If the socketName is empty (the default), the contents of start argument
+ * If the socketName is empty (the default), the contents of the start argument
  * --wayland-socket-name is used instead. If this is not set, then the compositor
  * will try to find a socket name automatically, which in the default case will
  * be "wayland-0".
@@ -563,9 +572,9 @@ void QWaylandCompositor::destroyClient(QWaylandClient *client)
     if (!client)
         return;
 
-    QWaylandWindowManagerExtension *wmExtension = QWaylandWindowManagerExtension::findIn(this);
+    QWaylandQtWindowManager *wmExtension = QWaylandQtWindowManager::findIn(this);
     if (wmExtension)
-        wmExtension->sendQuitMessage(client->client());
+        wmExtension->sendQuitMessage(client);
 
     wl_client_destroy(client->client());
 }
@@ -786,7 +795,6 @@ QWaylandInputDevice *QWaylandCompositor::inputDeviceFor(QInputEvent *inputEvent)
     return dev;
 }
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
 /*!
  * \qmlproperty bool QtWaylandCompositor::WaylandCompositor::useHardwareIntegrationExtension
  *
@@ -822,6 +830,51 @@ void QWaylandCompositor::setUseHardwareIntegrationExtension(bool use)
     d->use_hw_integration_extension = use;
     useHardwareIntegrationExtensionChanged();
 }
+
+/*!
+ * Grab the surface content from the given \a buffer.
+ * The default implementation requires a OpenGL context to be bound to the current thread
+ * to work. If this is not possible reimplement this function in your compositor subclass
+ * to implement custom logic.
+ * The default implementation only grabs SHM and OpenGL buffers, reimplement this in your
+ * compositor subclass to handle more buffer types.
+ * You should not call this manually, but rather use \a QWaylandSurfaceGrabber.
+ */
+void QWaylandCompositor::grabSurface(QWaylandSurfaceGrabber *grabber, const QWaylandBufferRef &buffer)
+{
+    if (buffer.isShm()) {
+        emit grabber->success(buffer.image());
+    } else {
+#ifdef QT_COMPOSITOR_WAYLAND_GL
+        if (QOpenGLContext::currentContext()) {
+            QOpenGLFramebufferObject fbo(buffer.size());
+            fbo.bind();
+            QOpenGLTextureBlitter blitter;
+            blitter.create();
+            blitter.bind();
+
+            glViewport(0, 0, buffer.size().width(), buffer.size().height());
+
+            QOpenGLTextureBlitter::Origin surfaceOrigin =
+                buffer.origin() == QWaylandSurface::OriginTopLeft
+                ? QOpenGLTextureBlitter::OriginTopLeft
+                : QOpenGLTextureBlitter::OriginBottomLeft;
+
+            GLuint texture;
+            glGenTextures(1, &texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            buffer.bindToTexture();
+            blitter.blit(texture, QMatrix4x4(), surfaceOrigin);
+
+            blitter.release();
+            glDeleteTextures(1, &texture);
+
+            emit grabber->success(fbo.toImage());
+        } else
 #endif
+        emit grabber->failed(QWaylandSurfaceGrabber::UnknownBufferType);
+    }
+}
 
 QT_END_NAMESPACE

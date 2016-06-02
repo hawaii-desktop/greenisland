@@ -30,7 +30,7 @@
 
 #include <QtCore/QMultiMap>
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/server/private/qwayland-server-greenisland.h>
@@ -51,7 +51,7 @@ namespace Server {
 class ClientWindow;
 
 class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_applications
 {
     Q_DECLARE_PUBLIC(ApplicationManager)

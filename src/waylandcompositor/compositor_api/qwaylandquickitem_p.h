@@ -49,13 +49,56 @@
 //
 
 #include <QtQuick/private/qquickitem_p.h>
+#include <QtQuick/QSGMaterialShader>
+#include <QtQuick/QSGMaterial>
 
 #include "qwaylandquickitem.h"
+
+#include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
 
 QT_BEGIN_NAMESPACE
 
 class QWaylandSurfaceTextureProvider;
 class QMutex;
+
+class QWaylandBufferMaterialShader : public QSGMaterialShader
+{
+public:
+    QWaylandBufferMaterialShader(QWaylandBufferRef::BufferFormatEgl format);
+
+    void updateState(const RenderState &state, QSGMaterial *newEffect, QSGMaterial *oldEffect) Q_DECL_OVERRIDE;
+    char const *const *attributeNames() const Q_DECL_OVERRIDE;
+
+protected:
+    void initialize() Q_DECL_OVERRIDE;
+
+private:
+    const QWaylandBufferRef::BufferFormatEgl m_format;
+    int m_id_matrix;
+    int m_id_opacity;
+    QVarLengthArray<int, 3> m_id_tex;
+};
+
+class QWaylandBufferMaterial : public QSGMaterial
+{
+public:
+    QWaylandBufferMaterial(QWaylandBufferRef::BufferFormatEgl format);
+    ~QWaylandBufferMaterial();
+
+    void setTextureForPlane(int plane, uint texture);
+
+    void bind();
+
+    QSGMaterialType *type() const Q_DECL_OVERRIDE;
+    QSGMaterialShader *createShader() const Q_DECL_OVERRIDE;
+
+private:
+    void setTextureParameters(GLenum target);
+    void ensureTextures(int count);
+
+    const QWaylandBufferRef::BufferFormatEgl m_format;
+    QVarLengthArray<GLuint, 3> m_textures;
+};
 
 class QWaylandQuickItemPrivate : public QQuickItemPrivate
 {
@@ -91,20 +134,28 @@ public:
 
         q->setSmooth(true);
 
-        q->setAcceptedMouseButtons(Qt::LeftButton | Qt::MiddleButton | Qt::RightButton |
-                                   Qt::ExtraButton1 | Qt::ExtraButton2 | Qt::ExtraButton3 | Qt::ExtraButton4 |
-                                   Qt::ExtraButton5 | Qt::ExtraButton6 | Qt::ExtraButton7 | Qt::ExtraButton8 |
-                                   Qt::ExtraButton9 | Qt::ExtraButton10 | Qt::ExtraButton11 |
-                                   Qt::ExtraButton12 | Qt::ExtraButton13);
-        q->setAcceptHoverEvents(true);
-
+        setInputEventsEnabled(true);
         QObject::connect(q, &QQuickItem::windowChanged, q, &QWaylandQuickItem::updateWindow);
         QObject::connect(view.data(), &QWaylandView::surfaceChanged, q, &QWaylandQuickItem::surfaceChanged);
         QObject::connect(view.data(), &QWaylandView::surfaceChanged, q, &QWaylandQuickItem::handleSurfaceChanged);
         QObject::connect(view.data(), &QWaylandView::surfaceDestroyed, q, &QWaylandQuickItem::surfaceDestroyed);
     }
 
+
+    void setInputEventsEnabled(bool enable)
+    {
+        Q_Q(QWaylandQuickItem);
+        q->setAcceptedMouseButtons(enable ? (Qt::LeftButton | Qt::MiddleButton | Qt::RightButton |
+                                   Qt::ExtraButton1 | Qt::ExtraButton2 | Qt::ExtraButton3 | Qt::ExtraButton4 |
+                                   Qt::ExtraButton5 | Qt::ExtraButton6 | Qt::ExtraButton7 | Qt::ExtraButton8 |
+                                   Qt::ExtraButton9 | Qt::ExtraButton10 | Qt::ExtraButton11 |
+                                   Qt::ExtraButton12 | Qt::ExtraButton13) : Qt::NoButton);
+        q->setAcceptHoverEvents(enable);
+        inputEventsEnabled = enable;
+    }
+
     bool shouldSendInputEvents() const { return view->surface() && inputEventsEnabled; }
+    int scaleFactor() const { return view->output() ? view->output()->scaleFactor() : 1; }
 
     static QMutex *mutex;
 

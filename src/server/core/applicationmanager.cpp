@@ -43,7 +43,7 @@ namespace Server {
  */
 
 ApplicationManagerPrivate::ApplicationManagerPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_applications()
 {
 }
@@ -161,12 +161,12 @@ void ApplicationManagerPrivate::applications_quit(Resource *resource, const QStr
  */
 
 ApplicationManager::ApplicationManager()
-    : QWaylandExtensionTemplate<ApplicationManager>(*new ApplicationManagerPrivate())
+    : QWaylandCompositorExtensionTemplate<ApplicationManager>(*new ApplicationManagerPrivate())
 {
 }
 
 ApplicationManager::ApplicationManager(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<ApplicationManager>(compositor, *new ApplicationManagerPrivate())
+    : QWaylandCompositorExtensionTemplate<ApplicationManager>(compositor, *new ApplicationManagerPrivate())
 {
 }
 
@@ -210,7 +210,7 @@ void ApplicationManager::initialize()
 {
     Q_D(ApplicationManager);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qWarning() << "Failed to find QWaylandCompositor when initializing ApplicationManager";

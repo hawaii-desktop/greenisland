@@ -30,7 +30,7 @@
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 
 #include <GreenIsland/server/greenislandserver_export.h>
@@ -51,7 +51,7 @@ class OutputManagement;
 class OutputManagementPrivate;
 
 class GREENISLANDSERVER_EXPORT OutputConfiguration
-        : public QWaylandExtensionTemplate<OutputConfiguration>
+        : public QWaylandCompositorExtensionTemplate<OutputConfiguration>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(OutputConfiguration)
@@ -77,7 +77,7 @@ public Q_SLOTS:
     void setFailed();
 
 private:
-    void initialize();
+    void initialize() Q_DECL_OVERRIDE;
 };
 
 } // namespace Server

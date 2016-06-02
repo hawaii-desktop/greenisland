@@ -52,11 +52,11 @@
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 #include <private/qobject_p.h>
 
+#include <private/qwlsurfacebuffer_p.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
 
 #include <GreenIsland/QtWaylandCompositor/private/qwlregion_p.h>
-#include <GreenIsland/QtWaylandCompositor/private/qwlsurfacebuffer_p.h>
 
 #include <QtCore/QVector>
 #include <QtCore/QRect>
@@ -100,6 +100,7 @@ public:
     using QtWaylandServer::wl_surface::resource;
 
     void setSize(const QSize &size);
+    void setBufferScale(int bufferScale);
 
     void removeFrameCallback(QtWayland::FrameCallback *callback);
 
@@ -131,11 +132,12 @@ protected:
                                   struct wl_resource *region) Q_DECL_OVERRIDE;
     void surface_commit(Resource *resource) Q_DECL_OVERRIDE;
     void surface_set_buffer_transform(Resource *resource, int32_t transform) Q_DECL_OVERRIDE;
+    void surface_set_buffer_scale(Resource *resource, int32_t bufferScale) Q_DECL_OVERRIDE;
 
     void setBackBuffer(QtWayland::SurfaceBuffer *buffer, const QRegion &damage);
     QtWayland::SurfaceBuffer *createSurfaceBuffer(struct ::wl_resource *buffer);
 
-protected: //member variables
+public: //member variables
     QWaylandCompositor *compositor;
     int refCount;
     QWaylandClient *client;
@@ -151,6 +153,7 @@ protected: //member variables
         QPoint offset;
         bool newlyAttached;
         QRegion inputRegion;
+        int bufferScale;
     } pending;
 
     QPoint lastLocalMousePos;
@@ -165,6 +168,7 @@ protected: //member variables
     QVector<QtWayland::SurfaceBuffer *> bufferPool;
 
     QSize size;
+    int bufferScale;
     bool isCursorSurface;
     bool destroyed;
     bool mapped;

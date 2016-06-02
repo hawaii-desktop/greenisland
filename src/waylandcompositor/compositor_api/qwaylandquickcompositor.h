@@ -51,8 +51,10 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandQuickCompositor : public QWaylandCompo
     Q_INTERFACES(QQmlParserStatus)
     Q_OBJECT
 public:
-    QWaylandQuickCompositor(QObject *parent = 0);
+    QWaylandQuickCompositor(QObject *parent = nullptr);
     void create() Q_DECL_OVERRIDE;
+
+    void grabSurface(QWaylandSurfaceGrabber *grabber, const QWaylandBufferRef &buffer) Q_DECL_OVERRIDE;
 
 protected:
     void classBegin() Q_DECL_OVERRIDE;

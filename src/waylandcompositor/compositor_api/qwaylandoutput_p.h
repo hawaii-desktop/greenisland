@@ -108,6 +108,7 @@ public:
 protected:
     void output_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
 
+
 private:
     QWaylandCompositor *compositor;
     QWindow *window;

@@ -47,7 +47,7 @@ namespace Server {
  */
 
 ScreenshooterPrivate::ScreenshooterPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_screenshooter()
 {
 }
@@ -143,7 +143,7 @@ void ScreenshooterPrivate::screenshooter_capture_area(Resource *resource,
  */
 
 ScreenshotPrivate::ScreenshotPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_screenshot()
     , output(Q_NULLPTR)
     , selectedSurface(Q_NULLPTR)
@@ -252,12 +252,12 @@ void ScreenshotPrivate::screenshot_record(Resource *resource,
  */
 
 Screenshooter::Screenshooter()
-    : QWaylandExtensionTemplate<Screenshooter>(*new ScreenshooterPrivate())
+    : QWaylandCompositorExtensionTemplate<Screenshooter>(*new ScreenshooterPrivate())
 {
 }
 
 Screenshooter::Screenshooter(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<Screenshooter>(compositor, *new ScreenshooterPrivate())
+    : QWaylandCompositorExtensionTemplate<Screenshooter>(compositor, *new ScreenshooterPrivate())
 {
 }
 
@@ -265,7 +265,7 @@ void Screenshooter::initialize()
 {
     Q_D(Screenshooter);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qCWarning(gLcScreenshooter) << "Failed to find QWaylandCompositor when initializing Screenshooter";
@@ -289,7 +289,7 @@ QByteArray Screenshooter::interfaceName()
  */
 
 Screenshot::Screenshot(CaptureType type, Screenshooter::Effects effects)
-    : QWaylandExtensionTemplate<Screenshot>(*new ScreenshotPrivate())
+    : QWaylandCompositorExtensionTemplate<Screenshot>(*new ScreenshotPrivate())
 {
     d_func()->captureType = type;
     d_func()->effects = effects;

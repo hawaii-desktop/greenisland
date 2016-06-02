@@ -43,6 +43,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandDrag>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTouch>
 #include <GreenIsland/QtWaylandCompositor/QWaylandPointer>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwldatadevice_p.h>
@@ -57,6 +58,7 @@ QWaylandInputDevicePrivate::QWaylandInputDevicePrivate(QWaylandInputDevice *inpu
     , QtWaylandServer::wl_seat(compositor->display(), 4)
     , compositor(compositor)
     , mouseFocus(Q_NULLPTR)
+    , keyboardFocus(nullptr)
     , capabilities()
     , data_device()
     , drag_handle(new QWaylandDrag(inputdevice))
@@ -90,6 +92,9 @@ void QWaylandInputDevicePrivate::setCapabilities(QWaylandInputDevice::Capability
         for (int i = 0; i < resources.size(); i++) {
             wl_seat::send_capabilities(resources.at(i)->handle, (uint32_t)capabilities);
         }
+
+        if ((changed & caps & QWaylandInputDevice::Keyboard) && keyboardFocus != nullptr)
+            keyboard->setFocus(keyboardFocus);
     }
 }
 
@@ -146,6 +151,7 @@ QWaylandKeymap::QWaylandKeymap(const QString &layout, const QString &variant, co
 /*!
  * \class QWaylandInputDevice
  * \inmodule QtWaylandCompositor
+ * \preliminary
  * \brief The QWaylandInputDevice class provides access to keyboard, mouse and touch input.
  *
  * The QWaylandInputDevice provides access to different types of user input and maintains
@@ -298,7 +304,7 @@ void QWaylandInputDevice::sendFullKeyEvent(QKeyEvent *event)
     }
 
     if (keyboardFocus()->inputMethodControl()->enabled()
-            && event->nativeScanCode() == 0) {
+        && event->nativeScanCode() == 0) {
         QWaylandTextInput *textInput = QWaylandTextInput::findIn(this);
         if (textInput) {
             textInput->sendKeyEvent(event);
@@ -348,15 +354,21 @@ bool QWaylandInputDevice::setKeyboardFocus(QWaylandSurface *surface)
     if (surface && surface->isDestroyed())
         return false;
 
-    if (surface == keyboardFocus())
+    QWaylandSurface *oldSurface = keyboardFocus();
+    if (surface == oldSurface)
         return true;
 
-    if (!d->keyboard.isNull() && d->keyboard->setFocus(surface)) {
-        if (d->data_device)
-            d->data_device->setFocus(d->keyboard->focusClient());
-        return true;
-    }
-    return false;
+    QWaylandWlShellSurface *wlShellsurface = QWaylandWlShellSurface::findIn(surface);
+    if (wlShellsurface && wlShellsurface->focusPolicy() == QWaylandWlShellSurface::NoKeyboardFocus)
+        return false;
+
+    d->keyboardFocus = surface;
+    if (!d->keyboard.isNull())
+        d->keyboard->setFocus(surface);
+    if (d->data_device)
+        d->data_device->setFocus(surface->client());
+    emit keyboardFocusChanged(surface, oldSurface);
+    return true;
 }
 
 /*!

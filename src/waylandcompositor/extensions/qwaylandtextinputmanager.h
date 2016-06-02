@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 KDAB
+** Copyright (C) 2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -37,7 +37,7 @@
 #ifndef QWAYLANDTEXTINPUTMANAGER_H
 #define QWAYLANDTEXTINPUTMANAGER_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 #include <QtCore/QSize>
 
@@ -45,7 +45,7 @@ QT_BEGIN_NAMESPACE
 
 class QWaylandTextInputManagerPrivate;
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputManager : public QWaylandExtensionTemplate<QWaylandTextInputManager>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputManager : public QWaylandCompositorExtensionTemplate<QWaylandTextInputManager>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandTextInputManager)

@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_APPLICATIONMANAGER_H
 #define GREENISLAND_APPLICATIONMANAGER_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -40,7 +40,7 @@ namespace Server {
 
 class ApplicationManagerPrivate;
 
-class GREENISLANDSERVER_EXPORT ApplicationManager : public QWaylandExtensionTemplate<ApplicationManager>
+class GREENISLANDSERVER_EXPORT ApplicationManager : public QWaylandCompositorExtensionTemplate<ApplicationManager>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)

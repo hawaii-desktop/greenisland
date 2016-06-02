@@ -96,8 +96,6 @@ public:
     void checkFocusResource(Resource *resource);
     void sendEnter(QWaylandSurface *surface, Resource *resource);
 
-    void sendRepeatInfo();
-
 protected:
     void keyboard_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
     void keyboard_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
@@ -110,6 +108,8 @@ private:
     void createXKBState(xkb_keymap *keymap);
 #endif
     static uint toWaylandXkbV1Key(const uint nativeScanCode);
+
+    void sendRepeatInfo();
 
     QWaylandInputDevice *seat;
 

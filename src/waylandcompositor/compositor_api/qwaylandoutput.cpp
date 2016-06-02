@@ -231,6 +231,7 @@ QWaylandOutput::QWaylandOutput()
 /*!
    \qmltype WaylandOutput
    \inqmlmodule QtWayland.Compositor
+   \preliminary
    \brief Type providing access to a displayable area managed by the compositor.
 
    The WaylandOutput manages a rectangular part of the compositor's geometry that
@@ -243,6 +244,7 @@ QWaylandOutput::QWaylandOutput()
 /*!
    \class QWaylandOutput
    \inmodule QtWaylandCompositor
+   \preliminary
    \brief The QWaylandOutput class provides access to a displayable area managed by the compositor.
 
    The QWaylandOutput manages a rectangular part of the compositor's geometry that
@@ -683,7 +685,6 @@ QRect QWaylandOutput::geometry() const
 QRect QWaylandOutput::availableGeometry() const
 {
     Q_D(const QWaylandOutput);
-
     if (!d->availableGeometry.isValid())
         return QRect(QPoint(0, 0), currentMode().size);
 
@@ -1023,7 +1024,10 @@ void QWaylandOutput::surfaceEnter(QWaylandSurface *surface)
 {
     if (!surface)
         return;
-    QWaylandSurfacePrivate::get(surface)->send_enter(resourceForClient(surface->client()));
+
+    auto clientResource = resourceForClient(surface->client());
+    if (clientResource)
+        QWaylandSurfacePrivate::get(surface)->send_enter(clientResource);
 }
 
 /*!
@@ -1042,7 +1046,6 @@ void QWaylandOutput::surfaceLeave(QWaylandSurface *surface)
 void QWaylandOutput::handleSetWidth(int newWidth)
 {
     Q_D(QWaylandOutput);
-
     if (!d->window || !d->sizeFollowsWindow || d->currentMode < 0)
         return;
 
@@ -1058,7 +1061,6 @@ void QWaylandOutput::handleSetWidth(int newWidth)
 void QWaylandOutput::handleSetHeight(int newHeight)
 {
     Q_D(QWaylandOutput);
-
     if (!d->window || !d->sizeFollowsWindow || d->currentMode < 0)
         return;
 

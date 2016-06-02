@@ -55,6 +55,7 @@ public:
 /*!
  * \class QWaylandBufferRef
  * \inmodule QtWaylandCompositor
+ * \preliminary
  * \brief A class which holds a reference to a surface buffer
  *
  * This class can be used to reference a surface buffer. As long as a reference
@@ -199,6 +200,25 @@ QWaylandSurface::Origin QWaylandBufferRef::origin() const
     return QWaylandSurface::OriginBottomLeft;
 }
 
+QWaylandBufferRef::BufferType QWaylandBufferRef::bufferType() const
+{
+    if (d->nullOrDestroyed())
+        return BufferType_Null;
+
+    if (isShm())
+        return BufferType_Shm;
+
+    return BufferType_Egl;
+}
+
+QWaylandBufferRef::BufferFormatEgl QWaylandBufferRef::bufferFormatEgl() const
+{
+    if (d->nullOrDestroyed())
+        return BufferFormatEgl_Null;
+
+    return d->buffer->bufferFormatEgl();
+}
+
 /*!
  * Returns true if the buffer is a shared memory buffer. Otherwise returns false.
  */
@@ -221,6 +241,16 @@ QImage QWaylandBufferRef::image() const
     return d->buffer->image();
 }
 
+#ifdef QT_COMPOSITOR_WAYLAND_GL
+GLuint QWaylandBufferRef::textureForPlane(int plane) const
+{
+    if (d->nullOrDestroyed())
+        return 0;
+
+    return d->buffer->textureForPlane(plane);
+}
+#endif
+
 /*!
  * Binds the buffer to the current OpenGL texture. This may
  * perform a copy of the buffer data, depending on the platform
@@ -233,14 +263,6 @@ void QWaylandBufferRef::bindToTexture() const
 
     return d->buffer->bindToTexture();
 
-}
-
-int QWaylandBufferRef::textureTarget() const
-{
-    if (d->nullOrDestroyed())
-        return 0x0DE1; // GL_TEXTURE_2D
-
-    return d->buffer->textureTarget();
 }
 
 void QWaylandBufferRef::updateTexture() const

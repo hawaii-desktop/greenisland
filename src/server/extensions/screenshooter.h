@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_SCREENSHOOTER_H
 #define GREENISLAND_SCREENSHOOTER_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -43,7 +43,7 @@ class Screenshot;
 class ScreenshotPrivate;
 class ScreenshooterPrivate;
 
-class GREENISLANDSERVER_EXPORT Screenshooter : public QWaylandExtensionTemplate<Screenshooter>
+class GREENISLANDSERVER_EXPORT Screenshooter : public QWaylandCompositorExtensionTemplate<Screenshooter>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshooter)
@@ -67,7 +67,7 @@ Q_SIGNALS:
     void captureRequested(Screenshot *screenshot);
 };
 
-class GREENISLANDSERVER_EXPORT Screenshot : public QWaylandExtensionTemplate<Screenshot>
+class GREENISLANDSERVER_EXPORT Screenshot : public QWaylandCompositorExtensionTemplate<Screenshot>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screenshot)

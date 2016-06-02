@@ -38,7 +38,7 @@
 #ifndef QWAYLANDOUTPUT_H
 #define QWAYLANDOUTPUT_H
 
-#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandcompositorextension.h>
 #include <QtCore/QObject>
 
 #include <QObject>

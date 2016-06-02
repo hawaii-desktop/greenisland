@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_TASKMANAGER_P_H
 #define GREENISLAND_TASKMANAGER_P_H
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/ClientWindow>
 #include <GreenIsland/Server/TaskManager>
@@ -50,7 +50,7 @@ namespace GreenIsland {
 namespace Server {
 
 class GREENISLANDSERVER_EXPORT TaskManagerPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_windows
 {
     Q_DECLARE_PUBLIC(TaskManager)
@@ -72,7 +72,7 @@ protected:
 };
 
 class GREENISLANDSERVER_EXPORT TaskItemPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_window
 {
     Q_DECLARE_PUBLIC(TaskItem)

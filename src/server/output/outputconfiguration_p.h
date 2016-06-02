@@ -29,7 +29,7 @@
 #define GREENISLAND_OUTPUTCONFIGURATION_P_H
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/OutputConfiguration>
 #include <GreenIsland/server/private/qwayland-server-greenisland-outputmanagement.h>
@@ -52,7 +52,7 @@ namespace Server {
 class OutputChangeset;
 
 class GREENISLANDSERVER_EXPORT OutputConfigurationPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_outputconfiguration
 {
     Q_DECLARE_PUBLIC(OutputConfiguration)

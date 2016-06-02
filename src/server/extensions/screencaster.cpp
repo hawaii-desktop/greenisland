@@ -81,7 +81,7 @@ public:
  */
 
 ScreencasterPrivate::ScreencasterPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_screencaster()
 {
 }
@@ -162,12 +162,12 @@ void ScreencasterPrivate::screencaster_capture(Resource *resource, uint32_t id,
  */
 
 Screencaster::Screencaster()
-    : QWaylandExtensionTemplate<Screencaster>(*new ScreencasterPrivate())
+    : QWaylandCompositorExtensionTemplate<Screencaster>(*new ScreencasterPrivate())
 {
 }
 
 Screencaster::Screencaster(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<Screencaster>(compositor, *new ScreencasterPrivate())
+    : QWaylandCompositorExtensionTemplate<Screencaster>(compositor, *new ScreencasterPrivate())
 {
 }
 
@@ -175,7 +175,7 @@ void Screencaster::initialize()
 {
     Q_D(Screencaster);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtension::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qCWarning(gLcScreencaster) << "Failed to find QWaylandCompositor when initializing Screencaster";
@@ -248,7 +248,7 @@ QByteArray Screencaster::interfaceName()
  */
 
 ScreencastPrivate::ScreencastPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_screencast()
     , valid(true)
     , screencaster(Q_NULLPTR)
@@ -366,7 +366,7 @@ void ScreencastPrivate::screencast_record(Resource *resource,
  */
 
 Screencast::Screencast()
-    : QWaylandExtensionTemplate<Screencast>(*new ScreencastPrivate())
+    : QWaylandCompositorExtensionTemplate<Screencast>(*new ScreencastPrivate())
 {
 }
 

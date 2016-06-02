@@ -34,44 +34,50 @@
 **
 ****************************************************************************/
 
-#ifndef WAYLANDWINDOWMANAGERINTEGRATION_H
-#define WAYLANDWINDOWMANAGERINTEGRATION_H
+#ifndef QWAYLANDMOUSETRACKER_P_H
+#define QWAYLANDMOUSETRACKER_P_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
-#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <QtQuick/private/qquickmousearea_p.h>
 
-#include <QtCore/QUrl>
+#include <QtWaylandCompositor/qwaylandexport.h>
 
 QT_BEGIN_NAMESPACE
 
-class QWaylandCompositor;
+class QWaylandMouseTrackerPrivate;
 
-class QWaylandWindowManagerExtensionPrivate;
-
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWindowManagerExtension : public QWaylandExtensionTemplate<QWaylandWindowManagerExtension>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandMouseTracker : public QQuickItem
 {
     Q_OBJECT
-    Q_PROPERTY(bool showIsFullScreen READ showIsFullScreen WRITE setShowIsFullScreen NOTIFY showIsFullScreenChanged)
-    Q_DECLARE_PRIVATE(QWaylandWindowManagerExtension)
+    Q_DECLARE_PRIVATE(QWaylandMouseTracker)
+    Q_PROPERTY(qreal mouseX READ mouseX NOTIFY mouseXChanged)
+    Q_PROPERTY(qreal mouseY READ mouseY NOTIFY mouseYChanged)
+    Q_PROPERTY(bool containsMouse READ hovered NOTIFY hoveredChanged)
+
+    Q_PROPERTY(bool enableWSCursor READ enableWSCursor WRITE setEnableWSCursor NOTIFY enableWSCursorChanged)
 public:
-    QWaylandWindowManagerExtension();
-    QWaylandWindowManagerExtension(QWaylandCompositor *compositor);
+    QWaylandMouseTracker(QQuickItem *parent = 0);
 
-    bool showIsFullScreen() const;
-    void setShowIsFullScreen(bool value);
+    qreal mouseX() const;
+    qreal mouseY() const;
 
-    void sendQuitMessage(wl_client *client);
+    void setEnableWSCursor(bool enable);
+    bool enableWSCursor() const;
+    bool hovered() const;
 
-    void initialize() Q_DECL_OVERRIDE;
+signals:
+    void mouseXChanged();
+    void mouseYChanged();
+    void enableWSCursorChanged();
+    void hoveredChanged();
 
-    static const struct wl_interface *interface();
-    static QByteArray interfaceName();
-
-Q_SIGNALS:
-    void showIsFullScreenChanged();
-    void openUrl(QWaylandClient *client, const QUrl &url);
+protected:
+    bool childMouseEventFilter(QQuickItem *item, QEvent *event) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
+    void hoverMoveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
+    void hoverEnterEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
+    void hoverLeaveEvent(QHoverEvent *event) Q_DECL_OVERRIDE;
 };
 
 QT_END_NAMESPACE
 
-#endif // WAYLANDWINDOWMANAGERINTEGRATION_H
+#endif  /*QWAYLANDMOUSETRACKER_P_H*/

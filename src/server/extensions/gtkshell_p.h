@@ -29,7 +29,7 @@
 #define GREENISLAND_GTKSHELL_P_H
 
 #include <GreenIsland/Server/GtkShell>
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/server/private/qwayland-server-gtk.h>
 
@@ -49,7 +49,7 @@ namespace GreenIsland {
 namespace Server {
 
 class GREENISLANDSERVER_EXPORT GtkShellPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::gtk_shell
 {
     Q_DECLARE_PUBLIC(GtkShell)
@@ -66,7 +66,7 @@ protected:
 };
 
 class GREENISLANDSERVER_EXPORT GtkSurfacePrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::gtk_surface
 {
     Q_DECLARE_PUBLIC(GtkSurface)

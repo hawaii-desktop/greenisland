@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_OUTPUTMANAGEMENT_P_H
 #define GREENISLAND_OUTPUTMANAGEMENT_P_H
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/OutputManagement>
 #include <GreenIsland/server/private/qwayland-server-greenisland-outputmanagement.h>
@@ -49,7 +49,7 @@ namespace GreenIsland {
 namespace Server {
 
 class GREENISLANDSERVER_EXPORT OutputManagementPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_outputmanagement
 {
     Q_DECLARE_PUBLIC(OutputManagement)

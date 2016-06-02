@@ -28,7 +28,7 @@
 #ifndef GREENISLAND_TASKMANAGER_H
 #define GREENISLAND_TASKMANAGER_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -40,7 +40,7 @@ class TaskItem;
 class TaskItemPrivate;
 class TaskManagerPrivate;
 
-class GREENISLANDSERVER_EXPORT TaskManager : public QWaylandExtensionTemplate<TaskManager>
+class GREENISLANDSERVER_EXPORT TaskManager : public QWaylandCompositorExtensionTemplate<TaskManager>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(TaskManager)
@@ -54,7 +54,7 @@ public:
     static QByteArray interfaceName();
 };
 
-class GREENISLANDSERVER_EXPORT TaskItem : public QWaylandExtensionTemplate<TaskItem>
+class GREENISLANDSERVER_EXPORT TaskItem : public QWaylandCompositorExtensionTemplate<TaskItem>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(TaskItem)

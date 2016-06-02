@@ -53,6 +53,8 @@ public:
 
     QQmlListProperty<OutputChangeset> changes();
 
+    QList<QObject *> objects;
+
     static int changesCount(QQmlListProperty<OutputChangeset> *prop);
     static OutputChangeset *changesAt(QQmlListProperty<OutputChangeset> *prop, int index);
 };

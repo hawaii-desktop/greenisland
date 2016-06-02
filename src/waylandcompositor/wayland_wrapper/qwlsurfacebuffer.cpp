@@ -36,15 +36,15 @@
 
 #include "qwlsurfacebuffer_p.h"
 
-#include "hardware_integration/qwlclientbufferintegration_p.h"
 #ifdef QT_COMPOSITOR_WAYLAND_GL
+#include "hardware_integration/qwlclientbufferintegration_p.h"
 #include <qpa/qplatformopenglcontext.h>
 #endif
 
 #include <QtCore/QDebug>
 
 #include <wayland-server-protocol.h>
-#include "qwaylandshmformathelper.h"
+#include "qwaylandshmformathelper_p.h"
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 
@@ -92,7 +92,8 @@ void SurfaceBuffer::initialize(struct ::wl_resource *buffer)
 void SurfaceBuffer::destructBufferState()
 {
     if (m_buffer) {
-        sendRelease();
+        if (m_committed)
+            sendRelease();
         wl_list_remove(&m_destroy_listener.listener.link);
     }
     m_buffer = 0;
@@ -198,6 +199,16 @@ QImage SurfaceBuffer::image() const
     return QImage();
 }
 
+QWaylandBufferRef::BufferFormatEgl SurfaceBuffer::bufferFormatEgl() const
+{
+    Q_ASSERT(isShm() == false);
+
+    if (QtWayland::ClientBufferIntegration *clientInt = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration())
+        return clientInt->bufferFormat(m_buffer);
+
+    return QWaylandBufferRef::BufferFormatEgl_Null;
+}
+
 void SurfaceBuffer::bindToTexture() const
 {
     Q_ASSERT(m_compositor);
@@ -221,10 +232,10 @@ void SurfaceBuffer::bindToTexture() const
     }
 }
 
-int SurfaceBuffer::textureTarget() const
+uint SurfaceBuffer::textureForPlane(int plane) const
 {
     if (QtWayland::ClientBufferIntegration *clientInt = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration())
-        return clientInt->textureTargetForBuffer(m_buffer);
+        return clientInt->textureForBuffer(m_buffer, plane);
 
     return 0;
 }

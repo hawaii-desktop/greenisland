@@ -43,7 +43,7 @@ namespace Server {
  */
 
 OutputManagementPrivate::OutputManagementPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_outputmanagement()
 {
 }
@@ -82,12 +82,12 @@ void OutputManagementPrivate::outputmanagement_create_configuration(Resource *re
  */
 
 OutputManagement::OutputManagement()
-    : QWaylandExtensionTemplate<OutputManagement>(*new OutputManagementPrivate())
+    : QWaylandCompositorExtensionTemplate<OutputManagement>(*new OutputManagementPrivate())
 {
 }
 
 OutputManagement::OutputManagement(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<OutputManagement>(compositor, *new OutputManagementPrivate())
+    : QWaylandCompositorExtensionTemplate<OutputManagement>(compositor, *new OutputManagementPrivate())
 {
 }
 
@@ -95,7 +95,7 @@ void OutputManagement::initialize()
 {
     Q_D(OutputManagement);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qCWarning(gLcOutputManagement) << "Failed to find QWaylandCompositor when initializing OutputManagement";

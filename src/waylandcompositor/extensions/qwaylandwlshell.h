@@ -37,8 +37,9 @@
 #ifndef QWAYLANDWLSHELL_H
 #define QWAYLANDWLSHELL_H
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
 
 #include <QtCore/QSize>
 
@@ -53,7 +54,7 @@ class QWaylandOutput;
 class QWaylandSurfaceRole;
 class QWaylandWlShellSurface;
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShell : public QWaylandExtensionTemplate<QWaylandWlShell>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShell : public QWaylandCompositorExtensionTemplate<QWaylandWlShell>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandWlShell)
@@ -71,11 +72,12 @@ Q_SIGNALS:
     void shellSurfaceCreated(QWaylandWlShellSurface *shellSurface);
 };
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShellSurface : public QWaylandExtensionTemplate<QWaylandWlShellSurface>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShellSurface : public QWaylandShellSurfaceTemplate<QWaylandWlShellSurface>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandWlShellSurface)
     Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(QWaylandWlShell *shell READ shell NOTIFY shellChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString className READ className NOTIFY classNameChanged)
     Q_PROPERTY(FocusPolicy focusPolicy READ focusPolicy NOTIFY focusPolicyChanged)
@@ -117,6 +119,7 @@ public:
     QString className() const;
 
     QWaylandSurface *surface() const;
+    QWaylandWlShell *shell() const;
 
     FocusPolicy focusPolicy() const;
 
@@ -130,11 +133,14 @@ public:
     Q_INVOKABLE void sendConfigure(const QSize &size, ResizeEdge edges);
     Q_INVOKABLE void sendPopupDone();
 
+    QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+
 public Q_SLOTS:
     void ping();
 
 Q_SIGNALS:
     void surfaceChanged();
+    void shellChanged();
     void titleChanged();
     void classNameChanged();
     void focusPolicyChanged();

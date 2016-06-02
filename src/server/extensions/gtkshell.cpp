@@ -41,7 +41,7 @@ namespace Server {
  */
 
 GtkShellPrivate::GtkShellPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::gtk_shell()
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
@@ -61,15 +61,20 @@ void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_
     Q_Q(GtkShell);
 
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
-    Q_ASSERT(surface);
 
-    QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(q->extensionContainer());
-    Q_ASSERT(compositor);
+    QWaylandResource gtkSurfaceResource(wl_resource_create(resource->client(), &gtk_surface_interface,
+                                                             wl_resource_get_version(resource->handle), id));
 
-    QWaylandClient *client = QWaylandClient::fromWlClient(compositor, resource->client());
-    Q_ASSERT(client);
+    Q_EMIT q->createGtkSurface(surface, gtkSurfaceResource);
 
-    Q_EMIT q->createSurface(surface, client, id);
+    GtkSurface *gtkSurface = GtkSurface::fromResource(gtkSurfaceResource.resource());
+    if (!gtkSurface) {
+        // A GtkSurface was not created in response to the createGtkSurface signal,
+        // so we have to create a fallback one here
+        gtkSurface = new GtkSurface(q, surface, gtkSurfaceResource);
+    }
+
+    Q_EMIT q->gtkSurfaceCreated(gtkSurface);
 }
 
 /*
@@ -77,13 +82,13 @@ void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_
  */
 
 GtkShell::GtkShell()
-    : QWaylandExtensionTemplate<GtkShell>(*new GtkShellPrivate())
+    : QWaylandCompositorExtensionTemplate<GtkShell>(*new GtkShellPrivate())
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 GtkShell::GtkShell(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<GtkShell>(compositor, *new GtkShellPrivate())
+    : QWaylandCompositorExtensionTemplate<GtkShell>(compositor, *new GtkShellPrivate())
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
@@ -94,7 +99,7 @@ void GtkShell::initialize()
 
     Q_D(GtkShell);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qWarning() << "Failed to find QWaylandCompositor when initializing GtkShell";
@@ -118,7 +123,7 @@ QByteArray GtkShell::interfaceName()
  */
 
 GtkSurfacePrivate::GtkSurfacePrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::gtk_surface()
     , m_shell(Q_NULLPTR)
     , m_surface(Q_NULLPTR)
@@ -201,45 +206,45 @@ void GtkSurfacePrivate::surface_unset_modal(Resource *resource)
  */
 
 GtkSurface::GtkSurface()
-    : QWaylandExtensionTemplate<GtkSurface>(*new GtkSurfacePrivate())
+    : QWaylandShellSurfaceTemplate<GtkSurface>(*new GtkSurfacePrivate())
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 }
 
 GtkSurface::GtkSurface(GtkShell *shell, QWaylandSurface *surface,
-                       QWaylandClient *client, uint id)
-    : QWaylandExtensionTemplate<GtkSurface>(*new GtkSurfacePrivate())
+                       const QWaylandResource &resource)
+    : QWaylandShellSurfaceTemplate<GtkSurface>(*new GtkSurfacePrivate())
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
-    initialize(shell, surface, client, id);
+    initialize(shell, surface, resource);
 }
 
 void GtkSurface::initialize(GtkShell *shell, QWaylandSurface *surface,
-                            QWaylandClient *client, uint id)
+                            const QWaylandResource &resource)
 {
     qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
 
     Q_D(GtkSurface);
     d->m_shell = shell;
     d->m_surface = surface;
-    d->init(client->client(), id, 1);
+    d->init(resource.resource());
     setExtensionContainer(surface);
     Q_EMIT surfaceChanged();
-    QWaylandExtension::initialize();
-}
-
-void GtkSurface::initialize()
-{
-    qCDebug(gLcGtkShellTrace) << Q_FUNC_INFO;
-
-    QWaylandExtensionTemplate::initialize();
+    Q_EMIT shellChanged();
+    QWaylandCompositorExtension::initialize();
 }
 
 QWaylandSurface *GtkSurface::surface() const
 {
     Q_D(const GtkSurface);
     return d->m_surface;
+}
+
+GtkShell *GtkSurface::shell() const
+{
+    Q_D(const GtkSurface);
+    return d->m_shell;
 }
 
 QString GtkSurface::appId() const
@@ -278,6 +283,12 @@ QString GtkSurface::uniqueBusName() const
     return d->m_uniqueBusName;
 }
 
+QWaylandQuickShellIntegration *GtkSurface::createIntegration(QWaylandQuickShellSurfaceItem *item)
+{
+    Q_UNUSED(item);
+    return nullptr;
+}
+
 const struct wl_interface *GtkSurface::interface()
 {
     return GtkSurfacePrivate::interface();
@@ -286,6 +297,19 @@ const struct wl_interface *GtkSurface::interface()
 QByteArray GtkSurface::interfaceName()
 {
     return GtkSurfacePrivate::interfaceName();
+}
+
+GtkSurface *GtkSurface::fromResource(wl_resource *resource)
+{
+    GtkSurfacePrivate::Resource *res = GtkSurfacePrivate::Resource::fromResource(resource);
+    if (res)
+        return static_cast<GtkSurfacePrivate *>(res->surface_object)->q_func();
+    return nullptr;
+}
+
+void GtkSurface::initialize()
+{
+    QWaylandCompositorExtension::initialize();
 }
 
 } // namespace Server

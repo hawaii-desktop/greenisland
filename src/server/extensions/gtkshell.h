@@ -28,8 +28,11 @@
 #ifndef GREENISLAND_GTKSHELL_H
 #define GREENISLAND_GTKSHELL_H
 
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandResource>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
+
 #include <GreenIsland/server/greenislandserver_export.h>
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
 
 class QWaylandClient;
 class QWaylandSurface;
@@ -39,9 +42,10 @@ namespace GreenIsland {
 namespace Server {
 
 class GtkShellPrivate;
+class GtkSurface;
 class GtkSurfacePrivate;
 
-class GREENISLANDSERVER_EXPORT GtkShell : public QWaylandExtensionTemplate<GtkShell>
+class GREENISLANDSERVER_EXPORT GtkShell : public QWaylandCompositorExtensionTemplate<GtkShell>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GtkShell)
@@ -55,24 +59,28 @@ public:
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void createSurface(QWaylandSurface *surface,
-                       QWaylandClient *client, uint id);
+    void createGtkSurface(QWaylandSurface *surface,
+                          const QWaylandResource &resource);
+    void gtkSurfaceCreated(GtkSurface *gtkSurface);
 };
 
-class GREENISLANDSERVER_EXPORT GtkSurface : public QWaylandExtensionTemplate<GtkSurface>
+class GREENISLANDSERVER_EXPORT GtkSurface : public QWaylandShellSurfaceTemplate<GtkSurface>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(GtkSurface)
+    Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
+    Q_PROPERTY(GtkShell *shell READ shell NOTIFY shellChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
 public:
     GtkSurface();
     GtkSurface(GtkShell *shell, QWaylandSurface *surface,
-               QWaylandClient *client, uint id);
+               const QWaylandResource &resource);
 
     Q_INVOKABLE void initialize(GtkShell *shell, QWaylandSurface *surface,
-                                QWaylandClient *client, uint id);
+                                 const QWaylandResource &resource);
 
     QWaylandSurface *surface() const;
+    GtkShell *shell() const;
 
     QString appId() const;
     QString appMenuPath() const;
@@ -81,11 +89,16 @@ public:
     QString appObjectPath() const;
     QString uniqueBusName() const;
 
+    QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
 
+    static GtkSurface *fromResource(wl_resource *resource);
+
 Q_SIGNALS:
     void surfaceChanged();
+    void shellChanged();
 
     void appIdChanged(const QString &appId);
     void appMenuPathChanged(const QString &appMenuPath);
@@ -98,7 +111,7 @@ Q_SIGNALS:
     void unsetModal();
 
 private:
-    void initialize();
+    void initialize() Q_DECL_OVERRIDE;
 };
 
 } // namespace Server

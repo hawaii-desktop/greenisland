@@ -28,17 +28,20 @@
 #include <QtQml/QQmlExtensionPlugin>
 #include <QtQml/QQmlComponent>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
-#include <GreenIsland/QtWaylandCompositor/QWaylandWindowManagerExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQtWindowManager>
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
+#include <GreenIsland/QtWaylandCompositor/QWaylandXdgShell>
 
 #include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
@@ -55,31 +58,20 @@
 #include <GreenIsland/Server/QuickScreenManager>
 
 #include "fpscounter.h"
-#include "globalpointertracker.h"
-#include "localpointertracker.h"
-#include "pointeritem.h"
 #include "keyeventfilter.h"
+#include "qwaylandmousetracker_p.h"
 
 using namespace GreenIsland::Server;
 
-Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQuickCompositor)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CONTAINER_CLASS(QWaylandQuickCompositor)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandQtWindowManager)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandWlShell)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandXdgShell)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandTextInputManager)
 
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWindowManagerExtension)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(GtkShell)
 
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShell)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandWlShellSurface)
-
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QWaylandTextInputManager)
-
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkShell)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(GtkSurface)
-
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgPopup)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgShell)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(XdgSurface)
-
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(QuickOutputConfiguration)
-Q_COMPOSITOR_DECLARE_QUICK_DATA_CLASS(OutputManagement)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(OutputManagement)
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -95,19 +87,15 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     Q_ASSERT(QLatin1String(uri) == QLatin1String("GreenIsland"));
 
     // Base types
-    qmlRegisterType<QWaylandQuickCompositorQuickExtension>(uri, 1, 0, "WaylandCompositor");
+    qmlRegisterType<QWaylandQuickCompositorQuickExtensionContainer>(uri, 1, 0, "WaylandCompositor");
     qmlRegisterType<QWaylandQuickItem>(uri, 1, 0, "WaylandQuickItem");
-    qmlRegisterType<QuickOutput>(uri, 1, 0, "WaylandOutput");
+    qmlRegisterType<QWaylandMouseTracker>(uri, 1, 0, "WaylandMouseTracker");
+    qmlRegisterType<QWaylandQuickOutput>(uri, 1, 0, "WaylandOutput");
     qmlRegisterType<QWaylandQuickSurface>(uri, 1, 0, "WaylandSurface");
 
-    // Pointer tracking
-    qmlRegisterType<GlobalPointerTracker>(uri, 1, 0, "GlobalPointerTracker");
-    qmlRegisterType<LocalPointerTracker>(uri, 1, 0, "LocalPointerTracker");
-    qmlRegisterType<PointerItem>(uri, 1, 0, "PointerItem");
-
-    // Uncreatable base types
-    qmlRegisterUncreatableType<QWaylandExtension>(uri, 1, 0, "WaylandExtension",
-                                                  QObject::tr("Cannot create instance of WaylandExtension"));
+    // Uncreatable types
+    qmlRegisterUncreatableType<QWaylandCompositorExtension>(uri, 1, 0, "WaylandExtension",
+                                                            QObject::tr("Cannot create instance of WaylandExtension"));
     qmlRegisterUncreatableType<QWaylandClient>(uri, 1, 0, "WaylandClient",
                                                QObject::tr("Cannot create instance of WaylandClient"));
     qmlRegisterUncreatableType<QWaylandView>(uri, 1, 0, "WaylandView",
@@ -116,29 +104,32 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                     QObject::tr("Cannot create instance of WaylandInputDevice"));
     qmlRegisterUncreatableType<QWaylandCompositor>(uri, 1, 0, "WaylandCompositorBase",
                                                    QObject::tr("Cannot create instance of WaylandCompositorBase, use WaylandCompositor instead"));
-    qmlRegisterUncreatableType<QWaylandResource>(uri, 1, 0, "WaylandResource",
-                                                 QObject::tr("Cannot create instance of WaylandResource"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",
                                                 QObject::tr("Cannot create instance of WaylandSurfaceBase, use WaylandSurface instead"));
-
-    // Qt window manager
-    qmlRegisterType<QWaylandWindowManagerExtensionQuickData>(uri, 1, 0, "WindowManager");
-
-    // wl-shell
+    qmlRegisterUncreatableType<QWaylandShellSurface>(uri, 1, 0, "ShellSurface",
+                                                     QObject::tr("Cannot create instance of ShellSurface"));
     qmlRegisterUncreatableType<QWaylandWlShellSurface>(uri, 1, 0, "WlShellSurfaceBase",
                                                        QObject::tr("Cannot create instance of WlShellSurfaceBase, use WlShellSurface instead"));
-    qmlRegisterType<QWaylandWlShellQuickData>(uri, 1, 0, "WlShell");
-    qmlRegisterType<QWaylandWlShellSurfaceQuickData>(uri, 1, 0, "WlShellSurface");
-    qmlRegisterType<QWaylandQuickWlShellSurfaceItem>(uri, 1, 0, "WlShellSurfaceItem");
+    qmlRegisterUncreatableType<QWaylandXdgSurface>(uri, 1, 0, "XdgSurfaceBase",
+                                                   QObject::tr("Cannot create instance of XdgSurfaceBase, use XdgSurface instead"));
+    qmlRegisterUncreatableType<QWaylandResource>(uri, 1, 0, "WaylandResource",
+                                                 QObject::tr("Cannot create instance of WaylandResource"));
 
-    // Text input manager
-    qmlRegisterType<QWaylandTextInputManagerQuickData>(uri, 1, 0, "TextInputManager");
+    // Extensions
+    qmlRegisterType<QWaylandQtWindowManagerQuickExtension>(uri, 1, 0, "QtWindowManager");
+    qmlRegisterType<QWaylandWlShellQuickExtension>(uri, 1, 0, "WlShell");
+    qmlRegisterType<QWaylandWlShellSurface>(uri, 1, 0, "WlShellSurface");
+    qmlRegisterType<QWaylandQuickShellSurfaceItem>(uri, 1, 0, "ShellSurfaceItem");
+    qmlRegisterType<QWaylandXdgShellQuickExtension>(uri, 1, 0, "XdgShell");
+    qmlRegisterType<QWaylandXdgSurface>(uri, 1, 0, "XdgSurface");
+    qmlRegisterType<QWaylandTextInputManagerQuickExtension>(uri, 1, 0, "TextInputManager");
+
+    // More specialized output
+    qmlRegisterType<QuickOutput>(uri, 1, 0, "ExtendedOutput");
 
     // gtk-shell
-    qmlRegisterType<GtkShellQuickData>(uri, 1, 0, "GtkShell");
-    qmlRegisterUncreatableType<GtkSurface>(uri, 1, 0, "GtkSurfaceBase",
-                                           QObject::tr("Cannot create instance of GtkSurfaceBase, use GtkSurface instead"));
-    qmlRegisterType<GtkSurfaceQuickData>(uri, 1, 0, "GtkSurface");
+    qmlRegisterType<GtkShellQuickExtension>(uri, 1, 0, "GtkShell");
+    qmlRegisterType<GtkSurface>(uri, 1, 0, "GtkSurface");
 
     // Screen
     qmlRegisterType<QuickScreenManager>(uri, 1, 0, "ScreenManager");
@@ -146,10 +137,10 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                        QObject::tr("Cannot create instance of Screen"));
 
     // Output management
-    qmlRegisterType<QuickOutputConfigurationQuickData>(uri, 1, 0, "OutputConfiguration");
+    qmlRegisterType<QuickOutputConfiguration>(uri, 1, 0, "OutputConfiguration");
     qmlRegisterUncreatableType<OutputManagement>(uri, 1, 0, "OutputManagementBase",
                                                  QObject::tr("Cannot create instance of OutputManagementBase, use OutputManagement instead"));
-    qmlRegisterType<OutputManagementQuickData>(uri, 1, 0, "OutputManagement");
+    qmlRegisterType<OutputManagementQuickExtension>(uri, 1, 0, "OutputManagement");
     qmlRegisterUncreatableType<OutputChangeset>(uri, 1, 0, "OutputChangeset",
                                                 QObject::tr("Cannot create instance of OutputChangeset"));
 

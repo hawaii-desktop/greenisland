@@ -52,7 +52,7 @@ class BrcmEglIntegration : public QtWayland::ClientBufferIntegration, public QtW
 public:
     BrcmEglIntegration();
 
-    void initializeHardware(struct ::wl_display *waylandDisplay) Q_DECL_OVERRIDE;
+    void initializeHardware(struct ::wl_display *display) Q_DECL_OVERRIDE;
 
     void bindTextureToBuffer(struct ::wl_resource *buffer) Q_DECL_OVERRIDE;
 

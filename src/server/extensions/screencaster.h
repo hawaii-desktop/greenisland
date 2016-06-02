@@ -32,7 +32,7 @@
 #include <QtCore/QMultiHash>
 #include <QtCore/QMutex>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -46,7 +46,7 @@ class Screencast;
 class ScreencastPrivate;
 class ScreencasterPrivate;
 
-class GREENISLANDSERVER_EXPORT Screencaster : public QWaylandExtensionTemplate<Screencaster>
+class GREENISLANDSERVER_EXPORT Screencaster : public QWaylandCompositorExtensionTemplate<Screencaster>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screencaster)
@@ -65,7 +65,7 @@ Q_SIGNALS:
     void captureRequested(Screencast *screencast);
 };
 
-class GREENISLANDSERVER_EXPORT Screencast : public QWaylandExtensionTemplate<Screencast>
+class GREENISLANDSERVER_EXPORT Screencast : public QWaylandCompositorExtensionTemplate<Screencast>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Screencast)

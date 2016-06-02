@@ -32,7 +32,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/Screenshooter>
 #include <GreenIsland/server/private/qwayland-server-greenisland-screenshooter.h>
@@ -53,7 +53,7 @@ namespace GreenIsland {
 namespace Server {
 
 class GREENISLANDSERVER_EXPORT ScreenshooterPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_screenshooter
 {
     Q_DECLARE_PUBLIC(Screenshooter)
@@ -79,7 +79,7 @@ protected:
 };
 
 class GREENISLANDSERVER_EXPORT ScreenshotPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_screenshot
 {
     Q_DECLARE_PUBLIC(Screenshot)

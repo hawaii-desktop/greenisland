@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
 **
@@ -34,46 +34,22 @@
 **
 ****************************************************************************/
 
-#ifndef QWAYLANDWINDOWMANAGEREXTENSION_P_H
-#define QWAYLANDWINDOWMANAGEREXTENSION_P_H
+import QtQuick 2.0
+import QtQuick.Window 2.2
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
+Window {
+    id: window
+    property QtObject compositor
+    property QtObject output
+    property bool automaticFrameCallback: false
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+    Component.onCompleted: {
+        if (!compositor) {
+            console.warn("WaylandOutputWindow initiated without compositor. This leads to undefined behavior");
+            return;
+        }
+        output = compositor.addOutput(window);
+        output.automaticFrameCallbacks = window.automaticFrameCallback;
+    }
+}
 
-#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-windowmanager.h>
-
-#include <QMap>
-
-QT_BEGIN_NAMESPACE
-
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWindowManagerExtensionPrivate
-        : public QWaylandExtensionTemplatePrivate
-        , public QtWaylandServer::qt_windowmanager
-{
-    Q_DECLARE_PUBLIC(QWaylandWindowManagerExtension)
-public:
-    QWaylandWindowManagerExtensionPrivate();
-
-protected:
-    void windowmanager_bind_resource(Resource *resource) Q_DECL_OVERRIDE;
-    void windowmanager_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
-    void windowmanager_open_url(Resource *resource, uint32_t remaining, const QString &url) Q_DECL_OVERRIDE;
-
-private:
-    bool showIsFullScreen;
-    QMap<Resource*, QString> urls;
-};
-
-QT_END_NAMESPACE
-
-#endif  /*QWAYLANDWINDOWMANAGEREXTENSION_P_H*/

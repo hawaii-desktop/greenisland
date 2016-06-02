@@ -40,7 +40,7 @@ namespace Server {
  */
 
 TaskManagerPrivate::TaskManagerPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_windows()
     , initialized(false)
     , boundResource(Q_NULLPTR)
@@ -101,7 +101,7 @@ void TaskManagerPrivate::windows_bind_resource(Resource *resource)
  */
 
 TaskItemPrivate::TaskItemPrivate(ClientWindow *w)
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_window()
     , window(w)
 {
@@ -171,12 +171,12 @@ void TaskItemPrivate::determineState()
  */
 
 TaskManager::TaskManager()
-    : QWaylandExtensionTemplate<TaskManager>(*new TaskManagerPrivate())
+    : QWaylandCompositorExtensionTemplate<TaskManager>(*new TaskManagerPrivate())
 {
 }
 
 TaskManager::TaskManager(QWaylandCompositor *compositor)
-    : QWaylandExtensionTemplate<TaskManager>(compositor, *new TaskManagerPrivate())
+    : QWaylandCompositorExtensionTemplate<TaskManager>(compositor, *new TaskManagerPrivate())
 {
 }
 
@@ -184,7 +184,7 @@ void TaskManager::initialize()
 {
     Q_D(TaskManager);
 
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtensionTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qCWarning(gLcTaskManager) << "Failed to find QWaylandCompositor when initializing TaskManager";

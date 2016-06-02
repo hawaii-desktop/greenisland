@@ -43,7 +43,7 @@ namespace Server {
  */
 
 OutputConfigurationPrivate::OutputConfigurationPrivate()
-    : QWaylandExtensionTemplatePrivate()
+    : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_outputconfiguration()
     , management(Q_NULLPTR)
 {
@@ -175,12 +175,12 @@ void OutputConfigurationPrivate::outputconfiguration_apply(Resource *resource)
  */
 
 OutputConfiguration::OutputConfiguration()
-    : QWaylandExtensionTemplate<OutputConfiguration>(*new OutputConfigurationPrivate())
+    : QWaylandCompositorExtensionTemplate<OutputConfiguration>(*new OutputConfigurationPrivate())
 {
 }
 
 OutputConfiguration::OutputConfiguration(OutputManagement *parent, const QWaylandResource &resource)
-    : QWaylandExtensionTemplate<OutputConfiguration>(*new OutputConfigurationPrivate())
+    : QWaylandCompositorExtensionTemplate<OutputConfiguration>(*new OutputConfigurationPrivate())
 {
     initialize(parent, resource);
 }
@@ -197,12 +197,7 @@ void OutputConfiguration::initialize(OutputManagement *parent, const QWaylandRes
     d->management = parent;
     d->init(resource.resource());
     setExtensionContainer(parent);
-    QWaylandExtension::initialize();
-}
-
-void OutputConfiguration::initialize()
-{
-    QWaylandExtensionTemplate::initialize();
+    QWaylandCompositorExtension::initialize();
 }
 
 void OutputConfiguration::setApplied()
@@ -242,6 +237,11 @@ OutputConfiguration *OutputConfiguration::fromResource(wl_resource *resource)
     if (res)
         return static_cast<OutputConfigurationPrivate *>(res->outputconfiguration_object)->q_func();
     return Q_NULLPTR;
+}
+
+void OutputConfiguration::initialize()
+{
+    QWaylandCompositorExtension::initialize();
 }
 
 } // namespace Server

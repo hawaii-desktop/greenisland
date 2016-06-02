@@ -30,7 +30,7 @@
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 
 #include <GreenIsland/server/greenislandserver_export.h>
@@ -42,7 +42,7 @@ namespace Server {
 class OutputConfiguration;
 class OutputManagementPrivate;
 
-class GREENISLANDSERVER_EXPORT OutputManagement : public QWaylandExtensionTemplate<OutputManagement>
+class GREENISLANDSERVER_EXPORT OutputManagement : public QWaylandCompositorExtensionTemplate<OutputManagement>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(OutputManagement)

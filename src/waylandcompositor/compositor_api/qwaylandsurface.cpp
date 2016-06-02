@@ -126,6 +126,7 @@ QWaylandSurfacePrivate::QWaylandSurfacePrivate()
     , buffer(0)
     , role(0)
     , inputRegion(infiniteRegion())
+    , bufferScale(1)
     , isCursorSurface(false)
     , destroyed(false)
     , mapped(false)
@@ -137,6 +138,7 @@ QWaylandSurfacePrivate::QWaylandSurfacePrivate()
     pending.buffer = 0;
     pending.newlyAttached = false;
     pending.inputRegion = infiniteRegion();
+    pending.bufferScale = 1;
 #ifndef QT_NO_DEBUG
     addUninitializedSurface(this);
 #endif
@@ -168,6 +170,15 @@ void QWaylandSurfacePrivate::setSize(const QSize &s)
         size = s;
         q->sizeChanged();
     }
+}
+
+void QWaylandSurfacePrivate::setBufferScale(int scale)
+{
+    Q_Q(QWaylandSurface);
+    if (scale == bufferScale)
+        return;
+    bufferScale = scale;
+    emit q->bufferScaleChanged();
 }
 
 void QWaylandSurfacePrivate::removeFrameCallback(QtWayland::FrameCallback *callback)
@@ -272,6 +283,8 @@ void QWaylandSurfacePrivate::surface_commit(Resource *)
     pending.newlyAttached = false;
     pending.damage = QRegion();
 
+    setBufferScale(pending.bufferScale);
+
     if (buffer)
         buffer->setCommitted();
 
@@ -305,6 +318,12 @@ void QWaylandSurfacePrivate::surface_set_buffer_transform(Resource *resource, in
     }
     if (contentOrientation != oldOrientation)
         emit q->contentOrientationChanged();
+}
+
+void QWaylandSurfacePrivate::surface_set_buffer_scale(QtWaylandServer::wl_surface::Resource *resource, int32_t scale)
+{
+    Q_UNUSED(resource);
+    pending.bufferScale = scale;
 }
 
 void QWaylandSurfacePrivate::setBackBuffer(QtWayland::SurfaceBuffer *b, const QRegion &d)
@@ -358,6 +377,7 @@ QtWayland::SurfaceBuffer *QWaylandSurfacePrivate::createSurfaceBuffer(struct ::w
 /*!
  * \qmltype WaylandSurface
  * \inqmlmodule QtWayland.Compositor
+ * \preliminary
  * \brief A rectangular area which is displayed on an output device.
  *
  * This type encapsulates a rectangular area of pixels that is displayed on an output device. It
@@ -367,6 +387,7 @@ QtWayland::SurfaceBuffer *QWaylandSurfacePrivate::createSurfaceBuffer(struct ::w
 /*!
  * \class QWaylandSurface
  * \inmodule QtWaylandCompositor
+ * \preliminary
  * \brief A rectangular area which is displayed on an output device.
  *
  * This class encapsulates a rectangular area of pixels that is displayed on an output device. It
@@ -456,7 +477,7 @@ bool QWaylandSurface::isInitialized() const
 QWaylandClient *QWaylandSurface::client() const
 {
     Q_D(const QWaylandSurface);
-    if (isDestroyed() || !compositor()->clients().contains(d->client))
+    if (isDestroyed() || !compositor() || !compositor()->clients().contains(d->client))
         return Q_NULLPTR;
 
     return d->client;
@@ -494,6 +515,27 @@ QSize QWaylandSurface::size() const
 {
     Q_D(const QWaylandSurface);
     return d->size;
+}
+
+/*!
+ * \qmlproperty size QtWaylandCompositor::WaylandSurface::bufferScale
+ *
+ * This property holds the WaylandSurface's buffer scale. The buffer scale lets
+ * a client supply higher resolution buffer data for use on high resolution
+ * outputs.
+ */
+
+/*!
+ * \property QWaylandSurface::bufferScale
+ *
+ * This property holds the QWaylandSurface's buffer scale. The buffer scale
+ * lets a client supply higher resolution buffer data for use on high
+ * resolution outputs.
+ */
+int QWaylandSurface::bufferScale() const
+{
+    Q_D(const QWaylandSurface);
+    return d->bufferScale;
 }
 
 /*!
@@ -825,6 +867,7 @@ void QWaylandSurfacePrivate::Subsurface::subsurface_set_position(wl_subsurface::
     Q_UNUSED(resource);
     position = QPoint(x,y);
     emit surface->q_func()->subsurfacePositionChanged(position);
+
 }
 
 void QWaylandSurfacePrivate::Subsurface::subsurface_place_above(wl_subsurface::Resource *resource, struct wl_resource *sibling)

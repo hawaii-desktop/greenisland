@@ -378,7 +378,7 @@ void QuickOutput::readContent()
     if (!quickWindow)
         return;
 
-    QWaylandExtension *e = compositor()->extension(Screencaster::interfaceName());
+    QWaylandCompositorExtension *e = compositor()->extension(Screencaster::interfaceName());
     Screencaster *screencaster = qobject_cast<Screencaster *>(e);
     if (screencaster && screencaster->isInitialized())
         screencaster->recordFrame(quickWindow);

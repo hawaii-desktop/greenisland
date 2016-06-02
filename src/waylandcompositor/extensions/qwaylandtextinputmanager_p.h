@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2013 Klarälvdalens Datakonsult AB (KDAB).
+** Copyright (C) 2013-2016 Klarälvdalens Datakonsult AB, a KDAB Group company, info@kdab.com
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -37,9 +37,9 @@
 #ifndef QWAYLANDTEXTINPUTMANAGER_P_H
 #define QWAYLANDTEXTINPUTMANAGER_P_H
 
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
-#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text-input-v2.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwayland-server-text-input-unstable-v2.h>
 
 //
 //  W A R N I N G
@@ -54,7 +54,7 @@
 
 QT_BEGIN_NAMESPACE
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputManagerPrivate : public QWaylandExtensionTemplatePrivate, public QtWaylandServer::zwp_text_input_manager_v2
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandTextInputManagerPrivate : public QWaylandCompositorExtensionPrivate, public QtWaylandServer::zwp_text_input_manager_v2
 {
     Q_DECLARE_PUBLIC(QWaylandTextInputManager)
 public:

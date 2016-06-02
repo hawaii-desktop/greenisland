@@ -29,10 +29,8 @@ include_directories(
 set(SOURCES
     plugin.cpp
     fpscounter.cpp
-    globalpointertracker.cpp
-    localpointertracker.cpp
-    pointeritem.cpp
     keyeventfilter.cpp
+    qwaylandmousetracker.cpp
 )
 
 add_library(greenislandplugin SHARED ${SOURCES})
@@ -48,7 +46,10 @@ install(TARGETS greenislandplugin LIBRARY
 
 set(MODULE_FILES
     qmldir
+    WaylandCursorItem.qml
+    WaylandOutputWindow.qml
     WaylandWindow.qml
+    WindowChrome.qml
 )
 install(FILES ${MODULE_FILES}
     DESTINATION ${QML_INSTALL_DIR}/GreenIsland)

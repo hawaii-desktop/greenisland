@@ -40,7 +40,7 @@
 
 #include <QtCore/QObject>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandExtension>
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 
 QT_BEGIN_NAMESPACE
@@ -76,7 +76,7 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandKeyboard : public QWaylandObject
     Q_PROPERTY(quint32 repeatRate READ repeatRate WRITE setRepeatRate NOTIFY repeatRateChanged)
     Q_PROPERTY(quint32 repeatDelay READ repeatDelay WRITE setRepeatDelay NOTIFY repeatDelayChanged)
 public:
-    QWaylandKeyboard(QWaylandInputDevice *inputDevice, QObject *parent = 0);
+    QWaylandKeyboard(QWaylandInputDevice *inputDevice, QObject *parent = nullptr);
 
     QWaylandInputDevice *inputDevice() const;
     QWaylandCompositor *compositor() const;
@@ -87,7 +87,7 @@ public:
     quint32 repeatDelay() const;
     void setRepeatDelay(quint32 delay);
 
-    virtual bool setFocus(QWaylandSurface *surface);
+    virtual void setFocus(QWaylandSurface *surface);
     virtual void setKeymap(const QWaylandKeymap &keymap);
 
     virtual void sendKeyModifiers(QWaylandClient *client, uint32_t serial);

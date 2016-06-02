@@ -42,7 +42,7 @@
 #include <QtCore/QString>
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
-#include <GreenIsland/QtWaylandCompositor/qwaylandextension.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandcompositorextension.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandkeyboard.h>
 
 QT_BEGIN_NAMESPACE
@@ -124,6 +124,7 @@ public:
 
 Q_SIGNALS:
     void mouseFocusChanged(QWaylandView *newFocus, QWaylandView *oldFocus);
+    void keyboardFocusChanged(QWaylandSurface *newFocus, QWaylandSurface *oldFocus);
     void cursorSurfaceRequest(QWaylandSurface *surface, int hotspotX, int hotspotY);
 };
 

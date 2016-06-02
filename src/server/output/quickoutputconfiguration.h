@@ -43,8 +43,12 @@ class GREENISLANDSERVER_EXPORT QuickOutputConfiguration : public OutputConfigura
     Q_OBJECT
     Q_DECLARE_PRIVATE(QuickOutputConfiguration)
     Q_PRIVATE_PROPERTY(QuickOutputConfiguration::d_func(), QQmlListProperty<GreenIsland::Server::OutputChangeset> changes READ changes NOTIFY changesChanged)
+    Q_PROPERTY(QQmlListProperty<QObject> data READ data DESIGNABLE false)
+    Q_CLASSINFO("DefaultProperty", "data")
 public:
     QuickOutputConfiguration();
+
+    QQmlListProperty<QObject> data();
 
 Q_SIGNALS:
     void changesChanged();

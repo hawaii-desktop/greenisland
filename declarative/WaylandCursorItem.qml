@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
 **
@@ -34,51 +34,27 @@
 **
 ****************************************************************************/
 
-#ifndef QWAYLANDEXTENSION_P_H
-#define QWAYLANDEXTENSION_P_H
+import QtQuick 2.0
+import GreenIsland 1.0
 
-//
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Qt API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
-//
+WaylandQuickItem {
+    id: cursorItem
+    property QtObject inputDevice
+    property int hotspotX: 0
+    property int hotspotY: 0
 
-#include "qwaylandextension.h"
-#include <QtCore/private/qobject_p.h>
+    visible: cursorItem.surface != null
+    inputEventsEnabled: false
 
-QT_BEGIN_NAMESPACE
-
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandExtensionPrivate : public QObjectPrivate
-{
-    Q_DECLARE_PUBLIC(QWaylandExtension)
-
-public:
-    QWaylandExtensionPrivate()
-        : QObjectPrivate()
-        , extension_container(Q_NULLPTR)
-        , initialized(false)
-    {
+    onInputDeviceChanged: {
+        if (!inputDevice)
+            return;
+        inputDevice.cursorSurfaceRequest.connect(setCursorSurface);
     }
 
-    static QWaylandExtensionPrivate *get(QWaylandExtension *extension) { return extension->d_func(); }
-
-    QWaylandObject *extension_container;
-    bool initialized;
-};
-
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandExtensionTemplatePrivate : public QWaylandExtensionPrivate
-{
-public:
-    QWaylandExtensionTemplatePrivate()
-        : QWaylandExtensionPrivate()
-    { }
-};
-
-QT_END_NAMESPACE
-
-#endif  /*QWAYLANDEXTENSION_P_H*/
+    function setCursorSurface(surface, hotspotX, hotspotY) {
+        cursorItem.surface = surface;
+        cursorItem.hotspotX = hotspotX;
+        cursorItem.hotspotY = hotspotY;
+    }
+}

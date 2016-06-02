@@ -68,6 +68,12 @@ QuickOutputConfiguration::QuickOutputConfiguration()
 {
 }
 
+QQmlListProperty<QObject> QuickOutputConfiguration::data()
+{
+    Q_D(QuickOutputConfiguration);
+    return QQmlListProperty<QObject>(this, d->objects);
+}
+
 } // namespace Server
 
 } // namespace GreenIsland

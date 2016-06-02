@@ -54,6 +54,7 @@
 #include <QAtomicInt>
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandBufferRef>
 
 #include <wayland-server.h>
 
@@ -88,7 +89,7 @@ public:
 
     void setDisplayed();
 
-    inline bool isComitted() const { return m_committed; }
+    inline bool isCommitted() const { return m_committed; }
     inline void setCommitted() { m_committed = true; }
     inline bool isDisplayed() const { return m_is_displayed; }
 
@@ -103,8 +104,9 @@ public:
     bool isShm() const { return wl_shm_buffer_get(m_buffer); }
 
     QImage image() const;
-    int textureTarget() const;
+    QWaylandBufferRef::BufferFormatEgl bufferFormatEgl() const;
     void bindToTexture() const;
+    uint textureForPlane(int plane) const;
     void updateTexture() const;
 
     static bool hasContent(SurfaceBuffer *buffer) { return buffer && buffer->waylandBufferHandle(); }
@@ -116,6 +118,7 @@ private:
     QWaylandSurface *m_surface;
     QWaylandCompositor *m_compositor;
     struct ::wl_resource *m_buffer;
+    int m_bufferScale;
     struct surface_buffer_destroy_listener m_destroy_listener;
     bool m_committed;
     bool m_is_registered_for_buffer;

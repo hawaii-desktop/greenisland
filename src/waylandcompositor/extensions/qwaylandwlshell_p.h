@@ -39,7 +39,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 
@@ -64,7 +64,7 @@
 QT_BEGIN_NAMESPACE
 
 class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShellPrivate
-                                        : public QWaylandExtensionTemplatePrivate
+                                        : public QWaylandCompositorExtensionPrivate
                                         , public QtWaylandServer::wl_shell
 {
     Q_DECLARE_PUBLIC(QWaylandWlShell)
@@ -77,7 +77,7 @@ protected:
 };
 
 class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShellSurfacePrivate
-                                        : public QWaylandExtensionTemplatePrivate
+                                        : public QWaylandCompositorExtensionPrivate
                                         , public QtWaylandServer::wl_shell_surface
 {
     Q_DECLARE_PUBLIC(QWaylandWlShellSurface)

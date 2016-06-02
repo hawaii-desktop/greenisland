@@ -31,7 +31,7 @@
 #include <QtQuick/QQuickWindow>
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
-#include <GreenIsland/QtWaylandCompositor/private/qwaylandextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
 #include <GreenIsland/Server/Screencaster>
 #include <GreenIsland/server/private/qwayland-server-greenisland-screencaster.h>
@@ -52,7 +52,7 @@ namespace GreenIsland {
 namespace Server {
 
 class GREENISLANDSERVER_EXPORT ScreencasterPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_screencaster
 {
     Q_DECLARE_PUBLIC(Screencaster)
@@ -76,7 +76,7 @@ protected:
 };
 
 class GREENISLANDSERVER_EXPORT ScreencastPrivate
-        : public QWaylandExtensionTemplatePrivate
+        : public QWaylandCompositorExtensionPrivate
         , public QtWaylandServer::greenisland_screencast
 {
     Q_DECLARE_PUBLIC(Screencast)

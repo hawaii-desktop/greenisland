@@ -41,8 +41,6 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandClient>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
-
 #include <QtCore/QFile>
 #include <QtCore/QStandardPaths>
 
@@ -374,7 +372,7 @@ void QWaylandKeyboardPrivate::createXKBKeymap()
 
 void QWaylandKeyboardPrivate::sendRepeatInfo()
 {
-    Q_FOREACH (wl_keyboard::Resource *resource, resourceMap()) {
+    Q_FOREACH (Resource *resource, resourceMap()) {
         if (resource->version() >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION)
             send_repeat_info(resource->handle, repeatRate, repeatDelay);
     }
@@ -383,6 +381,7 @@ void QWaylandKeyboardPrivate::sendRepeatInfo()
 /*!
  * \class QWaylandKeyboard
  * \inmodule QtWaylandCompositor
+ * \preliminary
  * \brief The QWaylandKeyboard class provides access to a keyboard device.
  *
  * This class provides access to the keyboard device in a QWaylandInputDevice. It corresponds to
@@ -532,14 +531,10 @@ QWaylandSurface *QWaylandKeyboard::focus() const
 /*!
  * Sets the current focus to \a surface.
  */
-bool QWaylandKeyboard::setFocus(QWaylandSurface *surface)
+void QWaylandKeyboard::setFocus(QWaylandSurface *surface)
 {
     Q_D(QWaylandKeyboard);
-    QWaylandWlShellSurface *shellsurface = QWaylandWlShellSurface::findIn(surface);
-    if (shellsurface &&  shellsurface->focusPolicy() == QWaylandWlShellSurface::NoKeyboardFocus)
-            return false;
     d->focused(surface);
-    return true;
 }
 
 /*!
