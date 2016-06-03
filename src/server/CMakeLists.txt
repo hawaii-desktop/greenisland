@@ -60,9 +60,6 @@ set(SOURCES
     screen/screenbackend.cpp
     screen/screenmanager.cpp
     extensions/gtkshell.cpp
-    extensions/xdgshell.cpp
-    extensions/quickxdgpopupitem.cpp
-    extensions/quickxdgsurfaceitem.cpp
     extensions/screencaster.cpp
     extensions/screenshooter.cpp
 )
@@ -91,11 +88,6 @@ greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-outputmanagement.xml
     BASENAME greenisland-outputmanagement
     PREFIX greenisland_
-)
-greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/xdg-shell.xml
-    BASENAME xdg-shell
-    PREFIX xdg_
 )
 greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk/gtk-shell.xml
@@ -194,9 +186,6 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
         GtkShell,GtkSurface
-        XdgShell,XdgSurface,XdgPopup
-        QuickXdgPopupItem
-        QuickXdgSurfaceItem
         Screencaster,Screencast
         Screenshooter,Screenshot
         TaskManager,TaskItem
@@ -243,9 +232,6 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/core/applicationmanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgpopupitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/quickxdgsurfaceitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/xdgshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
@@ -262,13 +248,11 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-server-protocol.h
         ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
     OUTPUT_DIR
         ${CMAKE_BINARY_DIR}/headers/GreenIsland/server
 )

@@ -40,7 +40,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
 
-//#include <GreenIsland/Server/ApplicationManager>
+#include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
 #include <GreenIsland/Server/OutputChangeset>
 #include <GreenIsland/Server/OutputManagement>
@@ -48,9 +48,6 @@
 #include <GreenIsland/Server/QuickOutputConfiguration>
 #include <GreenIsland/Server/GtkShell>
 #include <GreenIsland/Server/Keymap>
-#include <GreenIsland/Server/QuickXdgPopupItem>
-#include <GreenIsland/Server/QuickXdgSurfaceItem>
-#include <GreenIsland/Server/XdgShell>
 #include <GreenIsland/Server/Screen>
 #include <GreenIsland/Server/Screencaster>
 #include <GreenIsland/Server/Screenshooter>
@@ -143,17 +140,6 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                            QObject::tr("Cannot create instance of GtkSurfaceBase, use GtkSurface instead"));
     qmlRegisterType<GtkSurfaceQuickData>(uri, 1, 0, "GtkSurface");
 
-    // xdg-shell
-    qmlRegisterUncreatableType<XdgPopup>(uri, 1, 0, "XdgPopupBase",
-                                         QObject::tr("Cannot create instance of XdgPopupBase, use XdgPopup instead"));
-    qmlRegisterType<XdgPopupQuickData>(uri, 1, 0, "XdgPopup");
-    qmlRegisterType<QuickXdgPopupItem>(uri, 1, 0, "XdgPopupItem");
-    qmlRegisterType<XdgShellQuickData>(uri, 1, 0, "XdgShell");
-    qmlRegisterUncreatableType<XdgSurface>(uri, 1, 0, "XdgSurfaceBase",
-                                           QObject::tr("Cannot create instance of XdgSurfaceBase, use XdgSurface instead"));
-    qmlRegisterType<XdgSurfaceQuickData>(uri, 1, 0, "XdgSurface");
-    qmlRegisterType<QuickXdgSurfaceItem>(uri, 1, 0, "XdgSurfaceItem");
-
     // Screen
     qmlRegisterType<QuickScreenManager>(uri, 1, 0, "ScreenManager");
     qmlRegisterUncreatableType<Screen>(uri, 1, 0, "Screen",
@@ -168,7 +154,7 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                 QObject::tr("Cannot create instance of OutputChangeset"));
 
     // Application manager
-    //qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
+    qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
 
     // Task manager
     //qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");
