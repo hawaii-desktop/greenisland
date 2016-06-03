@@ -40,10 +40,8 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTextInputManager>
 
-#include <GreenIsland/Server/ApplicationManager>
+//#include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/CompositorSettings>
-#include <GreenIsland/Server/ClientWindow>
-#include <GreenIsland/Server/ClientWindowView>
 #include <GreenIsland/Server/OutputChangeset>
 #include <GreenIsland/Server/OutputManagement>
 #include <GreenIsland/Server/QuickOutput>
@@ -56,9 +54,8 @@
 #include <GreenIsland/Server/Screen>
 #include <GreenIsland/Server/Screencaster>
 #include <GreenIsland/Server/Screenshooter>
-#include <GreenIsland/Server/TaskManager>
+//#include <GreenIsland/Server/TaskManager>
 #include <GreenIsland/Server/QuickScreenManager>
-#include <GreenIsland/Server/UnifiedShell>
 
 #include "fpscounter.h"
 #include "globalpointertracker.h"
@@ -170,19 +167,13 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<OutputChangeset>(uri, 1, 0, "OutputChangeset",
                                                 QObject::tr("Cannot create instance of OutputChangeset"));
 
-    // Unified shell
-    qmlRegisterType<UnifiedShell>(uri, 1, 0, "UnifiedShell");
-    qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
-                                             QObject::tr("Cannot create instance of ClientWindow"));
-    qmlRegisterType<ClientWindowView>(uri, 1, 0, "ClientWindowView");
-
     // Application manager
-    qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
+    //qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
 
     // Task manager
-    qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");
-    qmlRegisterUncreatableType<TaskItem>(uri, 1, 0, "TaskItem",
-                                         QObject::tr("Cannot create instance of TaskItem"));
+    //qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");
+    //qmlRegisterUncreatableType<TaskItem>(uri, 1, 0, "TaskItem",
+                                         //QObject::tr("Cannot create instance of TaskItem"));
 
     // Screencaster
     qmlRegisterType<Screencaster>(uri, 1, 0, "Screencaster");

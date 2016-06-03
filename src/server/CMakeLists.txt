@@ -59,16 +59,12 @@ set(SOURCES
     screen/quickscreenmanager.cpp
     screen/screenbackend.cpp
     screen/screenmanager.cpp
-    shell/clientwindow.cpp
-    shell/clientwindowview.cpp
-    shell/unifiedshell.cpp
     extensions/gtkshell.cpp
     extensions/xdgshell.cpp
     extensions/quickxdgpopupitem.cpp
     extensions/quickxdgsurfaceitem.cpp
     extensions/screencaster.cpp
     extensions/screenshooter.cpp
-    extensions/taskmanager.cpp
 )
 
 greenisland_add_server_protocol(SOURCES

@@ -58,8 +58,10 @@ class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate
 public:
     ApplicationManagerPrivate();
 
+#if 0
     void registerWindow(ClientWindow *window);
     void unregisterWindow(ClientWindow *window);
+#endif
 
     void _q_appIdChanged();
     void _q_activeChanged();
