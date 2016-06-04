@@ -25,13 +25,12 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_CLIENTWINDOWVIEW_H
-#define GREENISLAND_CLIENTWINDOWVIEW_H
+#ifndef GREENISLAND_CLIENTWINDOWQUICKITEM_H
+#define GREENISLAND_CLIENTWINDOWQUICKITEM_H
 
 #include <QtQml/QQmlPropertyMap>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
@@ -40,39 +39,27 @@ namespace GreenIsland {
 namespace Server {
 
 class ClientWindow;
-class ClientWindowViewPrivate;
+class ClientWindowQuickItemPrivate;
 
-class GREENISLANDSERVER_EXPORT ClientWindowView : public QQuickItem
+class GREENISLANDSERVER_EXPORT ClientWindowQuickItem : public QWaylandQuickShellSurfaceItem
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(ClientWindowView)
-    Q_PROPERTY(QWaylandQuickOutput *output READ output NOTIFY outputChanged)
-    Q_PROPERTY(QWaylandQuickItem *shellSurfaceItem READ shellSurfaceItem NOTIFY shellSurfaceItemChanged)
+    Q_DECLARE_PRIVATE(ClientWindowQuickItem)
     Q_PROPERTY(QQmlPropertyMap *savedProperties READ savedProperties NOTIFY savedPropertiesChanged)
 public:
-    ClientWindowView(QQuickItem *parent = Q_NULLPTR);
+    ClientWindowQuickItem(QQuickItem *parent = Q_NULLPTR);
 
-    QWaylandQuickOutput *output() const;
-    QWaylandQuickItem *shellSurfaceItem() const;
     QQmlPropertyMap *savedProperties() const;
 
-    Q_INVOKABLE void initialize(GreenIsland::Server::ClientWindow *window, QWaylandQuickOutput *output);
-
 Q_SIGNALS:
-    void outputChanged();
-    void shellSurfaceItemChanged();
     void savedPropertiesChanged();
 
 protected:
     bool childMouseEventFilter(QQuickItem *item, QEvent *event) Q_DECL_OVERRIDE;
-
-private Q_SLOTS:
-    void shellSurfaceItemWidthChanged();
-    void shellSurfaceItemHeightChanged();
 };
 
 } // namespace Server
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_CLIENTWINDOWVIEW_H
+#endif // GREENISLAND_CLIENTWINDOWQUICKITEM_H

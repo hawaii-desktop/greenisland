@@ -31,6 +31,7 @@
 #include <QtCore/private/qobject_p.h>
 
 #include <GreenIsland/Server/ClientWindow>
+#include <GreenIsland/Server/WindowManager>
 
 //  W A R N I N G
 //  -------------
@@ -47,14 +48,12 @@ namespace GreenIsland {
 
 namespace Server {
 
-class UnifiedShell;
-
 class GREENISLANDSERVER_EXPORT ClientWindowPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(ClientWindow)
 public:
     ClientWindowPrivate()
-        : wm(Q_NULLPTR)
+        : windowManager(Q_NULLPTR)
         , surface(Q_NULLPTR)
         , type(ClientWindow::Unknown)
         , parentWindow(Q_NULLPTR)
@@ -67,13 +66,12 @@ public:
         , active(false)
         , minimized(false)
         , maximized(false)
-        , fullScreen(false)
+        , fullscreen(false)
         , moveItem(new QQuickItem())
         , designedOutput(Q_NULLPTR)
     {}
 
-    UnifiedShell *wm;
-    QByteArray interfaceName;
+    WindowManager *windowManager;
     QWaylandSurface *surface;
     ClientWindow::Type type;
     ClientWindow *parentWindow;
@@ -89,45 +87,32 @@ public:
     bool active;
     bool minimized;
     bool maximized;
-    bool fullScreen;
+    bool fullscreen;
 
     QQuickItem *moveItem;
-    QVector<ClientWindowView *> views;
-
+    QVector<QWaylandQuickItem *> views;
     QWaylandOutput *designedOutput;
     QList<QWaylandOutput *> outputsList;
 
-    QPointF randomPosition() const;
+    void initialize(QWaylandSurface *surface);
 
     void findOutputs();
 
-    void resize(const QSize &size);
-    void resizeToFitOutput(QWaylandOutput *output);
-
-    void setSurface(QWaylandSurface *surface);
     void setType(ClientWindow::Type type);
     void setParentWindow(ClientWindow *window);
     void setTitle(const QString &title);
     void setAppId(const QString &appId);
     void setActive(bool active);
     void setWindowGeometry(const QRect &geometry);
-    void setMaximized(QWaylandOutput *output);
-    void unsetMaximized();
-    void setFullScreen(QWaylandOutput *output);
-    void unsetFullScreen();
-
-    void setTopLevel();
-    void setTransient(ClientWindow *parentWindow,
-                      const QPoint &relativeToParent,
-                      bool keyboardFocus);
-    void setPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface, const QPoint &relativeToParent);
+    void setMaximized(bool maximized);
+    void setFullscreen(bool fullscreen);
 
     QString findDesktopFile(const QString &appId);
 
-    QQmlListProperty<ClientWindowView> windowViews();
+    QQmlListProperty<QWaylandQuickItem> windowViews();
 
-    static int windowViewsCount(QQmlListProperty<ClientWindowView> *prop);
-    static ClientWindowView *windowViewsAt(QQmlListProperty<ClientWindowView> *prop, int index);
+    static int windowViewsCount(QQmlListProperty<QWaylandQuickItem> *prop);
+    static QWaylandQuickItem *windowViewsAt(QQmlListProperty<QWaylandQuickItem> *prop, int index);
 
     QQmlListProperty<QWaylandOutput> outputs();
 

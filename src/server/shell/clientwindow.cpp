@@ -31,17 +31,15 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandInput>
-#include <GreenIsland/QtWaylandCompositor/QWaylandQuickWlShellSurfaceItem>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandXdgShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
 
 #include "clientwindow.h"
 #include "clientwindow_p.h"
-#include "clientwindowview.h"
-#include "clientwindowview_p.h"
+#include "windowmanager_p.h"
 #include "serverlogging_p.h"
-#include "unifiedshell.h"
-#include "unifiedshell_p.h"
-#include "extensions/quickxdgsurfaceitem.h"
-#include "extensions/quickxdgpopupitem.h"
 
 namespace GreenIsland {
 
@@ -51,56 +49,121 @@ namespace Server {
  * ClientWindowPrivate
  */
 
-QPointF ClientWindowPrivate::randomPosition() const
+void ClientWindowPrivate::initialize(QWaylandSurface *surface)
 {
-    // Surface size
-    const int w = surface->size().width();
-    const int h = surface->size().height();
+    Q_Q(ClientWindow);
 
-    // Find the output where the pointer is located, defaults
-    // to the default output
-    // TODO: Need something clever for touch?
-    QPoint pos = QCursor::pos();
-    QWaylandOutput *output = surface->compositor()->defaultOutput();
-    Q_FOREACH (QWaylandOutput *curOutput, surface->compositor()->outputs()) {
-        if (curOutput->geometry().contains(pos)) {
-            output = curOutput;
-            break;
-        }
+    if (this->surface) {
+        qCWarning(gLcCore, "ClientWindow is already initialized");
+        return;
     }
 
-    // Output size
-    const int ow = output->availableGeometry().size().width();
-    const int oh = output->availableGeometry().size().height();
+    this->surface = surface;
+    this->pid = surface->client()->processId();
 
-    const int step = 24;
-    static int px = step;
-    static int py = 2 * step;
-    int dx, dy;
+    Q_EMIT q->surfaceChanged();
+    Q_EMIT q->processIdChanged();
 
-    // Increment new coordinates by the step
-    px += step;
-    py += 2 * step;
-    if (px > ow / 2)
-        px = step;
-    if (py > oh / 2)
-        py = step;
-    dx = px;
-    dy = py;
-    if (dx + w > ow) {
-        dx = ow - w;
-        if (dx < 0)
-            dx = 0;
-        px = 0;
+    // Assign a random position by default
+    q->setPosition(q->randomPosition());
+
+    QWaylandWlShellSurface *shellSurface = QWaylandWlShellSurface::findIn(surface);
+    if (shellSurface) {
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::titleChanged, q, [this, shellSurface] {
+            setTitle(shellSurface->title());
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::classNameChanged, q, [this, shellSurface] {
+            setAppId(shellSurface->className());
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::setDefaultToplevel, q, [this, shellSurface] {
+            setParentWindow(Q_NULLPTR);
+            setMaximized(false);
+            setFullscreen(false);
+            setType(ClientWindow::TopLevel);
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::setTransient, q, [this, shellSurface]
+                         (QWaylandSurface *parentSurface, const QPoint &, QWaylandWlShellSurface::FocusPolicy) {
+            setParentWindow(windowManager->windowForSurface(parentSurface));
+            setMaximized(false);
+            setFullscreen(false);
+            setType(ClientWindow::Transient);
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::setFullScreen, q, [this, shellSurface]
+                         (QWaylandWlShellSurface::FullScreenMethod, uint, QWaylandOutput *) {
+            setFullscreen(true);
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::setPopup, q, [this, shellSurface]
+                         (QWaylandInputDevice *, QWaylandSurface *parentSurface, const QPoint &) {
+            setParentWindow(windowManager->windowForSurface(parentSurface));
+            setMaximized(false);
+            setType(ClientWindow::Popup);
+        });
+        QObject::connect(shellSurface, &QWaylandWlShellSurface::setMaximized, q, [this, shellSurface]
+                         (QWaylandOutput *) {
+            setMaximized(true);
+            setFullscreen(false);
+        });
+
+        return;
     }
-    if (dy + h > oh) {
-        dy = oh - h;
-        if (dy < 0)
-            dy = 0;
-        py = 0;
-    }
 
-    return QPointF(dx, dy);
+    QWaylandXdgSurface *xdgSurface = QWaylandXdgSurface::findIn(surface);
+    if (xdgSurface) {
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::setTopLevel, q, [this, q, xdgSurface] {
+            setType(ClientWindow::TopLevel);
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::setTransient, q, [this, q, xdgSurface] {
+            setParentWindow(windowManager->windowForSurface(xdgSurface->parentSurface()->surface()));
+
+            // Set position relative to parent
+            // FIXME: We don't know the surface size yet because the buffer is not yet committed
+            if (parentWindow) {
+                qreal startX = parentWindow->x() + (parentWindow->surface()->size().width() / 2);
+                qreal startY = parentWindow->y() + (parentWindow->surface()->size().height() / 2);
+                q->setPosition(QPointF(startX - (xdgSurface->windowGeometry().size().width() / 2),
+                                       startY - (xdgSurface->windowGeometry().size().height() / 2)));
+
+                setType(ClientWindow::Transient);
+            }
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::titleChanged, q, [this, xdgSurface] {
+            setTitle(xdgSurface->title());
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::appIdChanged, q, [this, xdgSurface] {
+            setAppId(xdgSurface->appId());
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::windowGeometryChanged, q, [this, xdgSurface] {
+            setWindowGeometry(xdgSurface->windowGeometry());
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::maximizedChanged, q, [this, q, xdgSurface] {
+            setMaximized(xdgSurface->maximized());
+            q->setMinimized(false);
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::fullscreenChanged, q, [this, q, xdgSurface] {
+            setFullscreen(xdgSurface->fullscreen());
+            q->setMinimized(false);
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::activatedChanged, q, [this, q, xdgSurface] {
+            setActive(xdgSurface->activated());
+            q->setMinimized(false);
+
+            if (active) {
+                // Raise parent
+                if (type == ClientWindow::Transient && parentWindow)
+                    parentWindow->raise();
+
+                // Raise this window
+                q->raise();
+            }
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::setMinimized, q, [this, q, xdgSurface] {
+            q->setMinimized(true);
+        });
+        QObject::connect(xdgSurface, &QWaylandXdgSurface::showWindowMenu,
+                         q, &ClientWindow::showWindowMenu);
+
+        return;
+    }
 }
 
 void ClientWindowPrivate::findOutputs()
@@ -141,37 +204,6 @@ void ClientWindowPrivate::findOutputs()
         designedOutput = mainOutput;
         Q_EMIT q->designedOutputChanged();
     }
-}
-
-void ClientWindowPrivate::resize(const QSize &size)
-{
-    QWaylandWlShellSurface *wlShellSurface =
-            QWaylandWlShellSurface::findIn(surface);
-    if (wlShellSurface) {
-        wlShellSurface->sendConfigure(size, QWaylandWlShellSurface::BottomRightEdge);
-        return;
-    }
-
-    XdgSurface *xdgSurface = XdgSurface::findIn(surface);
-    if (xdgSurface) {
-        xdgSurface->sendConfigure(size);
-        return;
-    }
-}
-
-void ClientWindowPrivate::resizeToFitOutput(QWaylandOutput *output)
-{
-    resize(output->availableGeometry().size());
-}
-
-void ClientWindowPrivate::setSurface(QWaylandSurface *surface)
-{
-    if (this->surface) {
-        qCWarning(gLcCore, "Setting ClientWindow surface is allowed only once");
-        return;
-    }
-
-    this->surface = surface;
 }
 
 void ClientWindowPrivate::setType(ClientWindow::Type type)
@@ -253,20 +285,7 @@ void ClientWindowPrivate::setActive(bool active)
         return;
 
     this->active = active;
-    Q_EMIT q->activeChanged();
-
-    XdgSurface *shellSurface = XdgSurface::findIn(surface);
-    if (shellSurface)
-        shellSurface->setActive(active);
-
-    if (active) {
-        // Raise parent
-        if (type == ClientWindow::Transient && parentWindow)
-            parentWindow->raise();
-
-        // Raise this window
-        q->raise();
-    }
+    Q_EMIT q->activatedChanged();
 }
 
 void ClientWindowPrivate::setWindowGeometry(const QRect &geometry)
@@ -280,132 +299,26 @@ void ClientWindowPrivate::setWindowGeometry(const QRect &geometry)
     Q_EMIT q->windowGeometryChanged();
 }
 
-void ClientWindowPrivate::setMaximized(QWaylandOutput *output)
+void ClientWindowPrivate::setMaximized(bool maximized)
 {
     Q_Q(ClientWindow);
 
-    if (maximized)
+    if (this->maximized == maximized)
         return;
 
-    maximized = true;
+    this->maximized = maximized;
     Q_EMIT q->maximizedChanged();
-
-    savedMaximized = moveItem->position();
-
-    QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
-    moveItem->setX(designedOutput->position().x() + designedOutput->availableGeometry().x());
-    moveItem->setY(designedOutput->position().y() + designedOutput->availableGeometry().y());
-
-    resizeToFitOutput(designedOutput);
 }
 
-void ClientWindowPrivate::unsetMaximized()
+void ClientWindowPrivate::setFullscreen(bool fullscreen)
 {
     Q_Q(ClientWindow);
 
-    if (!maximized)
+    if (this->fullscreen == fullscreen)
         return;
 
-    maximized = false;
-    Q_EMIT q->maximizedChanged();
-
-    moveItem->setPosition(savedMaximized);
-}
-
-void ClientWindowPrivate::setFullScreen(QWaylandOutput *output)
-{
-    Q_Q(ClientWindow);
-
-    if (fullScreen)
-        return;
-
-    fullScreen = true;
-    Q_EMIT q->fullScreenChanged();
-
-    savedFullScreen = moveItem->position();
-
-    QWaylandOutput *designedOutput = output ? output : surface->compositor()->defaultOutput();
-    moveItem->setX(designedOutput->position().x());
-    moveItem->setY(designedOutput->position().y());
-
-    resizeToFitOutput(designedOutput);
-}
-
-void ClientWindowPrivate::unsetFullScreen()
-{
-    Q_Q(ClientWindow);
-
-    if (!fullScreen)
-        return;
-
-    fullScreen = false;
-    Q_EMIT q->fullScreenChanged();
-
-    moveItem->setPosition(savedFullScreen);
-}
-
-void ClientWindowPrivate::setTopLevel()
-{
-    Q_Q(ClientWindow);
-
-    setParentWindow(Q_NULLPTR);
-
-    unsetMaximized();
-    unsetFullScreen();
-
-    // When a window is unmaximized we'll be asked to set it as toplevel,
-    // but in that case we don't want to set a random position we just
-    // need to restore the previous location
-    if (type != ClientWindow::TopLevel) {
-        setType(ClientWindow::TopLevel);
-
-        QPointF pos = randomPosition();
-        moveItem->setX(pos.x());
-        moveItem->setY(pos.y());
-    }
-
-    q->setActive(true);
-}
-
-void ClientWindowPrivate::setTransient(ClientWindow *parentWindow,
-                                       const QPoint &relativeToParent,
-                                       bool keyboardFocus)
-{
-    Q_Q(ClientWindow);
-
-    setType(ClientWindow::Transient);
-    setParentWindow(parentWindow);
-
-    moveItem->setX(parentWindow->x() + relativeToParent.x());
-    moveItem->setY(parentWindow->y() + relativeToParent.y());
-
-    q->setActive(keyboardFocus);
-}
-
-void ClientWindowPrivate::setPopup(QWaylandInputDevice *inputDevice,
-                                   QWaylandSurface *parentSurface,
-                                   const QPoint &relativeToParent)
-{
-    Q_UNUSED(inputDevice);
-
-    setType(ClientWindow::Popup);
-
-    ClientWindow *parentWindow =
-            UnifiedShellPrivate::get(wm)->windowForSurface(parentSurface);
-    Q_ASSERT(parentWindow);
-    setParentWindow(parentWindow);
-    ClientWindowPrivate *dParentWindow = ClientWindowPrivate::get(parentWindow);
-    Q_ASSERT(dParentWindow);
-
-    Q_FOREACH (ClientWindowView *view, views) {
-        Q_FOREACH (ClientWindowView *parentView, dParentWindow->views) {
-            if (parentView->output() == view->output()) {
-                view->setParentItem(parentView);
-                view->setPosition(relativeToParent);
-                break;
-            }
-        }
-    }
+    this->fullscreen = fullscreen;
+    Q_EMIT q->fullscreenChanged();
 }
 
 QString ClientWindowPrivate::findDesktopFile(const QString &appId)
@@ -414,19 +327,19 @@ QString ClientWindowPrivate::findDesktopFile(const QString &appId)
                                   QStringLiteral("%1.desktop").arg(appId));
 }
 
-QQmlListProperty<ClientWindowView> ClientWindowPrivate::windowViews()
+QQmlListProperty<QWaylandQuickItem> ClientWindowPrivate::windowViews()
 {
     Q_Q(ClientWindow);
-    return QQmlListProperty<ClientWindowView>(q, Q_NULLPTR, windowViewsCount, windowViewsAt);
+    return QQmlListProperty<QWaylandQuickItem>(q, Q_NULLPTR, windowViewsCount, windowViewsAt);
 }
 
-int ClientWindowPrivate::windowViewsCount(QQmlListProperty<ClientWindowView> *prop)
+int ClientWindowPrivate::windowViewsCount(QQmlListProperty<QWaylandQuickItem> *prop)
 {
     ClientWindow *that = static_cast<ClientWindow *>(prop->object);
     return ClientWindowPrivate::get(that)->views.count();
 }
 
-ClientWindowView *ClientWindowPrivate::windowViewsAt(QQmlListProperty<ClientWindowView> *prop, int index)
+QWaylandQuickItem *ClientWindowPrivate::windowViewsAt(QQmlListProperty<QWaylandQuickItem> *prop, int index)
 {
     ClientWindow *that = static_cast<ClientWindow *>(prop->object);
     return ClientWindowPrivate::get(that)->views.at(index);
@@ -454,19 +367,14 @@ QWaylandOutput *ClientWindowPrivate::outputsAt(QQmlListProperty<QWaylandOutput> 
  * ClientWindow
  */
 
-ClientWindow::ClientWindow(QWaylandSurface *surface, QObject *parent)
-    : QObject(*new ClientWindowPrivate(), parent)
+ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
+    : QObject(*new ClientWindowPrivate(), wm)
 {
     Q_D(ClientWindow);
-    d->surface = surface;
-    d->pid = surface->client()->processId();
 
-    // Lock the buffer when the surface is being destroyed
-    // so QtQuick has a chance to animate destruction
-    connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, d] {
-        Q_FOREACH (ClientWindowView *view, d->views)
-            view->shellSurfaceItem()->view()->setBufferLock(true);
-    });
+    // Initialize
+    d->windowManager = wm;
+    d->initialize(surface);
 
     // Move
     connect(d->moveItem, &QQuickItem::xChanged, this, [this, d] {
@@ -482,8 +390,14 @@ ClientWindow::~ClientWindow()
     Q_D(ClientWindow);
 
     // Activate the parent window
-    if (d->type == Transient && d->parentWindow)
-        ClientWindowPrivate::get(d->parentWindow)->setActive(true);
+    if (d->type == Transient && d->parentWindow) {
+        auto views = ClientWindowPrivate::get(d->parentWindow)->views;
+        Q_FOREACH (QWaylandQuickItem *view, views)
+            view->takeFocus();
+    }
+
+    // Unregister window
+    WindowManagerPrivate::get(d->windowManager)->windowsList.removeOne(this);
 }
 
 QWaylandSurface *ClientWindow::surface() const
@@ -541,11 +455,6 @@ void ClientWindow::setX(qreal x)
     if (d->x == x)
         return;
 
-    Q_FOREACH (ClientWindowView *view, d->views) {
-        qreal localX = x - view->output()->geometry().left();
-        view->setX(localX);
-    }
-
     d->x = x;
     Q_EMIT xChanged();
 
@@ -564,11 +473,6 @@ void ClientWindow::setY(qreal y)
 
     if (d->y == y)
         return;
-
-    Q_FOREACH (ClientWindowView *view, d->views) {
-        qreal localY = y - view->output()->geometry().top();
-        view->setY(localY);
-    }
 
     d->y = y;
     Q_EMIT yChanged();
@@ -610,33 +514,13 @@ void ClientWindow::setTaskIconGeometry(const QRect &rect)
     Q_EMIT taskIconGeometryChanged();
 }
 
-bool ClientWindow::isActive() const
+bool ClientWindow::activated() const
 {
     Q_D(const ClientWindow);
     return d->active;
 }
 
-void ClientWindow::setActive(bool active)
-{
-    Q_D(ClientWindow);
-
-    UnifiedShellPrivate *dWM = UnifiedShellPrivate::get(d->wm);
-
-    // Set focus on all windows, this will make the view call the
-    // private version of setActive which will set the active flag
-    // and raise the window
-    Q_FOREACH (ClientWindow *window, dWM->windowsList) {
-        // Give or take focus to the views of this window
-        Q_FOREACH (ClientWindowView *view, ClientWindowPrivate::get(window)->views)
-            view->shellSurfaceItem()->setFocus(active && window == this);
-    }
-
-    // Set keyboard focus to the surface of this window
-    if (active)
-        d->surface->compositor()->defaultInputDevice()->keyboard()->setFocus(d->surface);
-}
-
-bool ClientWindow::isMinimized() const
+bool ClientWindow::minimized() const
 {
     Q_D(const ClientWindow);
     return d->minimized;
@@ -649,6 +533,7 @@ void ClientWindow::setMinimized(bool minimized)
     if (d->minimized == minimized)
         return;
 
+    /*
     Q_FOREACH (ClientWindowView *view, d->views) {
         // No input events for minimized windows to prevent accidental interaction
         // with it (like keyboard input being sent to the window)
@@ -661,21 +546,28 @@ void ClientWindow::setMinimized(bool minimized)
             view->savedProperties()->insert(QStringLiteral("y"), view->y());
         }
     }
+    */
 
     d->minimized = minimized;
     Q_EMIT minimizedChanged();
 }
 
-bool ClientWindow::isMaximized() const
+bool ClientWindow::maximized() const
 {
     Q_D(const ClientWindow);
     return d->maximized;
 }
 
-bool ClientWindow::isFullScreen() const
+bool ClientWindow::fullscreen() const
 {
     Q_D(const ClientWindow);
-    return d->fullScreen;
+    return d->fullscreen;
+}
+
+QQuickItem *ClientWindow::moveItem() const
+{
+    Q_D(const ClientWindow);
+    return d->moveItem;
 }
 
 QWaylandOutput *ClientWindow::designedOutput() const
@@ -684,11 +576,80 @@ QWaylandOutput *ClientWindow::designedOutput() const
     return d->designedOutput;
 }
 
+QPointF ClientWindow::randomPosition() const
+{
+    Q_D(const ClientWindow);
+
+    // Surface size
+    const int w = d->surface->size().width();
+    const int h = d->surface->size().height();
+
+    // Find the output where the pointer is located, defaults
+    // to the default output
+    // TODO: Need something clever for touch?
+    QPoint pos = QCursor::pos();
+    QWaylandOutput *output = d->surface->compositor()->defaultOutput();
+    Q_FOREACH (QWaylandOutput *curOutput, d->surface->compositor()->outputs()) {
+        if (curOutput->geometry().contains(pos)) {
+            output = curOutput;
+            break;
+        }
+    }
+
+    // Output size
+    const int ow = output->availableGeometry().size().width();
+    const int oh = output->availableGeometry().size().height();
+
+    const int step = 24;
+    static int px = step;
+    static int py = 2 * step;
+    int dx, dy;
+
+    // Increment new coordinates by the step
+    px += step;
+    py += 2 * step;
+    if (px > ow / 2)
+        px = step;
+    if (py > oh / 2)
+        py = step;
+    dx = px;
+    dy = py;
+    if (dx + w > ow) {
+        dx = ow - w;
+        if (dx < 0)
+            dx = 0;
+        px = 0;
+    }
+    if (dy + h > oh) {
+        dy = oh - h;
+        if (dy < 0)
+            dy = 0;
+        py = 0;
+    }
+
+    return QPointF(dx, dy);
+}
+
+void ClientWindow::addWindowView(QWaylandQuickItem *item)
+{
+    Q_D(ClientWindow);
+
+    if (!d->views.contains(item))
+        d->views.append(item);
+}
+
+void ClientWindow::removeWindowView(QWaylandQuickItem *item)
+{
+    Q_D(ClientWindow);
+
+    d->views.removeOne(item);
+}
+
 void ClientWindow::lower()
 {
     Q_D(ClientWindow);
 
-    Q_FOREACH (ClientWindowView *view, d->views) {
+    Q_FOREACH (QWaylandQuickItem *view, d->views) {
         QQuickItem *parent = view->parentItem();
         Q_ASSERT(parent);
         QQuickItem *bottom = parent->childItems().first();
@@ -701,7 +662,7 @@ void ClientWindow::raise()
 {
     Q_D(ClientWindow);
 
-    Q_FOREACH (ClientWindowView *view, d->views) {
+    Q_FOREACH (QWaylandQuickItem *view, d->views) {
         QQuickItem *parent = view->parentItem();
         Q_ASSERT(parent);
         QQuickItem *top = parent->childItems().last();
@@ -721,10 +682,10 @@ void ClientWindow::close()
 {
     Q_D(ClientWindow);
 
-    if (d->surface->role() == XdgSurface::role())
-        XdgSurface::findIn(d->surface)->close();
-    else if (d->surface->role() == XdgPopup::role())
-        XdgPopup::findIn(d->surface)->sendPopupDone();
+    if (d->surface->role() == QWaylandXdgSurface::role())
+        QWaylandXdgSurface::findIn(d->surface)->sendClose();
+    else if (d->surface->role() == QWaylandXdgPopup::role())
+        QWaylandXdgPopup::findIn(d->surface)->sendPopupDone();
     else
         d->surface->destroy();
 }

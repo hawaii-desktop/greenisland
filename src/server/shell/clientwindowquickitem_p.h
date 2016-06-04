@@ -25,18 +25,13 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef GREENISLAND_UNIFIEDSHELL_P_H
-#define GREENISLAND_UNIFIEDSHELL_P_H
+#ifndef GREENISLAND_CLIENTWINDOWQUICKITEM_P_H
+#define GREENISLAND_CLIENTWINDOWQUICKITEM_P_H
 
-#include <QtCore/private/qobject_p.h>
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandquickshellsurfaceitem_p.h>
 
-#include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
+#include <GreenIsland/Server/ClientWindowQuickItem>
 
-#include <GreenIsland/Server/UnifiedShell>
-#include <GreenIsland/Server/XdgShell>
-#include <GreenIsland/Server/GtkShell>
-
-//
 //  W A R N I N G
 //  -------------
 //
@@ -45,55 +40,26 @@
 // version without notice, or even be removed.
 //
 // We mean it.
-//
 
 namespace GreenIsland {
 
 namespace Server {
 
-class ApplicationManager;
-class ClientWindow;
-
-class GREENISLANDSERVER_EXPORT UnifiedShellPrivate : public QObjectPrivate
+class GREENISLANDSERVER_EXPORT ClientWindowQuickItemPrivate : public QWaylandQuickShellSurfaceItemPrivate
 {
-    Q_DECLARE_PUBLIC(UnifiedShell)
+    Q_DECLARE_PUBLIC(ClientWindowQuickItem)
 public:
-    UnifiedShellPrivate()
-        : initialized(false)
-        , compositor(Q_NULLPTR)
-        , rootItem(new QQuickItem())
-        , wlShell(Q_NULLPTR)
-        , xdgShell(Q_NULLPTR)
-        , gtkShell(Q_NULLPTR)
-        , appMan(Q_NULLPTR)
-    {}
+    ClientWindowQuickItemPrivate();
+    ~ClientWindowQuickItemPrivate();
 
-    ~UnifiedShellPrivate()
-    {
-        delete rootItem;
-    }
+    static ClientWindowQuickItemPrivate *get(ClientWindowQuickItem *item) { return item->d_func(); }
 
-    ClientWindow *windowForSurface(QWaylandSurface *surface) const;
-
-    QQmlListProperty<ClientWindow> windows();
-
-    static int windowsCount(QQmlListProperty<ClientWindow> *prop);
-    static ClientWindow *windowsAt(QQmlListProperty<ClientWindow> *prop, int index);
-
-    static UnifiedShellPrivate *get(UnifiedShell *wm) { return wm->d_func(); }
-
-    bool initialized;
-    QWaylandCompositor *compositor;
-    QQuickItem *rootItem;
-    QWaylandWlShell *wlShell;
-    XdgShell *xdgShell;
-    GtkShell *gtkShell;
-    QVector<ClientWindow *> windowsList;
-    ApplicationManager *appMan;
+    QQmlPropertyMap *savedProperties;
 };
 
 } // namespace Server
 
 } // namespace GreenIsland
 
-#endif // GREENISLAND_UNIFIEDSHELL_P_H
+#endif // GREENISLAND_CLIENTWINDOWQUICKITEM_P_H
+

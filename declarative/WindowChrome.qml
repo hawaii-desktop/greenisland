@@ -28,19 +28,15 @@
 import QtQuick 2.0
 import GreenIsland 1.0
 
-ShellSurfaceItem {
+ClientWindowItem {
+    property QtObject window
     property bool animationsEnabled: true
-    readonly property alias type: d.type
-    readonly property alias appId: d.appId
-    readonly property alias title: d.title
-    readonly property alias windowGeometry: d.windowGeometry
-    readonly property alias taskIconGeometry: d.taskIconGeometry
-    readonly property alias minimized: d.minimized
-    readonly property alias maximized: d.maximized
-    readonly property alias fullscreen: d.fullscreen
-    readonly property alias parentSurface: d.parentSurface
+
+    signal showWindowMenu(point localSurfacePosition)
 
     id: windowChrome
+    x: window.x - view.output.geometry.x
+    y: window.y - view.output.geometry.y
     transform: [
         Scale {
             id: scaleTransform
@@ -50,34 +46,21 @@ ShellSurfaceItem {
         Scale {
             id: scaleTransformPos
             origin.x: windowChrome.width / 2
-            origin.y: windowChrome.y - windowChrome.height
+            origin.y: window.y - view.output.geometry.y - windowChrome.height
         }
     ]
     opacity: 0.0
-    onTypeChanged: {
-        switch (d.type) {
-        case 1:
-            topLevelMapAnimation.start();
-            break;
-        case 2:
-            transientMapAnimation.start();
-            break;
-        case 3:
-            popupMapAnimation.start();
-            break;
-        }
-    }
     onSurfaceDestroyed: {
         view.bufferLock = true;
 
-        switch (windowChrome.type) {
-        case 1:
+        switch (window.type) {
+        case ClientWindow.TopLevel:
             topLevelDestroyAnimation.start();
             break;
-        case 2:
+        case ClientWindow.Transient:
             transientDestroyAnimation.start();
             break;
-        case 3:
+        case ClientWindow.Popup:
             popupDestroyAnimation.start();
             break;
         default:
@@ -87,31 +70,33 @@ ShellSurfaceItem {
     }
 
     QtObject {
-        // 0: Unknown
-        // 1: Top level
-        // 2: Transient
-        // 3: Popup
-        property int type: 0
         property real x
         property real y
         property bool unresponsive: false
         property bool started: false
-        property string title
-        property string appId
-        property rect windowGeometry: Qt.rect(0, 0, view.surface.size.width, view.surface.size.height)
-        property rect taskIconGeometry
-        property bool minimized: false
-        property bool maximized: false
-        property bool fullscreen: false
-        property WaylandSurface parentSurface: null
 
         id: d
-        onMinimizedChanged: {
-            if (minimized)
-                minimizeAnimation.start();
-            else
-                unminimizeAnimation.start();
+
+        function showAnimation() {
+            switch (window.type) {
+            case ClientWindow.TopLevel:
+                topLevelMapAnimation.start();
+                break;
+            case ClientWindow.Transient:
+                transientMapAnimation.start();
+                break;
+            case ClientWindow.Popup:
+                popupMapAnimation.start();
+                break;
+            }
         }
+    }
+
+    QtObject {
+        property real x
+        property real y
+
+        id: savedProperties
     }
 
     Timer {
@@ -124,59 +109,20 @@ ShellSurfaceItem {
     }
 
     Connections {
-        target: shellSurface
-        ignoreUnknownSignals: true
-
-        // wl-shell
-        onClassNameChanged: d.appId = shellSurface.className
-        onSetDefaultToplevel: {
-            d.type = 1;
-            d.minimized = false;
-            d.maximized = false;
-            d.fullscreen = false;
-            d.parentSurface = null;
-        }
-        onSetTransient: {
-            d.type = 2;
-            d.parentSurface = parentSurface;
-        }
-        onSetPopup: {
-            d.type = 3;
-            d.parentSurface = null;
-        }
-        onSetMaximized: {
-            if (output)
-                d.maximized = true;
-        }
-        onSetFullScreen: {
-            if (output)
-                d.fullscreen = true;
-        }
-
-        // xdg-shell
-        onAppIdChanged: d.appId = shellSurface.appId
-        onWindowGeometryChanged: d.windowGeometry = shellSurface.windowGeometry
-        onParentSurfaceChanged: {
-            d.type = 2;
-            d.minimized = false;
-            d.parentSurface = shellSurface.parentSurface;
-        }
+        target: window
+        onTypeChanged: d.showAnimation()
         onActivatedChanged: {
-            if (shellSurface.activated && d.started)
+            if (window.activated && d.started)
                 focusAnimation.start();
-            d.minimized = false;
-            d.parentSurface = null;
         }
-        onSetMinimized: d.minimized = true
-        onMaximizedChanged: d.maximized = shellSurface.maximized
-        onFullscreenChanged: d.fullscreen = shellSurface.fullscreen
-        onShowWindowMenu: {
-            console.log("Window menu requested at " + localSurfacePosition.x + "," + localSurfacePosition.y);
+        onMinimizedChanged: {
+            if (window.minimized)
+                minimizeAnimation.start();
+            else
+                unminimizeAnimation.start();
         }
-
-        // All
-        onTitleChanged: d.title = shellSurface.title
-
+        onShowWindowMenu: windowChrome.showWindowMenu(localSurfacePosition)
+        /*
         onPingRequested: {
             pingTimer.start();
         }
@@ -184,27 +130,12 @@ ShellSurfaceItem {
             pingTimer.stop();
             d.unresponsive = false;
         }
+        */
     }
 
     /*
      * Behavior
      */
-
-    Behavior on x {
-        enabled: animationsEnabled
-        SmoothedAnimation {
-            easing.type: Easing.OutQuad
-            duration: 350
-        }
-    }
-
-    Behavior on y {
-        enabled: animationsEnabled
-        SmoothedAnimation {
-            easing.type: Easing.OutQuad
-            duration: 350
-        }
-    }
 
     Behavior on width {
         enabled: animationsEnabled
@@ -326,7 +257,7 @@ ShellSurfaceItem {
             NumberAnimation {
                 target: scaleTransform
                 property: "yScale"
-                to: 2 / height
+                to: 2 / windowChrome.height
                 duration: 150
             }
             NumberAnimation {
@@ -531,14 +462,14 @@ ShellSurfaceItem {
             target: windowChrome
             property: "x"
             easing.type: Easing.OutQuad
-            to: d.taskIconGeometry.x - (view.output ? view.output.position.x : 0)
+            to: window.taskIconGeometry.x - (view.output ? view.output.position.x : 0)
             duration: 350
         }
         NumberAnimation {
             target: windowChrome
             property: "y"
             easing.type: Easing.OutQuad
-            to: d.taskIconGeometry.y - (view.output ? view.output.position.y : 0)
+            to: window.taskIconGeometry.y - (view.output ? view.output.position.y : 0)
             duration: 350
         }
         NumberAnimation {
@@ -589,6 +520,4 @@ ShellSurfaceItem {
             duration: 500
         }
     }
-
-    Component.onCompleted: d.type = 1
 }

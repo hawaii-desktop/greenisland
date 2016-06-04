@@ -25,63 +25,47 @@
  * $END_LICENSE$
  ***************************************************************************/
 
-#ifndef CLIENTWINDOWVIEW_P_H
-#define CLIENTWINDOWVIEW_P_H
-
-#include <QtQuick/private/qquickitem_p.h>
+#ifndef GREENISLAND_WINDOWMANAGER_H
+#define GREENISLAND_WINDOWMANAGER_H
 
 #include <GreenIsland/Server/ClientWindow>
 
-//  W A R N I N G
-//  -------------
-//
-// This file is not part of the Green Island API.  It exists purely as an
-// implementation detail.  This header file may change from version to
-// version without notice, or even be removed.
-//
-// We mean it.
+class QWaylandClient;
+class QWaylandCompositor;
 
 namespace GreenIsland {
 
 namespace Server {
 
-class GREENISLANDSERVER_EXPORT ClientWindowViewPrivate : public QQuickItemPrivate
+class WindowManagerPrivate;
+
+class GREENISLANDSERVER_EXPORT WindowManager : public QObject
 {
-    Q_DECLARE_PUBLIC(ClientWindowView)
+    Q_OBJECT
+    Q_DECLARE_PRIVATE(WindowManager)
+    Q_PROPERTY(QWaylandCompositor *compositor READ compositor WRITE setCompositor NOTIFY compositorChanged)
+    Q_PRIVATE_PROPERTY(WindowManager::d_func(), QQmlListProperty<GreenIsland::Server::ClientWindow> windows READ windows NOTIFY windowsChanged)
 public:
-    enum GrabberState {
-        DefaultState,
-        MoveState
-    };
+    WindowManager(QObject *parent = Q_NULLPTR);
+    WindowManager(QWaylandCompositor *compositor, QObject *parent = Q_NULLPTR);
 
-    ClientWindowViewPrivate();
-    ~ClientWindowViewPrivate();
+    QWaylandCompositor *compositor() const;
+    void setCompositor(QWaylandCompositor *compositor);
 
-    void setShellSurfaceItem(QWaylandQuickItem *item);
+    Q_INVOKABLE GreenIsland::Server::ClientWindow *createWindow(QWaylandSurface *surface);
+    Q_INVOKABLE GreenIsland::Server::ClientWindow *windowForSurface(QWaylandSurface *surface) const;
 
-    bool mousePressEvent(QMouseEvent *event);
-    bool mouseReleaseEvent(QMouseEvent *event);
-    bool mouseMoveEvent(QMouseEvent *event);
+    Q_INVOKABLE QVariantList windowsForOutput(QWaylandOutput *desiredOutput = Q_NULLPTR) const;
 
-    static ClientWindowViewPrivate *get(ClientWindowView *view) { return view->d_func(); }
+    Q_INVOKABLE void recalculateVirtualGeometry();
 
-    bool initialized;
-    QWaylandQuickOutput *output;
-    QWaylandQuickItem *shellSurfaceItem;
-    QQmlPropertyMap *savedProperties;
-    ClientWindow *window;
-
-    GrabberState grabberState;
-
-    struct {
-        QPointF initialOffset;
-        bool initialized;
-    } moveState;
+Q_SIGNALS:
+    void compositorChanged();
+    void windowsChanged();
 };
 
 } // namespace Server
 
 } // namespace GreenIsland
 
-#endif // CLIENTWINDOWVIEW_P_H
-
+#endif // GREENISLAND_WINDOWMANAGER_H

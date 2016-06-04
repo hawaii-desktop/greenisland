@@ -44,6 +44,8 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandXdgShell>
 
 #include <GreenIsland/Server/ApplicationManager>
+#include <GreenIsland/Server/ClientWindow>
+#include <GreenIsland/Server/ClientWindowQuickItem>
 #include <GreenIsland/Server/CompositorSettings>
 #include <GreenIsland/Server/OutputChangeset>
 #include <GreenIsland/Server/OutputManagement>
@@ -56,6 +58,7 @@
 #include <GreenIsland/Server/Screenshooter>
 //#include <GreenIsland/Server/TaskManager>
 #include <GreenIsland/Server/QuickScreenManager>
+#include <GreenIsland/Server/WindowManager>
 
 #include "fpscounter.h"
 #include "keyeventfilter.h"
@@ -70,7 +73,6 @@ Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandXdgShell)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandTextInputManager)
 
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(GtkShell)
-
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(OutputManagement)
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
@@ -148,6 +150,12 @@ void GreenIslandPlugin::registerTypes(const char *uri)
 
     // Application manager
     qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
+
+    // Window manager
+    qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
+                                             QObject::tr("Cannot create instance of ClientWindow"));
+    qmlRegisterType<ClientWindowQuickItem>(uri, 1, 0, "ClientWindowItem");
+    qmlRegisterType<WindowManager>(uri, 1, 0, "WindowManager");
 
     // Task manager
     //qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");
