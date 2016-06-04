@@ -360,7 +360,11 @@ void QuickOutput::initialize()
             modeId++;
         }
 
-        Screen::Mode currentMode = modes.at(d->nativeScreen->currentMode());
+        // Set current mode
+        int currentModeId = d->nativeScreen->currentMode();
+        if (currentModeId < 0)
+            currentModeId = 0;
+        Screen::Mode currentMode = modes.at(currentModeId);
         setCurrentMode(currentMode.size, currentMode.refreshRate);
     }
 
