@@ -232,12 +232,8 @@ QuickOutput::PowerState QuickOutput::powerState() const
     if (d->nativeScreen && d->nativeScreen->screen())
         screen = static_cast<Platform::EglFSScreen *>(
                     d->nativeScreen->screen()->handle());
-    if (!screen) {
-        qCWarning(gLcCore)
-                << "QuickOutput::powerState always returns "
-                << "ON without native screens or the greenisland QPA";
+    if (!screen)
         return PowerStateOn;
-    }
 
     return static_cast<QuickOutput::PowerState>(screen->powerState());
 }
@@ -251,12 +247,8 @@ void QuickOutput::setPowerState(PowerState state)
     if (d->nativeScreen && d->nativeScreen->screen())
         screen = static_cast<Platform::EglFSScreen *>(
                     d->nativeScreen->screen()->handle());
-    if (!screen) {
-        qCWarning(gLcCore)
-                << "Setting QuickOutput::powerState without native screens "
-                << "or without the greenisland QPA has no effect";
+    if (!screen)
         return;
-    }
 
     Platform::EglFSScreen::PowerState pstate =
             static_cast<Platform::EglFSScreen::PowerState>(state);
