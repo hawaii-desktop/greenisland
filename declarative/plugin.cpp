@@ -98,6 +98,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                             QObject::tr("Cannot create instance of WaylandExtension"));
     qmlRegisterUncreatableType<QWaylandClient>(uri, 1, 0, "WaylandClient",
                                                QObject::tr("Cannot create instance of WaylandClient"));
+    qmlRegisterUncreatableType<QWaylandOutput>(uri, 1, 0, "WaylandOutputBase",
+                                               QObject::tr("Cannot create instance of WaylandOutputBase, use WaylandOutput instead"));
     qmlRegisterUncreatableType<QWaylandView>(uri, 1, 0, "WaylandView",
                                              QObject::tr("Cannot create instance of WaylandView, it can be retrieved by accessor on WaylandQuickItem"));
     qmlRegisterUncreatableType<QWaylandInputDevice>(uri, 1, 0, "WaylandInputDevice",
