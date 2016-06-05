@@ -120,6 +120,7 @@ private:
     QWaylandXdgSurface *m_parentSurface;
 
     WindowType m_windowType;
+    QWaylandXdgSurface::FocusPolicy m_focusPolicy;
 
     QString m_title;
     QString m_appId;

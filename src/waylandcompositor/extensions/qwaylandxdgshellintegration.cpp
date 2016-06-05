@@ -52,6 +52,8 @@ XdgShellIntegration::XdgShellIntegration(QWaylandQuickShellSurfaceItem *item)
     , grabberState(GrabberState::Default)
 {
     m_item->setSurface(m_xdgSurface->surface());
+    connect(m_xdgSurface, &QWaylandXdgSurface::setTopLevel, this, &XdgShellIntegration::handleSetTopLevel);
+    connect(m_xdgSurface, &QWaylandXdgSurface::setTransient, this, &XdgShellIntegration::handleSetTransient);
     connect(m_xdgSurface, &QWaylandXdgSurface::startMove, this, &XdgShellIntegration::handleStartMove);
     connect(m_xdgSurface, &QWaylandXdgSurface::startResize, this, &XdgShellIntegration::handleStartResize);
     connect(m_xdgSurface, &QWaylandXdgSurface::setMaximized, this, &XdgShellIntegration::handleSetMaximized);
@@ -104,6 +106,18 @@ bool XdgShellIntegration::mouseReleaseEvent(QMouseEvent *event)
         return true;
     }
     return false;
+}
+
+void XdgShellIntegration::handleSetTopLevel()
+{
+    if (m_xdgSurface->focusPolicy() == QWaylandXdgSurface::AutomaticFocus)
+        m_item->takeFocus();
+}
+
+void XdgShellIntegration::handleSetTransient()
+{
+    if (m_xdgSurface->focusPolicy() == QWaylandXdgSurface::AutomaticFocus)
+        m_item->takeFocus();
 }
 
 void XdgShellIntegration::handleStartMove(QWaylandInputDevice *inputDevice)

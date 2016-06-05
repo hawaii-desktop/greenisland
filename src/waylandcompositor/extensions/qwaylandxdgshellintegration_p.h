@@ -66,6 +66,8 @@ public:
 private Q_SLOTS:
     void handleStartMove(QWaylandInputDevice *inputDevice);
     void handleStartResize(QWaylandInputDevice *inputDevice, QWaylandXdgSurface::ResizeEdge edges);
+    void handleSetTopLevel();
+    void handleSetTransient();
     void handleSetMaximized();
     void handleUnsetMaximized();
     void handleMaximizedChanged();

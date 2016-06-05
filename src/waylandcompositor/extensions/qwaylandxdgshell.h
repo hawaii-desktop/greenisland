@@ -97,6 +97,7 @@ class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgSurface : public QWaylandShellSurfa
     Q_PROPERTY(QWaylandXdgSurface *parentSurface READ parentSurface NOTIFY parentSurfaceChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
+    Q_PROPERTY(FocusPolicy focusPolicy READ focusPolicy WRITE setFocusPolicy NOTIFY focusPolicyChanged)
     Q_PROPERTY(QRect windowGeometry READ windowGeometry NOTIFY windowGeometryChanged)
 
     Q_PROPERTY(QList<int> states READ statesAsInts NOTIFY statesChanged)
@@ -127,6 +128,12 @@ public:
     };
     Q_ENUM(ResizeEdge)
 
+    enum FocusPolicy {
+        AutomaticFocus,
+        ManualFocus
+    };
+    Q_ENUM(FocusPolicy)
+
     QWaylandXdgSurface();
     QWaylandXdgSurface(QWaylandXdgShell* xdgShell, QWaylandSurface *surface, const QWaylandResource &resource);
 
@@ -143,6 +150,9 @@ public:
 
     QWaylandSurface *surface() const;
     QWaylandXdgSurface *parentSurface() const;
+
+    FocusPolicy focusPolicy() const;
+    void setFocusPolicy(FocusPolicy focusPolicy);
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
@@ -166,6 +176,7 @@ Q_SIGNALS:
     void titleChanged();
     void windowGeometryChanged();
     void appIdChanged();
+    void focusPolicyChanged();
     void parentSurfaceChanged();
 
     void statesChanged();

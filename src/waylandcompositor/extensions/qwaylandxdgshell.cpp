@@ -222,6 +222,7 @@ QWaylandXdgSurfacePrivate::QWaylandXdgSurfacePrivate()
     , m_surface(nullptr)
     , m_parentSurface(nullptr)
     , m_windowType(UnknownWindowType)
+    , m_focusPolicy(QWaylandXdgSurface::AutomaticFocus)
     , m_unsetWindowGeometry(true)
     , m_lastAckedConfigure({{}, QSize(0, 0), 0})
 {
@@ -727,6 +728,34 @@ QWaylandXdgSurface *QWaylandXdgSurface::parentSurface() const
 {
     Q_D(const QWaylandXdgSurface);
     return d->m_parentSurface;
+}
+
+/*!
+ * \qmlproperty object QtWaylandCompositor::XdgSurface::focusPolicy
+ *
+ * This property holds the focus policy of the XdgSurface.
+ */
+
+/*!
+ * \property QWaylandXdgSurface::focusPolicy
+ *
+ * This property holds the focus policy of the QWaylandXdgSurface.
+ */
+QWaylandXdgSurface::FocusPolicy QWaylandXdgSurface::focusPolicy() const
+{
+    Q_D(const QWaylandXdgSurface);
+    return d->m_focusPolicy;
+}
+
+void QWaylandXdgSurface::setFocusPolicy(QWaylandXdgSurface::FocusPolicy focusPolicy)
+{
+    Q_D(QWaylandXdgSurface);
+
+    if (focusPolicy == d->m_focusPolicy)
+        return;
+
+    d->m_focusPolicy = focusPolicy;
+    emit focusPolicyChanged();
 }
 
 /*!
