@@ -81,16 +81,16 @@ void WlShellIntegration::handleStartResize(QWaylandInputDevice *inputDevice, QWa
 
 void WlShellIntegration::handleSetTopLevel()
 {
-    if (m_shellSurface->focusPolicy() == QWaylandWlShellSurface::DefaultFocus)
+    if (m_shellSurface->focusPolicy() == QWaylandShellSurface::AutomaticFocus)
         m_item->takeFocus();
 }
 
-void WlShellIntegration::handleSetTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, QWaylandWlShellSurface::FocusPolicy focusPolicy)
+void WlShellIntegration::handleSetTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, bool inactive)
 {
     Q_UNUSED(parentSurface);
     Q_UNUSED(relativeToParent);
 
-    if (focusPolicy == QWaylandWlShellSurface::DefaultFocus)
+    if (m_shellSurface->focusPolicy() == QWaylandShellSurface::AutomaticFocus && !inactive)
         m_item->takeFocus();
 }
 

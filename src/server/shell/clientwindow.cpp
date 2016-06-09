@@ -82,7 +82,7 @@ void ClientWindowPrivate::initialize(QWaylandSurface *surface)
             setType(ClientWindow::TopLevel);
         });
         QObject::connect(shellSurface, &QWaylandWlShellSurface::setTransient, q, [this, shellSurface]
-                         (QWaylandSurface *parentSurface, const QPoint &, QWaylandWlShellSurface::FocusPolicy) {
+                         (QWaylandSurface *parentSurface, const QPoint &, bool) {
             setParentWindow(windowManager->windowForSurface(parentSurface));
             setMaximized(false);
             setFullscreen(false);

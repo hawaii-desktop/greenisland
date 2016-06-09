@@ -110,13 +110,13 @@ bool XdgShellIntegration::mouseReleaseEvent(QMouseEvent *event)
 
 void XdgShellIntegration::handleSetTopLevel()
 {
-    if (m_xdgSurface->focusPolicy() == QWaylandXdgSurface::AutomaticFocus)
+    if (m_xdgSurface->focusPolicy() == QWaylandShellSurface::AutomaticFocus)
         m_item->takeFocus();
 }
 
 void XdgShellIntegration::handleSetTransient()
 {
-    if (m_xdgSurface->focusPolicy() == QWaylandXdgSurface::AutomaticFocus)
+    if (m_xdgSurface->focusPolicy() == QWaylandShellSurface::AutomaticFocus)
         m_item->takeFocus();
 }
 

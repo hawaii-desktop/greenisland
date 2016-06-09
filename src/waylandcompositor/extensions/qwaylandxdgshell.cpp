@@ -731,34 +731,6 @@ QWaylandXdgSurface *QWaylandXdgSurface::parentSurface() const
 }
 
 /*!
- * \qmlproperty object QtWaylandCompositor::XdgSurface::focusPolicy
- *
- * This property holds the focus policy of the XdgSurface.
- */
-
-/*!
- * \property QWaylandXdgSurface::focusPolicy
- *
- * This property holds the focus policy of the QWaylandXdgSurface.
- */
-QWaylandXdgSurface::FocusPolicy QWaylandXdgSurface::focusPolicy() const
-{
-    Q_D(const QWaylandXdgSurface);
-    return d->m_focusPolicy;
-}
-
-void QWaylandXdgSurface::setFocusPolicy(QWaylandXdgSurface::FocusPolicy focusPolicy)
-{
-    Q_D(QWaylandXdgSurface);
-
-    if (focusPolicy == d->m_focusPolicy)
-        return;
-
-    d->m_focusPolicy = focusPolicy;
-    emit focusPolicyChanged();
-}
-
-/*!
  * \qmlproperty string QtWaylandCompositor::XdgSurface::title
  *
  * This property holds the title of the XdgSurface.

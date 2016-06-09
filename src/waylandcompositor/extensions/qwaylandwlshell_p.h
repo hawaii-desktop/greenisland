@@ -89,14 +89,6 @@ public:
 
     void ping(uint32_t serial);
 
-    void setFocusPolicy(QWaylandWlShellSurface::FocusPolicy focusPolicy)
-    {
-        if (focusPolicy == m_focusPolicy)
-            return;
-        Q_Q(QWaylandWlShellSurface);
-        m_focusPolicy = focusPolicy;
-        emit q->focusPolicyChanged();
-    }
 private:
     QWaylandWlShell *m_shell;
     QWaylandSurface *m_surface;
@@ -105,7 +97,6 @@ private:
 
     QString m_title;
     QString m_className;
-    QWaylandWlShellSurface::FocusPolicy m_focusPolicy;
 
     void shell_surface_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
 

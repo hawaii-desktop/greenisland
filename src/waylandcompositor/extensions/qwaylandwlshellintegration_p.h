@@ -68,7 +68,7 @@ private Q_SLOTS:
     void handleStartMove(QWaylandInputDevice *inputDevice);
     void handleStartResize(QWaylandInputDevice *inputDevice, QWaylandWlShellSurface::ResizeEdge edges);
     void handleSetTopLevel();
-    void handleSetTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, QWaylandWlShellSurface::FocusPolicy focusPolicy);
+    void handleSetTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, bool inactive);
     void handleSetPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parent, const QPoint &relativeToParent);
     void handleShellSurfaceDestroyed();
     void handleSurfaceUnmapped();

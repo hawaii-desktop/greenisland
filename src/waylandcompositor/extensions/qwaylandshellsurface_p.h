@@ -34,62 +34,35 @@
 **
 ****************************************************************************/
 
-#include "qwaylandshellsurface.h"
-#include "qwaylandshellsurface_p.h"
+#ifndef QWAYLANDSHELLSURFACE_P_H
+#define QWAYLANDSHELLSURFACE_P_H
+
+#include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
+
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
 
 QT_BEGIN_NAMESPACE
 
-QWaylandShellSurfacePrivate::QWaylandShellSurfacePrivate()
-    : focusPolicy(QWaylandShellSurface::AutomaticFocus)
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandShellSurfacePrivate
+        : public QWaylandCompositorExtensionPrivate
 {
-}
+    Q_DECLARE_PUBLIC(QWaylandShellSurface)
+public:
+    QWaylandShellSurfacePrivate();
 
-QWaylandShellSurface::QWaylandShellSurface(QWaylandObject *waylandObject)
-    : QWaylandCompositorExtension(waylandObject, *new QWaylandShellSurfacePrivate())
-{
-}
-
-/*!
- * \qmlproperty enum QtWaylandCompositor::ShellSurface::focusPolicy
- *
- * This property holds the focus policy of the ShellSurface.
- */
-
-/*!
- * \enum QWaylandShellSurface::FocusPolicy
- *
- * This enum type is used to specify the focus policy of a shell surface.
- *
- * \value AutomaticFocus The shell surface will automatically get keyboard focus.
- * \value ManualFocus The compositor will decide whether the shell surface should get keyboard focus or not.
- */
-
-/*!
- * \qmlproperty object QtWaylandCompositor::ShellSurface::focusPolicy
- *
- * This property holds the focus policy of the ShellSurface.
- */
-
-/*!
- * \property QWaylandShellSurface::focusPolicy
- *
- * This property holds the focus policy of the QWaylandShellSurface.
- */
-QWaylandShellSurface::FocusPolicy QWaylandShellSurface::focusPolicy() const
-{
-    Q_D(const QWaylandShellSurface);
-    return d->focusPolicy;
-}
-
-void QWaylandShellSurface::setFocusPolicy(QWaylandShellSurface::FocusPolicy focusPolicy)
-{
-    Q_D(QWaylandShellSurface);
-
-    if (d->focusPolicy == focusPolicy)
-        return;
-
-    d->focusPolicy = focusPolicy;
-    emit focusPolicyChanged();
-}
+    QWaylandShellSurface::FocusPolicy focusPolicy;
+};
 
 QT_END_NAMESPACE
+
+#endif // QWAYLANDSHELLSURFACE_P_H

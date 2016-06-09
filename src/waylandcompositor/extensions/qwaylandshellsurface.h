@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** Copyright (C) 2016 The Qt Company Ltd.
+** Copyright (C) 2016 Pier Luigi Fiorini <pierluigi.fiorini@gmail.com>
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtWaylandCompositor module of the Qt Toolkit.
@@ -49,9 +50,24 @@ class QWaylandShellSurfaceTemplatePrivate;
 class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandShellSurface : public QWaylandCompositorExtension
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(QWaylandShellSurface)
+    Q_PROPERTY(FocusPolicy focusPolicy READ focusPolicy WRITE setFocusPolicy NOTIFY focusPolicyChanged)
 public:
+    enum FocusPolicy {
+        AutomaticFocus,
+        ManualFocus
+    };
+    Q_ENUM(FocusPolicy)
+
+    QWaylandShellSurface(QWaylandObject *waylandObject);
+
+    FocusPolicy focusPolicy() const;
+    void setFocusPolicy(FocusPolicy focusPolicy);
+
     virtual QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) = 0;
-    QWaylandShellSurface(QWaylandObject *waylandObject) : QWaylandCompositorExtension(waylandObject) {}
+
+Q_SIGNALS:
+    void focusPolicyChanged();
 
 protected:
     QWaylandShellSurface(QWaylandCompositorExtensionPrivate &dd) : QWaylandCompositorExtension(dd){}
