@@ -206,7 +206,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandShellSurface
         QWaylandTextInput
         QWaylandTextInputManager
-        QWaylandWlShell
+        QWaylandWlShell,QWaylandWlShellSurface
         QWaylandXdgShell,QWaylandXdgSurface,QWaylandXdgPopup
     PREFIX
         QtWaylandCompositor
