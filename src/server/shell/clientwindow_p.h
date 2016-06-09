@@ -48,12 +48,15 @@ namespace GreenIsland {
 
 namespace Server {
 
+class ApplicationManager;
+
 class GREENISLANDSERVER_EXPORT ClientWindowPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(ClientWindow)
 public:
     ClientWindowPrivate()
         : windowManager(Q_NULLPTR)
+        , applicationManager(Q_NULLPTR)
         , surface(Q_NULLPTR)
         , type(ClientWindow::Unknown)
         , parentWindow(Q_NULLPTR)
@@ -72,6 +75,7 @@ public:
     {}
 
     WindowManager *windowManager;
+    ApplicationManager *applicationManager;
     QWaylandSurface *surface;
     ClientWindow::Type type;
     ClientWindow *parentWindow;

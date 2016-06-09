@@ -387,9 +387,9 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     });
 
     // Register window with the application manager
-    ApplicationManager *appMan = ApplicationManager::findIn(surface->compositor());
-    if (appMan)
-        ApplicationManagerPrivate::get(appMan)->registerWindow(this);
+    d->applicationManager = ApplicationManager::findIn(surface->compositor());
+    if (d->applicationManager)
+        ApplicationManagerPrivate::get(d->applicationManager)->registerWindow(this);
 }
 
 ClientWindow::~ClientWindow()
@@ -407,9 +407,8 @@ ClientWindow::~ClientWindow()
     WindowManagerPrivate::get(d->windowManager)->windowsList.removeOne(this);
 
     // Unregister window from the application manager
-    ApplicationManager *appMan = ApplicationManager::findIn(d->surface->compositor());
-    if (appMan)
-        ApplicationManagerPrivate::get(appMan)->unregisterWindow(this);
+    if (d->applicationManager)
+        ApplicationManagerPrivate::get(d->applicationManager)->unregisterWindow(this);
 }
 
 QWaylandSurface *ClientWindow::surface() const

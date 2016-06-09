@@ -107,7 +107,7 @@ ClientWindow *WindowManager::createWindow(QWaylandSurface *surface)
     recalculateVirtualGeometry();
 
     // Automatically delete client window when the surface is destroyed
-    connect(surface, SIGNAL(destroyed(QObject*)),
+    connect(surface, SIGNAL(surfaceDestroyed()),
             clientWindow, SLOT(deleteLater()));
 
     return clientWindow;
