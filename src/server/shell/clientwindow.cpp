@@ -40,6 +40,8 @@
 #include "clientwindow_p.h"
 #include "windowmanager_p.h"
 #include "serverlogging_p.h"
+#include "extensions/applicationmanager.h"
+#include "extensions/applicationmanager_p.h"
 
 namespace GreenIsland {
 
@@ -383,6 +385,11 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     connect(d->moveItem, &QQuickItem::yChanged, this, [this, d] {
         setY(d->moveItem->y());
     });
+
+    // Register window with the application manager
+    ApplicationManager *appMan = ApplicationManager::findIn(surface->compositor());
+    if (appMan)
+        ApplicationManagerPrivate::get(appMan)->registerWindow(this);
 }
 
 ClientWindow::~ClientWindow()
@@ -396,8 +403,13 @@ ClientWindow::~ClientWindow()
             view->takeFocus();
     }
 
-    // Unregister window
+    // Unregister window from the window manager
     WindowManagerPrivate::get(d->windowManager)->windowsList.removeOne(this);
+
+    // Unregister window from the application manager
+    ApplicationManager *appMan = ApplicationManager::findIn(d->surface->compositor());
+    if (appMan)
+        ApplicationManagerPrivate::get(appMan)->unregisterWindow(this);
 }
 
 QWaylandSurface *ClientWindow::surface() const

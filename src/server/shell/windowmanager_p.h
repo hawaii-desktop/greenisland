@@ -47,7 +47,6 @@ namespace GreenIsland {
 
 namespace Server {
 
-class ApplicationManager;
 class ClientWindow;
 
 class GREENISLANDSERVER_EXPORT WindowManagerPrivate : public QObjectPrivate

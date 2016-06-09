@@ -48,7 +48,6 @@ ApplicationManagerPrivate::ApplicationManagerPrivate()
 {
 }
 
-#if 0
 void ApplicationManagerPrivate::registerWindow(ClientWindow *window)
 {
     Q_Q(ApplicationManager);
@@ -66,8 +65,8 @@ void ApplicationManagerPrivate::registerWindow(ClientWindow *window)
 
     QObject::connect(window, SIGNAL(appIdChanged()),
                      q, SLOT(_q_appIdChanged()));
-    QObject::connect(window, SIGNAL(activeChanged()),
-                     q, SLOT(_q_activeChanged()));
+    QObject::connect(window, SIGNAL(activatedChanged()),
+                     q, SLOT(_q_activatedChanged()));
 }
 
 void ApplicationManagerPrivate::unregisterWindow(ClientWindow *window)
@@ -76,8 +75,8 @@ void ApplicationManagerPrivate::unregisterWindow(ClientWindow *window)
 
     QObject::disconnect(window, SIGNAL(appIdChanged()),
                         q, SLOT(_q_appIdChanged()));
-    QObject::disconnect(window, SIGNAL(activeChanged()),
-                        q, SLOT(_q_activeChanged()));
+    QObject::disconnect(window, SIGNAL(activatedChanged()),
+                        q, SLOT(_q_activatedChanged()));
 
     QStringList keys = appIdMap.keys();
     Q_FOREACH (const QString &curAppId, keys) {
@@ -91,13 +90,11 @@ void ApplicationManagerPrivate::unregisterWindow(ClientWindow *window)
     if (!appIdMap.contains(window->appId()))
         Q_EMIT q->applicationRemoved(window->appId(), window->processId());
 }
-#endif
 
 void ApplicationManagerPrivate::_q_appIdChanged()
 {
     Q_Q(ApplicationManager);
 
-#if 0
     ClientWindow *window = qobject_cast<ClientWindow *>(q->sender());
     Q_ASSERT(window);
 
@@ -124,18 +121,16 @@ void ApplicationManagerPrivate::_q_appIdChanged()
         // Insert the new appId
         appIdMap.insert(window->appId(), window);
     }
-#endif
 }
 
-void ApplicationManagerPrivate::_q_activeChanged()
+void ApplicationManagerPrivate::_q_activatedChanged()
 {
     Q_Q(ApplicationManager);
 
-#if 0
     ClientWindow *window = qobject_cast<ClientWindow *>(q->sender());
     Q_ASSERT(window);
 
-    if (!window->isActive())
+    if (!window->activated())
         return;
 
     Q_EMIT q->applicationFocused(window->appId());
@@ -144,7 +139,6 @@ void ApplicationManagerPrivate::_q_activeChanged()
         if (appId != window->appId())
             Q_EMIT q->applicationUnfocused(appId);
     }
-#endif
 }
 
 void ApplicationManagerPrivate::applications_quit(Resource *resource, const QString &app_id)
@@ -187,7 +181,6 @@ void ApplicationManager::quit(const QString &appId)
         return;
     }
 
-#if 0
     ClientWindow *window = d->appIdMap.values(appId).at(0);
     if (!window) {
         qCWarning(gLcCore,
@@ -203,7 +196,6 @@ void ApplicationManager::quit(const QString &appId)
         return;
     }
     window->surface()->client()->close();
-#endif
 }
 
 void ApplicationManager::initialize()

@@ -44,7 +44,6 @@ include(GreenIslandServerMacros.cmake)
 set(SOURCES
     serverlogging_p.cpp
     core/abstractplugin.cpp
-    core/applicationmanager.cpp
     core/compositorsettings.cpp
     core/diagnostic_p.cpp
     core/homeapplication.cpp
@@ -62,6 +61,7 @@ set(SOURCES
     shell/clientwindow.cpp
     shell/clientwindowquickitem.cpp
     shell/windowmanager.cpp
+    extensions/applicationmanager.cpp
     extensions/gtkshell.cpp
     extensions/screencaster.cpp
     extensions/screenshooter.cpp
@@ -143,7 +143,6 @@ set_target_properties(GreenIslandServer PROPERTIES
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
         AbstractPlugin
-        ApplicationManager
         CompositorSettings
         HomeApplication
         QuickOutput
@@ -188,6 +187,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
+        ApplicationManager
         GtkShell,GtkSurface
         Screencaster,Screencast
         Screenshooter,Screenshot
@@ -234,7 +234,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/core/applicationmanager_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/applicationmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h

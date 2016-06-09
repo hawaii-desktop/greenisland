@@ -72,6 +72,7 @@ Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandWlShell)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandXdgShell)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandTextInputManager)
 
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(ApplicationManager)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(GtkShell)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(OutputManagement)
 
@@ -149,7 +150,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                 QObject::tr("Cannot create instance of OutputChangeset"));
 
     // Application manager
-    qmlRegisterType<ApplicationManager>(uri, 1, 0, "ApplicationManager");
+    qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManagerBase",
+                                                   QObject::tr("Cannot create instance of ApplicationManagerBase, use ApplicationManager instead"));
+    qmlRegisterType<ApplicationManagerQuickExtension>(uri, 1, 0, "ApplicationManager");
 
     // Window manager
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
