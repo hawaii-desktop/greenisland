@@ -67,7 +67,7 @@ void ClientWindowPrivate::initialize(QWaylandSurface *surface)
     Q_EMIT q->processIdChanged();
 
     // Assign a random position by default
-    q->setPosition(q->randomPosition());
+    moveItem->setPosition(q->randomPosition());
 
     QWaylandWlShellSurface *shellSurface = QWaylandWlShellSurface::findIn(surface);
     if (shellSurface) {
@@ -122,8 +122,8 @@ void ClientWindowPrivate::initialize(QWaylandSurface *surface)
             if (parentWindow) {
                 qreal startX = parentWindow->x() + (parentWindow->surface()->size().width() / 2);
                 qreal startY = parentWindow->y() + (parentWindow->surface()->size().height() / 2);
-                q->setPosition(QPointF(startX - (xdgSurface->windowGeometry().size().width() / 2),
-                                       startY - (xdgSurface->windowGeometry().size().height() / 2)));
+                moveItem->setPosition(QPointF(startX - (xdgSurface->windowGeometry().size().width() / 2),
+                                              startY - (xdgSurface->windowGeometry().size().height() / 2)));
 
                 setType(ClientWindow::Transient);
             }
@@ -373,10 +373,7 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     : QObject(*new ClientWindowPrivate(), wm)
 {
     Q_D(ClientWindow);
-
-    // Initialize
     d->windowManager = wm;
-    d->initialize(surface);
 
     // Move
     connect(d->moveItem, &QQuickItem::xChanged, this, [this, d] {
@@ -385,6 +382,9 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     connect(d->moveItem, &QQuickItem::yChanged, this, [this, d] {
         setY(d->moveItem->y());
     });
+
+    // Initialize
+    d->initialize(surface);
 
     // Register window with the application manager
     d->applicationManager = ApplicationManager::findIn(surface->compositor());
