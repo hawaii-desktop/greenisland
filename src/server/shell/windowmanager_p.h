@@ -65,6 +65,9 @@ public:
 
     QQmlListProperty<ClientWindow> windows();
 
+    void registerWindow(ClientWindow *window);
+    void unregisterWindow(ClientWindow *window);
+
     static int windowsCount(QQmlListProperty<ClientWindow> *prop);
     static ClientWindow *windowsAt(QQmlListProperty<ClientWindow> *prop, int index);
 

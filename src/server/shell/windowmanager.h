@@ -62,6 +62,8 @@ public:
 Q_SIGNALS:
     void compositorChanged();
     void windowsChanged();
+    void windowCreated(GreenIsland::Server::ClientWindow *window);
+    void windowClosed(GreenIsland::Server::ClientWindow *window);
 };
 
 } // namespace Server

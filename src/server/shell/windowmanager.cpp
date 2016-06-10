@@ -46,6 +46,22 @@ QQmlListProperty<ClientWindow> WindowManagerPrivate::windows()
     return QQmlListProperty<ClientWindow>(q, Q_NULLPTR, windowsCount, windowsAt);
 }
 
+void WindowManagerPrivate::registerWindow(ClientWindow *window)
+{
+    Q_Q(WindowManager);
+
+    windowsList.append(window);
+    Q_EMIT q->windowCreated(window);
+}
+
+void WindowManagerPrivate::unregisterWindow(ClientWindow *window)
+{
+    Q_Q(WindowManager);
+
+    windowsList.removeOne(window);
+    Q_EMIT q->windowClosed(window);
+}
+
 int WindowManagerPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
 {
     WindowManager *that = static_cast<WindowManager *>(prop->object);
@@ -100,7 +116,7 @@ ClientWindow *WindowManager::createWindow(QWaylandSurface *surface)
     ClientWindowPrivate::get(clientWindow)->moveItem->setParentItem(d->rootItem);
 
     // Append to the list
-    d->windowsList.append(clientWindow);
+    d->registerWindow(clientWindow);
 
     // Recalculate virtual geometry
     // FIXME: Call only when outputs are added or removed

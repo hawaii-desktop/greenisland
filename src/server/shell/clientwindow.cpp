@@ -404,7 +404,7 @@ ClientWindow::~ClientWindow()
     }
 
     // Unregister window from the window manager
-    WindowManagerPrivate::get(d->windowManager)->windowsList.removeOne(this);
+    WindowManagerPrivate::get(d->windowManager)->unregisterWindow(this);
 
     // Unregister window from the application manager
     if (d->applicationManager)
