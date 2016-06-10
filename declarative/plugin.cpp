@@ -75,6 +75,8 @@ Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(QWaylandTextInputManager)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(ApplicationManager)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(GtkShell)
 Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(OutputManagement)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(Screencaster)
+Q_COMPOSITOR_DECLARE_QUICK_EXTENSION_CLASS(Screenshooter)
 
 class GreenIslandPlugin : public QQmlExtensionPlugin
 {
@@ -166,12 +168,12 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                          //QObject::tr("Cannot create instance of TaskItem"));
 
     // Screencaster
-    qmlRegisterType<Screencaster>(uri, 1, 0, "Screencaster");
+    qmlRegisterType<ScreencasterQuickExtension>(uri, 1, 0, "Screencaster");
     qmlRegisterUncreatableType<Screencast>(uri, 1, 0, "Screencast",
                                            QObject::tr("Cannot create instance of Screencast"));
 
     // Screen shooter
-    qmlRegisterType<Screenshooter>(uri, 1, 0, "Screenshooter");
+    qmlRegisterType<ScreenshooterQuickExtension>(uri, 1, 0, "Screenshooter");
     qmlRegisterUncreatableType<Screenshot>(uri, 1, 0, "Screenshot",
                                            QObject::tr("Cannot create instance of Screenshot"));
 
