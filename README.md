@@ -330,8 +330,6 @@ to learn how to enable them.
   * **greenisland.protocols.recorder:** greenisland_recorder
   * **greenisland.protocols.screenshooter:** greenisland_screenshooter
   * **greenisland.protocols.taskmanager:** greenisland_windows
-  * **greenisland.protocols.xdgshell:** xdg_shell
-  * **greenisland.protocols.xdgshell.trace:** xdg_shell trace
 
 * Client-side:
   * **greenisland.client.registry:** Registry
