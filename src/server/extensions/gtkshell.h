@@ -77,7 +77,7 @@ public:
                const QWaylandResource &resource);
 
     Q_INVOKABLE void initialize(GtkShell *shell, QWaylandSurface *surface,
-                                 const QWaylandResource &resource);
+                                const QWaylandResource &resource);
 
     QWaylandSurface *surface() const;
     GtkShell *shell() const;

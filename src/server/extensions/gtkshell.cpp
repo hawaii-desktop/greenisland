@@ -63,7 +63,7 @@ void GtkShellPrivate::shell_get_gtk_surface(Resource *resource, uint32_t id, wl_
     QWaylandSurface *surface = QWaylandSurface::fromResource(surfaceResource);
 
     QWaylandResource gtkSurfaceResource(wl_resource_create(resource->client(), &gtk_surface_interface,
-                                                             wl_resource_get_version(resource->handle), id));
+                                                           wl_resource_get_version(resource->handle), id));
 
     Q_EMIT q->createGtkSurface(surface, gtkSurfaceResource);
 
