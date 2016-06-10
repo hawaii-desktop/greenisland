@@ -55,7 +55,7 @@ Q_SIGNALS:
     void savedPropertiesChanged();
 
 protected:
-    bool childMouseEventFilter(QQuickItem *item, QEvent *event) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
 };
 
 } // namespace Server
