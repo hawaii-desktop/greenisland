@@ -656,6 +656,14 @@ void ClientWindow::removeWindowView(QWaylandQuickItem *item)
     d->views.removeOne(item);
 }
 
+void ClientWindow::activate()
+{
+    Q_D(ClientWindow);
+
+    Q_FOREACH (QWaylandQuickItem *view, d->views)
+        view->takeFocus();
+}
+
 void ClientWindow::lower()
 {
     Q_D(ClientWindow);

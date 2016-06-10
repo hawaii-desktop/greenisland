@@ -120,6 +120,7 @@ public:
     Q_INVOKABLE void removeWindowView(QWaylandQuickItem *item);
 
 public Q_SLOTS:
+    void activate();
     void lower();
     void raise();
     void move(const QPoint &position);
