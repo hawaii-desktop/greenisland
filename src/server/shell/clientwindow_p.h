@@ -30,8 +30,12 @@
 
 #include <QtCore/private/qobject_p.h>
 
+#include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
+#include <GreenIsland/QtWaylandCompositor/QWaylandXdgShell>
+
 #include <GreenIsland/Server/ClientWindow>
 #include <GreenIsland/Server/WindowManager>
+#include <GreenIsland/Server/GtkShell>
 
 //  W A R N I N G
 //  -------------
@@ -54,28 +58,15 @@ class GREENISLANDSERVER_EXPORT ClientWindowPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(ClientWindow)
 public:
-    ClientWindowPrivate()
-        : windowManager(Q_NULLPTR)
-        , applicationManager(Q_NULLPTR)
-        , surface(Q_NULLPTR)
-        , type(ClientWindow::Unknown)
-        , parentWindow(Q_NULLPTR)
-        , pid(0)
-        , x(0)
-        , y(0)
-        , savedMaximized(QPointF(0, 0))
-        , savedFullScreen(QPointF(0, 0))
-        , taskIconGeometry(QRect(0, 0, 32, 32))
-        , active(false)
-        , minimized(false)
-        , maximized(false)
-        , fullscreen(false)
-        , moveItem(new QQuickItem())
-        , designedOutput(Q_NULLPTR)
-    {}
+    ClientWindowPrivate();
 
     WindowManager *windowManager;
     ApplicationManager *applicationManager;
+
+    QWaylandWlShell *wlShell;
+    QWaylandXdgShell *xdgShell;
+    GtkShell *gtkShell;
+
     QWaylandSurface *surface;
     ClientWindow::Type type;
     ClientWindow *parentWindow;
@@ -110,6 +101,10 @@ public:
     void setWindowGeometry(const QRect &geometry);
     void setMaximized(bool maximized);
     void setFullscreen(bool fullscreen);
+
+    void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface);
+    void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface);
+    void _q_gtkSurfaceCreated(GtkSurface *gtkSurface);
 
     QString findDesktopFile(const QString &appId);
 

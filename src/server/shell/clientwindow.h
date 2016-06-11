@@ -36,11 +36,16 @@
 
 #include <GreenIsland/server/greenislandserver_export.h>
 
+class QWaylandWlShellSurface;
+class QWaylandXdgSurface;
+class QWaylandXdgPopup;
+
 namespace GreenIsland {
 
 namespace Server {
 
 class ClientWindowPrivate;
+class GtkSurface;
 class WindowManager;
 
 class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
@@ -152,6 +157,10 @@ Q_SIGNALS:
 
 private:
     ClientWindow(WindowManager *wm, QWaylandSurface *surface);
+
+    Q_PRIVATE_SLOT(d_func(), void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface))
+    Q_PRIVATE_SLOT(d_func(), void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface))
+    Q_PRIVATE_SLOT(d_func(), void _q_gtkSurfaceCreated(GtkSurface *gtkSurface))
 
     friend class WindowManager;
 };
