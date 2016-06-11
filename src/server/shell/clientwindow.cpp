@@ -418,7 +418,7 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     // Shells
     d->wlShell = QWaylandWlShell::findIn(surface->compositor());
     if (d->wlShell)
-        connect(d->wlShell, SIGNAL(wlSurfaceCreated(QWaylandWlShellSurface*)),
+        connect(d->wlShell, SIGNAL(shellSurfaceCreated(QWaylandWlShellSurface*)),
                 this, SLOT(_q_wlSurfaceCreated(QWaylandWlShellSurface*)));
     d->xdgShell = QWaylandXdgShell::findIn(surface->compositor());
     if (d->xdgShell)
