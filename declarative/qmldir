@@ -2,5 +2,4 @@ module GreenIsland
 plugin greenislandplugin
 WaylandCursorItem 1.0 WaylandCursorItem.qml
 WaylandOutputWindow 1.0 WaylandOutputWindow.qml
-WaylandWindow 1.0 WaylandWindow.qml
 WindowChrome 1.0 WindowChrome.qml
