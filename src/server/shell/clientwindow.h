@@ -160,6 +160,7 @@ private:
 
     Q_PRIVATE_SLOT(d_func(), void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface))
+    Q_PRIVATE_SLOT(d_func(), void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup))
     Q_PRIVATE_SLOT(d_func(), void _q_gtkSurfaceCreated(GtkSurface *gtkSurface))
 
     friend class WindowManager;

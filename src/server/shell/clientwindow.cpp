@@ -351,6 +351,16 @@ void ClientWindowPrivate::_q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface)
                      q, &ClientWindow::showWindowMenu);
 }
 
+void ClientWindowPrivate::_q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup)
+{
+    Q_Q(ClientWindow);
+
+    if (xdgPopup->surface() != surface)
+        return;
+
+    setType(ClientWindow::Popup);
+}
+
 void ClientWindowPrivate::_q_gtkSurfaceCreated(GtkSurface *gtkSurface)
 {
     Q_Q(ClientWindow);
@@ -421,9 +431,12 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
         connect(d->wlShell, SIGNAL(shellSurfaceCreated(QWaylandWlShellSurface*)),
                 this, SLOT(_q_wlSurfaceCreated(QWaylandWlShellSurface*)));
     d->xdgShell = QWaylandXdgShell::findIn(surface->compositor());
-    if (d->xdgShell)
+    if (d->xdgShell) {
         connect(d->xdgShell, SIGNAL(xdgSurfaceCreated(QWaylandXdgSurface*)),
                 this, SLOT(_q_xdgSurfaceCreated(QWaylandXdgSurface*)));
+        connect(d->xdgShell, SIGNAL(xdgPopupCreated(QWaylandXdgPopup*)),
+                this, SLOT(_q_xdgPopupCreated(QWaylandXdgPopup*)));
+    }
     d->gtkShell = GtkShell::findIn(surface->compositor());
     if (d->gtkShell)
         connect(d->gtkShell, SIGNAL(gtkSurfaceCreated(GtkSurface*)),

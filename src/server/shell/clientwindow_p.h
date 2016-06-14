@@ -104,6 +104,7 @@ public:
 
     void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface);
     void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface);
+    void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup);
     void _q_gtkSurfaceCreated(GtkSurface *gtkSurface);
 
     QString findDesktopFile(const QString &appId);
