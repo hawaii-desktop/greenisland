@@ -70,6 +70,7 @@ public:
     void setDragFocus(QWaylandSurface *focus, const QPointF &localPosition);
 
     QWaylandSurface *dragIcon() const;
+    QWaylandSurface *dragOrigin() const;
 
     void sourceDestroyed(DataSource *source);
 
@@ -82,6 +83,8 @@ protected:
     void data_device_set_selection(Resource *resource, struct ::wl_resource *source, uint32_t serial) Q_DECL_OVERRIDE;
 
 private:
+    void setDragIcon(QWaylandSurface *icon);
+
     QWaylandCompositor *m_compositor;
     QWaylandInputDevice *m_inputDevice;
 
@@ -94,6 +97,7 @@ private:
     Resource *m_dragFocusResource;
 
     QWaylandSurface *m_dragIcon;
+    QWaylandSurface *m_dragOrigin;
 };
 
 }

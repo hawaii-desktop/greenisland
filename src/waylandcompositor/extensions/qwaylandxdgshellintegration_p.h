@@ -66,8 +66,6 @@ public:
 private Q_SLOTS:
     void handleStartMove(QWaylandInputDevice *inputDevice);
     void handleStartResize(QWaylandInputDevice *inputDevice, QWaylandXdgSurface::ResizeEdge edges);
-    void handleSetTopLevel();
-    void handleSetTransient();
     void handleSetMaximized();
     void handleUnsetMaximized();
     void handleMaximizedChanged();
@@ -104,6 +102,20 @@ private:
         QSize initialWindowSize;
         QPointF initialPosition;
     } maximizeState;
+};
+
+class XdgPopupIntegration : public QWaylandQuickShellIntegration
+{
+    Q_OBJECT
+public:
+    XdgPopupIntegration(QWaylandQuickShellSurfaceItem *item);
+
+private Q_SLOTS:
+    void handlePopupDestroyed();
+
+private:
+    QWaylandXdgPopup *m_xdgPopup;
+    QWaylandXdgShell *m_xdgShell;
 };
 
 }

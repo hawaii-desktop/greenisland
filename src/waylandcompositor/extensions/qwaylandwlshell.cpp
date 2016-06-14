@@ -86,7 +86,14 @@ void QWaylandWlShellPrivate::shell_get_shell_surface(Resource *resource, uint32_
         shellSurface = new QWaylandWlShellSurface(q, surface, shellSurfaceResource);
     }
 
+    m_shellSurfaces.append(shellSurface);
     emit q->shellSurfaceCreated(shellSurface);
+}
+
+void QWaylandWlShellPrivate::unregisterShellSurface(QWaylandWlShellSurface *shellSurface)
+{
+    if (!m_shellSurfaces.removeOne(shellSurface))
+        qWarning("Unexpected state. Can't find registered shell surface.");
 }
 
 QWaylandWlShellSurfacePrivate::QWaylandWlShellSurfacePrivate()
@@ -94,6 +101,7 @@ QWaylandWlShellSurfacePrivate::QWaylandWlShellSurfacePrivate()
     , wl_shell_surface()
     , m_shell(Q_NULLPTR)
     , m_surface(Q_NULLPTR)
+    , m_focusPolicy(QWaylandWlShellSurface::DefaultFocus)
 {
 }
 
@@ -143,6 +151,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_toplevel(Resource *resourc
 {
     Q_UNUSED(resource);
     Q_Q(QWaylandWlShellSurface);
+    setFocusPolicy(QWaylandWlShellSurface::DefaultFocus);
     emit q->setDefaultToplevel();
 }
 
@@ -156,8 +165,11 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_transient(Resource *resour
     Q_UNUSED(resource);
     Q_Q(QWaylandWlShellSurface);
     QWaylandSurface *parent_surface = QWaylandSurface::fromResource(parent_surface_resource);
-    bool transientInactive = flags & WL_SHELL_SURFACE_TRANSIENT_INACTIVE;
-    emit q->setTransient(parent_surface, QPoint(x,y), transientInactive);
+    QWaylandWlShellSurface::FocusPolicy focusPolicy =
+        flags & WL_SHELL_SURFACE_TRANSIENT_INACTIVE ? QWaylandWlShellSurface::NoKeyboardFocus
+                                                    : QWaylandWlShellSurface::DefaultFocus;
+    setFocusPolicy(focusPolicy);
+    emit q->setTransient(parent_surface, QPoint(x,y), focusPolicy);
 }
 
 void QWaylandWlShellSurfacePrivate::shell_surface_set_fullscreen(Resource *resource,
@@ -169,6 +181,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_fullscreen(Resource *resou
     Q_UNUSED(method);
     Q_UNUSED(framerate);
     Q_Q(QWaylandWlShellSurface);
+    setFocusPolicy(QWaylandWlShellSurface::DefaultFocus);
     QWaylandOutput *output = output_resource
             ? QWaylandOutput::fromResource(output_resource)
             : Q_NULLPTR;
@@ -181,6 +194,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_popup(Resource *resource, 
     Q_UNUSED(serial);
     Q_UNUSED(flags);
     Q_Q(QWaylandWlShellSurface);
+    setFocusPolicy(QWaylandWlShellSurface::DefaultFocus);
     QWaylandInputDevice *input = QWaylandInputDevice::fromSeatResource(input_device);
     QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parent);
     emit q->setPopup(input, parentSurface, QPoint(x,y));
@@ -192,6 +206,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_maximized(Resource *resour
 {
     Q_UNUSED(resource);
     Q_Q(QWaylandWlShellSurface);
+    setFocusPolicy(QWaylandWlShellSurface::DefaultFocus);
     QWaylandOutput *output = output_resource
             ? QWaylandOutput::fromResource(output_resource)
             : Q_NULLPTR;
@@ -300,6 +315,23 @@ void QWaylandWlShell::initialize()
     d->init(compositor->display(), 1);
 }
 
+QList<QWaylandWlShellSurface *> QWaylandWlShell::shellSurfaces() const
+{
+    Q_D(const QWaylandWlShell);
+    return d->m_shellSurfaces;
+}
+
+QList<QWaylandWlShellSurface *> QWaylandWlShell::shellSurfacesForClient(QWaylandClient *client) const
+{
+    Q_D(const QWaylandWlShell);
+    QList<QWaylandWlShellSurface *> surfsForClient;
+    Q_FOREACH (QWaylandWlShellSurface *shellSurface, d->m_shellSurfaces) {
+        if (shellSurface->surface()->client() == client)
+            surfsForClient.append(shellSurface);
+    }
+    return surfsForClient;
+}
+
 /*!
  * Returns the Wayland interface for the QWaylandWlShell.
  */
@@ -375,6 +407,12 @@ QWaylandWlShellSurface::QWaylandWlShellSurface(QWaylandWlShell *shell, QWaylandS
     : QWaylandShellSurfaceTemplate<QWaylandWlShellSurface>(*new QWaylandWlShellSurfacePrivate)
 {
     initialize(shell, surface, res);
+}
+
+QWaylandWlShellSurface::~QWaylandWlShellSurface()
+{
+    Q_D(QWaylandWlShellSurface);
+    QWaylandWlShellPrivate::get(d->m_shell)->unregisterShellSurface(this);
 }
 
 /*!
@@ -515,6 +553,32 @@ QWaylandWlShell *QWaylandWlShellSurface::shell() const
 {
     Q_D(const QWaylandWlShellSurface);
     return d->m_shell;
+}
+
+/*!
+ * \enum QWaylandWlShellSurface::FocusPolicy
+ *
+ * This enum type is used to specify the focus policy of a shell surface.
+ *
+ * \value DefaultFocus The default focus policy should be used.
+ * \value NoKeyboardFocus The shell surface should not get keyboard focus.
+ */
+
+/*!
+ * \qmlproperty enum QtWaylandCompositor::WlShellSurface::focusPolicy
+ *
+ * This property holds the focus policy of the WlShellSurface.
+ */
+
+/*!
+ * \property QWaylandWlShellSurface::focusPolicy
+ *
+ * This property holds the focus policy of the QWaylandWlShellSurface.
+ */
+QWaylandWlShellSurface::FocusPolicy QWaylandWlShellSurface::focusPolicy() const
+{
+    Q_D(const QWaylandWlShellSurface);
+    return d->m_focusPolicy;
 }
 
 /*!

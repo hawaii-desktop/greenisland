@@ -73,13 +73,13 @@ public:
     bool isValidPopupParent(QWaylandSurface *parentSurface) const;
     QWaylandXdgPopup *topmostPopupForClient(struct wl_client* client) const;
 
-private:
     QSet<uint32_t> m_pings;
     QMultiMap<struct wl_client *, QWaylandXdgSurface *> m_xdgSurfaces;
     QMultiMap<struct wl_client *, QWaylandXdgPopup *> m_xdgPopups;
 
     QWaylandXdgSurface *xdgSurfaceFromSurface(QWaylandSurface *surface);
 
+protected:
     void xdg_shell_destroy(Resource *resource) Q_DECL_OVERRIDE;
     void xdg_shell_get_xdg_surface(Resource *resource, uint32_t id,
                                    struct ::wl_resource *surface) Q_DECL_OVERRIDE;
@@ -120,7 +120,6 @@ private:
     QWaylandXdgSurface *m_parentSurface;
 
     WindowType m_windowType;
-    QWaylandXdgSurface::FocusPolicy m_focusPolicy;
 
     QString m_title;
     QString m_appId;
@@ -166,10 +165,10 @@ public:
     QWaylandXdgPopupPrivate();
     static QWaylandXdgPopupPrivate *get(QWaylandXdgPopup *xdgPopup) { return xdgPopup->d_func(); }
 
-private:
     QWaylandSurface *m_surface;
     QWaylandSurface *m_parentSurface;
     QWaylandXdgShell *m_xdgShell;
+    QPoint m_position;
 
     void xdg_popup_destroy_resource(Resource *resource) Q_DECL_OVERRIDE;
     void xdg_popup_destroy(xdg_popup::Resource *resource) Q_DECL_OVERRIDE;

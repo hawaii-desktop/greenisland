@@ -63,6 +63,8 @@ public:
     QWaylandWlShell(QWaylandCompositor *compositor);
 
     void initialize() Q_DECL_OVERRIDE;
+    QList<QWaylandWlShellSurface *> shellSurfaces() const;
+    QList<QWaylandWlShellSurface *> shellSurfacesForClient(QWaylandClient* client) const;
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
@@ -104,8 +106,15 @@ public:
     };
     Q_ENUM(ResizeEdge);
 
+    enum FocusPolicy{
+        DefaultFocus,
+        NoKeyboardFocus
+    };
+    Q_ENUM(FocusPolicy)
+
     QWaylandWlShellSurface();
     QWaylandWlShellSurface(QWaylandWlShell *shell, QWaylandSurface *surface, const QWaylandResource &resource);
+    virtual ~QWaylandWlShellSurface();
 
     Q_INVOKABLE void initialize(QWaylandWlShell *shell, QWaylandSurface *surface, const QWaylandResource &resource);
 
@@ -114,6 +123,8 @@ public:
 
     QWaylandSurface *surface() const;
     QWaylandWlShell *shell() const;
+
+    FocusPolicy focusPolicy() const;
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
@@ -141,7 +152,7 @@ Q_SIGNALS:
     void startResize(QWaylandInputDevice *inputDevice, ResizeEdge edges);
 
     void setDefaultToplevel();
-    void setTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, bool inactive);
+    void setTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, FocusPolicy focusPolicy);
     void setFullScreen(FullScreenMethod method, uint framerate, QWaylandOutput *output);
     void setPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface, const QPoint &relativeToParent);
     void setMaximized(QWaylandOutput *output);

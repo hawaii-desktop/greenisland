@@ -199,7 +199,7 @@ void QWaylandXdgShellPrivate::xdg_shell_get_xdg_popup(Resource *resource, uint32
     if (!xdgPopup) {
         // A QWaylandXdgPopup was not created in response to the createXdgPopup signal, so we
         // create one as fallback here instead.
-        xdgPopup = new QWaylandXdgPopup(q, surface, parentSurface, xdgPopupResource);
+        xdgPopup = new QWaylandXdgPopup(q, surface, parentSurface, position, xdgPopupResource);
     }
 
     registerXdgPopup(xdgPopup);
@@ -222,7 +222,6 @@ QWaylandXdgSurfacePrivate::QWaylandXdgSurfacePrivate()
     , m_surface(nullptr)
     , m_parentSurface(nullptr)
     , m_windowType(UnknownWindowType)
-    , m_focusPolicy(QWaylandXdgSurface::AutomaticFocus)
     , m_unsetWindowGeometry(true)
     , m_lastAckedConfigure({{}, QSize(0, 0), 0})
 {
@@ -329,17 +328,17 @@ void QWaylandXdgSurfacePrivate::xdg_surface_set_parent(Resource *resource, wl_re
 
     Q_Q(QWaylandXdgSurface);
 
-    const bool isTransient = !m_parentSurface && parentSurface;
-
     if (m_parentSurface != parentSurface) {
         m_parentSurface = parentSurface;
         emit q->parentSurfaceChanged();
     }
 
-    if (isTransient && m_windowType != TransientWindowType) {
+    if (m_parentSurface && m_windowType != TransientWindowType) {
+        // There's a parent now, which means the surface is transient
         m_windowType = TransientWindowType;
         emit q->setTransient();
-    } else if (!isTransient && m_windowType != TopLevelWindowType) {
+    } else if (!m_parentSurface && m_windowType != TopLevelWindowType) {
+        // When the surface has no parent it is toplevel
         m_windowType = TopLevelWindowType;
         emit q->setTopLevel();
     }
@@ -715,7 +714,7 @@ QWaylandSurface *QWaylandXdgSurface::surface() const
  */
 
 /*!
- * \property QWaylandXdgSurface::surface
+ * \property QWaylandXdgSurface::parentSurface
  *
  * This property holds the XdgSurface parent of this XdgSurface.
  * When a parent surface is set, the parentSurfaceChanged() signal
@@ -976,7 +975,7 @@ QWaylandQuickShellIntegration *QWaylandXdgSurface::createIntegration(QWaylandQui
  * Constructs a QWaylandXdgPopup.
  */
 QWaylandXdgPopup::QWaylandXdgPopup()
-    : QWaylandCompositorExtensionTemplate<QWaylandXdgPopup>(*new QWaylandXdgPopupPrivate)
+    : QWaylandShellSurfaceTemplate<QWaylandXdgPopup>(*new QWaylandXdgPopupPrivate)
 {
 }
 
@@ -985,10 +984,10 @@ QWaylandXdgPopup::QWaylandXdgPopup()
  * given \a parentSurface and \a resource.
  */
 QWaylandXdgPopup::QWaylandXdgPopup(QWaylandXdgShell *xdgShell, QWaylandSurface *surface,
-                                   QWaylandSurface *parentSurface, const QWaylandResource &resource)
-    : QWaylandCompositorExtensionTemplate<QWaylandXdgPopup>(*new QWaylandXdgPopupPrivate)
+                                   QWaylandSurface *parentSurface, const QPoint &position, const QWaylandResource &resource)
+    : QWaylandShellSurfaceTemplate<QWaylandXdgPopup>(*new QWaylandXdgPopupPrivate)
 {
-    initialize(xdgShell, surface, parentSurface, resource);
+    initialize(xdgShell, surface, parentSurface, position, resource);
 }
 
 /*!
@@ -1002,13 +1001,14 @@ QWaylandXdgPopup::QWaylandXdgPopup(QWaylandXdgShell *xdgShell, QWaylandSurface *
  * Initializes the QWaylandXdgPopup, associating it with the given \a shell \a surface,
  * \a parentSurface and \a resource.
  */
-void QWaylandXdgPopup::initialize(QWaylandXdgShell *shell, QWaylandSurface *surface,
-                                  QWaylandSurface *parentSurface, const QWaylandResource &resource)
+void QWaylandXdgPopup::initialize(QWaylandXdgShell *shell, QWaylandSurface *surface, QWaylandSurface *parentSurface,
+                                  const QPoint& position, const QWaylandResource &resource)
 {
     Q_D(QWaylandXdgPopup);
     d->m_surface = surface;
     d->m_parentSurface = parentSurface;
     d->m_xdgShell = shell;
+    d->m_position = position;
     d->init(resource.resource());
     setExtensionContainer(surface);
     emit surfaceChanged();
@@ -1051,12 +1051,34 @@ QWaylandSurface *QWaylandXdgPopup::parentSurface() const
     return d->m_parentSurface;
 }
 
+
+/*!
+ * \qmlproperty object QtWaylandCompositor::XdgPopup::position
+ *
+ * This property holds the location of the upper left corner of the surface
+ * relative to the upper left corner of the parent surface, in surface local
+ * coordinates.
+ */
+
+/*!
+ * \property QWaylandXdgPopup::position
+ *
+ * This property holds the location of the upper left corner of the surface
+ * relative to the upper left corner of the parent surface, in surface local
+ * coordinates.
+ */
+QPoint QWaylandXdgPopup::position() const
+{
+    Q_D(const QWaylandXdgPopup);
+    return d->m_position;
+}
+
 /*!
  * \internal
  */
 void QWaylandXdgPopup::initialize()
 {
-    QWaylandCompositorExtensionTemplate::initialize();
+    QWaylandCompositorExtension::initialize();
 }
 
 /*!
@@ -1092,6 +1114,11 @@ void QWaylandXdgPopup::sendPopupDone()
 {
     Q_D(QWaylandXdgPopup);
     d->send_popup_done();
+}
+
+QWaylandQuickShellIntegration *QWaylandXdgPopup::createIntegration(QWaylandQuickShellSurfaceItem *item)
+{
+    return new QtWayland::XdgPopupIntegration(item);
 }
 
 QT_END_NAMESPACE

@@ -65,6 +65,7 @@ DataDevice::DataDevice(QWaylandInputDevice *inputDevice)
     , m_dragFocus(0)
     , m_dragFocusResource(0)
     , m_dragIcon(0)
+    , m_dragOrigin(nullptr)
 {
 }
 
@@ -123,6 +124,11 @@ QWaylandSurface *DataDevice::dragIcon() const
     return m_dragIcon;
 }
 
+QWaylandSurface *DataDevice::dragOrigin() const
+{
+    return m_dragOrigin;
+}
+
 void DataDevice::sourceDestroyed(DataSource *source)
 {
     if (m_selectionSource == source)
@@ -148,6 +154,8 @@ void DataDevice::drop()
     } else {
         m_dragDataSource->cancel();
     }
+    m_dragOrigin = nullptr;
+    setDragIcon(nullptr);
 }
 
 void DataDevice::cancelDrag()
@@ -159,12 +167,13 @@ void DataDevice::data_device_start_drag(Resource *resource, struct ::wl_resource
 {
     m_dragClient = resource->client();
     m_dragDataSource = source ? DataSource::fromResource(source) : 0;
-    m_dragIcon = icon ? QWaylandSurface::fromResource(icon) : 0;
-    Q_EMIT m_inputDevice->drag()->iconChanged();
-    Q_EMIT m_inputDevice->drag()->dragStarted();
+    m_dragOrigin = QWaylandSurface::fromResource(origin);
+    QWaylandDrag *drag = m_inputDevice->drag();
+    setDragIcon(icon ? QWaylandSurface::fromResource(icon) : nullptr);
+    Q_EMIT drag->dragStarted();
+    Q_EMIT m_dragOrigin->dragStarted(drag);
 
     Q_UNUSED(serial);
-    Q_UNUSED(origin);
     //### need to verify that we have an implicit grab with this serial
 }
 
@@ -191,6 +200,14 @@ void DataDevice::data_device_set_selection(Resource *, struct ::wl_resource *sou
     } else if (resource) {
         send_selection(resource->handle, 0);
     }
+}
+
+void DataDevice::setDragIcon(QWaylandSurface *icon)
+{
+    if (icon == m_dragIcon)
+        return;
+    m_dragIcon = icon;
+    Q_EMIT m_inputDevice->drag()->iconChanged();
 }
 
 }

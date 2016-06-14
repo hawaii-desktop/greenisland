@@ -194,22 +194,25 @@ private Q_SLOTS:
     void handleSurfaceSizeChanged();
 };
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgPopup : public QWaylandCompositorExtensionTemplate<QWaylandXdgPopup>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgPopup : public QWaylandShellSurfaceTemplate<QWaylandXdgPopup>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandXdgPopup)
     Q_PROPERTY(QWaylandSurface *surface READ surface NOTIFY surfaceChanged)
     Q_PROPERTY(QWaylandSurface *parentSurface READ parentSurface NOTIFY parentSurfaceChanged)
+    Q_PROPERTY(QPoint position READ position)
 
 public:
     QWaylandXdgPopup();
-    QWaylandXdgPopup(QWaylandXdgShell *xdgShell, QWaylandSurface *surface, QWaylandSurface *parentSurface, const QWaylandResource &resource);
+    QWaylandXdgPopup(QWaylandXdgShell *xdgShell, QWaylandSurface *surface, QWaylandSurface *parentSurface,
+                     const QPoint &position, const QWaylandResource &resource);
 
     Q_INVOKABLE void initialize(QWaylandXdgShell *shell, QWaylandSurface *surface,
-                                QWaylandSurface *parentSurface, const QWaylandResource &resource);
+                                QWaylandSurface *parentSurface, const QPoint &position, const QWaylandResource &resource);
 
     QWaylandSurface *surface() const;
     QWaylandSurface *parentSurface() const;
+    QPoint position() const;
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();
@@ -217,6 +220,8 @@ public:
     static QWaylandXdgPopup *fromResource(::wl_resource *resource);
 
     Q_INVOKABLE void sendPopupDone();
+
+    QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
     void surfaceChanged();

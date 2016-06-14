@@ -112,10 +112,10 @@ public:
         , paintEnabled(true)
         , touchEventsEnabled(false)
         , inputEventsEnabled(true)
+        , isDragging(false)
         , newTexture(false)
         , focusOnClick(true)
         , sizeFollowsSurface(true)
-        , belowParent(false)
         , connectedWindow(Q_NULLPTR)
         , origin(QWaylandSurface::OriginTopLeft)
     {
@@ -165,10 +165,10 @@ public:
     bool paintEnabled;
     bool touchEventsEnabled;
     bool inputEventsEnabled;
+    bool isDragging;
     bool newTexture;
     bool focusOnClick;
     bool sizeFollowsSurface;
-    bool belowParent;
 
     QQuickWindow *connectedWindow;
     QWaylandSurface::Origin origin;

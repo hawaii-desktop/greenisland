@@ -39,14 +39,17 @@
 #include "qwaylandquicksurface.h"
 #include "qwaylandinputmethodcontrol.h"
 #include "qwaylandtextinput.h"
+#include "qwaylandquickoutput.h"
 #include <GreenIsland/QtWaylandCompositor/qwaylandcompositor.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandbufferref.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandDrag>
 #include <GreenIsland/QtWaylandCompositor/private/qwlclientbufferintegration_p.h>
 
 #include <QtGui/QKeyEvent>
 #include <QtGui/QGuiApplication>
 #include <QtGui/QScreen>
+#include <QtGui/QOpenGLFunctions>
 
 #include <QtQuick/QSGSimpleTextureNode>
 #include <QtQuick/QQuickWindow>
@@ -497,7 +500,7 @@ void QWaylandQuickItem::mousePressEvent(QMouseEvent *event)
     if (d->focusOnClick)
         takeFocus(inputDevice);
 
-    inputDevice->sendMouseMoveEvent(d->view.data(), event->localPos() / d->scaleFactor(), event->windowPos());
+    inputDevice->sendMouseMoveEvent(d->view.data(), mapToSurface(event->localPos()), event->windowPos());
     inputDevice->sendMousePressEvent(event->button());
 }
 
@@ -509,7 +512,18 @@ void QWaylandQuickItem::mouseMoveEvent(QMouseEvent *event)
     Q_D(QWaylandQuickItem);
     if (d->shouldSendInputEvents()) {
         QWaylandInputDevice *inputDevice = compositor()->inputDeviceFor(event);
-        inputDevice->sendMouseMoveEvent(d->view.data(), event->localPos() / d->scaleFactor(), event->windowPos());
+        inputDevice->sendMouseMoveEvent(d->view.data(), mapToSurface(event->localPos()), event->windowPos());
+    } else if (d->isDragging) {
+        QWaylandInputDevice *inputDevice = compositor()->inputDeviceFor(event);
+        QWaylandQuickOutput *currentOutput = qobject_cast<QWaylandQuickOutput *>(view()->output());
+        //TODO: also check if dragging onto other outputs
+        QWaylandQuickItem *targetItem = qobject_cast<QWaylandQuickItem *>(currentOutput->pickClickableItem(mapToScene(event->localPos())));
+        QWaylandSurface *targetSurface = targetItem ? targetItem->surface() : nullptr;
+        if (targetSurface) {
+            QPointF position = mapToItem(targetItem, event->localPos());
+            QPointF surfacePosition = targetItem->mapToSurface(position);
+            inputDevice->drag()->dragMove(targetSurface, surfacePosition);
+        }
     } else {
         emit mouseMove(event->windowPos());
         event->ignore();
@@ -525,6 +539,11 @@ void QWaylandQuickItem::mouseReleaseEvent(QMouseEvent *event)
     if (d->shouldSendInputEvents()) {
         QWaylandInputDevice *inputDevice = compositor()->inputDeviceFor(event);
         inputDevice->sendMouseReleaseEvent(event->button());
+    } else if (d->isDragging) {
+        d->isDragging = false;
+        setInputEventsEnabled(true);
+        QWaylandInputDevice *inputDevice = compositor()->inputDeviceFor(event);
+        inputDevice->drag()->drop();
     } else {
         emit mouseRelease();
         event->ignore();
@@ -563,7 +582,7 @@ void QWaylandQuickItem::hoverMoveEvent(QHoverEvent *event)
     }
     if (d->shouldSendInputEvents()) {
         QWaylandInputDevice *inputDevice = compositor()->inputDeviceFor(event);
-        inputDevice->sendMouseMoveEvent(d->view.data(), event->pos() / d->scaleFactor(), mapToScene(event->pos()));
+        inputDevice->sendMouseMoveEvent(d->view.data(), mapToSurface(event->pos()), mapToScene(event->pos()));
     } else {
         event->ignore();
     }
@@ -716,78 +735,6 @@ void QWaylandQuickItem::handleSubsurfaceAdded(QWaylandSurface *childSurface)
     }
 }
 
-void QWaylandQuickItem::handlePlaceAbove(QWaylandSurface *siblingSurface)
-{
-    Q_D(QWaylandQuickItem);
-    QWaylandQuickItem *parent = qobject_cast<QWaylandQuickItem*>(parentItem());
-    if (!parent)
-        return;
-
-    //### does not handle changes in z value if parent is a subsurface
-
-    if (parent->surface() == siblingSurface) {
-        setZ(parent->z());
-        d->belowParent = false;
-        //stack below first sibling above parent
-        Q_FOREACH (QQuickItem *item, parent->childItems()) {
-            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
-            if (sibling && !sibling->d_func()->belowParent) {
-                stackAfter(sibling);
-                break;
-            }
-        }
-    } else {
-        Q_FOREACH (QQuickItem *item, parent->childItems()) {
-            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
-            if (sibling && sibling->surface() == siblingSurface) {
-                stackBefore(sibling);
-                setZ(sibling->z());
-                d->belowParent = sibling->d_func()->belowParent;
-                break;
-            }
-        }
-    }
-}
-
-void QWaylandQuickItem::handlePlaceBelow(QWaylandSurface *siblingSurface)
-{
-    Q_D(QWaylandQuickItem);
-    QWaylandQuickItem *parent = qobject_cast<QWaylandQuickItem*>(parentItem());
-    if (!parent)
-        return;
-
-    //### does not handle changes in z value if parent is a subsurface
-
-    if (parent->surface() == siblingSurface) {
-        setZ(parent->z() - 1.0);
-        d->belowParent = true;
-        //stack above last sibling below parent
-        QWaylandQuickItem *siblingBelow = nullptr;
-        Q_FOREACH (QQuickItem *item, parent->childItems()) {
-            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
-            if (!sibling)
-                continue;
-            if (sibling->d_func()->belowParent) {
-                siblingBelow = sibling;
-            } else { // first sibling above parent
-                if (siblingBelow)
-                    stackAfter(siblingBelow);
-                break;
-            }
-        }
-    } else {
-        Q_FOREACH (QQuickItem *item, parent->childItems()) {
-            QWaylandQuickItem *sibling = qobject_cast<QWaylandQuickItem*>(item);
-            if (sibling && sibling->surface() == siblingSurface) {
-                stackBefore(sibling);
-                setZ(sibling->z());
-                d->belowParent = sibling->d_func()->belowParent;
-                break;
-            }
-        }
-    }
-}
-
 
 
 /*!
@@ -842,6 +789,7 @@ void QWaylandQuickItem::handleSurfaceChanged()
         disconnect(d->oldSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         disconnect(d->oldSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
         disconnect(d->oldSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
+        disconnect(d->oldSurface, &QWaylandSurface::dragStarted, this, &QWaylandQuickItem::handleDragStarted);
 #ifndef QT_NO_IM
         disconnect(d->oldSurface->inputMethodControl(), &QWaylandInputMethodControl::updateInputMethod, this, &QWaylandQuickItem::updateInputMethod);
 #endif
@@ -854,6 +802,7 @@ void QWaylandQuickItem::handleSurfaceChanged()
         connect(newSurface, &QWaylandSurface::configure, this, &QWaylandQuickItem::updateBuffer);
         connect(newSurface, &QWaylandSurface::redraw, this, &QQuickItem::update);
         connect(newSurface, &QWaylandSurface::childAdded, this, &QWaylandQuickItem::handleSubsurfaceAdded);
+        connect(newSurface, &QWaylandSurface::dragStarted, this, &QWaylandQuickItem::handleDragStarted);
 #ifndef QT_NO_IM
         connect(newSurface->inputMethodControl(), &QWaylandInputMethodControl::updateInputMethod, this, &QWaylandQuickItem::updateInputMethod);
 #endif
@@ -970,10 +919,20 @@ void QWaylandQuickItem::setFocusOnClick(bool focus)
  */
 bool QWaylandQuickItem::inputRegionContains(const QPointF &localPosition)
 {
-    Q_D(QWaylandQuickItem);
     if (QWaylandSurface *s = surface())
-        return s->inputRegionContains(localPosition.toPoint() / d->scaleFactor());
+        return s->inputRegionContains(mapToSurface(localPosition).toPoint());
     return false;
+}
+
+/*!
+ * Maps the given \a point in this item's coordinate system to the equivalent
+ * point within the Wayland surface's coordinate system, and returns the mapped
+ * coordinate.
+ */
+QPointF QWaylandQuickItem::mapToSurface(const QPointF &point) const
+{
+    Q_D(const QWaylandQuickItem);
+    return point / d->scaleFactor();
 }
 
 /*!
@@ -1203,6 +1162,8 @@ void QWaylandQuickItem::setInputEventsEnabled(bool enabled)
 {
     Q_D(QWaylandQuickItem);
     if (d->inputEventsEnabled != enabled) {
+        if (enabled)
+            setEnabled(true);
         d->setInputEventsEnabled(enabled);
         emit inputEventsEnabledChanged();
     }
@@ -1235,6 +1196,14 @@ void QWaylandQuickItem::handleSubsurfacePosition(const QPoint &pos)
 {
     Q_D(QWaylandQuickItem);
     QQuickItem::setPosition(pos * d->scaleFactor());
+}
+
+void QWaylandQuickItem::handleDragStarted(QWaylandDrag *drag)
+{
+    Q_D(QWaylandQuickItem);
+    Q_ASSERT(drag->origin() == surface());
+    d->isDragging = true;
+    setInputEventsEnabled(false);
 }
 
 QT_END_NAMESPACE

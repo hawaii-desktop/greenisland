@@ -95,6 +95,7 @@ public:
     void setFocusOnClick(bool focus);
 
     bool inputRegionContains(const QPointF &localPosition);
+    Q_INVOKABLE QPointF mapToSurface(const QPointF &point) const;
 
     bool sizeFollowsSurface() const;
     void setSizeFollowsSurface(bool sizeFollowsSurface);
@@ -143,11 +144,10 @@ private Q_SLOTS:
     void beforeSync();
     void handleSubsurfaceAdded(QWaylandSurface *childSurface);
     void handleSubsurfacePosition(const QPoint &pos);
+    void handleDragStarted(QWaylandDrag *drag);
 #ifndef QT_NO_IM
     void updateInputMethod(Qt::InputMethodQueries queries);
 #endif
-    void handlePlaceAbove(QWaylandSurface *siblingSurface);
-    void handlePlaceBelow(QWaylandSurface *siblingSurface);
 
 Q_SIGNALS:
     void surfaceChanged();
