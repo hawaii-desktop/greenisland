@@ -50,16 +50,18 @@ void WindowManagerPrivate::registerWindow(ClientWindow *window)
 {
     Q_Q(WindowManager);
 
-    windowsList.append(window);
-    Q_EMIT q->windowCreated(window);
+    if (!windowsList.contains(window)) {
+        windowsList.append(window);
+        Q_EMIT q->windowCreated(window);
+    }
 }
 
 void WindowManagerPrivate::unregisterWindow(ClientWindow *window)
 {
     Q_Q(WindowManager);
 
-    windowsList.removeOne(window);
-    Q_EMIT q->windowClosed(window);
+    if (windowsList.removeOne(window))
+        Q_EMIT q->windowClosed(window);
 }
 
 int WindowManagerPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
