@@ -107,12 +107,6 @@ Q_SIGNALS:
     void applicationFocused(const QString &appId);
 
     /*!
-     * \brief An application got unfocused.
-     * \param appId Application identifier.
-     */
-    void applicationUnfocused(const QString &appId);
-
-    /*!
      * \brief A new window was created.
      * \param window Window that was just created.
      */
