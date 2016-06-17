@@ -33,8 +33,8 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandXdgShell>
 
+#include <GreenIsland/Server/ApplicationManager>
 #include <GreenIsland/Server/ClientWindow>
-#include <GreenIsland/Server/WindowManager>
 #include <GreenIsland/Server/GtkShell>
 
 //  W A R N I N G
@@ -52,15 +52,12 @@ namespace GreenIsland {
 
 namespace Server {
 
-class ApplicationManager;
-
 class GREENISLANDSERVER_EXPORT ClientWindowPrivate : public QObjectPrivate
 {
     Q_DECLARE_PUBLIC(ClientWindow)
 public:
     ClientWindowPrivate();
 
-    WindowManager *windowManager;
     ApplicationManager *applicationManager;
 
     QWaylandWlShell *wlShell;
@@ -71,6 +68,7 @@ public:
     ClientWindow::Type type;
     ClientWindow *parentWindow;
     QString title;
+    QString prevAppId;
     QString appId;
     qint64 pid;
     QString iconName;

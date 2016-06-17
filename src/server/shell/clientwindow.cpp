@@ -36,9 +36,7 @@
 
 #include "clientwindow.h"
 #include "clientwindow_p.h"
-#include "windowmanager_p.h"
 #include "serverlogging_p.h"
-#include "extensions/applicationmanager.h"
 #include "extensions/applicationmanager_p.h"
 
 namespace GreenIsland {
@@ -50,8 +48,7 @@ namespace Server {
  */
 
 ClientWindowPrivate::ClientWindowPrivate()
-    : windowManager(Q_NULLPTR)
-    , applicationManager(Q_NULLPTR)
+    : applicationManager(Q_NULLPTR)
     , wlShell(Q_NULLPTR)
     , xdgShell(Q_NULLPTR)
     , gtkShell(Q_NULLPTR)
@@ -184,6 +181,7 @@ void ClientWindowPrivate::setAppId(const QString &appId)
     if (this->appId == newAppId)
         return;
 
+    this->prevAppId = this->appId;
     this->appId = newAppId;
     Q_EMIT q->appIdChanged();
 
@@ -268,7 +266,7 @@ void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSur
     });
     QObject::connect(wlShellSurface, &QWaylandWlShellSurface::setTransient, q, [this, wlShellSurface]
                      (QWaylandSurface *parentSurface, const QPoint &, bool) {
-        setParentWindow(windowManager->windowForSurface(parentSurface));
+        setParentWindow(applicationManager->windowForSurface(parentSurface));
         setMaximized(false);
         setFullscreen(false);
         setType(ClientWindow::Transient);
@@ -279,7 +277,7 @@ void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSur
     });
     QObject::connect(wlShellSurface, &QWaylandWlShellSurface::setPopup, q, [this, wlShellSurface]
                      (QWaylandInputDevice *, QWaylandSurface *parentSurface, const QPoint &) {
-        setParentWindow(windowManager->windowForSurface(parentSurface));
+        setParentWindow(applicationManager->windowForSurface(parentSurface));
         setMaximized(false);
         setType(ClientWindow::Popup);
     });
@@ -301,7 +299,7 @@ void ClientWindowPrivate::_q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface)
         setType(ClientWindow::TopLevel);
     });
     QObject::connect(xdgSurface, &QWaylandXdgSurface::setTransient, q, [this, q, xdgSurface] {
-        setParentWindow(windowManager->windowForSurface(xdgSurface->parentSurface()->surface()));
+        setParentWindow(applicationManager->windowForSurface(xdgSurface->parentSurface()->surface()));
 
         // Set position relative to parent
         // FIXME: We don't know the surface size yet because the buffer is not yet committed
@@ -419,11 +417,11 @@ QWaylandOutput *ClientWindowPrivate::outputsAt(QQmlListProperty<QWaylandOutput> 
  * ClientWindow
  */
 
-ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
-    : QObject(*new ClientWindowPrivate(), wm)
+ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurface *surface)
+    : QObject(*new ClientWindowPrivate(), applicationManager)
 {
     Q_D(ClientWindow);
-    d->windowManager = wm;
+    d->applicationManager = applicationManager;
 
     // Shells
     d->wlShell = QWaylandWlShell::findIn(surface->compositor());
@@ -454,9 +452,7 @@ ClientWindow::ClientWindow(WindowManager *wm, QWaylandSurface *surface)
     d->initialize(surface);
 
     // Register window with the application manager
-    d->applicationManager = ApplicationManager::findIn(surface->compositor());
-    if (d->applicationManager)
-        ApplicationManagerPrivate::get(d->applicationManager)->registerWindow(this);
+    ApplicationManagerPrivate::get(d->applicationManager)->registerWindow(this);
 }
 
 ClientWindow::~ClientWindow()
@@ -470,12 +466,8 @@ ClientWindow::~ClientWindow()
             view->takeFocus();
     }
 
-    // Unregister window from the window manager
-    WindowManagerPrivate::get(d->windowManager)->unregisterWindow(this);
-
     // Unregister window from the application manager
-    if (d->applicationManager)
-        ApplicationManagerPrivate::get(d->applicationManager)->unregisterWindow(this);
+    ApplicationManagerPrivate::get(d->applicationManager)->unregisterWindow(this);
 }
 
 QWaylandSurface *ClientWindow::surface() const

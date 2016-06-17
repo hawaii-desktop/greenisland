@@ -60,7 +60,6 @@ set(SOURCES
     screen/screenmanager.cpp
     shell/clientwindow.cpp
     shell/clientwindowquickitem.cpp
-    shell/windowmanager.cpp
     extensions/applicationmanager.cpp
     extensions/gtkshell.cpp
     extensions/screencaster.cpp
@@ -221,7 +220,6 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     HEADER_NAMES
         ClientWindow
         ClientWindowQuickItem
-        WindowManager
     PREFIX
         Server
     OUTPUT_DIR
@@ -246,7 +244,6 @@ private_headers(GreenIslandServer_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowquickitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shell/windowmanager_p.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-outputmanagement.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h
         ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h

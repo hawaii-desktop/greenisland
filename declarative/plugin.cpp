@@ -58,7 +58,6 @@
 #include <GreenIsland/Server/Screenshooter>
 //#include <GreenIsland/Server/TaskManager>
 #include <GreenIsland/Server/QuickScreenManager>
-#include <GreenIsland/Server/WindowManager>
 
 #include "fpscounter.h"
 #include "keyeventfilter.h"
@@ -155,12 +154,9 @@ void GreenIslandPlugin::registerTypes(const char *uri)
     qmlRegisterUncreatableType<ApplicationManager>(uri, 1, 0, "ApplicationManagerBase",
                                                    QObject::tr("Cannot create instance of ApplicationManagerBase, use ApplicationManager instead"));
     qmlRegisterType<ApplicationManagerQuickExtension>(uri, 1, 0, "ApplicationManager");
-
-    // Window manager
     qmlRegisterUncreatableType<ClientWindow>(uri, 1, 0, "ClientWindow",
                                              QObject::tr("Cannot create instance of ClientWindow"));
     qmlRegisterType<ClientWindowQuickItem>(uri, 1, 0, "ClientWindowItem");
-    qmlRegisterType<WindowManager>(uri, 1, 0, "WindowManager");
 
     // Task manager
     //qmlRegisterType<TaskManager>(uri, 1, 0, "TaskManager");

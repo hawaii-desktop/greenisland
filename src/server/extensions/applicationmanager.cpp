@@ -33,6 +33,7 @@
 #include "applicationmanager_p.h"
 #include "serverlogging_p.h"
 #include "shell/clientwindow.h"
+#include "shell/clientwindow_p.h"
 
 namespace GreenIsland {
 
@@ -45,22 +46,30 @@ namespace Server {
 ApplicationManagerPrivate::ApplicationManagerPrivate()
     : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_applications()
+    , rootItem(new QQuickItem())
 {
+}
+
+ApplicationManagerPrivate::~ApplicationManagerPrivate()
+{
+    delete rootItem;
 }
 
 void ApplicationManagerPrivate::registerWindow(ClientWindow *window)
 {
     Q_Q(ApplicationManager);
 
-    if (appIdMap.values().contains(window))
+    if (windowsList.contains(window))
         return;
 
-    if (!window->appId().isEmpty()) {
-        // Announce the appId
-        Q_EMIT q->applicationAdded(window->appId(), window->surface()->client()->processId());
+    // Append the window
+    windowsList.append(window);
+    Q_EMIT q->windowCreated(window);
 
-        // Insert the new appId
-        appIdMap.insert(window->appId(), window);
+    // Append to the applications list
+    if (!window->appId().isEmpty() && !appIds.contains(window->appId())) {
+        appIds.append(window->appId());
+        Q_EMIT q->applicationAdded(window->appId(), window->processId());
     }
 
     QObject::connect(window, SIGNAL(appIdChanged()),
@@ -73,22 +82,49 @@ void ApplicationManagerPrivate::unregisterWindow(ClientWindow *window)
 {
     Q_Q(ApplicationManager);
 
+    // First remove the window to avoid checking appId against itself
+    if (!windowsList.removeOne(window)) {
+        qCWarning(gLcCore) << "Couldn't unregister window" << window;
+        return;
+    }
+
+    // Disconnect the window
     QObject::disconnect(window, SIGNAL(appIdChanged()),
                         q, SLOT(_q_appIdChanged()));
     QObject::disconnect(window, SIGNAL(activatedChanged()),
                         q, SLOT(_q_activatedChanged()));
 
-    QStringList keys = appIdMap.keys();
-    Q_FOREACH (const QString &curAppId, keys) {
-        if (appIdMap.remove(curAppId, window) > 0) {
-            if (appIdMap.count(curAppId) == 0)
-                appIdMap.remove(curAppId);
-        }
+    // Go through the windows list and if there is no window with the
+    // same appId left it means the application was closed
+    Q_FOREACH (ClientWindow *curWindow, windowsList) {
+        if (curWindow->appId() == window->appId())
+            return;
     }
 
-    // Emit the signal if this was the last window with that appId
-    if (!appIdMap.contains(window->appId()))
-        Q_EMIT q->applicationRemoved(window->appId(), window->processId());
+    // Unregister the application
+    appIds.removeOne(window->appId());
+    Q_EMIT q->applicationRemoved(window->appId(), window->processId());
+}
+
+void ApplicationManagerPrivate::recalculateVirtualGeometry()
+{
+    QRect geometry;
+
+    Q_FOREACH (QWaylandOutput *output, compositor->outputs())
+        geometry = geometry.united(output->geometry());
+
+    rootItem->setPosition(geometry.topLeft());
+    rootItem->setSize(geometry.size());
+}
+
+void ApplicationManagerPrivate::_q_outputAdded(QWaylandOutput *)
+{
+    recalculateVirtualGeometry();
+}
+
+void ApplicationManagerPrivate::_q_outputRemoved(QWaylandOutput *)
+{
+    recalculateVirtualGeometry();
 }
 
 void ApplicationManagerPrivate::_q_appIdChanged()
@@ -97,29 +133,18 @@ void ApplicationManagerPrivate::_q_appIdChanged()
 
     ClientWindow *window = qobject_cast<ClientWindow *>(q->sender());
     Q_ASSERT(window);
+    ClientWindowPrivate *dWindow = ClientWindowPrivate::get(window);
 
-    // Deassociate window with the previous appId if it has changed
-    // and remove empty appId entries
-    QSet<QString> oldAppIds;
-    QStringList keys = appIdMap.keys();
-    Q_FOREACH (const QString &curAppId, keys) {
-        if (appIdMap.remove(curAppId, window) > 0)
-            oldAppIds.insert(curAppId);
-
-        if (appIdMap.values(curAppId).count() == 0)
-            appIdMap.remove(curAppId);
+    // Unregister the old appId
+    if (appIds.contains(dWindow->prevAppId)) {
+        appIds.removeOne(dWindow->prevAppId);
+        Q_EMIT q->applicationRemoved(dWindow->prevAppId, window->processId());
     }
 
-    // Emit a signal for each old appId that was removed
-    Q_FOREACH (const QString &curAppId, oldAppIds)
-        Q_EMIT q->applicationRemoved(curAppId, window->processId());
-
-    if (!window->appId().isEmpty()) {
-        // Announce the appId
+    // Register the new appId
+    if (!appIds.contains(window->appId())) {
+        appIds.append(window->appId());
         Q_EMIT q->applicationAdded(window->appId(), window->processId());
-
-        // Insert the new appId
-        appIdMap.insert(window->appId(), window);
     }
 }
 
@@ -134,11 +159,24 @@ void ApplicationManagerPrivate::_q_activatedChanged()
         return;
 
     Q_EMIT q->applicationFocused(window->appId());
+}
 
-    Q_FOREACH (const QString &appId, appIdMap.keys()) {
-        if (appId != window->appId())
-            Q_EMIT q->applicationUnfocused(appId);
-    }
+QQmlListProperty<ClientWindow> ApplicationManagerPrivate::windows()
+{
+    Q_Q(ApplicationManager);
+    return QQmlListProperty<ClientWindow>(q, Q_NULLPTR, windowsCount, windowsAt);
+}
+
+int ApplicationManagerPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
+{
+    ApplicationManager *that = static_cast<ApplicationManager *>(prop->object);
+    return ApplicationManagerPrivate::get(that)->windowsList.count();
+}
+
+ClientWindow *ApplicationManagerPrivate::windowsAt(QQmlListProperty<ClientWindow> *prop, int index)
+{
+    ApplicationManager *that = static_cast<ApplicationManager *>(prop->object);
+    return ApplicationManagerPrivate::get(that)->windowsList.at(index);
 }
 
 void ApplicationManagerPrivate::applications_quit(Resource *resource, const QString &app_id)
@@ -164,38 +202,87 @@ ApplicationManager::ApplicationManager(QWaylandCompositor *compositor)
 {
 }
 
+QWaylandCompositor *ApplicationManager::compositor() const
+{
+    Q_D(const ApplicationManager);
+    return d->compositor;
+}
+
+ClientWindow *ApplicationManager::createWindow(QWaylandSurface *surface)
+{
+    Q_D(ApplicationManager);
+
+    // Create a new client window
+    ClientWindow *clientWindow = new ClientWindow(this, surface);
+    ClientWindowPrivate::get(clientWindow)->moveItem->setParentItem(d->rootItem);
+
+    // Append to the list
+    d->registerWindow(clientWindow);
+
+    // Automatically delete client window when the surface is destroyed
+    connect(surface, SIGNAL(surfaceDestroyed()),
+            clientWindow, SLOT(deleteLater()));
+
+    return clientWindow;
+}
+
+ClientWindow *ApplicationManager::windowForSurface(QWaylandSurface *surface) const
+{
+    Q_D(const ApplicationManager);
+
+    if (surface) {
+        Q_FOREACH (ClientWindow *window, d->windowsList) {
+            if (window->surface() == surface)
+                return window;
+        }
+    }
+
+    return Q_NULLPTR;
+}
+
+QVariantList ApplicationManager::windowsForOutput(QWaylandOutput *desiredOutput) const
+{
+    Q_D(const ApplicationManager);
+
+    if (!d->compositor)
+        return QVariantList();
+
+    QVariantList list;
+    QWaylandOutput *output = desiredOutput ? desiredOutput : d->compositor->defaultOutput();
+
+    Q_FOREACH (ClientWindow *window, d->windowsList) {
+        if (window->designedOutput() == output)
+            list.append(QVariant::fromValue(window));
+    }
+
+    return list;
+}
+
 bool ApplicationManager::isRegistered(const QString &appId) const
 {
     Q_D(const ApplicationManager);
-    return d->appIdMap.contains(appId);
+    return d->appIds.contains(appId);
 }
 
 void ApplicationManager::quit(const QString &appId)
 {
     Q_D(ApplicationManager);
 
-    if (!d->appIdMap.contains(appId)) {
+    // Cannot quit an unkown application
+    if (!d->appIds.contains(appId)) {
         qCWarning(gLcCore,
-                  "Quit requested on the unknown appId %s has no effect",
+                  "Quit requested on unregistered appId %s has no effect",
                   qPrintable(appId));
         return;
     }
 
-    ClientWindow *window = d->appIdMap.values(appId).at(0);
-    if (!window) {
-        qCWarning(gLcCore,
-                  "Quit requested on the unregistered appId %s has no effect",
-                  qPrintable(appId));
-        return;
+    // Close the client
+    Q_FOREACH (ClientWindow *curWindow, d->windowsList) {
+        if (curWindow->appId() == appId) {
+            curWindow->surface()->client()->close();
+            return;
+        }
     }
-
-    if (!window->surface()) {
-        qCWarning(gLcCore,
-                  "Quit requested on appId %s has no effect because surface cannot be found",
-                  qPrintable(appId));
-        return;
-    }
-    window->surface()->client()->close();
 }
 
 void ApplicationManager::initialize()
@@ -208,7 +295,15 @@ void ApplicationManager::initialize()
         qWarning() << "Failed to find QWaylandCompositor when initializing ApplicationManager";
         return;
     }
+    d->compositor = compositor;
     d->init(compositor->display(), 1);
+
+    Q_EMIT compositorChanged();
+
+    connect(compositor, SIGNAL(outputAdded(QWaylandOutput*)),
+            this, SLOT(_q_outputAdded(QWaylandOutput*)));
+    connect(compositor, SIGNAL(outputRemoved(QWaylandOutput*)),
+            this, SLOT(_q_outputRemoved(QWaylandOutput*)));
 }
 
 const struct wl_interface *ApplicationManager::interface()

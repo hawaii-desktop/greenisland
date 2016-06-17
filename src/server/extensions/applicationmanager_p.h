@@ -29,6 +29,7 @@
 #define GREENISLAND_APPLICATIONMANAGER_P_H
 
 #include <QtCore/QMultiMap>
+#include <QtQuick/QQuickItem>
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 
@@ -57,16 +58,30 @@ class GREENISLANDSERVER_EXPORT ApplicationManagerPrivate
     Q_DECLARE_PUBLIC(ApplicationManager)
 public:
     ApplicationManagerPrivate();
+    ~ApplicationManagerPrivate();
 
     void registerWindow(ClientWindow *window);
     void unregisterWindow(ClientWindow *window);
 
+    void recalculateVirtualGeometry();
+
+    void _q_outputAdded(QWaylandOutput *);
+    void _q_outputRemoved(QWaylandOutput *);
+
     void _q_appIdChanged();
     void _q_activatedChanged();
 
+    QQmlListProperty<ClientWindow> windows();
+
+    static int windowsCount(QQmlListProperty<ClientWindow> *prop);
+    static ClientWindow *windowsAt(QQmlListProperty<ClientWindow> *prop, int index);
+
     static ApplicationManagerPrivate *get(ApplicationManager *appMan) { return appMan->d_func(); }
 
-    QMultiMap<QString, ClientWindow *> appIdMap;
+    QWaylandCompositor *compositor;
+    QQuickItem *rootItem;
+    QVector<ClientWindow *> windowsList;
+    QStringList appIds;
 
 protected:
     void applications_quit(Resource *resource, const QString &app_id) Q_DECL_OVERRIDE;

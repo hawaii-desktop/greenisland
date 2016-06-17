@@ -33,20 +33,32 @@
 #include <GreenIsland/server/greenislandserver_export.h>
 
 class QWaylandCompositor;
+class QWaylandOutput;
+class QWaylandSurface;
 
 namespace GreenIsland {
 
 namespace Server {
 
 class ApplicationManagerPrivate;
+class ClientWindow;
 
 class GREENISLANDSERVER_EXPORT ApplicationManager : public QWaylandCompositorExtensionTemplate<ApplicationManager>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)
+    Q_PROPERTY(QWaylandCompositor *compositor READ compositor NOTIFY compositorChanged)
+    Q_PRIVATE_PROPERTY(ApplicationManager::d_func(), QQmlListProperty<GreenIsland::Server::ClientWindow> windows READ windows NOTIFY windowsChanged)
 public:
     ApplicationManager();
     ApplicationManager(QWaylandCompositor *compositor);
+
+    QWaylandCompositor *compositor() const;
+
+    Q_INVOKABLE GreenIsland::Server::ClientWindow *createWindow(QWaylandSurface *surface);
+
+    Q_INVOKABLE GreenIsland::Server::ClientWindow *windowForSurface(QWaylandSurface *surface) const;
+    Q_INVOKABLE QVariantList windowsForOutput(QWaylandOutput *desiredOutput = Q_NULLPTR) const;
 
     /*!
      * \brief Returns whether the application is registered or not.
@@ -69,6 +81,11 @@ public:
     static QByteArray interfaceName();
 
 Q_SIGNALS:
+    /*!
+     * \brief A compositor was associated with this extension.
+     */
+    void compositorChanged();
+
     /*!
      * \brief An application has been added.
      * \param appId Application identifier.
@@ -94,6 +111,26 @@ Q_SIGNALS:
      * \param appId Application identifier.
      */
     void applicationUnfocused(const QString &appId);
+
+    /*!
+     * \brief A new window was created.
+     * \param window Window that was just created.
+     */
+    void windowCreated(GreenIsland::Server::ClientWindow *window);
+
+    /*!
+     * \brief A window was closed.
+     * \param window Window that was closed.
+     */
+    void windowClosed(GreenIsland::Server::ClientWindow *window);
+
+    /*!
+     * \brief A window was either created or closed.
+     *
+     * Creating and closing windows affects the windows list,
+     * when that happens this signal is emitted.
+     */
+    void windowsChanged();
 
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_appIdChanged())

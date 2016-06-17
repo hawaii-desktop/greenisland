@@ -44,9 +44,9 @@ namespace GreenIsland {
 
 namespace Server {
 
+class ApplicationManager;
 class ClientWindowPrivate;
 class GtkSurface;
-class WindowManager;
 
 class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
 {
@@ -156,14 +156,14 @@ Q_SIGNALS:
                         const QPoint &localSurfacePosition);
 
 private:
-    ClientWindow(WindowManager *wm, QWaylandSurface *surface);
+    ClientWindow(ApplicationManager *applicationManager, QWaylandSurface *surface);
 
     Q_PRIVATE_SLOT(d_func(), void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup))
     Q_PRIVATE_SLOT(d_func(), void _q_gtkSurfaceCreated(GtkSurface *gtkSurface))
 
-    friend class WindowManager;
+    friend class ApplicationManager;
 };
 
 } // namespace Server
