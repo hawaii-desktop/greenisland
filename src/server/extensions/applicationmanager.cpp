@@ -220,8 +220,10 @@ ClientWindow *ApplicationManager::createWindow(QWaylandSurface *surface)
     d->registerWindow(clientWindow);
 
     // Automatically delete client window when the surface is destroyed
-    connect(surface, SIGNAL(surfaceDestroyed()),
-            clientWindow, SLOT(deleteLater()));
+    connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, d, clientWindow] {
+        d->unregisterWindow(clientWindow);
+        clientWindow->deleteLater();
+    });
 
     return clientWindow;
 }

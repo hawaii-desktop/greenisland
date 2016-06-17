@@ -450,9 +450,6 @@ ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurfa
 
     // Initialize
     d->initialize(surface);
-
-    // Register window with the application manager
-    ApplicationManagerPrivate::get(d->applicationManager)->registerWindow(this);
 }
 
 ClientWindow::~ClientWindow()
@@ -465,9 +462,6 @@ ClientWindow::~ClientWindow()
         Q_FOREACH (QWaylandQuickItem *view, views)
             view->takeFocus();
     }
-
-    // Unregister window from the application manager
-    ApplicationManagerPrivate::get(d->applicationManager)->unregisterWindow(this);
 }
 
 QWaylandSurface *ClientWindow::surface() const
