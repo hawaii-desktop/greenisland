@@ -64,6 +64,27 @@ void WindowManagerPrivate::unregisterWindow(ClientWindow *window)
         Q_EMIT q->windowClosed(window);
 }
 
+void WindowManagerPrivate::recalculateVirtualGeometry()
+{
+    QRect geometry;
+
+    Q_FOREACH (QWaylandOutput *output, compositor->outputs())
+        geometry = geometry.united(output->geometry());
+
+    rootItem->setPosition(geometry.topLeft());
+    rootItem->setSize(geometry.size());
+}
+
+void WindowManagerPrivate::_q_outputAdded(QWaylandOutput *)
+{
+    recalculateVirtualGeometry();
+}
+
+void WindowManagerPrivate::_q_outputRemoved(QWaylandOutput *)
+{
+    recalculateVirtualGeometry();
+}
+
 int WindowManagerPrivate::windowsCount(QQmlListProperty<ClientWindow> *prop)
 {
     WindowManager *that = static_cast<WindowManager *>(prop->object);
@@ -105,6 +126,20 @@ void WindowManager::setCompositor(QWaylandCompositor *compositor)
     if (d->compositor != compositor)
         return;
 
+    if (d->compositor) {
+        disconnect(d->compositor, SIGNAL(outputAdded(QWaylandOutput*)),
+                   this, SLOT(_q_outputAdded(QWaylandOutput*)));
+        disconnect(d->compositor, SIGNAL(outputRemoved(QWaylandOutput*)),
+                   this, SLOT(_q_outputRemoved(QWaylandOutput*)));
+    }
+
+    if (compositor) {
+        connect(compositor, SIGNAL(outputAdded(QWaylandOutput*)),
+                this, SLOT(_q_outputAdded(QWaylandOutput*)));
+        connect(compositor, SIGNAL(outputRemoved(QWaylandOutput*)),
+                this, SLOT(_q_outputRemoved(QWaylandOutput*)));
+    }
+
     d->compositor = compositor;
     Q_EMIT compositorChanged();
 }
@@ -119,10 +154,6 @@ ClientWindow *WindowManager::createWindow(QWaylandSurface *surface)
 
     // Append to the list
     d->registerWindow(clientWindow);
-
-    // Recalculate virtual geometry
-    // FIXME: Call only when outputs are added or removed
-    recalculateVirtualGeometry();
 
     // Automatically delete client window when the surface is destroyed
     connect(surface, SIGNAL(surfaceDestroyed()),
@@ -161,22 +192,6 @@ QVariantList WindowManager::windowsForOutput(QWaylandOutput *desiredOutput) cons
     }
 
     return list;
-}
-
-void WindowManager::recalculateVirtualGeometry()
-{
-    Q_D(WindowManager);
-
-    if (!d->compositor)
-        return;
-
-    QRect geometry;
-
-    Q_FOREACH (QWaylandOutput *output, d->compositor->outputs())
-        geometry = geometry.united(output->geometry());
-
-    d->rootItem->setPosition(geometry.topLeft());
-    d->rootItem->setSize(geometry.size());
 }
 
 } // namespace Server

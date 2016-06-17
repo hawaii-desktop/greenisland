@@ -68,6 +68,11 @@ public:
     void registerWindow(ClientWindow *window);
     void unregisterWindow(ClientWindow *window);
 
+    void recalculateVirtualGeometry();
+
+    void _q_outputAdded(QWaylandOutput *);
+    void _q_outputRemoved(QWaylandOutput *);
+
     static int windowsCount(QQmlListProperty<ClientWindow> *prop);
     static ClientWindow *windowsAt(QQmlListProperty<ClientWindow> *prop, int index);
 

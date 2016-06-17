@@ -57,13 +57,15 @@ public:
 
     Q_INVOKABLE QVariantList windowsForOutput(QWaylandOutput *desiredOutput = Q_NULLPTR) const;
 
-    Q_INVOKABLE void recalculateVirtualGeometry();
-
 Q_SIGNALS:
     void compositorChanged();
     void windowsChanged();
     void windowCreated(GreenIsland::Server::ClientWindow *window);
     void windowClosed(GreenIsland::Server::ClientWindow *window);
+
+private:
+    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(QWaylandOutput *))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput *))
 };
 
 } // namespace Server
