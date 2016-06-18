@@ -181,6 +181,12 @@ void ClientWindowPrivate::setAppId(const QString &appId)
     if (this->appId == newAppId)
         return;
 
+    // Map known identifiers to the correct values
+    ApplicationManagerPrivate *dAppMan = ApplicationManagerPrivate::get(applicationManager);
+    if (dAppMan->appIdMap.contains(newAppId))
+        newAppId = dAppMan->appIdMap[newAppId];
+
+    // Set the new appId and save the previous one
     this->prevAppId = this->appId;
     this->appId = newAppId;
     Q_EMIT q->appIdChanged();

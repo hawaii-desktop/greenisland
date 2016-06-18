@@ -82,6 +82,7 @@ public:
     QQuickItem *rootItem;
     QVector<ClientWindow *> windowsList;
     QStringList appIds;
+    QMap<QString, QString> appIdMap;
 
 protected:
     void applications_quit(Resource *resource, const QString &app_id) Q_DECL_OVERRIDE;

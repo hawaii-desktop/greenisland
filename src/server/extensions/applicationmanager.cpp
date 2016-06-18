@@ -48,6 +48,10 @@ ApplicationManagerPrivate::ApplicationManagerPrivate()
     , QtWaylandServer::greenisland_applications()
     , rootItem(new QQuickItem())
 {
+    // Populate appId mapping
+    appIdMap[QLatin1String("org.hawaiios.hawaii-system-preferences")] = QLatin1String("org.hawaiios.SystemPreferences");
+    appIdMap[QLatin1String("org.hawaiios.hawaii-screenshot")] = QLatin1String("org.hawaiios.Screenshot");
+    appIdMap[QLatin1String("org.qterminal.qterminal-qt5")] = QLatin1String("qterminal-qt5");
 }
 
 ApplicationManagerPrivate::~ApplicationManagerPrivate()
