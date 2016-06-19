@@ -105,6 +105,9 @@ public:
     void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup);
     void _q_gtkSurfaceCreated(GtkSurface *gtkSurface);
 
+    void _q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice);
+    void _q_handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
+
     QString findDesktopFile(const QString &appId);
 
     QQmlListProperty<QWaylandQuickItem> windowViews();

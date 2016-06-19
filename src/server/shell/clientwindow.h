@@ -162,6 +162,8 @@ private:
     Q_PRIVATE_SLOT(d_func(), void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup))
     Q_PRIVATE_SLOT(d_func(), void _q_gtkSurfaceCreated(GtkSurface *gtkSurface))
+    Q_PRIVATE_SLOT(d_func(), void _q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice))
+    Q_PRIVATE_SLOT(d_func(), void _q_handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface))
 
     friend class ApplicationManager;
 };

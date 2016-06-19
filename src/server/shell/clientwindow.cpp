@@ -292,6 +292,11 @@ void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSur
         setMaximized(true);
         setFullscreen(false);
     });
+
+    // Handle input device changes
+    _q_handleDefaultInputDeviceChanged(surface->compositor()->defaultInputDevice(), Q_NULLPTR);
+    QObject::connect(surface->compositor(), SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
+                     q, SLOT(_q_handleDefaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)));
 }
 
 void ClientWindowPrivate::_q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface)
@@ -375,6 +380,48 @@ void ClientWindowPrivate::_q_gtkSurfaceCreated(GtkSurface *gtkSurface)
     QObject::connect(gtkSurface, &GtkSurface::appIdChanged, q, [this](const QString &appId) {
         setAppId(appId);
     });
+}
+
+void ClientWindowPrivate::_q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice)
+{
+    Q_Q(ClientWindow);
+
+    if (oldDevice != nullptr) {
+        QObject::disconnect(oldDevice, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
+                            q, SLOT(_q_handleFocusChanged(QWaylandSurface*,QWaylandSurface*)));
+    }
+
+    if (newDevice != nullptr) {
+        QObject::connect(newDevice, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
+                         q, SLOT(_q_handleFocusChanged(QWaylandSurface*,QWaylandSurface*)));
+    }
+}
+
+void ClientWindowPrivate::_q_handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface)
+{
+    Q_Q(ClientWindow);
+    Q_UNUSED(oldSurface);
+
+    // wl_shell do not handle activation like xdg_shell does, so we implement
+    // it ourselves with focus changed events
+
+    QWaylandWlShellSurface *newShellSurface = QWaylandWlShellSurface::findIn(newSurface);
+
+    if (newShellSurface) {
+        bool active = newSurface == surface;
+
+        setActive(active);
+        q->setMinimized(false);
+
+        if (active) {
+            // Raise parent
+            if (type == ClientWindow::Transient && parentWindow)
+                parentWindow->raise();
+
+            // Raise this window
+            q->raise();
+        }
+    }
 }
 
 QString ClientWindowPrivate::findDesktopFile(const QString &appId)
