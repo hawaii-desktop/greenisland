@@ -495,9 +495,11 @@ ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurfa
 
     // Move
     connect(d->moveItem, &QQuickItem::xChanged, this, [this, d] {
+        d->findOutputs();
         setX(d->moveItem->x());
     });
     connect(d->moveItem, &QQuickItem::yChanged, this, [this, d] {
+        d->findOutputs();
         setY(d->moveItem->y());
     });
 
@@ -574,8 +576,6 @@ void ClientWindow::setX(qreal x)
 
     d->x = x;
     Q_EMIT xChanged();
-
-    d->findOutputs();
 }
 
 qreal ClientWindow::y() const
@@ -593,8 +593,6 @@ void ClientWindow::setY(qreal y)
 
     d->y = y;
     Q_EMIT yChanged();
-
-    d->findOutputs();
 }
 
 QPointF ClientWindow::position() const

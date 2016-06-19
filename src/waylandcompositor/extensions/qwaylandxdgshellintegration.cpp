@@ -121,7 +121,7 @@ void XdgShellIntegration::handleStartResize(QWaylandInputDevice *inputDevice, QW
     resizeState.inputDevice = inputDevice;
     resizeState.resizeEdges = edges;
     resizeState.initialWindowSize = m_xdgSurface->windowGeometry().size();
-    resizeState.initialPosition = m_item->position();
+    resizeState.initialPosition = m_item->moveItem()->position();
     resizeState.initialSurfaceSize = m_item->surface()->size();
     resizeState.initialized = false;
 }
@@ -129,7 +129,7 @@ void XdgShellIntegration::handleStartResize(QWaylandInputDevice *inputDevice, QW
 void XdgShellIntegration::handleSetMaximized()
 {
     maximizeState.initialWindowSize = m_xdgSurface->windowGeometry().size();
-    maximizeState.initialPosition = m_item->position();
+    maximizeState.initialPosition = m_item->moveItem()->position();
 
     m_xdgSurface->sendMaximized(m_item->view()->output()->availableGeometry().size() / m_item->view()->output()->scaleFactor());
 }
@@ -142,9 +142,9 @@ void XdgShellIntegration::handleUnsetMaximized()
 void XdgShellIntegration::handleMaximizedChanged()
 {
     if (m_xdgSurface->maximized()) {
-        m_item->setPosition(m_item->view()->output()->position() + m_item->view()->output()->availableGeometry().topLeft());
+        m_item->moveItem()->setPosition(m_item->view()->output()->position() + m_item->view()->output()->availableGeometry().topLeft());
     } else {
-        m_item->setPosition(maximizeState.initialPosition);
+        m_item->moveItem()->setPosition(maximizeState.initialPosition);
     }
 }
 
@@ -164,7 +164,7 @@ void XdgShellIntegration::handleSurfaceSizeChanged()
 
         if (resizeState.resizeEdges & QWaylandXdgSurface::ResizeEdge::LeftEdge)
             x += resizeState.initialSurfaceSize.width() - m_item->surface()->size().width();
-        m_item->setPosition(QPointF(x, y));
+        m_item->moveItem()->setPosition(QPointF(x, y));
     }
 }
 
@@ -174,7 +174,7 @@ XdgPopupIntegration::XdgPopupIntegration(QWaylandQuickShellSurfaceItem *item)
     , m_xdgShell(QWaylandXdgPopupPrivate::get(m_xdgPopup)->m_xdgShell)
 {
     item->setSurface(m_xdgPopup->surface());
-    item->setPosition(QPointF(m_xdgPopup->position() * item->view()->output()->scaleFactor()));
+    item->moveItem()->setPosition(QPointF(m_xdgPopup->position() * item->view()->output()->scaleFactor()));
 
     QWaylandClient *client = m_xdgPopup->surface()->client();
     QWaylandQuickShellEventFilter::startFilter(client, [&]() { m_xdgShell->closeAllPopups(); });
