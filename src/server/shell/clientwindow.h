@@ -128,7 +128,7 @@ public Q_SLOTS:
     void activate();
     void lower();
     void raise();
-    void move(const QPoint &position);
+    void move(const QPoint &globalPosition);
     void close();
 
 Q_SIGNALS:

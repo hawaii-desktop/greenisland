@@ -749,11 +749,11 @@ void ClientWindow::raise()
     }
 }
 
-void ClientWindow::move(const QPoint &position)
+void ClientWindow::move(const QPoint &globalPosition)
 {
     Q_D(ClientWindow);
-    d->moveItem->setX(position.x());
-    d->moveItem->setY(position.y());
+    d->moveItem->setX(globalPosition.x());
+    d->moveItem->setY(globalPosition.y());
 }
 
 void ClientWindow::close()
