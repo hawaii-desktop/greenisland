@@ -132,7 +132,7 @@ void XdgShellIntegration::handleSetMaximized()
     maximizeState.initialPosition = m_item->position();
 
     QWaylandOutput *output = m_item->compositor()->outputs().first();
-    m_xdgSurface->sendMaximized(output->geometry().size() / output->scaleFactor());
+    m_xdgSurface->sendMaximized(output->availableGeometry().size() / output->scaleFactor());
 }
 
 void XdgShellIntegration::handleUnsetMaximized()
@@ -144,7 +144,7 @@ void XdgShellIntegration::handleMaximizedChanged()
 {
     if (m_xdgSurface->maximized()) {
         QWaylandOutput *output = m_item->compositor()->outputs().first();
-        m_item->setPosition(output->geometry().topLeft());
+        m_item->setPosition(output->position() + output->availableGeometry().topLeft());
     } else {
         m_item->setPosition(maximizeState.initialPosition);
     }
