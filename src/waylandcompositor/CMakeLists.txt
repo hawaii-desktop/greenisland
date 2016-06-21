@@ -175,7 +175,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandCompositor
         QWaylandDestroyListener
         QWaylandDrag
-        QWaylandInput
+        QWaylandInput,QWaylandInputDevice
         QWaylandInputMethodControl
         QWaylandKeyboard,QWaylandKeymap
         QWaylandOutput
