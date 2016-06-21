@@ -50,12 +50,17 @@ WlShellIntegration::WlShellIntegration(QWaylandQuickShellSurfaceItem *item)
     , m_item(item)
     , m_shellSurface(qobject_cast<QWaylandWlShellSurface *>(item->shellSurface()))
     , grabberState(GrabberState::Default)
+    , isMaximized(false)
+    , isFullScreen(false)
     , isPopup(false)
 {
     m_item->setSurface(m_shellSurface->surface());
     connect(m_shellSurface, &QWaylandWlShellSurface::startMove, this, &WlShellIntegration::handleStartMove);
     connect(m_shellSurface, &QWaylandWlShellSurface::startResize, this, &WlShellIntegration::handleStartResize);
     connect(m_shellSurface->surface(), &QWaylandSurface::offsetForNextFrame, this, &WlShellIntegration::adjustOffsetForNextFrame);
+    connect(m_shellSurface, &QWaylandWlShellSurface::setDefaultToplevel, this, &WlShellIntegration::handleSetDefaultTopLevel);
+    connect(m_shellSurface, &QWaylandWlShellSurface::setMaximized, this, &WlShellIntegration::handleSetMaximized);
+    connect(m_shellSurface, &QWaylandWlShellSurface::setFullScreen, this, &WlShellIntegration::handleSetFullScreen);
     connect(m_shellSurface, &QWaylandWlShellSurface::setPopup, this, &WlShellIntegration::handleSetPopup);
     connect(m_shellSurface, &QWaylandWlShellSurface::destroyed, this, &WlShellIntegration::handleShellSurfaceDestroyed);
 }
@@ -75,6 +80,54 @@ void WlShellIntegration::handleStartResize(QWaylandInputDevice *inputDevice, QWa
     float scaleFactor = m_item->view()->output()->scaleFactor();
     resizeState.initialSize = m_shellSurface->surface()->size() / scaleFactor;
     resizeState.initialized = false;
+}
+
+void WlShellIntegration::handleSetDefaultTopLevel()
+{
+    if (isMaximized) {
+        m_item->moveItem()->setPosition(maximizedState.initialPosition);
+        m_shellSurface->sendConfigure(maximizedState.initialWindowSize, QWaylandWlShellSurface::RightEdge);
+        isMaximized = false;
+    }
+
+    if (isFullScreen) {
+        m_item->moveItem()->setPosition(fullScreenState.initialPosition);
+        m_shellSurface->sendConfigure(fullScreenState.initialWindowSize, QWaylandWlShellSurface::RightEdge);
+        isFullScreen = false;
+    }
+}
+
+void WlShellIntegration::handleSetMaximized(QWaylandOutput *output)
+{
+    if (isMaximized || isFullScreen)
+        return;
+
+    QWaylandOutput *designedOutput = output ? output : m_item->view()->output();
+
+    maximizedState.initialWindowSize = m_shellSurface->surface()->size() / designedOutput->scaleFactor();
+    maximizedState.initialPosition = m_item->moveItem()->position();
+    isMaximized = true;
+
+    m_item->moveItem()->setPosition(designedOutput->position() + designedOutput->availableGeometry().topLeft());
+    m_shellSurface->sendConfigure(designedOutput->availableGeometry().size(), QWaylandWlShellSurface::RightEdge);
+}
+
+void WlShellIntegration::handleSetFullScreen(QWaylandWlShellSurface::FullScreenMethod method, uint framerate, QWaylandOutput *output)
+{
+    Q_UNUSED(method);
+    Q_UNUSED(framerate);
+
+    if (isMaximized || isFullScreen)
+        return;
+
+    QWaylandOutput *designedOutput = output ? output : m_item->view()->output();
+
+    fullScreenState.initialWindowSize = m_shellSurface->surface()->size() / designedOutput->scaleFactor();
+    fullScreenState.initialPosition = m_item->moveItem()->position();
+    isFullScreen = true;
+
+    m_item->moveItem()->setPosition(designedOutput->position());
+    m_shellSurface->sendConfigure(designedOutput->geometry().size(), QWaylandWlShellSurface::RightEdge);
 }
 
 void WlShellIntegration::handleSetPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parent, const QPoint &relativeToParent)
@@ -132,7 +185,6 @@ void WlShellIntegration::handlePopupRemoved()
         QWaylandQuickShellEventFilter::cancelFilter();
     isPopup = false;
 }
-
 
 void WlShellIntegration::handleShellSurfaceDestroyed()
 {

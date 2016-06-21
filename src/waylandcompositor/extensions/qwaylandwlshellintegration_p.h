@@ -67,6 +67,9 @@ public:
 private Q_SLOTS:
     void handleStartMove(QWaylandInputDevice *inputDevice);
     void handleStartResize(QWaylandInputDevice *inputDevice, QWaylandWlShellSurface::ResizeEdge edges);
+    void handleSetDefaultTopLevel();
+    void handleSetMaximized(QWaylandOutput *output);
+    void handleSetFullScreen(QWaylandWlShellSurface::FullScreenMethod method, uint framerate, QWaylandOutput *output);
     void handleSetPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parent, const QPoint &relativeToParent);
     void handleShellSurfaceDestroyed();
     void handleSurfaceUnmapped();
@@ -100,7 +103,20 @@ private:
         bool initialized;
     } resizeState;
 
+    struct {
+        QSize initialWindowSize;
+        QPointF initialPosition;
+    } maximizedState;
+
+    struct {
+        QSize initialWindowSize;
+        QPointF initialPosition;
+    } fullScreenState;
+
     static QVector<QWaylandWlShellSurface*> popupShellSurfaces;
+
+    bool isMaximized;
+    bool isFullScreen;
     bool isPopup;
 };
 
