@@ -59,6 +59,9 @@ XdgShellIntegration::XdgShellIntegration(QWaylandQuickShellSurfaceItem *item)
     connect(m_xdgSurface, &QWaylandXdgSurface::setMaximized, this, &XdgShellIntegration::handleSetMaximized);
     connect(m_xdgSurface, &QWaylandXdgSurface::unsetMaximized, this, &XdgShellIntegration::handleUnsetMaximized);
     connect(m_xdgSurface, &QWaylandXdgSurface::maximizedChanged, this, &XdgShellIntegration::handleMaximizedChanged);
+    connect(m_xdgSurface, &QWaylandXdgSurface::setFullscreen, this, &XdgShellIntegration::handleSetFullscreen);
+    connect(m_xdgSurface, &QWaylandXdgSurface::unsetFullscreen, this, &XdgShellIntegration::handleUnsetFullscreen);
+    connect(m_xdgSurface, &QWaylandXdgSurface::fullscreenChanged, this, &XdgShellIntegration::handleFullscreenChanged);
     connect(m_xdgSurface, &QWaylandXdgSurface::activatedChanged, this, &XdgShellIntegration::handleActivatedChanged);
     connect(m_xdgSurface->surface(), &QWaylandSurface::sizeChanged, this, &XdgShellIntegration::handleSurfaceSizeChanged);
 }
@@ -144,6 +147,28 @@ void XdgShellIntegration::handleMaximizedChanged()
         m_item->moveItem()->setPosition(m_item->view()->output()->position() + m_item->view()->output()->availableGeometry().topLeft());
     } else {
         m_item->moveItem()->setPosition(maximizeState.initialPosition);
+    }
+}
+
+void XdgShellIntegration::handleSetFullscreen()
+{
+    fullscreenState.initialWindowSize = m_xdgSurface->windowGeometry().size();
+    fullscreenState.initialPosition = m_item->moveItem()->position();
+
+    m_xdgSurface->sendFullscreen(m_item->view()->output()->geometry().size() / m_item->view()->output()->scaleFactor());
+}
+
+void XdgShellIntegration::handleUnsetFullscreen()
+{
+    m_xdgSurface->sendUnMaximized(fullscreenState.initialWindowSize);
+}
+
+void XdgShellIntegration::handleFullscreenChanged()
+{
+    if (m_xdgSurface->fullscreen()) {
+        m_item->moveItem()->setPosition(m_item->view()->output()->geometry().topLeft());
+    } else {
+        m_item->moveItem()->setPosition(fullscreenState.initialPosition);
     }
 }
 
