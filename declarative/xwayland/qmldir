@@ -1,0 +1,3 @@
+module GreenIsland.XWayland
+plugin GreenIslandXWaylandPlugin
+XWaylandWindowChrome 1.0 XWaylandWindowChrome.qml
