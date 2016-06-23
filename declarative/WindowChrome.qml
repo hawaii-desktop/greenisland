@@ -27,10 +27,12 @@
 
 import QtQuick 2.0
 import GreenIsland 1.0
+import QtGraphicalEffects 1.0
 
 ClientWindowItem {
     property QtObject window
     property bool animationsEnabled: true
+    property bool decorated: false
 
     signal showWindowMenu(point localSurfacePosition)
 
@@ -131,6 +133,18 @@ ClientWindowItem {
             d.unresponsive = false;
         }
         */
+    }
+
+    // Shadow
+    // FIXME: Transparent backgrounds will be opaque due to shadows
+    RectangularGlow {
+        id: dropShadow
+        anchors.fill: parent
+        glowRadius: 10
+        spread: 0.2
+        color: "#80000000"
+        z: -1
+        visible: decorated && !window.maximized
     }
 
     /*
