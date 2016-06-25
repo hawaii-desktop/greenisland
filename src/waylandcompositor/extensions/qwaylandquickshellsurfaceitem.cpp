@@ -203,14 +203,6 @@ bool QWaylandQuickShellEventFilter::eventFilter(QObject *receiver, QEvent *e)
         if (!item)
             return false;
 
-        // Workaround for QtQuick Controls 2.0 items that are traversed
-        // before compositor's surfaces are and get mistaken because both
-        // are QQuickItems
-        if (item->inherits("QQuickOverlay") || item->inherits("QQuickDrawer")) {
-            e->ignore();
-            return false;
-        }
-
         QMouseEvent *event = static_cast<QMouseEvent*>(e);
         QWaylandQuickShellSurfaceItem *shellSurfaceItem = qobject_cast<QWaylandQuickShellSurfaceItem*>(item);
         bool finalRelease = (event->type() == QEvent::MouseButtonRelease) && (event->buttons() == Qt::NoButton);
