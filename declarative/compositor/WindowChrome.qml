@@ -31,14 +31,14 @@ import QtGraphicalEffects 1.0
 
 ClientWindowItem {
     property QtObject window
-    property bool animationsEnabled: true
+    property bool animationsEnabled: false
     property bool decorated: false
 
     signal showWindowMenu(point localSurfacePosition)
 
     id: windowChrome
-    x: window.x - view.output.geometry.x
-    y: window.y - view.output.geometry.y
+    x: window.moveItem.x - view.output.geometry.x
+    y: window.moveItem.y - view.output.geometry.y
     transform: [
         Scale {
             id: scaleTransform
@@ -150,6 +150,22 @@ ClientWindowItem {
     /*
      * Behavior
      */
+
+    Behavior on x {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 250
+        }
+    }
+
+    Behavior on y {
+        enabled: animationsEnabled
+        SmoothedAnimation {
+            easing.type: Easing.InOutQuad
+            duration: 250
+        }
+    }
 
     Behavior on width {
         enabled: animationsEnabled
