@@ -155,7 +155,7 @@ ClientWindowItem {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
-            duration: 250
+            duration: 450
         }
     }
 
@@ -163,7 +163,7 @@ ClientWindowItem {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
-            duration: 250
+            duration: 450
         }
     }
 
@@ -187,7 +187,7 @@ ClientWindowItem {
         enabled: animationsEnabled
         SmoothedAnimation {
             easing.type: Easing.OutQuad
-            duration: 350
+            duration: 450
         }
     }
 
