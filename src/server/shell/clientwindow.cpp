@@ -493,14 +493,12 @@ ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurfa
         connect(d->gtkShell, SIGNAL(gtkSurfaceCreated(GtkSurface*)),
                 this, SLOT(_q_gtkSurfaceCreated(GtkSurface*)));
 
-    // Move
+    // Determine the outputs that are rendering the window when it is moved
     connect(d->moveItem, &QQuickItem::xChanged, this, [this, d] {
         d->findOutputs();
-        setX(d->moveItem->x());
     });
     connect(d->moveItem, &QQuickItem::yChanged, this, [this, d] {
         d->findOutputs();
-        setY(d->moveItem->y());
     });
 
     // Initialize
@@ -564,46 +562,18 @@ QString ClientWindow::iconName() const
 qreal ClientWindow::x() const
 {
     Q_D(const ClientWindow);
-    return d->x;
-}
-
-void ClientWindow::setX(qreal x)
-{
-    Q_D(ClientWindow);
-
-    if (d->x == x)
-        return;
-
-    d->x = x;
-    Q_EMIT xChanged();
+    return d->moveItem->x();
 }
 
 qreal ClientWindow::y() const
 {
     Q_D(const ClientWindow);
-    return d->y;
-}
-
-void ClientWindow::setY(qreal y)
-{
-    Q_D(ClientWindow);
-
-    if (d->y == y)
-        return;
-
-    d->y = y;
-    Q_EMIT yChanged();
+    return d->moveItem->y();
 }
 
 QPointF ClientWindow::position() const
 {
     return QPointF(x(), y());
-}
-
-void ClientWindow::setPosition(const QPointF &pos)
-{
-    setX(pos.x());
-    setY(pos.y());
 }
 
 QRect ClientWindow::windowGeometry() const

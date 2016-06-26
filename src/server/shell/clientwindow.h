@@ -59,8 +59,8 @@ class GREENISLANDSERVER_EXPORT ClientWindow : public QObject
     Q_PROPERTY(QString appId READ appId NOTIFY appIdChanged)
     Q_PROPERTY(qint64 processId READ processId NOTIFY processIdChanged)
     Q_PROPERTY(QString iconName READ iconName NOTIFY iconNameChanged)
-    Q_PROPERTY(qreal x READ x WRITE setX NOTIFY xChanged)
-    Q_PROPERTY(qreal y READ y WRITE setY NOTIFY yChanged)
+    Q_PROPERTY(qreal x READ x NOTIFY xChanged)
+    Q_PROPERTY(qreal y READ y NOTIFY yChanged)
     Q_PROPERTY(QRect windowGeometry READ windowGeometry NOTIFY windowGeometryChanged)
     Q_PROPERTY(QRect taskIconGeometry READ taskIconGeometry WRITE setTaskIconGeometry NOTIFY taskIconGeometryChanged)
     Q_PROPERTY(bool activated READ activated NOTIFY activatedChanged)
@@ -94,13 +94,9 @@ public:
     QString iconName() const;
 
     qreal x() const;
-    void setX(qreal x);
-
     qreal y() const;
-    void setY(qreal y);
 
     QPointF position() const;
-    void setPosition(const QPointF &pos);
 
     QRect windowGeometry() const;
 
