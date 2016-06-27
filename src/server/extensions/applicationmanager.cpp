@@ -51,6 +51,7 @@ ApplicationManagerPrivate::ApplicationManagerPrivate()
     // Populate appId mapping
     appIdMap[QLatin1String("org.hawaiios.hawaii-system-preferences")] = QLatin1String("org.hawaiios.SystemPreferences");
     appIdMap[QLatin1String("org.hawaiios.hawaii-screenshot")] = QLatin1String("org.hawaiios.Screenshot");
+    appIdMap[QLatin1String("org.hawaiios.hawaii-terminal")] = QLatin1String("org.hawaiios.terminal");
     appIdMap[QLatin1String("org.qterminal.qterminal-qt5")] = QLatin1String("qterminal-qt5");
 }
 
