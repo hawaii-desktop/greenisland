@@ -76,6 +76,7 @@ ClientWindowItem {
         property real y
         property bool unresponsive: false
         property bool started: false
+        property bool animationsOverride: false
 
         id: d
 
@@ -152,7 +153,7 @@ ClientWindowItem {
      */
 
     Behavior on x {
-        enabled: animationsEnabled
+        enabled: animationsEnabled || d.animationsOverride
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
             duration: 450
@@ -160,7 +161,7 @@ ClientWindowItem {
     }
 
     Behavior on y {
-        enabled: animationsEnabled
+        enabled: animationsEnabled || d.animationsOverride
         SmoothedAnimation {
             easing.type: Easing.InOutQuad
             duration: 450
@@ -168,7 +169,7 @@ ClientWindowItem {
     }
 
     Behavior on width {
-        enabled: animationsEnabled
+        enabled: animationsEnabled || d.animationsOverride
         SmoothedAnimation {
             easing.type: Easing.OutQuad
             duration: 350
@@ -176,7 +177,7 @@ ClientWindowItem {
     }
 
     Behavior on height {
-        enabled: animationsEnabled
+        enabled: animationsEnabled || d.animationsOverride
         SmoothedAnimation {
             easing.type: Easing.OutQuad
             duration: 350
@@ -184,7 +185,7 @@ ClientWindowItem {
     }
 
     Behavior on scale {
-        enabled: animationsEnabled
+        enabled: animationsEnabled || d.animationsOverride
         SmoothedAnimation {
             easing.type: Easing.OutQuad
             duration: 450
@@ -485,69 +486,70 @@ ClientWindowItem {
      * Minimize animations
      */
 
-    ParallelAnimation {
+    SequentialAnimation {
         id: minimizeAnimation
 
-        NumberAnimation {
-            target: windowChrome
-            property: "x"
-            easing.type: Easing.OutQuad
-            to: window.taskIconGeometry.x - (view.output ? view.output.position.x : 0)
-            duration: 350
+        ScriptAction {
+            script: {
+                savedProperties.x = window.moveItem.x;
+                savedProperties.y = window.moveItem.y;
+                d.animationsOverride = true;
+                window.moveItem.x = window.taskIconGeometry.x;
+                window.moveItem.y = window.taskIconGeometry.y;
+            }
         }
-        NumberAnimation {
-            target: windowChrome
-            property: "y"
-            easing.type: Easing.OutQuad
-            to: window.taskIconGeometry.y - (view.output ? view.output.position.y : 0)
-            duration: 350
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: windowChrome
+                property: "scale"
+                easing.type: Easing.OutQuad
+                to: 0.0
+                duration: 550
+            }
+            NumberAnimation {
+                target: windowChrome
+                property: "opacity"
+                easing.type: Easing.Linear
+                to: 0.0
+                duration: 500
+            }
         }
-        NumberAnimation {
-            target: windowChrome
-            property: "scale"
-            easing.type: Easing.OutQuad
-            to: 0.0
-            duration: 500
-        }
-        NumberAnimation {
-            target: windowChrome
-            property: "opacity"
-            easing.type: Easing.Linear
-            to: 0.0
-            duration: 500
+
+        ScriptAction {
+            script: {
+                d.animationsOverride = false;
+            }
         }
     }
 
-    ParallelAnimation {
+    SequentialAnimation {
         id: unminimizeAnimation
 
-        NumberAnimation {
-            target: windowChrome
-            property: "x"
-            easing.type: Easing.OutQuad
-            to: windowChrome.savedProperties.x
-            duration: 350
+        ScriptAction {
+            script: {
+                d.animationsOverride = true;
+                window.moveItem.x = savedProperties.x;
+                window.moveItem.y = savedProperties.y;
+                d.animationsOverride = false;
+            }
         }
-        NumberAnimation {
-            target: windowChrome
-            property: "y"
-            easing.type: Easing.OutQuad
-            to: windowChrome.savedProperties.y
-            duration: 350
-        }
-        NumberAnimation {
-            target: windowChrome
-            property: "scale"
-            easing.type: Easing.OutQuad
-            to: 1.0
-            duration: 500
-        }
-        NumberAnimation {
-            target: windowChrome
-            property: "opacity"
-            easing.type: Easing.Linear
-            to: 1.0
-            duration: 500
+
+        ParallelAnimation {
+            NumberAnimation {
+                target: windowChrome
+                property: "scale"
+                easing.type: Easing.OutQuad
+                to: 1.0
+                duration: 550
+            }
+            NumberAnimation {
+                target: windowChrome
+                property: "opacity"
+                easing.type: Easing.Linear
+                to: 1.0
+                duration: 500
+            }
         }
     }
 }
