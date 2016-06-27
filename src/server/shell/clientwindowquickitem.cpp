@@ -48,6 +48,7 @@ namespace Server {
 ClientWindowQuickItemPrivate::ClientWindowQuickItemPrivate()
     : QWaylandQuickShellSurfaceItemPrivate()
     , savedProperties(new QQmlPropertyMap())
+    , isModifierHeld(false)
 {
     savedProperties->insert(QStringLiteral("x"), qreal(0));
     savedProperties->insert(QStringLiteral("y"), qreal(0));
@@ -79,13 +80,38 @@ QQmlPropertyMap *ClientWindowQuickItem::savedProperties() const
     return d->savedProperties;
 }
 
+void ClientWindowQuickItem::keyPressEvent(QKeyEvent *event)
+{
+    Q_D(ClientWindowQuickItem);
+
+    d->isModifierHeld = event->key() == Qt::Key_Meta ||
+            event->key() == Qt::Key_Super_L ||
+            event->key() == Qt::Key_Super_R;
+
+    QWaylandQuickShellSurfaceItem::keyPressEvent(event);
+}
+
+void ClientWindowQuickItem::keyReleaseEvent(QKeyEvent *event)
+{
+    Q_D(ClientWindowQuickItem);
+
+    if (event->key() == Qt::Key_Meta || event->key() == Qt::Key_Super_L ||
+            event->key() == Qt::Key_Super_R)
+        d->isModifierHeld = false;
+
+    QWaylandQuickShellSurfaceItem::keyReleaseEvent(event);
+}
+
 void ClientWindowQuickItem::mousePressEvent(QMouseEvent *event)
 {
     Q_D(ClientWindowQuickItem);
 
+    // Let mouse press go through anyway, if focus on click is enabled this
+    // will give focus to the window before the use can drag it
+    QWaylandQuickShellSurfaceItem::mousePressEvent(event);
+
     // If the modifier is pressed we initiate a move operation
-    Qt::KeyboardModifier mod = Qt::MetaModifier;
-    if (QGuiApplication::queryKeyboardModifiers().testFlag(mod) && event->buttons().testFlag(Qt::LeftButton)) {
+    if (d->isModifierHeld && event->buttons().testFlag(Qt::LeftButton)) {
         QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(shellSurface());
         if (wlShellSurface) {
             Q_EMIT wlShellSurface->startMove(compositor()->defaultInputDevice());
@@ -98,9 +124,6 @@ void ClientWindowQuickItem::mousePressEvent(QMouseEvent *event)
             return;
         }
     }
-
-    // Do not filter out events we don't care about
-    QWaylandQuickShellSurfaceItem::mousePressEvent(event);
 }
 
 } // namespace Server

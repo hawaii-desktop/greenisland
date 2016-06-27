@@ -55,6 +55,7 @@ public:
     static ClientWindowQuickItemPrivate *get(ClientWindowQuickItem *item) { return item->d_func(); }
 
     QQmlPropertyMap *savedProperties;
+    bool isModifierHeld;
 };
 
 } // namespace Server
