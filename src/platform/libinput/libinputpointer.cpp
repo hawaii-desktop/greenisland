@@ -129,11 +129,14 @@ void LibInputPointer::handleAxis(libinput_event_pointer *e)
     event.buttons = m_buttons;
     event.modifiers = QGuiApplication::keyboardModifiers();
 
+    // TODO: Make sensitivity configurable instead of fixed 10
+    const double sensitivity = qBound<double>(1, 10, 100);
+
     if (libinput_event_pointer_has_axis(e, LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL)) {
         const double d =
                 libinput_event_pointer_get_axis_value(e,
                                                       LIBINPUT_POINTER_AXIS_SCROLL_HORIZONTAL);
-        event.wheelDelta = qRound(-120 * d);
+        event.wheelDelta = qRound(-d * sensitivity);
         event.wheelOrientation = Qt::Horizontal;
         Q_EMIT m_handler->mouseWheel(event);
     }
@@ -142,7 +145,7 @@ void LibInputPointer::handleAxis(libinput_event_pointer *e)
         const double d =
                 libinput_event_pointer_get_axis_value(e,
                                                       LIBINPUT_POINTER_AXIS_SCROLL_VERTICAL);
-        event.wheelDelta = qRound(-120 * d);
+        event.wheelDelta = qRound(-d * sensitivity);
         event.wheelOrientation = Qt::Vertical;
         Q_EMIT m_handler->mouseWheel(event);
     }
