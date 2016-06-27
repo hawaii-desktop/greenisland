@@ -80,8 +80,6 @@ public:
     };
     Q_ENUM(Type)
 
-    ~ClientWindow();
-
     QWaylandSurface *surface() const;
 
     Type type() const;

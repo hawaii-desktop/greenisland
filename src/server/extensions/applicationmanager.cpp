@@ -226,7 +226,17 @@ ClientWindow *ApplicationManager::createWindow(QWaylandSurface *surface)
 
     // Automatically delete client window when the surface is destroyed
     connect(surface, &QWaylandSurface::surfaceDestroyed, this, [this, d, clientWindow] {
+        // Unregister window
         d->unregisterWindow(clientWindow);
+
+        // Activate the parent window
+        if (clientWindow->type() == ClientWindow::Transient && clientWindow->parentWindow()) {
+            auto views = ClientWindowPrivate::get(clientWindow->parentWindow())->views;
+            Q_FOREACH (QWaylandQuickItem *view, views)
+                view->takeFocus();
+        }
+
+        // Delete window
         clientWindow->deleteLater();
     });
 

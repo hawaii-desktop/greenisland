@@ -505,18 +505,6 @@ ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurfa
     d->initialize(surface);
 }
 
-ClientWindow::~ClientWindow()
-{
-    Q_D(ClientWindow);
-
-    // Activate the parent window
-    if (d->type == Transient && d->parentWindow) {
-        auto views = ClientWindowPrivate::get(d->parentWindow)->views;
-        Q_FOREACH (QWaylandQuickItem *view, views)
-            view->takeFocus();
-    }
-}
-
 QWaylandSurface *ClientWindow::surface() const
 {
     Q_D(const ClientWindow);
