@@ -1,6 +1,7 @@
 /****************************************************************************
  * This file is part of Hawaii.
  *
+ * Copyright (C) 2016 Pier Luigi Fiorini
  * Copyright (C) 2016 The Qt Company Ltd.
  *
  * Author(s):
@@ -109,6 +110,7 @@ void EglFSContext::swapBuffers(QPlatformSurface *surface)
 
     egl_device_integration()->waitForVSync(surface);
     if (egl_device_integration()->isResizingSurface(surface)) {
+        EGLPlatformContext::doneCurrent();
         egl_device_integration()->resizeSurface(surface);
         EGLPlatformContext::makeCurrent(surface);
     }
