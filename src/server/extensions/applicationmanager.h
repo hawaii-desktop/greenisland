@@ -48,12 +48,18 @@ class GREENISLANDSERVER_EXPORT ApplicationManager : public QWaylandCompositorExt
     Q_OBJECT
     Q_DECLARE_PRIVATE(ApplicationManager)
     Q_PROPERTY(QWaylandCompositor *compositor READ compositor NOTIFY compositorChanged)
+    Q_PROPERTY(GreenIsland::Server::ClientWindow *focusedWindow READ focusedWindow NOTIFY focusedWindowChanged)
     Q_PRIVATE_PROPERTY(ApplicationManager::d_func(), QQmlListProperty<GreenIsland::Server::ClientWindow> windows READ windows NOTIFY windowsChanged)
 public:
     ApplicationManager();
     ApplicationManager(QWaylandCompositor *compositor);
 
     QWaylandCompositor *compositor() const;
+
+    /*!
+     * Returns the focused window.
+     */
+    GreenIsland::Server::ClientWindow *focusedWindow() const;
 
     Q_INVOKABLE GreenIsland::Server::ClientWindow *createWindow(QWaylandSurface *surface);
 
@@ -85,6 +91,11 @@ Q_SIGNALS:
      * \brief A compositor was associated with this extension.
      */
     void compositorChanged();
+
+    /*!
+     * \brief Focus had been given to another window.
+     */
+    void focusedWindowChanged();
 
     /*!
      * \brief An application has been added.

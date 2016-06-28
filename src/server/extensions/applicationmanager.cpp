@@ -47,6 +47,7 @@ ApplicationManagerPrivate::ApplicationManagerPrivate()
     : QWaylandCompositorExtensionPrivate()
     , QtWaylandServer::greenisland_applications()
     , rootItem(new QQuickItem())
+    , focusedWindow(Q_NULLPTR)
 {
     // Populate appId mapping
     appIdMap[QLatin1String("org.hawaiios.hawaii-system-preferences")] = QLatin1String("org.hawaiios.SystemPreferences");
@@ -213,6 +214,12 @@ QWaylandCompositor *ApplicationManager::compositor() const
     return d->compositor;
 }
 
+ClientWindow *ApplicationManager::focusedWindow() const
+{
+    Q_D(const ApplicationManager);
+    return d->focusedWindow;
+}
+
 ClientWindow *ApplicationManager::createWindow(QWaylandSurface *surface)
 {
     Q_D(ApplicationManager);
@@ -220,6 +227,14 @@ ClientWindow *ApplicationManager::createWindow(QWaylandSurface *surface)
     // Create a new client window
     ClientWindow *clientWindow = new ClientWindow(this, surface);
     ClientWindowPrivate::get(clientWindow)->moveItem->setParentItem(d->rootItem);
+
+    // Change focused window
+    connect(clientWindow, &ClientWindow::activatedChanged, this, [this, d, clientWindow] {
+        if (clientWindow->activated()) {
+            d->focusedWindow = clientWindow;
+            Q_EMIT focusedWindowChanged();
+        }
+    });
 
     // Append to the list
     d->registerWindow(clientWindow);

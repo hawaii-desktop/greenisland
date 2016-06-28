@@ -80,6 +80,7 @@ public:
 
     QWaylandCompositor *compositor;
     QQuickItem *rootItem;
+    ClientWindow *focusedWindow;
     QVector<ClientWindow *> windowsList;
     QStringList appIds;
     QMap<QString, QString> appIdMap;
