@@ -76,6 +76,7 @@ void EglFSKmsWindow::resizeSurface()
         eglDestroySurface(display, m_surface);
     }
 
+    qWarning() << "Resize window surface: old" << m_surface << "new" << surface;
     m_window = window;
     m_surface = surface;
 

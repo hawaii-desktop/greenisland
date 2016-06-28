@@ -382,6 +382,7 @@ bool EGLPlatformContext::makeCurrent(QPlatformSurface *surface)
         return true;
     }
 
+    qCDebug(lcEglConvenience) << "eglMakeCurrent:" << m_eglDisplay << eglSurface << m_eglContext;
     const bool ok = eglMakeCurrent(m_eglDisplay, eglSurface, eglSurface, m_eglContext);
     if (ok) {
         if (!m_swapIntervalEnvChecked) {
