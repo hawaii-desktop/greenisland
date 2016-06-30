@@ -188,8 +188,11 @@ QSizeF EglFSKmsScreen::physicalSize() const
 {
     // Some connectors report empty physical size, this happens especially
     // on virtual machines resulting in NaN DPI breaking font rendering,
-    // icons and other things: calculate a physical size for 100 DPI
-    QSizeF size = m_edid.physicalSize.isEmpty() ? m_output.physical_size : m_edid.physicalSize;
+    // icons and other things on the other end EDID often reports the wrong
+    // physical size so what we do here is pick up the physical size reported
+    // by the connector or, if empty, from EDID.
+    // If neither is valid we calculate a physical size for 100 DPI.
+    QSizeF size = m_output.physical_size.isEmpty() ? m_edid.physicalSize : m_output.physical_size;
     if (Q_UNLIKELY(size.isEmpty())) {
         // pixelsPerMm is 25.4 (mm per inch) divided by 100 (default physical DPI)
         const qreal pixelsPerMm = 0.254;
