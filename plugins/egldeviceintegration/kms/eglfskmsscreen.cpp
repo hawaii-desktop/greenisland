@@ -151,6 +151,11 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
     } else {
         qCWarning(lcKms) << "No EDID data for output" << name();
     }
+
+    qCDebug(lcKms, "Physical size for output \"%s\": %.2fx%.2f",
+            name().toLatin1().constData(),
+            m_output.physical_size.width(),
+            m_output.physical_size.height());
 }
 
 EglFSKmsScreen::~EglFSKmsScreen()
