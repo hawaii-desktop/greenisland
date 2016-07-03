@@ -63,10 +63,15 @@ public Q_SLOTS:
     void restoreVideoMode() { m_screen->restoreMode(); }
     void activeChanged(bool active)
     {
+        // Power on the screen when active
+        if (active)
+            m_screen->setPowerState(EglFSScreen::PowerStateOn);
+        /*
         if (active)
             drmSetMaster(m_screen->device()->fd());
         else
             drmDropMaster(m_screen->device()->fd());
+        */
     }
 
 private:
@@ -292,8 +297,15 @@ void EglFSKmsScreen::waitForFlip()
 
 void EglFSKmsScreen::flip()
 {
+    // Platform must be initialized
     if (!m_gbm_surface) {
         qCWarning(lcKms, "Cannot sync before platform init!");
+        return;
+    }
+
+    // Output must be on
+    if (m_powerState != PowerStateOn) {
+        qCDebug(lcKms, "Avoiding flip when screen is turned off");
         return;
     }
 
