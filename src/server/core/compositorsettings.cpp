@@ -88,11 +88,11 @@ void CompositorSettings::setCompositor(QWaylandCompositor *compositor)
         return;
 
     if (d->compositor)
-        disconnect(compositor, SIGNAL(defaultInputDeviceChanged()),
+        disconnect(compositor, SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
                    this, SLOT(_q_setupKeymap()));
 
     if (compositor) {
-        connect(compositor, SIGNAL(defaultInputDeviceChanged()),
+        connect(compositor, SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
                 this, SLOT(_q_setupKeymap()));
         d->_q_setupKeymap();
     }
