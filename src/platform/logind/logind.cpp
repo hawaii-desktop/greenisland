@@ -84,13 +84,25 @@ public:
     {
         Q_Q(Logind);
 
+        // Use session id if available, otherwise get the session by pid
+        QString methodName;
+        QVariantList args;
+        const QByteArray sessionId = qgetenv("XDG_SESSION_ID");
+        if (sessionId.isEmpty()) {
+            methodName = QLatin1String("GetSessionByPID");
+            args << (quint32)QCoreApplication::applicationPid();
+        } else {
+            methodName = QLatin1String("GetSession");
+            args << QString::fromLocal8Bit(sessionId);
+        }
+
         // Get the current session as soon as the logind service is registered
         QDBusMessage message =
                 QDBusMessage::createMethodCall(login1Service,
                                                login1Object,
                                                login1ManagerInterface,
-                                               QLatin1String("GetSessionByPID"));
-        message.setArguments(QVariantList() << (quint32)QCoreApplication::applicationPid());
+                                               methodName);
+        message.setArguments(args);
 
         QDBusPendingReply<QDBusObjectPath> result = bus.asyncCall(message);
         QDBusPendingCallWatcher *callWatcher = new QDBusPendingCallWatcher(result, q);
