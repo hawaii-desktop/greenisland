@@ -140,6 +140,8 @@ Q_SIGNALS:
 private:
     Q_PRIVATE_SLOT(d_func(), void _q_appIdChanged())
     Q_PRIVATE_SLOT(d_func(), void _q_activatedChanged())
+    Q_PRIVATE_SLOT(d_func(), void _q_outputAdded(QWaylandOutput*))
+    Q_PRIVATE_SLOT(d_func(), void _q_outputRemoved(QWaylandOutput*))
 };
 
 } // namespace Server
