@@ -193,6 +193,12 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         return Q_NULLPTR;
     }
 
+    // Skip disconnected output
+    if (configuration == OutputConfigPreferred && connector->connection == DRM_MODE_DISCONNECTED) {
+        qCDebug(lcKms) << "Skipping disconnected output" << connectorName;
+        return Q_NULLPTR;
+    }
+
     // Get the current mode on the current crtc
     drmModeModeInfo crtc_mode;
     memset(&crtc_mode, 0, sizeof crtc_mode);
