@@ -156,6 +156,12 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
             name().toLatin1().constData(),
             m_output.physical_size.width(),
             m_output.physical_size.height());
+    qCDebug(lcKms, "Logical DPI for output \"%s\": %.2fx%.2f",
+            name().toLatin1().constData(),
+            logicalDpi().first, logicalDpi().second);
+    qCDebug(lcKms, "Device pixel ratio for output \"%s\": %.2f",
+            name().toLatin1().constData(),
+            pixelDensity());
 }
 
 EglFSKmsScreen::~EglFSKmsScreen()
