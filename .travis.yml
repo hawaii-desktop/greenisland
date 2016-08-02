@@ -10,6 +10,10 @@ arch:
     - mesa-libgl
     - wayland
     - wayland-protocols
+    - libinput
+    - libxkbcommon
+    - xcb-util-cursor
+    - libxcursor
     - xorg-server-xvfb
     - git
   script:
