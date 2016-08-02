@@ -160,7 +160,7 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
 
     const int crtc = crtcForConnector(resources, connector);
     if (crtc < 0) {
-        qCWarning(lcKms, ) << "No usable crtc/encoder pair for connector" << connectorName;
+        qCWarning(lcKms) << "No usable crtc/encoder pair for connector" << connectorName;
         return Q_NULLPTR;
     }
 
@@ -267,7 +267,7 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         selected_mode = best;
 
     if (selected_mode < 0) {
-        qCWarning(lcKms, ) << "No modes available for output" << connectorName;
+        qCWarning(lcKms) << "No modes available for output" << connectorName;
         return Q_NULLPTR;
     } else {
         int width = modes[selected_mode].hdisplay;
