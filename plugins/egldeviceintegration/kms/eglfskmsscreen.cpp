@@ -223,6 +223,11 @@ QDpi EglFSKmsScreen::logicalDpi() const
         return QDpi(100, 100);
 }
 
+qreal EglFSKmsScreen::pixelDensity() const
+{
+    return qRound(logicalDpi().first / qreal(100));
+}
+
 Qt::ScreenOrientation EglFSKmsScreen::nativeOrientation() const
 {
     return Qt::PrimaryOrientation;
