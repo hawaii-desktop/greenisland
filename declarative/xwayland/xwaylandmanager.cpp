@@ -451,13 +451,25 @@ void XWaylandManager::handleConfigureRequest(xcb_configure_request_event_t *even
     if (!shellSurface->surface())
         return;
 
-    /*
-    if (window->fullscreen) {
-            weston_wm_window_send_configure_notify(window);
-            return;
+    if (shellSurface->fullscreen()) {
+        xcb_configure_notify_event_t notify;
+        notify.response_type = XCB_CONFIGURE_NOTIFY;
+        notify.pad0 = 0;
+        notify.event = event->window;
+        notify.window = event->window;
+        notify.above_sibling = XCB_WINDOW_NONE;
+        notify.x = event->x;
+        notify.y = event->y;
+        notify.width = event->width;
+        notify.height = event->height;
+        notify.border_width = 0;
+        notify.override_redirect = 0;
+        notify.pad1 = 0;
+        xcb_send_event(Xcb::connection(), 0, event->window, XCB_EVENT_MASK_STRUCTURE_NOTIFY, (char *) &notify);
+        return;
     }
-    */
 
+    int x = 0, y = 0;
     QSize size = shellSurface->surface()->size();
 
     if (event->value_mask & XCB_CONFIG_WINDOW_WIDTH)
@@ -465,7 +477,6 @@ void XWaylandManager::handleConfigureRequest(xcb_configure_request_event_t *even
     if (event->value_mask & XCB_CONFIG_WINDOW_HEIGHT)
         size.setHeight(event->height);
 
-    int x = 0, y = 0;
     quint32 i = 0, values[16];
     values[i++] = x;
     values[i++] = y;
@@ -525,7 +536,7 @@ void XWaylandManager::handlePropertyNotify(xcb_property_notify_event_t *event)
 
     XWaylandShellSurface *window = m_windowsMap[event->window];
     if (event->state == XCB_PROPERTY_DELETE)
-        qCDebug(XWAYLAND_TRACE, "deleted");
+        qCDebug(XWAYLAND_TRACE, "\tdeleted");
     else
         window->readAndDumpProperty(event->atom);
 }
