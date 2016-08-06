@@ -498,32 +498,28 @@ xcb_window_t XWaylandShellSurface::window() const
 
 void XWaylandShellSurface::dumpProperty(xcb_atom_t property, xcb_get_property_reply_t *reply)
 {
-    QString buffer = QString("\tProperty %1 (window %2): ")
-            .arg(Xcb::Atom::nameFromAtom(property))
-            .arg(m_window);
+    QString buffer = QStringLiteral("\t%1: ").arg(Xcb::Atom::nameFromAtom(property));
 
-    if (!reply)
-        buffer += QStringLiteral("(no reply)");
-
-    qCDebug(XWAYLAND_TRACE) << qPrintable(buffer);
-
-    if (!reply)
+    if (!reply) {
+        buffer += QLatin1String("(no reply)");
+        qCDebug(XWAYLAND_TRACE) << qPrintable(buffer);
         return;
+    }
 
-    buffer = buffer.sprintf("\t\t%s/%d, length %d (value_len %d): ",
-                            qPrintable(Xcb::Atom::nameFromAtom(reply->type)),
-                            reply->format,
-                            xcb_get_property_value_length(reply),
-                            reply->value_len);
+    buffer += QString().sprintf("%s/%d, length %d (value_len %d): ",
+                              qPrintable(Xcb::Atom::nameFromAtom(reply->type)),
+                              reply->format,
+                              xcb_get_property_value_length(reply),
+                              reply->value_len);
 
     if (reply->type == Xcb::resources()->atoms->incr) {
         qint32 *v = (qint32 *)xcb_get_property_value(reply);
-        buffer += buffer.sprintf("%d", *v);
+        buffer += QString().sprintf("%d", *v);
     } else if (reply->type == Xcb::resources()->atoms->utf8_string ||
                reply->type == Xcb::resources()->atoms->string) {
         const char *v = (const char *)xcb_get_property_value(reply);
         int len = reply->value_len > 40 ? 40 : reply->value_len;
-        buffer += buffer.sprintf("\"%.*s\"\n", len, v);
+        buffer += QString().sprintf("\"%.*s\"", len, v);
     } else if (reply->type == XCB_ATOM_ATOM) {
         xcb_atom_t *v = (xcb_atom_t *)xcb_get_property_value(reply);
 

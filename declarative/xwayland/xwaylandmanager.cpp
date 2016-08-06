@@ -523,17 +523,11 @@ void XWaylandManager::handlePropertyNotify(xcb_property_notify_event_t *event)
 
     qCDebug(XWAYLAND_TRACE, "XCB_PROPERTY_NOTIFY (window %d)", event->window);
 
-#if 0 // 2016
-    XWaylandWindow *window = m_windowsMap[event->window];
+    XWaylandShellSurface *window = m_windowsMap[event->window];
     if (event->state == XCB_PROPERTY_DELETE)
         qCDebug(XWAYLAND_TRACE, "deleted");
     else
         window->readAndDumpProperty(event->atom);
-
-    if (event->atom == Xcb::resources()->atoms->net_wm_name ||
-            event->atom == XCB_ATOM_WM_NAME)
-        window->repaint();
-#endif
 }
 
 void XWaylandManager::handleClientMessage(xcb_client_message_event_t *event)
