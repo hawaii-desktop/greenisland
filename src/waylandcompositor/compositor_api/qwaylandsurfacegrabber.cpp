@@ -51,7 +51,8 @@ QT_BEGIN_NAMESPACE
 
     Sometimes it is needed to get the contents of a surface, for example to provide a screenshot
     to the user. The QWaylandSurfaceGrabber class provides a simple method to do so, without
-    having to care what type of buffer backs the surface, be it SHM, OpenGL or something else.
+    having to care what type of buffer backs the surface, be it shared memory, OpenGL or something
+    else.
 */
 
 /*!
@@ -93,7 +94,7 @@ QWaylandSurface *QWaylandSurfaceGrabber::surface() const
 
 /*!
  * Grab the content of the surface set on this object.
- * It may not be possible to do that immediately so the \a success and \a failed signals
+ * It may not be possible to do that immediately so the success and failed signals
  * should be used to be notified of when the grab is completed.
  */
 void QWaylandSurfaceGrabber::grab()

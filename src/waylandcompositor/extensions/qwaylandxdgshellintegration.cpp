@@ -38,8 +38,8 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandxdgshell_p.h>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 #include <QMouseEvent>
 #include <QGuiApplication>
 
@@ -71,18 +71,17 @@ XdgShellIntegration::XdgShellIntegration(QWaylandQuickShellSurfaceItem *item)
 bool XdgShellIntegration::mouseMoveEvent(QMouseEvent *event)
 {
     if (grabberState == GrabberState::Resize) {
-        Q_ASSERT(resizeState.inputDevice == m_item->compositor()->inputDeviceFor(event));
+        Q_ASSERT(resizeState.seat == m_item->compositor()->seatFor(event));
         if (!resizeState.initialized) {
             resizeState.initialMousePos = event->windowPos();
             resizeState.initialized = true;
             return true;
         }
-        float scaleFactor = m_item->view()->output()->scaleFactor();
-        QPointF delta = (event->windowPos() - resizeState.initialMousePos) / scaleFactor;
+        QPointF delta = m_item->mapToSurface(event->windowPos() - resizeState.initialMousePos);
         QSize newSize = m_xdgSurface->sizeForResize(resizeState.initialWindowSize, delta, resizeState.resizeEdges);
         m_xdgSurface->sendResizing(newSize);
     } else if (grabberState == GrabberState::Move) {
-        Q_ASSERT(moveState.inputDevice == m_item->compositor()->inputDeviceFor(event));
+        Q_ASSERT(moveState.seat == m_item->compositor()->seatFor(event));
         QQuickItem *moveItem = m_item->moveItem();
         if (!moveState.initialized) {
             moveState.initialOffset = moveItem->mapFromItem(nullptr, event->windowPos());
@@ -102,7 +101,7 @@ bool XdgShellIntegration::mouseReleaseEvent(QMouseEvent *event)
     Q_UNUSED(event);
 
     if (grabberState == GrabberState::Resize) {
-        m_xdgSurface->sendUnMaximized();
+        m_xdgSurface->sendUnmaximized();
         grabberState = GrabberState::Default;
         return true;
     } else if (grabberState == GrabberState::Move) {
@@ -112,17 +111,17 @@ bool XdgShellIntegration::mouseReleaseEvent(QMouseEvent *event)
     return false;
 }
 
-void XdgShellIntegration::handleStartMove(QWaylandInputDevice *inputDevice)
+void XdgShellIntegration::handleStartMove(QWaylandSeat *seat)
 {
     grabberState = GrabberState::Move;
-    moveState.inputDevice = inputDevice;
+    moveState.seat = seat;
     moveState.initialized = false;
 }
 
-void XdgShellIntegration::handleStartResize(QWaylandInputDevice *inputDevice, QWaylandXdgSurface::ResizeEdge edges)
+void XdgShellIntegration::handleStartResize(QWaylandSeat *seat, QWaylandXdgSurface::ResizeEdge edges)
 {
     grabberState = GrabberState::Resize;
-    resizeState.inputDevice = inputDevice;
+    resizeState.seat = seat;
     resizeState.resizeEdges = edges;
     resizeState.initialWindowSize = m_xdgSurface->windowGeometry().size();
     resizeState.initialPosition = m_item->moveItem()->position();
@@ -135,18 +134,20 @@ void XdgShellIntegration::handleSetMaximized()
     maximizeState.initialWindowSize = m_xdgSurface->windowGeometry().size();
     maximizeState.initialPosition = m_item->moveItem()->position();
 
-    m_xdgSurface->sendMaximized(m_item->view()->output()->availableGeometry().size() / m_item->view()->output()->scaleFactor());
+    QWaylandOutput *output = m_item->view()->output();
+    m_xdgSurface->sendMaximized(output->availableGeometry().size() / output->scaleFactor());
 }
 
 void XdgShellIntegration::handleUnsetMaximized()
 {
-    m_xdgSurface->sendUnMaximized(maximizeState.initialWindowSize);
+    m_xdgSurface->sendUnmaximized(maximizeState.initialWindowSize);
 }
 
 void XdgShellIntegration::handleMaximizedChanged()
 {
     if (m_xdgSurface->maximized()) {
-        m_item->moveItem()->setPosition(m_item->view()->output()->position() + m_item->view()->output()->availableGeometry().topLeft());
+        QWaylandOutput *output = m_item->view()->output();
+        m_item->moveItem()->setPosition(output->position() + output->availableGeometry().topLeft());
     } else {
         m_item->moveItem()->setPosition(maximizeState.initialPosition);
     }
@@ -176,7 +177,7 @@ void XdgShellIntegration::handleSetFullscreen()
 
 void XdgShellIntegration::handleUnsetFullscreen()
 {
-    m_xdgSurface->sendUnMaximized(fullscreenState.initialWindowSize);
+    m_xdgSurface->sendUnmaximized(fullscreenState.initialWindowSize);
 }
 
 void XdgShellIntegration::handleFullscreenChanged()

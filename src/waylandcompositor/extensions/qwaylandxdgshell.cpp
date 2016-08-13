@@ -36,13 +36,16 @@
 
 #include "qwaylandxdgshell.h"
 #include "qwaylandxdgshell_p.h"
+
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 #include "qwaylandxdgshellintegration_p.h"
+#endif
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandSurfaceRole>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 
 #include <QtCore/QObject>
 
@@ -147,11 +150,11 @@ void QWaylandXdgShellPrivate::xdg_shell_get_xdg_surface(Resource *resource, uint
     QWaylandResource xdgSurfaceResource(wl_resource_create(resource->client(), &xdg_surface_interface,
                                                            wl_resource_get_version(resource->handle), id));
 
-    emit q->createXdgSurface(surface, xdgSurfaceResource);
+    emit q->xdgSurfaceRequested(surface, xdgSurfaceResource);
 
     QWaylandXdgSurface *xdgSurface = QWaylandXdgSurface::fromResource(xdgSurfaceResource.resource());
     if (!xdgSurface) {
-        // A QWaylandXdgSurface was not created in response to the createXdgSurface signal, so we
+        // A QWaylandXdgSurface was not created in response to the xdgSurfaceRequested signal, so we
         // create one as fallback here instead.
         xdgSurface = new QWaylandXdgSurface(q, surface, xdgSurfaceResource);
     }
@@ -171,7 +174,7 @@ void QWaylandXdgShellPrivate::xdg_shell_use_unstable_version(Resource *resource,
 
 void QWaylandXdgShellPrivate::xdg_shell_get_xdg_popup(Resource *resource, uint32_t id,
                                                       wl_resource *surface_res, wl_resource *parent,
-                                                      wl_resource *seat, uint32_t serial,
+                                                      wl_resource *seatResource, uint32_t serial,
                                                       int32_t x, int32_t y)
 {
     Q_UNUSED(serial);
@@ -191,13 +194,13 @@ void QWaylandXdgShellPrivate::xdg_shell_get_xdg_popup(Resource *resource, uint32
 
     QWaylandResource xdgPopupResource (wl_resource_create(resource->client(), &xdg_popup_interface,
                                                           wl_resource_get_version(resource->handle), id));
-    QWaylandInputDevice *inputDevice = QWaylandInputDevice::fromSeatResource(seat);
+    QWaylandSeat *seat = QWaylandSeat::fromSeatResource(seatResource);
     QPoint position(x, y);
-    emit q->createXdgPopup(surface, parentSurface, inputDevice, position, xdgPopupResource);
+    emit q->xdgPopupRequested(surface, parentSurface, seat, position, xdgPopupResource);
 
     QWaylandXdgPopup *xdgPopup = QWaylandXdgPopup::fromResource(xdgPopupResource.resource());
     if (!xdgPopup) {
-        // A QWaylandXdgPopup was not created in response to the createXdgPopup signal, so we
+        // A QWaylandXdgPopup was not created in response to the xdgPopupRequested signal, so we
         // create one as fallback here instead.
         xdgPopup = new QWaylandXdgPopup(q, surface, parentSurface, position, xdgPopupResource);
     }
@@ -247,6 +250,27 @@ void QWaylandXdgSurfacePrivate::handleFocusReceived()
     q->sendConfigure(current.size, current.states);
 }
 
+QRect QWaylandXdgSurfacePrivate::calculateFallbackWindowGeometry() const
+{
+    // TODO: The unset window geometry should include subsurfaces as well, so this solution
+    // won't work too well on those kinds of clients.
+    return QRect(QPoint(0, 0), m_surface->size() / m_surface->bufferScale());
+}
+
+void QWaylandXdgSurfacePrivate::updateFallbackWindowGeometry()
+{
+    Q_Q(QWaylandXdgSurface);
+    if (!m_unsetWindowGeometry)
+        return;
+
+    const QRect unsetGeometry = calculateFallbackWindowGeometry();
+    if (unsetGeometry == m_windowGeometry)
+        return;
+
+    m_windowGeometry = unsetGeometry;
+    emit q->windowGeometryChanged();
+}
+
 void QWaylandXdgSurfacePrivate::xdg_surface_destroy_resource(Resource *resource)
 {
     Q_UNUSED(resource);
@@ -266,7 +290,7 @@ void QWaylandXdgSurfacePrivate::xdg_surface_move(Resource *resource, wl_resource
     Q_UNUSED(serial);
 
     Q_Q(QWaylandXdgSurface);
-    QWaylandInputDevice *input_device = QWaylandInputDevice::fromSeatResource(seat);
+    QWaylandSeat *input_device = QWaylandSeat::fromSeatResource(seat);
     emit q->startMove(input_device);
 }
 
@@ -277,7 +301,7 @@ void QWaylandXdgSurfacePrivate::xdg_surface_resize(Resource *resource, wl_resour
     Q_UNUSED(serial);
 
     Q_Q(QWaylandXdgSurface);
-    QWaylandInputDevice *input_device = QWaylandInputDevice::fromSeatResource(seat);
+    QWaylandSeat *input_device = QWaylandSeat::fromSeatResource(seat);
     emit q->startResize(input_device, QWaylandXdgSurface::ResizeEdge(edges));
 }
 
@@ -354,15 +378,15 @@ void QWaylandXdgSurfacePrivate::xdg_surface_set_app_id(Resource *resource, const
     emit q->appIdChanged();
 }
 
-void QWaylandXdgSurfacePrivate::xdg_surface_show_window_menu(Resource *resource, wl_resource *seat,
+void QWaylandXdgSurfacePrivate::xdg_surface_show_window_menu(Resource *resource, wl_resource *seatResource,
                                                              uint32_t serial, int32_t x, int32_t y)
 {
     Q_UNUSED(resource);
     Q_UNUSED(serial);
     QPoint position(x, y);
-    auto inputDevice = QWaylandInputDevice::fromSeatResource(seat);
+    auto seat = QWaylandSeat::fromSeatResource(seatResource);
     Q_Q(QWaylandXdgSurface);
-    emit q->showWindowMenu(inputDevice, position);
+    emit q->showWindowMenu(seat, position);
 }
 
 void QWaylandXdgSurfacePrivate::xdg_surface_ack_configure(Resource *resource, uint32_t serial)
@@ -501,10 +525,10 @@ void QWaylandXdgShell::initialize()
     }
     d->init(compositor->display(), 1);
 
-    handleDefaultInputDeviceChanged(compositor->defaultInputDevice(), nullptr);
+    handleSeatChanged(compositor->defaultSeat(), nullptr);
 
-    connect(compositor, &QWaylandCompositor::defaultInputDeviceChanged,
-            this, &QWaylandXdgShell::handleDefaultInputDeviceChanged);
+    connect(compositor, &QWaylandCompositor::defaultSeatChanged,
+            this, &QWaylandXdgShell::handleSeatChanged);
 }
 
 /*!
@@ -559,15 +583,15 @@ void QWaylandXdgShell::closeAllPopups()
     }
 }
 
-void QWaylandXdgShell::handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice)
+void QWaylandXdgShell::handleSeatChanged(QWaylandSeat *newSeat, QWaylandSeat *oldSeat)
 {
-    if (oldDevice != nullptr) {
-        disconnect(oldDevice, &QWaylandInputDevice::keyboardFocusChanged,
+    if (oldSeat != nullptr) {
+        disconnect(oldSeat, &QWaylandSeat::keyboardFocusChanged,
                    this, &QWaylandXdgShell::handleFocusChanged);
     }
 
-    if (newDevice != nullptr) {
-        connect(newDevice, &QWaylandInputDevice::keyboardFocusChanged,
+    if (newSeat != nullptr) {
+        connect(newSeat, &QWaylandSeat::keyboardFocusChanged,
                 this, &QWaylandXdgShell::handleFocusChanged);
     }
 }
@@ -624,7 +648,7 @@ QWaylandXdgSurface::QWaylandXdgSurface()
 
 /*!
  * Constructs a QWaylandXdgSurface for \a surface and initializes it with the
- * given \a xdgShell, \a surface and \a resource.
+ * given \a xdgShell, \a surface, and resource \a res.
  */
 QWaylandXdgSurface::QWaylandXdgSurface(QWaylandXdgShell *xdgShell, QWaylandSurface *surface, const QWaylandResource &res)
     : QWaylandShellSurfaceTemplate<QWaylandXdgSurface>(*new QWaylandXdgSurfacePrivate)
@@ -650,8 +674,9 @@ void QWaylandXdgSurface::initialize(QWaylandXdgShell *xdgShell, QWaylandSurface 
     d->m_surface = surface;
     d->init(resource.resource());
     setExtensionContainer(surface);
-    d->m_windowGeometry = QRect(QPoint(0,0), surface->size());
+    d->m_windowGeometry = d->calculateFallbackWindowGeometry();
     connect(surface, &QWaylandSurface::sizeChanged, this, &QWaylandXdgSurface::handleSurfaceSizeChanged);
+    connect(surface, &QWaylandSurface::bufferScaleChanged, this, &QWaylandXdgSurface::handleBufferScaleChanged);
     emit surfaceChanged();
     emit windowGeometryChanged();
     QWaylandCompositorExtension::initialize();
@@ -677,12 +702,13 @@ QList<int> QWaylandXdgSurface::statesAsInts() const
 void QWaylandXdgSurface::handleSurfaceSizeChanged()
 {
     Q_D(QWaylandXdgSurface);
-    if (d->m_unsetWindowGeometry && d->m_windowGeometry.size() != surface()->size()) {
-        // TODO: The unset window geometry should include subsurfaces as well, so this solution
-        // won't work too well on those kinds of clients.
-        d->m_windowGeometry.setSize(surface()->size());
-        emit windowGeometryChanged();
-    }
+    d->updateFallbackWindowGeometry();
+}
+
+void QWaylandXdgSurface::handleBufferScaleChanged()
+{
+    Q_D(QWaylandXdgSurface);
+    d->updateFallbackWindowGeometry();
 }
 
 /*!
@@ -915,7 +941,7 @@ uint QWaylandXdgSurface::sendMaximized(const QSize &size)
     return sendConfigure(size, conf.states);
 }
 
-uint QWaylandXdgSurface::sendUnMaximized(const QSize &size)
+uint QWaylandXdgSurface::sendUnmaximized(const QSize &size)
 {
     Q_D(QWaylandXdgSurface);
     QWaylandXdgSurfacePrivate::ConfigureEvent conf = d->lastSentConfigure();
@@ -953,10 +979,12 @@ uint QWaylandXdgSurface::sendResizing(const QSize &maxSize)
     return sendConfigure(maxSize, conf.states);
 }
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 QWaylandQuickShellIntegration *QWaylandXdgSurface::createIntegration(QWaylandQuickShellSurfaceItem *item)
 {
     return new QtWayland::XdgShellIntegration(item);
 }
+#endif
 
 /*!
  * \class QWaylandXdgPopup
@@ -1116,9 +1144,11 @@ void QWaylandXdgPopup::sendPopupDone()
     d->send_popup_done();
 }
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 QWaylandQuickShellIntegration *QWaylandXdgPopup::createIntegration(QWaylandQuickShellSurfaceItem *item)
 {
     return new QtWayland::XdgPopupIntegration(item);
 }
+#endif
 
 QT_END_NAMESPACE

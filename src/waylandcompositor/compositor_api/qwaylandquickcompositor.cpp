@@ -37,7 +37,11 @@
 
 #include <QtQml/QQmlEngine>
 #include <QQuickWindow>
-#include <QtGui/private/qopengltextureblitter_p.h>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#include <QOpenGLTextureBlitter>
+#else
+#include <QtGui/private/qopengltextureblitter_p.h> 
+#endif
 #include <QOpenGLFramebufferObject>
 #include <QMatrix4x4>
 #include <QRunnable>
@@ -114,7 +118,7 @@ void QWaylandQuickCompositor::componentComplete()
  */
 void QWaylandQuickCompositor::grabSurface(QWaylandSurfaceGrabber *grabber, const QWaylandBufferRef &buffer)
 {
-    if (buffer.isShm()) {
+    if (buffer.isSharedMemory()) {
         QWaylandCompositor::grabSurface(grabber, buffer);
         return;
     }

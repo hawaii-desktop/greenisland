@@ -39,7 +39,7 @@
 #include "qwaylandcompositor_p.h"
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandclient.h>
-#include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandseat.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandoutput.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandview.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandclient.h>
@@ -50,6 +50,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandkeyboard_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandseat.h>
 
 #include "wayland_wrapper/qwldatadevice_p.h"
 #include "wayland_wrapper/qwldatadevicemanager_p.h"
@@ -58,12 +59,15 @@
 #include "hardware_integration/qwlclientbufferintegrationfactory_p.h"
 #include "hardware_integration/qwlserverbufferintegration_p.h"
 #include "hardware_integration/qwlserverbufferintegrationfactory_p.h"
+
+#ifdef QT_WAYLAND_COMPOSITOR_GL
 #include "hardware_integration/qwlhwintegration_p.h"
+#endif
 
 #include "extensions/qwaylandqtwindowmanager.h"
 
 #include "qwaylandxkb_p.h"
-#include "qwaylandshmformathelper_p.h"
+#include "qwaylandsharedmemoryformathelper_p.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
@@ -76,8 +80,12 @@
 #include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/private/qguiapplication_p.h>
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
+#if QT_VERSION >= QT_VERSION_CHECK(5, 8, 0)
+#   include <QOpenGLTextureBlitter>
+#else
 #   include <QtGui/private/qopengltextureblitter_p.h>
+#endif
 #   include <QOpenGLContext>
 #   include <QOpenGLFramebufferObject>
 #   include <QMatrix4x4>
@@ -97,7 +105,7 @@ public:
     {
         if (e->type == QWindowSystemInterfacePrivate::Key) {
             QWindowSystemInterfacePrivate::KeyEvent *ke = static_cast<QWindowSystemInterfacePrivate::KeyEvent *>(e);
-            QWaylandKeyboardPrivate *keyb = QWaylandKeyboardPrivate::get(compositor->defaultInputDevice()->keyboard());
+            QWaylandKeyboardPrivate *keyb = QWaylandKeyboardPrivate::get(compositor->defaultSeat()->keyboard());
 
             uint32_t code = ke->nativeScanCode;
             bool isDown = ke->keyType == QEvent::KeyPress;
@@ -107,10 +115,8 @@ public:
             Qt::KeyboardModifiers modifiers = QWaylandXkb::modifiers(keyb->xkbState());
 
             const xkb_keysym_t sym = xkb_state_key_get_one_sym(keyb->xkbState(), code);
-            uint utf32 = xkb_keysym_to_utf32(sym);
-            if (utf32)
-                text = QString::fromUcs4(&utf32, 1);
-            int qtkey = QWaylandXkb::keysymToQtKey(sym, modifiers, text);
+            int qtkey;
+            std::tie(qtkey, text) = QWaylandXkb::keysymToQtKey(sym, modifiers);
 
             ke->key = qtkey;
             ke->modifiers = modifiers;
@@ -140,7 +146,7 @@ public:
 
 QWaylandCompositorPrivate::QWaylandCompositorPrivate(QWaylandCompositor *compositor)
     : display(0)
-#if defined (QT_COMPOSITOR_WAYLAND_GL)
+#if defined (QT_WAYLAND_COMPOSITOR_GL)
     , use_hw_integration_extension(true)
     , client_buffer_integration(0)
     , server_buffer_integration(0)
@@ -174,7 +180,7 @@ void QWaylandCompositorPrivate::init()
     data_device_manager =  new QtWayland::DataDeviceManager(q);
 
     wl_display_init_shm(display);
-    QVector<wl_shm_format> formats = QWaylandShmFormatHelper::supportedWaylandFormats();
+    QVector<wl_shm_format> formats = QWaylandSharedMemoryFormatHelper::supportedWaylandFormats();
     foreach (wl_shm_format format, formats)
         wl_display_add_shm_format(display, format);
 
@@ -199,7 +205,7 @@ void QWaylandCompositorPrivate::init()
     QObject::connect(dispatcher, SIGNAL(aboutToBlock()), q, SLOT(processWaylandEvents()));
 
     initializeHardwareIntegration();
-    initializeDefaultInputDevice();
+    initializeDefaultSeat();
 
     initialized = true;
 
@@ -289,7 +295,7 @@ void QWaylandCompositorPrivate::compositor_create_surface(wl_compositor::Resourc
 {
     Q_Q(QWaylandCompositor);
     QWaylandClient *client = QWaylandClient::fromWlClient(q, resource->client());
-    emit q->createSurface(client, id, resource->version());
+    emit q->surfaceRequested(client, id, resource->version());
 #ifndef QT_NO_DEBUG
     Q_ASSERT_X(!QWaylandSurfacePrivate::hasUninitializedSurface(), "QWaylandCompositor", QStringLiteral("Found uninitialized QWaylandSurface after emitting QWaylandCompositor::createSurface for id %1. All surfaces has to be initialized immediately after creation. See QWaylandSurface::initialize.").arg(id).toLocal8Bit().constData());
 #endif
@@ -334,7 +340,7 @@ QWaylandSurface *QWaylandCompositorPrivate::createDefaultSurface()
 
 void QWaylandCompositorPrivate::initializeHardwareIntegration()
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     Q_Q(QWaylandCompositor);
     if (use_hw_integration_extension)
         hw_integration.reset(new QtWayland::HardwareIntegration(q));
@@ -349,17 +355,17 @@ void QWaylandCompositorPrivate::initializeHardwareIntegration()
 #endif
 }
 
-void QWaylandCompositorPrivate::initializeDefaultInputDevice()
+void QWaylandCompositorPrivate::initializeDefaultSeat()
 {
     Q_Q(QWaylandCompositor);
-    QWaylandInputDevice *device = q->createInputDevice();
-    inputDevices.append(device);
-    q->defaultInputDeviceChanged(device, nullptr);
+    QWaylandSeat *device = q->createSeat();
+    seats.append(device);
+    q->defaultSeatChanged(device, nullptr);
 }
 
 void QWaylandCompositorPrivate::loadClientBufferIntegration()
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     Q_Q(QWaylandCompositor);
     QStringList keys = QtWayland::ClientBufferIntegrationFactory::keys();
     QString targetKey;
@@ -388,7 +394,7 @@ void QWaylandCompositorPrivate::loadClientBufferIntegration()
 
 void QWaylandCompositorPrivate::loadServerBufferIntegration()
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     QStringList keys = QtWayland::ServerBufferIntegrationFactory::keys();
     QString targetKey;
     QByteArray serverBufferIntegration = qgetenv("QT_WAYLAND_SERVER_BUFFER_INTEGRATION");
@@ -410,12 +416,12 @@ void QWaylandCompositorPrivate::loadServerBufferIntegration()
   \brief Type managing the Wayland display server.
 
   The WaylandCompositor manages the connections to the clients, as well as the different
-  \l{WaylandOutput}{outputs} and \l{WaylandInput}{input devices}.
+  \l{WaylandOutput}{outputs} and \l{QWaylandSeat}{seats}.
 
   Normally, a compositor application will have a single WaylandCompositor
   instance, which can have several outputs as children. When a client
   requests the compositor to create a surface, the request is handled by
-  the onCreateSurface handler.
+  the onSurfaceRequested handler.
 
   Extensions that are supported by the compositor should be instantiated and added to the
   extensions property.
@@ -429,7 +435,7 @@ void QWaylandCompositorPrivate::loadServerBufferIntegration()
    \brief Class managing the Wayland display server.
 
    The QWaylandCompositor manages the connections to the clients, as well as the different \l{QWaylandOutput}{outputs}
-   and \l{QWaylandInput}{input devices}.
+   and \l{QWaylandSeat}{seats}.
 
    Normally, a compositor application will have a single WaylandCompositor
    instance, which can have several outputs as children.
@@ -686,33 +692,33 @@ void QWaylandCompositor::processWaylandEvents()
 /*!
  * \internal
  */
-QWaylandInputDevice *QWaylandCompositor::createInputDevice()
+QWaylandSeat *QWaylandCompositor::createSeat()
 {
-    return new QWaylandInputDevice(this);
+    return new QWaylandSeat(this);
 }
 
 /*!
  * \internal
  */
-QWaylandPointer *QWaylandCompositor::createPointerDevice(QWaylandInputDevice *inputDevice)
+QWaylandPointer *QWaylandCompositor::createPointerDevice(QWaylandSeat *seat)
 {
-    return new QWaylandPointer(inputDevice);
+    return new QWaylandPointer(seat);
 }
 
 /*!
  * \internal
  */
-QWaylandKeyboard *QWaylandCompositor::createKeyboardDevice(QWaylandInputDevice *inputDevice)
+QWaylandKeyboard *QWaylandCompositor::createKeyboardDevice(QWaylandSeat *seat)
 {
-    return new QWaylandKeyboard(inputDevice);
+    return new QWaylandKeyboard(seat);
 }
 
 /*!
  * \internal
  */
-QWaylandTouch *QWaylandCompositor::createTouchDevice(QWaylandInputDevice *inputDevice)
+QWaylandTouch *QWaylandCompositor::createTouchDevice(QWaylandSeat *seat)
 {
-    return new QWaylandTouch(inputDevice);
+    return new QWaylandTouch(seat);
 }
 
 /*!
@@ -755,38 +761,38 @@ void QWaylandCompositor::overrideSelection(const QMimeData *data)
 }
 
 /*!
- * \qmlproperty object QtWaylandCompositor::WaylandCompositor::defaultInputDevice
+ * \qmlproperty object QtWaylandCompositor::WaylandCompositor::defaultSeat
  *
- * This property contains the default input device for this
+ * This property contains the default seat for this
  * WaylandCompositor.
  */
 
 /*!
- * \property QWaylandCompositor::defaultInputDevice
+ * \property QWaylandCompositor::defaultSeat
  *
- * This property contains the default input device for this
+ * This property contains the default seat for this
  * QWaylandCompositor.
  */
-QWaylandInputDevice *QWaylandCompositor::defaultInputDevice() const
+QWaylandSeat *QWaylandCompositor::defaultSeat() const
 {
     Q_D(const QWaylandCompositor);
-    if (d->inputDevices.size())
-        return d->inputDevices.first();
+    if (d->seats.size())
+        return d->seats.first();
     return Q_NULLPTR;
 }
 
 /*!
  * \internal
  *
- * Currently, Qt only supports a single input device, so this exists for
+ * Currently, Qt only supports a single seat, so this exists for
  * future proofing the APIs.
  */
-QWaylandInputDevice *QWaylandCompositor::inputDeviceFor(QInputEvent *inputEvent)
+QWaylandSeat *QWaylandCompositor::seatFor(QInputEvent *inputEvent)
 {
     Q_D(QWaylandCompositor);
-    QWaylandInputDevice *dev = NULL;
-    for (int i = 0; i < d->inputDevices.size(); i++) {
-        QWaylandInputDevice *candidate = d->inputDevices.at(i);
+    QWaylandSeat *dev = NULL;
+    for (int i = 0; i < d->seats.size(); i++) {
+        QWaylandSeat *candidate = d->seats.at(i);
         if (candidate->isOwner(inputEvent)) {
             dev = candidate;
             break;
@@ -814,12 +820,17 @@ QWaylandInputDevice *QWaylandCompositor::inputDeviceFor(QInputEvent *inputEvent)
  */
 bool QWaylandCompositor::useHardwareIntegrationExtension() const
 {
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     Q_D(const QWaylandCompositor);
     return d->use_hw_integration_extension;
+#else
+    return false;
+#endif
 }
 
 void QWaylandCompositor::setUseHardwareIntegrationExtension(bool use)
 {
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     Q_D(QWaylandCompositor);
     if (use == d->use_hw_integration_extension)
         return;
@@ -829,6 +840,10 @@ void QWaylandCompositor::setUseHardwareIntegrationExtension(bool use)
 
     d->use_hw_integration_extension = use;
     useHardwareIntegrationExtensionChanged();
+#else
+    if (use)
+        qWarning() << "Hardware integration not supported without OpenGL support";
+#endif
 }
 
 /*!
@@ -836,16 +851,16 @@ void QWaylandCompositor::setUseHardwareIntegrationExtension(bool use)
  * The default implementation requires a OpenGL context to be bound to the current thread
  * to work. If this is not possible reimplement this function in your compositor subclass
  * to implement custom logic.
- * The default implementation only grabs SHM and OpenGL buffers, reimplement this in your
+ * The default implementation only grabs shared memory and OpenGL buffers, reimplement this in your
  * compositor subclass to handle more buffer types.
- * You should not call this manually, but rather use \a QWaylandSurfaceGrabber.
+ * You should not call this manually, but rather use QWaylandSurfaceGrabber (\a grabber).
  */
 void QWaylandCompositor::grabSurface(QWaylandSurfaceGrabber *grabber, const QWaylandBufferRef &buffer)
 {
-    if (buffer.isShm()) {
+    if (buffer.isSharedMemory()) {
         emit grabber->success(buffer.image());
     } else {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
         if (QOpenGLContext::currentContext()) {
             QOpenGLFramebufferObject fbo(buffer.size());
             fbo.bind();

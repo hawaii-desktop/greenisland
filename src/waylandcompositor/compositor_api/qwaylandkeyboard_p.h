@@ -50,9 +50,9 @@
 //
 
 #include <GreenIsland/QtWaylandCompositor/qwaylandexport.h>
-#include <GreenIsland/QtWaylandCompositor/qwaylandinput.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylandkeyboard.h>
 #include <GreenIsland/QtWaylandCompositor/qwaylanddestroylistener.h>
+#include <GreenIsland/QtWaylandCompositor/qwaylandseat.h>
 
 #include <QtCore/private/qobject_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwayland-server-wayland.h>
@@ -74,7 +74,7 @@ public:
 
     static QWaylandKeyboardPrivate *get(QWaylandKeyboard *keyboard);
 
-    QWaylandKeyboardPrivate(QWaylandInputDevice *seat);
+    QWaylandKeyboardPrivate(QWaylandSeat *seat);
     ~QWaylandKeyboardPrivate();
 
     QWaylandCompositor *compositor() const { return seat->compositor(); }
@@ -111,7 +111,7 @@ private:
 
     void sendRepeatInfo();
 
-    QWaylandInputDevice *seat;
+    QWaylandSeat *seat;
 
     QWaylandSurface *focus;
     Resource *focusResource;

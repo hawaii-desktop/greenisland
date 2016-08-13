@@ -205,8 +205,8 @@ QWaylandBufferRef::BufferType QWaylandBufferRef::bufferType() const
     if (d->nullOrDestroyed())
         return BufferType_Null;
 
-    if (isShm())
-        return BufferType_Shm;
+    if (isSharedMemory())
+        return BufferType_SharedMemory;
 
     return BufferType_Egl;
 }
@@ -222,12 +222,12 @@ QWaylandBufferRef::BufferFormatEgl QWaylandBufferRef::bufferFormatEgl() const
 /*!
  * Returns true if the buffer is a shared memory buffer. Otherwise returns false.
  */
-bool QWaylandBufferRef::isShm() const
+bool QWaylandBufferRef::isSharedMemory() const
 {
     if (d->nullOrDestroyed())
         return false;
 
-    return d->buffer->isShm();
+    return d->buffer->isSharedMemory();
 }
 
 /*!
@@ -241,7 +241,7 @@ QImage QWaylandBufferRef::image() const
     return d->buffer->image();
 }
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
 GLuint QWaylandBufferRef::textureForPlane(int plane) const
 {
     if (d->nullOrDestroyed())
@@ -249,7 +249,6 @@ GLuint QWaylandBufferRef::textureForPlane(int plane) const
 
     return d->buffer->textureForPlane(plane);
 }
-#endif
 
 /*!
  * Binds the buffer to the current OpenGL texture. This may
@@ -267,10 +266,11 @@ void QWaylandBufferRef::bindToTexture() const
 
 void QWaylandBufferRef::updateTexture() const
 {
-    if (d->nullOrDestroyed() || d->buffer->isShm())
+    if (d->nullOrDestroyed() || d->buffer->isSharedMemory())
         return;
 
     d->buffer->updateTexture();
 }
+#endif
 
 QT_END_NAMESPACE

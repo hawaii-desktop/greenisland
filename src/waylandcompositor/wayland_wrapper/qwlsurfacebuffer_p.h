@@ -101,13 +101,15 @@ public:
 
     QSize size() const;
     QWaylandSurface::Origin origin() const;
-    bool isShm() const { return wl_shm_buffer_get(m_buffer); }
+    bool isSharedMemory() const { return wl_shm_buffer_get(m_buffer); }
 
     QImage image() const;
     QWaylandBufferRef::BufferFormatEgl bufferFormatEgl() const;
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     void bindToTexture() const;
     uint textureForPlane(int plane) const;
     void updateTexture() const;
+#endif
 
     static bool hasContent(SurfaceBuffer *buffer) { return buffer && buffer->waylandBufferHandle(); }
 private:

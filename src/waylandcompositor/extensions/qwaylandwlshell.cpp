@@ -38,7 +38,9 @@
 #include "qwaylandwlshell.h"
 #include "qwaylandwlshell_p.h"
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 #include "qwaylandwlshellintegration_p.h"
+#endif
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandView>
@@ -77,17 +79,17 @@ void QWaylandWlShellPrivate::shell_get_shell_surface(Resource *resource, uint32_
     if (!surface->setRole(QWaylandWlShellSurface::role(), displayRes, WL_DISPLAY_ERROR_INVALID_OBJECT))
         return;
 
-    emit q->createShellSurface(surface, shellSurfaceResource);
+    emit q->wlShellSurfaceRequested(surface, shellSurfaceResource);
 
     QWaylandWlShellSurface *shellSurface = QWaylandWlShellSurface::fromResource(shellSurfaceResource.resource());
     if (!shellSurface) {
-        // A QWaylandShellSurface was not created in response to the createShellSurface signal
-        // we create one as fallback here instead.
+        // A QWaylandWlShellSurface was not created in response to the wlShellSurfaceRequested
+        // signal, so we create one as fallback here instead.
         shellSurface = new QWaylandWlShellSurface(q, surface, shellSurfaceResource);
     }
 
     m_shellSurfaces.append(shellSurface);
-    emit q->shellSurfaceCreated(shellSurface);
+    emit q->wlShellSurfaceCreated(shellSurface);
 }
 
 void QWaylandWlShellPrivate::unregisterShellSurface(QWaylandWlShellSurface *shellSurface)
@@ -129,7 +131,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_move(Resource *resource,
     Q_UNUSED(serial);
 
     Q_Q(QWaylandWlShellSurface);
-    QWaylandInputDevice *input_device = QWaylandInputDevice::fromSeatResource(input_device_super);
+    QWaylandSeat *input_device = QWaylandSeat::fromSeatResource(input_device_super);
     emit q->startMove(input_device);
 }
 
@@ -142,7 +144,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_resize(Resource *resource,
     Q_UNUSED(serial);
     Q_Q(QWaylandWlShellSurface);
 
-    QWaylandInputDevice *input_device = QWaylandInputDevice::fromSeatResource(input_device_super);
+    QWaylandSeat *input_device = QWaylandSeat::fromSeatResource(input_device_super);
     emit q->startResize(input_device, QWaylandWlShellSurface::ResizeEdge(edges));
 }
 
@@ -187,7 +189,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_popup(Resource *resource, 
     Q_UNUSED(serial);
     Q_UNUSED(flags);
     Q_Q(QWaylandWlShellSurface);
-    QWaylandInputDevice *input = QWaylandInputDevice::fromSeatResource(input_device);
+    QWaylandSeat *input = QWaylandSeat::fromSeatResource(input_device);
     QWaylandSurface *parentSurface = QWaylandSurface::fromResource(parent);
     emit q->setPopup(input, parentSurface, QPoint(x,y));
 
@@ -243,7 +245,7 @@ void QWaylandWlShellSurfacePrivate::shell_surface_set_class(Resource *resource,
  * \preliminary
  * \brief Extension for desktop-style user interfaces.
  *
- * The WlShell extension provides a way to assiociate a \l{ShellSurface}
+ * The WlShell extension provides a way to assiociate a ShellSurface
  * with a regular Wayland surface. Using the shell surface interface, the client
  * can request that the surface is resized, moved, and so on.
  *
@@ -332,7 +334,7 @@ const struct wl_interface *QWaylandWlShell::interface()
 }
 
 /*!
- * \qmlsignal void QtWaylandCompositor::WlShell::createShellSurface(object surface, object client, int id)
+ * \qmlsignal void QtWaylandCompositor::WlShell::wlShellSurfaceRequested(object surface, object client, int id)
  *
  * This signal is emitted when the \a client has requested a wl_shell_surface to be associated
  * with \a surface and be assigned the given \a id. The handler for this signal is
@@ -341,12 +343,9 @@ const struct wl_interface *QWaylandWlShell::interface()
  */
 
 /*!
- * \fn void QWaylandWlShell::createShellSurface(QWaylandSurface *surface, QWaylandClient *client, uint id)
+ * \fn void QWaylandWlShell::wlShellSurfaceRequested(QWaylandSurface *surface, const QWaylandResource &resource)
  *
- * This signal is emitted when the \a client has requested a shell surface to be associated
- * with \a surface and be assigned the given \a id. The handler for this signal is
- * expected to create the shell surface and initialize it within the scope of the
- * signal emission.
+ * Constructs a QWaylandSurface, assigns it to \a surface and initializes it with the given \a resource.
  */
 
 /*!
@@ -392,7 +391,7 @@ QWaylandWlShellSurface::QWaylandWlShellSurface()
 }
 
 /*!
- * Constructs a QWaylandWlShellSurface for \a surface and initializes it with the given \a shell and \a resource.
+ * Constructs a QWaylandWlShellSurface for \a surface and initializes it with the given \a shell and resource \a res.
  */
 QWaylandWlShellSurface::QWaylandWlShellSurface(QWaylandWlShell *shell, QWaylandSurface *surface, const QWaylandResource &res)
     : QWaylandShellSurfaceTemplate<QWaylandWlShellSurface>(*new QWaylandWlShellSurfacePrivate)
@@ -518,10 +517,12 @@ void QWaylandWlShellSurface::sendPopupDone()
     d->send_popup_done();
 }
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 QWaylandQuickShellIntegration *QWaylandWlShellSurface::createIntegration(QWaylandQuickShellSurfaceItem *item)
 {
     return new QtWayland::WlShellIntegration(item);
 }
+#endif
 
 /*!
  * \qmlproperty object QtWaylandCompositor::WlShellSurface::surface
@@ -588,12 +589,12 @@ QWaylandSurfaceRole *QWaylandWlShellSurface::role()
 /*!
  * \qmlmethod void QtWaylandCompositor::WlShellSurface::ping()
  *
- * Sends a ping event to the client. If the client replies to the event the \a pong
+ * Sends a ping event to the client. If the client replies to the event the pong
  * signal will be emitted.
  */
 
 /*!
- * Sends a ping event to the client. If the client replies to the event the \a pong
+ * Sends a ping event to the client. If the client replies to the event the pong
  * signal will be emitted.
  */
 void QWaylandWlShellSurface::ping()

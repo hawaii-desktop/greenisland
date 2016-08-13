@@ -38,15 +38,15 @@
 #include "qwaylandtouch_p.h"
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandView>
 #include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 
 #include <GreenIsland/QtWaylandCompositor/private/qwlqttouch_p.h>
 
 QT_BEGIN_NAMESPACE
 
-QWaylandTouchPrivate::QWaylandTouchPrivate(QWaylandTouch *touch, QWaylandInputDevice *seat)
+QWaylandTouchPrivate::QWaylandTouchPrivate(QWaylandTouch *touch, QWaylandSeat *seat)
     : wl_touch()
     , seat(seat)
     , focusResource()
@@ -80,12 +80,12 @@ void QWaylandTouchPrivate::touch_release(Resource *resource)
 void QWaylandTouchPrivate::sendDown(uint32_t time, int touch_id, const QPointF &position)
 {
     Q_Q(QWaylandTouch);
-    if (!focusResource || !q->mouseFocus())
+    if (!focusResource || !seat->mouseFocus())
         return;
 
     uint32_t serial = q->compositor()->nextSerial();
 
-    wl_touch_send_down(focusResource->handle, serial, time, q->mouseFocus()->surfaceResource(), touch_id,
+    wl_touch_send_down(focusResource->handle, serial, time, seat->mouseFocus()->surfaceResource(), touch_id,
                        wl_fixed_from_double(position.x()), wl_fixed_from_double(position.y()));
 }
 
@@ -113,15 +113,15 @@ void QWaylandTouchPrivate::sendMotion(uint32_t time, int touch_id, const QPointF
  * \preliminary
  * \brief The QWaylandTouch class provides access to a touch device.
  *
- * This class provides access to the touch device in a QWaylandInputDevice. It corresponds to
+ * This class provides access to the touch device in a QWaylandSeat. It corresponds to
  * the Wayland interface wl_touch.
  */
 
 /*!
- * Constructs a QWaylandTouch for the \a inputDevice and with the given \a parent.
+ * Constructs a QWaylandTouch for the \a seat and with the given \a parent.
  */
-QWaylandTouch::QWaylandTouch(QWaylandInputDevice *inputDevice, QObject *parent)
-    : QWaylandObject(*new QWaylandTouchPrivate(this, inputDevice), parent)
+QWaylandTouch::QWaylandTouch(QWaylandSeat *seat, QObject *parent)
+    : QWaylandObject(*new QWaylandTouchPrivate(this, seat), parent)
 {
     connect(&d_func()->focusDestroyListener, &QWaylandDestroyListener::fired, this, &QWaylandTouch::focusDestroyed);
 }
@@ -129,7 +129,7 @@ QWaylandTouch::QWaylandTouch(QWaylandInputDevice *inputDevice, QObject *parent)
 /*!
  * Returns the input device for this QWaylandTouch.
  */
-QWaylandInputDevice *QWaylandTouch::inputDevice() const
+QWaylandSeat *QWaylandTouch::seat() const
 {
     Q_D(const QWaylandTouch);
     return d->seat;
@@ -147,9 +147,6 @@ QWaylandCompositor *QWaylandTouch::compositor() const
 /*!
  * Sends a touch point event for the touch device with the given \a id,
  * \a position, and \a state.
- *
- *
- * \sa mouseFocus()
  */
 void QWaylandTouch::sendTouchPointEvent(int id, const QPointF &position, Qt::TouchPointState state)
 {
@@ -243,15 +240,6 @@ struct wl_resource *QWaylandTouch::focusResource() const
     if (!d->focusResource)
         return Q_NULLPTR;
     return d->focusResource->handle;
-}
-
-/*!
- * Returns the view currently holding mouse focus in the input device.
- */
-QWaylandView *QWaylandTouch::mouseFocus() const
-{
-    Q_D(const QWaylandTouch);
-    return d->seat->mouseFocus();
 }
 
 /*!

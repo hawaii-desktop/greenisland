@@ -114,13 +114,13 @@ void ClientWindowQuickItem::mousePressEvent(QMouseEvent *event)
     if (d->isModifierHeld && event->buttons().testFlag(Qt::LeftButton)) {
         QWaylandWlShellSurface *wlShellSurface = qobject_cast<QWaylandWlShellSurface *>(shellSurface());
         if (wlShellSurface) {
-            Q_EMIT wlShellSurface->startMove(compositor()->defaultInputDevice());
+            Q_EMIT wlShellSurface->startMove(compositor()->defaultSeat());
             return;
         }
 
         QWaylandXdgSurface *xdgSurface = qobject_cast<QWaylandXdgSurface *>(shellSurface());
         if (xdgSurface) {
-            Q_EMIT xdgSurface->startMove(compositor()->defaultInputDevice());
+            Q_EMIT xdgSurface->startMove(compositor()->defaultSeat());
             return;
         }
     }

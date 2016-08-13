@@ -100,12 +100,12 @@ public:
     void setMaximized(bool maximized);
     void setFullscreen(bool fullscreen);
 
-    void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface);
+    void _q_wlShellSurfaceCreated(QWaylandWlShellSurface *wlShellSurface);
     void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface);
     void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup);
     void _q_gtkSurfaceCreated(GtkSurface *gtkSurface);
 
-    void _q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice);
+    void _q_handleDefaultSeatChanged(QWaylandSeat *newSeat, QWaylandSeat *oldSeat);
     void _q_handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
 
     QString findDesktopFile(const QString &appId);

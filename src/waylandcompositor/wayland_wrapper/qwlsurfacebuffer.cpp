@@ -36,7 +36,7 @@
 
 #include "qwlsurfacebuffer_p.h"
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
 #include "hardware_integration/qwlclientbufferintegration_p.h"
 #include <qpa/qplatformopenglcontext.h>
 #endif
@@ -44,7 +44,7 @@
 #include <QtCore/QDebug>
 
 #include <wayland-server-protocol.h>
-#include "qwaylandshmformathelper_p.h"
+#include "qwaylandsharedmemoryformathelper_p.h"
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 
@@ -83,8 +83,10 @@ void SurfaceBuffer::initialize(struct ::wl_resource *buffer)
     m_destroy_listener.surfaceBuffer = this;
     m_destroy_listener.listener.notify = destroy_listener_callback;
     if (buffer) {
+#ifdef QT_WAYLAND_COMPOSITOR_GL
         if (ClientBufferIntegration *integration = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration())
             integration->initializeBuffer(buffer);
+#endif
         wl_signal_add(&buffer->destroy_signal, &m_destroy_listener.listener);
     }
 }
@@ -167,22 +169,26 @@ QSize SurfaceBuffer::size() const
         int height = wl_shm_buffer_get_height(shmBuffer);
         return QSize(width, height);
     }
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     if (ClientBufferIntegration *integration = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration()) {
         return integration->bufferSize(m_buffer);
     }
+#endif
 
     return QSize();
 }
 
 QWaylandSurface::Origin SurfaceBuffer::origin() const
 {
-    if (isShm()) {
+    if (isSharedMemory()) {
         return QWaylandSurface::OriginTopLeft;
     }
 
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     if (ClientBufferIntegration *integration = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration()) {
         return integration->origin(m_buffer);
     }
+#endif
     return QWaylandSurface::OriginTopLeft;
 }
 
@@ -201,18 +207,21 @@ QImage SurfaceBuffer::image() const
 
 QWaylandBufferRef::BufferFormatEgl SurfaceBuffer::bufferFormatEgl() const
 {
-    Q_ASSERT(isShm() == false);
+    Q_ASSERT(isSharedMemory() == false);
 
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     if (QtWayland::ClientBufferIntegration *clientInt = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration())
         return clientInt->bufferFormat(m_buffer);
+#endif
 
     return QWaylandBufferRef::BufferFormatEgl_Null;
 }
 
+#ifdef QT_WAYLAND_COMPOSITOR_GL
 void SurfaceBuffer::bindToTexture() const
 {
     Q_ASSERT(m_compositor);
-    if (isShm()) {
+    if (isSharedMemory()) {
         QImage image = this->image();
         if (image.hasAlphaChannel()) {
             if (image.format() != QImage::Format_RGBA8888) {
@@ -245,6 +254,7 @@ void SurfaceBuffer::updateTexture() const
     if (QtWayland::ClientBufferIntegration *clientInt = QWaylandCompositorPrivate::get(m_compositor)->clientBufferIntegration())
         clientInt->updateTextureForBuffer(m_buffer);
 }
+#endif
 
 }
 

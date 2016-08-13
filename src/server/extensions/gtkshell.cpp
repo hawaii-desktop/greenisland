@@ -283,11 +283,13 @@ QString GtkSurface::uniqueBusName() const
     return d->m_uniqueBusName;
 }
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
 QWaylandQuickShellIntegration *GtkSurface::createIntegration(QWaylandQuickShellSurfaceItem *item)
 {
     Q_UNUSED(item);
     return nullptr;
 }
+#endif
 
 const struct wl_interface *GtkSurface::interface()
 {

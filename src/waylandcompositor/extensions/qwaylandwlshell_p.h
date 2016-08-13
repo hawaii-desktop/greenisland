@@ -41,7 +41,7 @@
 #include <GreenIsland/QtWaylandCompositor/qwaylandsurface.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositorextension_p.h>
 #include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 
 #include <wayland-server.h>
 #include <QHash>

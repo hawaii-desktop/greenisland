@@ -50,7 +50,7 @@ class QWaylandWlShellPrivate;
 class QWaylandWlShellSurfacePrivate;
 class QWaylandSurface;
 class QWaylandClient;
-class QWaylandInputDevice;
+class QWaylandSeat;
 class QWaylandOutput;
 class QWaylandSurfaceRole;
 class QWaylandWlShellSurface;
@@ -71,8 +71,8 @@ public:
     static QByteArray interfaceName();
 
 Q_SIGNALS:
-    void createShellSurface(QWaylandSurface *surface, const QWaylandResource &resource);
-    void shellSurfaceCreated(QWaylandWlShellSurface *shellSurface);
+    void wlShellSurfaceRequested(QWaylandSurface *surface, const QWaylandResource &resource);
+    void wlShellSurfaceCreated(QWaylandWlShellSurface *shellSurface);
 };
 
 class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandWlShellSurface : public QWaylandShellSurfaceTemplate<QWaylandWlShellSurface>
@@ -128,7 +128,9 @@ public:
     Q_INVOKABLE void sendConfigure(const QSize &size, ResizeEdge edges);
     Q_INVOKABLE void sendPopupDone();
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
     QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+#endif
 
 public Q_SLOTS:
     void ping();
@@ -139,17 +141,17 @@ Q_SIGNALS:
     void titleChanged();
     void classNameChanged();
     void pong();
-    void startMove(QWaylandInputDevice *inputDevice);
-    void startResize(QWaylandInputDevice *inputDevice, ResizeEdge edges);
+    void startMove(QWaylandSeat *seat);
+    void startResize(QWaylandSeat *seat, ResizeEdge edges);
 
     void setDefaultToplevel();
     void setTransient(QWaylandSurface *parentSurface, const QPoint &relativeToParent, bool inactive);
     void setFullScreen(FullScreenMethod method, uint framerate, QWaylandOutput *output);
-    void setPopup(QWaylandInputDevice *inputDevice, QWaylandSurface *parentSurface, const QPoint &relativeToParent);
+    void setPopup(QWaylandSeat *seat, QWaylandSurface *parentSurface, const QPoint &relativeToParent);
     void setMaximized(QWaylandOutput *output);
 
 private:
-    void initialize();
+    void initialize() override;
 };
 
 QT_END_NAMESPACE

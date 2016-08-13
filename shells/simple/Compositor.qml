@@ -32,7 +32,7 @@ WaylandCompositor {
     property QtObject primarySurfacesArea: null
 
     id: compositor
-    onCreateSurface: {
+    onSurfaceRequested: {
         var surface = surfaceComponent.createObject(compositor, {});
         surface.initialize(compositor, client, id, version);
     }

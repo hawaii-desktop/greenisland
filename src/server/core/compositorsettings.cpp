@@ -26,7 +26,7 @@
  ***************************************************************************/
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 
 #include "compositorsettings.h"
 #include "compositorsettings_p.h"
@@ -45,8 +45,8 @@ void CompositorSettingsPrivate::_q_setupKeymap()
     if (!compositor || !keymap || !initialized)
         return;
 
-    QWaylandInputDevice *inputDevice = compositor->defaultInputDevice();
-    if (inputDevice && inputDevice->keyboard()) {
+    QWaylandSeat *seat = compositor->defaultSeat();
+    if (seat && seat->keyboard()) {
         qCDebug(gLcCore,
                 "Setting keymap to '%s' (variant '%s', options '%s', model '%s', rules '%s')",
                 qPrintable(keymap->layout()),
@@ -58,10 +58,10 @@ void CompositorSettingsPrivate::_q_setupKeymap()
         QWaylandKeymap wlKeymap(keymap->layout(), keymap->variant(),
                                 keymap->options(), keymap->model(),
                                 keymap->rules());
-        inputDevice->keyboard()->setKeymap(wlKeymap);
+        seat->keyboard()->setKeymap(wlKeymap);
 
-        inputDevice->keyboard()->setRepeatRate(repeatRate);
-        inputDevice->keyboard()->setRepeatDelay(repeatDelay);
+        seat->keyboard()->setRepeatRate(repeatRate);
+        seat->keyboard()->setRepeatDelay(repeatDelay);
     }
 }
 
@@ -88,11 +88,11 @@ void CompositorSettings::setCompositor(QWaylandCompositor *compositor)
         return;
 
     if (d->compositor)
-        disconnect(compositor, SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
+        disconnect(compositor, SIGNAL(defaultSeatChanged(QWaylandSeat*,QWaylandSeat*)),
                    this, SLOT(_q_setupKeymap()));
 
     if (compositor) {
-        connect(compositor, SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
+        connect(compositor, SIGNAL(defaultSeatChanged(QWaylandSeat*,QWaylandSeat*)),
                 this, SLOT(_q_setupKeymap()));
         d->_q_setupKeymap();
     }
@@ -135,9 +135,9 @@ void CompositorSettings::setKeyboardRepeatRate(quint32 rate)
     Q_EMIT keyboardRepeatRateChanged();
 
     if (d->compositor) {
-        QWaylandInputDevice *inputDevice = d->compositor->defaultInputDevice();
-        if (inputDevice && inputDevice->keyboard())
-            inputDevice->keyboard()->setRepeatRate(d->repeatRate);
+        QWaylandSeat *seat = d->compositor->defaultSeat();
+        if (seat && seat->keyboard())
+            seat->keyboard()->setRepeatRate(d->repeatRate);
     }
 }
 
@@ -158,9 +158,9 @@ void CompositorSettings::setKeyboardRepeatDelay(quint32 delay)
     Q_EMIT keyboardRepeatDelayChanged();
 
     if (d->compositor) {
-        QWaylandInputDevice *inputDevice = d->compositor->defaultInputDevice();
-        if (inputDevice && inputDevice->keyboard())
-            inputDevice->keyboard()->setRepeatDelay(d->repeatDelay);
+        QWaylandSeat *seat = d->compositor->defaultSeat();
+        if (seat && seat->keyboard())
+            seat->keyboard()->setRepeatDelay(d->repeatDelay);
     }
 }
 

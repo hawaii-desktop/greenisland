@@ -37,8 +37,8 @@
 #include "qwaylandview.h"
 #include "qwaylandview_p.h"
 #include "qwaylandsurface.h"
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandsurface_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandoutput_p.h>
@@ -94,7 +94,7 @@ QWaylandView::~QWaylandView()
     if (d->surface) {
         if (d->output)
             QWaylandOutputPrivate::get(d->output)->removeView(this, d->surface);
-        QWaylandInputDevice *i = d->surface->compositor()->defaultInputDevice();
+        QWaylandSeat *i = d->surface->compositor()->defaultSeat();
         if (i->mouseFocus() == this)
             i->setMouseFocus(Q_NULLPTR);
 
@@ -144,7 +144,7 @@ void QWaylandView::setSurface(QWaylandSurface *newSurface)
 
     d->surface = newSurface;
 
-    if (!d->bufferLock) {
+    if (!d->bufferLocked) {
         d->currentBuffer = QWaylandBufferRef();
         d->currentDamage = QRegion();
     }
@@ -231,7 +231,7 @@ bool QWaylandView::advance()
     if (d->currentBuffer == d->nextBuffer && !d->forceAdvanceSucceed)
         return false;
 
-    if (d->bufferLock)
+    if (d->bufferLocked)
         return false;
 
     if (d->surface && d->surface->throttlingView() == this) {
@@ -280,7 +280,7 @@ QRegion QWaylandView::currentDamage()
 }
 
 /*!
- * \qmlproperty bool QtWaylandCompositor::WaylandView::bufferLock
+ * \qmlproperty bool QtWaylandCompositor::WaylandView::bufferLocked
  *
  * This property holds whether the view's buffer is currently locked. When
  * the buffer is locked, advance() will not advance to the next buffer,
@@ -290,7 +290,7 @@ QRegion QWaylandView::currentDamage()
  */
 
 /*!
- * \property QWaylandView::bufferLock
+ * \property QWaylandView::bufferLocked
  *
  * This property holds whether the view's buffer is currently locked. When
  * the buffer is locked, advance() will not advance to the next buffer,
@@ -301,13 +301,16 @@ QRegion QWaylandView::currentDamage()
 bool QWaylandView::isBufferLocked() const
 {
     Q_D(const QWaylandView);
-    return d->bufferLock;
+    return d->bufferLocked;
 }
 
-void QWaylandView::setBufferLock(bool locked)
+void QWaylandView::setBufferLocked(bool locked)
 {
     Q_D(QWaylandView);
-    d->bufferLock = locked;
+    if (d->bufferLocked == locked)
+        return;
+    d->bufferLocked = locked;
+    emit bufferLockedChanged();
 }
 
 /*!

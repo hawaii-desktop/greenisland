@@ -89,7 +89,9 @@ public:
     QString appObjectPath() const;
     QString uniqueBusName() const;
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
     QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+#endif
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();

@@ -146,17 +146,17 @@ Q_SIGNALS:
     void outputsChanged();
     void pingRequested();
     void pong();
-    void showWindowMenu(QWaylandInputDevice *inputDevice,
+    void showWindowMenu(QWaylandSeat *seat,
                         const QPoint &localSurfacePosition);
 
 private:
     ClientWindow(ApplicationManager *applicationManager, QWaylandSurface *surface);
 
-    Q_PRIVATE_SLOT(d_func(), void _q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface))
+    Q_PRIVATE_SLOT(d_func(), void _q_wlShellSurfaceCreated(QWaylandWlShellSurface *wlShellSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface))
     Q_PRIVATE_SLOT(d_func(), void _q_xdgPopupCreated(QWaylandXdgPopup *xdgPopup))
     Q_PRIVATE_SLOT(d_func(), void _q_gtkSurfaceCreated(GtkSurface *gtkSurface))
-    Q_PRIVATE_SLOT(d_func(), void _q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice))
+    Q_PRIVATE_SLOT(d_func(), void _q_handleDefaultSeatChanged(QWaylandSeat *newSeat, QWaylandSeat *oldSeat))
     Q_PRIVATE_SLOT(d_func(), void _q_handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface))
 
     friend class ApplicationManager;

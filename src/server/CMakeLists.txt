@@ -36,6 +36,7 @@ endif()
 
 add_definitions(
     -Wno-deprecated-declarations
+    -DQT_WAYLAND_COMPOSITOR_QUICK
 )
 
 include(GreenIslandServerConfigExtrasLocal.cmake)

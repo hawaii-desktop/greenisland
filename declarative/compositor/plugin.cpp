@@ -35,7 +35,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickShellSurfaceItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQtWindowManager>
@@ -106,8 +106,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                QObject::tr("Cannot create instance of WaylandOutputBase, use WaylandOutput instead"));
     qmlRegisterUncreatableType<QWaylandView>(uri, 1, 0, "WaylandView",
                                              QObject::tr("Cannot create instance of WaylandView, it can be retrieved by accessor on WaylandQuickItem"));
-    qmlRegisterUncreatableType<QWaylandInputDevice>(uri, 1, 0, "WaylandInputDevice",
-                                                    QObject::tr("Cannot create instance of WaylandInputDevice"));
+    qmlRegisterUncreatableType<QWaylandSeat>(uri, 1, 0, "WaylandSeat",
+                                             QObject::tr("Cannot create instance of WaylandSeat"));
     qmlRegisterUncreatableType<QWaylandCompositor>(uri, 1, 0, "WaylandCompositorBase",
                                                    QObject::tr("Cannot create instance of WaylandCompositorBase, use WaylandCompositor instead"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",

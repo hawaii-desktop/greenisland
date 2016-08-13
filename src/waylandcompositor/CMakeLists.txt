@@ -42,7 +42,6 @@ set(SOURCES
     compositor_api/qwaylandcompositor.cpp
     compositor_api/qwaylanddestroylistener.cpp
     compositor_api/qwaylanddrag.cpp
-    compositor_api/qwaylandinput.cpp
     compositor_api/qwaylandinputmethodcontrol.cpp
     compositor_api/qwaylandkeyboard.cpp
     compositor_api/qwaylandoutput.cpp
@@ -52,6 +51,7 @@ set(SOURCES
     compositor_api/qwaylandquickoutput.cpp
     compositor_api/qwaylandquicksurface.cpp
     compositor_api/qwaylandresource.cpp
+    compositor_api/qwaylandseat.cpp
     compositor_api/qwaylandsurface.cpp
     compositor_api/qwaylandsurfacegrabber.cpp
     compositor_api/qwaylandtouch.cpp
@@ -89,10 +89,13 @@ set(SOURCES
 )
 
 if(${Qt5Gui_OPENGL_IMPLEMENTATION} STREQUAL "GL")
-    add_definitions(-DQT_COMPOSITOR_WAYLAND_GL)
+    add_definitions(-DQT_WAYLAND_COMPOSITOR_GL)
 endif()
 
-add_definitions(-DQT_BUILD_WAYLANDCOMPOSITOR_LIB)
+add_definitions(
+    -DQT_BUILD_WAYLANDCOMPOSITOR_LIB
+    -DQT_WAYLAND_COMPOSITOR_QUICK
+)
 
 greenisland_add_server_protocol(SOURCES
     PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/surface-extension.xml
@@ -176,7 +179,6 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandCompositor
         QWaylandDestroyListener
         QWaylandDrag
-        QWaylandInput,QWaylandInputDevice
         QWaylandInputMethodControl
         QWaylandKeyboard,QWaylandKeymap
         QWaylandOutput
@@ -186,6 +188,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
         QWaylandQuickOutput
         QWaylandQuickSurface
         QWaylandResource
+        QWaylandSeat
         QWaylandSurface,QWaylandSurfaceRole
         QWaylandSurfaceGrabber
         QWaylandTouch
@@ -240,11 +243,11 @@ private_headers(GreenIslandCompositor_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandcompositor_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylanddestroylistener_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandinputmethodcontrol_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandinput_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandkeyboard_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandoutput_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandpointer_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandquickitem_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandseat_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandsurface_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandtouch_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandview_p.h

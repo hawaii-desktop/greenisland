@@ -56,7 +56,7 @@ class QWaylandXdgPopupPrivate;
 
 class QWaylandSurface;
 class QWaylandSurfaceRole;
-class QWaylandInputDevice;
+class QWaylandSeat;
 class QWaylandOutput;
 class QWaylandClient;
 
@@ -78,14 +78,14 @@ public Q_SLOTS:
     void closeAllPopups();
 
 Q_SIGNALS:
-    void createXdgSurface(QWaylandSurface *surface, const QWaylandResource &resource);
+    void xdgSurfaceRequested(QWaylandSurface *surface, const QWaylandResource &resource);
     void xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface);
     void xdgPopupCreated(QWaylandXdgPopup *xdgPopup);
-    void createXdgPopup(QWaylandSurface *surface, QWaylandSurface *parent, QWaylandInputDevice *seat, const QPoint &position, const QWaylandResource &resource);
+    void xdgPopupRequested(QWaylandSurface *surface, QWaylandSurface *parent, QWaylandSeat *seat, const QPoint &position, const QWaylandResource &resource);
     void pong(uint serial);
 
 private Q_SLOTS:
-    void handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice);
+    void handleSeatChanged(QWaylandSeat *newSeat, QWaylandSeat *oldSeat);
     void handleFocusChanged(QWaylandSurface *newSurface, QWaylandSurface *oldSurface);
 
 };
@@ -156,11 +156,13 @@ public:
     Q_INVOKABLE void sendClose();
 
     Q_INVOKABLE uint sendMaximized(const QSize &size);
-    Q_INVOKABLE uint sendUnMaximized(const QSize &size = QSize(0, 0));
+    Q_INVOKABLE uint sendUnmaximized(const QSize &size = QSize(0, 0));
     Q_INVOKABLE uint sendFullscreen(const QSize &size);
     Q_INVOKABLE uint sendResizing(const QSize &maxSize);
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
     QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+#endif
 
 Q_SIGNALS:
     void surfaceChanged();
@@ -175,9 +177,9 @@ Q_SIGNALS:
     void resizingChanged();
     void activatedChanged();
 
-    void showWindowMenu(QWaylandInputDevice *inputDevice, const QPoint &localSurfacePosition);
-    void startMove(QWaylandInputDevice *inputDevice);
-    void startResize(QWaylandInputDevice *inputDevice, ResizeEdge edges);
+    void showWindowMenu(QWaylandSeat *seat, const QPoint &localSurfacePosition);
+    void startMove(QWaylandSeat *seat);
+    void startResize(QWaylandSeat *seat, ResizeEdge edges);
     void setTopLevel();
     void setTransient();
     void setMaximized();
@@ -193,6 +195,7 @@ private:
 
 private Q_SLOTS:
     void handleSurfaceSizeChanged();
+    void handleBufferScaleChanged();
 };
 
 class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgPopup : public QWaylandShellSurfaceTemplate<QWaylandXdgPopup>
@@ -222,7 +225,9 @@ public:
 
     Q_INVOKABLE void sendPopupDone();
 
+#ifdef QT_WAYLAND_COMPOSITOR_QUICK
     QWaylandQuickShellIntegration *createIntegration(QWaylandQuickShellSurfaceItem *item) Q_DECL_OVERRIDE;
+#endif
 
 Q_SIGNALS:
     void surfaceChanged();

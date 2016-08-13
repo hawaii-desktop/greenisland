@@ -30,7 +30,7 @@
 #include <QtCore/QStandardPaths>
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
 
@@ -251,7 +251,7 @@ void ClientWindowPrivate::setFullscreen(bool fullscreen)
     Q_EMIT q->fullscreenChanged();
 }
 
-void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSurface)
+void ClientWindowPrivate::_q_wlShellSurfaceCreated(QWaylandWlShellSurface *wlShellSurface)
 {
     Q_Q(ClientWindow);
 
@@ -282,7 +282,7 @@ void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSur
         setFullscreen(true);
     });
     QObject::connect(wlShellSurface, &QWaylandWlShellSurface::setPopup, q, [this, wlShellSurface]
-                     (QWaylandInputDevice *, QWaylandSurface *parentSurface, const QPoint &) {
+                     (QWaylandSeat *, QWaylandSurface *parentSurface, const QPoint &) {
         setParentWindow(applicationManager->windowForSurface(parentSurface));
         setMaximized(false);
         setType(ClientWindow::Popup);
@@ -294,9 +294,9 @@ void ClientWindowPrivate::_q_wlSurfaceCreated(QWaylandWlShellSurface *wlShellSur
     });
 
     // Handle input device changes
-    _q_handleDefaultInputDeviceChanged(surface->compositor()->defaultInputDevice(), Q_NULLPTR);
-    QObject::connect(surface->compositor(), SIGNAL(defaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)),
-                     q, SLOT(_q_handleDefaultInputDeviceChanged(QWaylandInputDevice*,QWaylandInputDevice*)));
+    _q_handleDefaultSeatChanged(surface->compositor()->defaultSeat(), Q_NULLPTR);
+    QObject::connect(surface->compositor(), SIGNAL(defaultSeatChanged(QWaylandSeat*,QWaylandSeat*)),
+                     q, SLOT(_q_handleDefaultSeatChanged(QWaylandSeat*,QWaylandSeat*)));
 }
 
 void ClientWindowPrivate::_q_xdgSurfaceCreated(QWaylandXdgSurface *xdgSurface)
@@ -382,17 +382,17 @@ void ClientWindowPrivate::_q_gtkSurfaceCreated(GtkSurface *gtkSurface)
     });
 }
 
-void ClientWindowPrivate::_q_handleDefaultInputDeviceChanged(QWaylandInputDevice *newDevice, QWaylandInputDevice *oldDevice)
+void ClientWindowPrivate::_q_handleDefaultSeatChanged(QWaylandSeat *newSeat, QWaylandSeat *oldSeat)
 {
     Q_Q(ClientWindow);
 
-    if (oldDevice != nullptr) {
-        QObject::disconnect(oldDevice, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
+    if (oldSeat != nullptr) {
+        QObject::disconnect(oldSeat, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
                             q, SLOT(_q_handleFocusChanged(QWaylandSurface*,QWaylandSurface*)));
     }
 
-    if (newDevice != nullptr) {
-        QObject::connect(newDevice, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
+    if (newSeat != nullptr) {
+        QObject::connect(newSeat, SIGNAL(keyboardFocusChanged(QWaylandSurface*,QWaylandSurface*)),
                          q, SLOT(_q_handleFocusChanged(QWaylandSurface*,QWaylandSurface*)));
     }
 }
@@ -479,8 +479,8 @@ ClientWindow::ClientWindow(ApplicationManager *applicationManager, QWaylandSurfa
     // Shells
     d->wlShell = QWaylandWlShell::findIn(surface->compositor());
     if (d->wlShell)
-        connect(d->wlShell, SIGNAL(shellSurfaceCreated(QWaylandWlShellSurface*)),
-                this, SLOT(_q_wlSurfaceCreated(QWaylandWlShellSurface*)));
+        connect(d->wlShell, SIGNAL(wlShellSurfaceCreated(QWaylandWlShellSurface*)),
+                this, SLOT(_q_wlShellSurfaceCreated(QWaylandWlShellSurface*)));
     d->xdgShell = QWaylandXdgShell::findIn(surface->compositor());
     if (d->xdgShell) {
         connect(d->xdgShell, SIGNAL(xdgSurfaceCreated(QWaylandXdgSurface*)),

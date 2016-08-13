@@ -68,7 +68,7 @@ WaylandOutput {
 
             PointerItem {
                 id: cursor
-                inputDevice: output.compositor.defaultInputDevice
+                seat: output.compositor.defaultSeat
                 x: localPointerTracker.mouseX - hotspotX
                 y: localPointerTracker.mouseY - hotspotY
                 visible: globalPointerTracker.output === output

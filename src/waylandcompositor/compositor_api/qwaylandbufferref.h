@@ -39,7 +39,7 @@
 
 #include <QImage>
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
 #include <QtGui/qopengl.h>
 #endif
 
@@ -77,7 +77,7 @@ public:
 
     enum BufferType {
         BufferType_Null,
-        BufferType_Shm,
+        BufferType_SharedMemory,
         BufferType_Egl
     };
 
@@ -94,14 +94,14 @@ public:
     BufferType bufferType() const;
     BufferFormatEgl bufferFormatEgl() const;
 
-    bool isShm() const;
+    bool isSharedMemory() const;
     QImage image() const;
-#ifdef QT_COMPOSITOR_WAYLAND_GL
-    GLuint textureForPlane(int plane) const;
-#endif
 
+#ifdef QT_WAYLAND_COMPOSITOR_GL
+    GLuint textureForPlane(int plane) const;
     void bindToTexture() const;
     void updateTexture() const;
+#endif
 
 private:
     class QWaylandBufferRefPrivate *const d;

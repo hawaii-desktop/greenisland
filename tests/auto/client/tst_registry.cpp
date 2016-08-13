@@ -46,7 +46,7 @@
 #include <GreenIsland/Server/Screenshooter>
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
-#include <GreenIsland/QtWaylandCompositor/QWaylandInput>
+#include <GreenIsland/QtWaylandCompositor/QWaylandSeat>
 #include <GreenIsland/QtWaylandCompositor/QWaylandOutput>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 
@@ -202,7 +202,7 @@ private Q_SLOTS:
         QVERIFY(touchSpy.isValid());
         QCOMPARE(touchSpy.count(), 0);
 
-        new QWaylandInputDevice(m_compositor);
+        new QWaylandSeat(m_compositor);
 
         display->flushRequests();
         QVERIFY(keyboardSpy.wait());

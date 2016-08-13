@@ -90,12 +90,12 @@ public:
     QtWayland::DataDeviceManager *dataDeviceManager() const { return data_device_manager; }
     void feedRetainedSelectionData(QMimeData *data);
 
-    QWaylandPointer *callCreatePointerDevice(QWaylandInputDevice *inputDevice)
-    { return q_func()->createPointerDevice(inputDevice); }
-    QWaylandKeyboard *callCreateKeyboardDevice(QWaylandInputDevice *inputDevice)
-    { return q_func()->createKeyboardDevice(inputDevice); }
-    QWaylandTouch *callCreateTouchDevice(QWaylandInputDevice *inputDevice)
-    { return q_func()->createTouchDevice(inputDevice); }
+    QWaylandPointer *callCreatePointerDevice(QWaylandSeat *seat)
+    { return q_func()->createPointerDevice(seat); }
+    QWaylandKeyboard *callCreateKeyboardDevice(QWaylandSeat *seat)
+    { return q_func()->createKeyboardDevice(seat); }
+    QWaylandTouch *callCreateTouchDevice(QWaylandSeat *seat)
+    { return q_func()->createTouchDevice(seat); }
 
     inline void addClient(QWaylandClient *client);
     inline void removeClient(QWaylandClient *client);
@@ -114,7 +114,7 @@ protected:
 protected:
     void initializeHardwareIntegration();
     void initializeExtensions();
-    void initializeDefaultInputDevice();
+    void initializeDefaultSeat();
 
     void loadClientBufferIntegration();
     void loadServerBufferIntegration();
@@ -122,7 +122,7 @@ protected:
     QByteArray socket_name;
     struct wl_display *display;
 
-    QList<QWaylandInputDevice *> inputDevices;
+    QList<QWaylandSeat *> seats;
     QList<QWaylandOutput *> outputs;
 
     QList<QWaylandSurface *> all_surfaces;
@@ -135,7 +135,7 @@ protected:
 
     QList<QWaylandClient *> clients;
 
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     bool use_hw_integration_extension;
     QScopedPointer<QtWayland::HardwareIntegration> hw_integration;
     QScopedPointer<QtWayland::ClientBufferIntegration> client_buffer_integration;
@@ -154,7 +154,7 @@ protected:
 
 QtWayland::ClientBufferIntegration * QWaylandCompositorPrivate::clientBufferIntegration() const
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     return client_buffer_integration.data();
 #else
     return 0;
@@ -163,7 +163,7 @@ QtWayland::ClientBufferIntegration * QWaylandCompositorPrivate::clientBufferInte
 
 QtWayland::ServerBufferIntegration * QWaylandCompositorPrivate::serverBufferIntegration() const
 {
-#ifdef QT_COMPOSITOR_WAYLAND_GL
+#ifdef QT_WAYLAND_COMPOSITOR_GL
     return server_buffer_integration.data();
 #else
     return 0;
