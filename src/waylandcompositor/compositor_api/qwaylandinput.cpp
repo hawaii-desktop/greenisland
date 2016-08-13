@@ -43,7 +43,6 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandDrag>
 #include <GreenIsland/QtWaylandCompositor/QWaylandTouch>
 #include <GreenIsland/QtWaylandCompositor/QWaylandPointer>
-#include <GreenIsland/QtWaylandCompositor/QWaylandWlShellSurface>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandinput_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwaylandcompositor_p.h>
 #include <GreenIsland/QtWaylandCompositor/private/qwldatadevice_p.h>
@@ -357,10 +356,6 @@ bool QWaylandInputDevice::setKeyboardFocus(QWaylandSurface *surface)
     QWaylandSurface *oldSurface = keyboardFocus();
     if (surface == oldSurface)
         return true;
-
-    QWaylandWlShellSurface *wlShellsurface = QWaylandWlShellSurface::findIn(surface);
-    if (wlShellsurface && wlShellsurface->focusPolicy() == QWaylandWlShellSurface::NoKeyboardFocus)
-        return false;
 
     d->keyboardFocus = surface;
     if (!d->keyboard.isNull())

@@ -69,6 +69,8 @@ private Q_SLOTS:
     void handleSetMaximized();
     void handleUnsetMaximized();
     void handleMaximizedChanged();
+    void handleSetTopLevel();
+    void handleSetTransient();
     void handleSetFullscreen();
     void handleUnsetFullscreen();
     void handleFullscreenChanged();

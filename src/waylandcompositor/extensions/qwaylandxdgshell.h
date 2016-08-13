@@ -39,6 +39,7 @@
 
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandResource>
+#include <GreenIsland/QtWaylandCompositor/QWaylandShell>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
 
 #include <QtCore/QRect>
@@ -59,7 +60,7 @@ class QWaylandInputDevice;
 class QWaylandOutput;
 class QWaylandClient;
 
-class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgShell : public QWaylandCompositorExtensionTemplate<QWaylandXdgShell>
+class Q_WAYLAND_COMPOSITOR_EXPORT QWaylandXdgShell : public QWaylandShellTemplate<QWaylandXdgShell>
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(QWaylandXdgShell)
@@ -67,7 +68,7 @@ public:
     QWaylandXdgShell();
     QWaylandXdgShell(QWaylandCompositor *compositor);
 
-    void initialize() Q_DECL_OVERRIDE;
+    virtual void initialize() Q_DECL_OVERRIDE;
 
     static const struct wl_interface *interface();
     static QByteArray interfaceName();

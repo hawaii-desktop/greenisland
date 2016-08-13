@@ -477,14 +477,14 @@ void QWaylandXdgPopupPrivate::xdg_popup_destroy(Resource *resource)
  * Constructs a QWaylandXdgShell object.
  */
 QWaylandXdgShell::QWaylandXdgShell()
-    : QWaylandCompositorExtensionTemplate<QWaylandXdgShell>(*new QWaylandXdgShellPrivate())
+    : QWaylandShellTemplate<QWaylandXdgShell>(*new QWaylandXdgShellPrivate())
 { }
 
 /*!
  * Constructs a QWaylandXdgShell object for the provided \a compositor.
  */
 QWaylandXdgShell::QWaylandXdgShell(QWaylandCompositor *compositor)
-    : QWaylandCompositorExtensionTemplate<QWaylandXdgShell>(compositor, *new QWaylandXdgShellPrivate())
+    : QWaylandShellTemplate<QWaylandXdgShell>(compositor, *new QWaylandXdgShellPrivate())
 { }
 
 /*!
@@ -493,7 +493,7 @@ QWaylandXdgShell::QWaylandXdgShell(QWaylandCompositor *compositor)
 void QWaylandXdgShell::initialize()
 {
     Q_D(QWaylandXdgShell);
-    QWaylandCompositorExtensionTemplate::initialize();
+    QWaylandShellTemplate::initialize();
     QWaylandCompositor *compositor = static_cast<QWaylandCompositor *>(extensionContainer());
     if (!compositor) {
         qWarning() << "Failed to find QWaylandCompositor when initializing QWaylandXdgShell";

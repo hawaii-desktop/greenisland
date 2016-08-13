@@ -64,6 +64,7 @@ set(SOURCES
     extensions/qwaylandwlshellintegration.cpp
     extensions/qwaylandxdgshell.cpp
     extensions/qwaylandxdgshellintegration.cpp
+    extensions/qwaylandshell.cpp
     extensions/qwaylandshellsurface.cpp
     extensions/qwlextendedsurface.cpp
     extensions/qwlqtkey.cpp
@@ -203,6 +204,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     HEADER_NAMES
         QWaylandQtWindowManager
         QWaylandQuickShellSurfaceItem
+        QWaylandShell
         QWaylandShellSurface
         QWaylandTextInput
         QWaylandTextInputManager
@@ -250,6 +252,7 @@ private_headers(GreenIslandCompositor_PRIVATE_HEADERS
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandquickshellsurfaceitem_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinputmanager_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinput_p.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshellintegration_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshell_p.h
         ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandxdgshellintegration_p.h

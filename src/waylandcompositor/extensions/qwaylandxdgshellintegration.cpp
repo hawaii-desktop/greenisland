@@ -59,6 +59,8 @@ XdgShellIntegration::XdgShellIntegration(QWaylandQuickShellSurfaceItem *item)
     connect(m_xdgSurface, &QWaylandXdgSurface::setMaximized, this, &XdgShellIntegration::handleSetMaximized);
     connect(m_xdgSurface, &QWaylandXdgSurface::unsetMaximized, this, &XdgShellIntegration::handleUnsetMaximized);
     connect(m_xdgSurface, &QWaylandXdgSurface::maximizedChanged, this, &XdgShellIntegration::handleMaximizedChanged);
+    connect(m_xdgSurface, &QWaylandXdgSurface::setTopLevel, this, &XdgShellIntegration::handleSetTopLevel);
+    connect(m_xdgSurface, &QWaylandXdgSurface::setTransient, this, &XdgShellIntegration::handleSetTransient);
     connect(m_xdgSurface, &QWaylandXdgSurface::setFullscreen, this, &XdgShellIntegration::handleSetFullscreen);
     connect(m_xdgSurface, &QWaylandXdgSurface::unsetFullscreen, this, &XdgShellIntegration::handleUnsetFullscreen);
     connect(m_xdgSurface, &QWaylandXdgSurface::fullscreenChanged, this, &XdgShellIntegration::handleFullscreenChanged);
@@ -148,6 +150,20 @@ void XdgShellIntegration::handleMaximizedChanged()
     } else {
         m_item->moveItem()->setPosition(maximizeState.initialPosition);
     }
+}
+
+void XdgShellIntegration::handleSetTopLevel()
+{
+    QWaylandXdgShell *shell = QWaylandXdgShell::findIn(m_xdgSurface->surface()->compositor());
+    if (shell && shell->focusPolicy() == QWaylandShell::AutomaticFocus)
+        m_item->takeFocus();
+}
+
+void XdgShellIntegration::handleSetTransient()
+{
+    QWaylandXdgShell *shell = QWaylandXdgShell::findIn(m_xdgSurface->surface()->compositor());
+    if (shell && shell->focusPolicy() == QWaylandShell::AutomaticFocus)
+        m_item->takeFocus();
 }
 
 void XdgShellIntegration::handleSetFullscreen()
