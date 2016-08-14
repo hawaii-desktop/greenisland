@@ -165,12 +165,13 @@ void XdgShellIntegration::handleSetTransient()
         m_item->takeFocus();
 }
 
-void XdgShellIntegration::handleSetFullscreen()
+void XdgShellIntegration::handleSetFullscreen(QWaylandOutput *output)
 {
     fullscreenState.initialWindowSize = m_xdgSurface->windowGeometry().size();
     fullscreenState.initialPosition = m_item->moveItem()->position();
 
-    m_xdgSurface->sendFullscreen(m_item->view()->output()->geometry().size() / m_item->view()->output()->scaleFactor());
+    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
+    m_xdgSurface->sendFullscreen(designatedOutput->geometry().size() / designatedOutput->scaleFactor());
 }
 
 void XdgShellIntegration::handleUnsetFullscreen()

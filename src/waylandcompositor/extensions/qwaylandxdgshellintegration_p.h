@@ -71,7 +71,7 @@ private Q_SLOTS:
     void handleMaximizedChanged();
     void handleSetTopLevel();
     void handleSetTransient();
-    void handleSetFullscreen();
+    void handleSetFullscreen(QWaylandOutput *output);
     void handleUnsetFullscreen();
     void handleFullscreenChanged();
     void handleActivatedChanged();
