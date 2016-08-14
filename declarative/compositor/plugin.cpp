@@ -115,6 +115,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                                    QObject::tr("Cannot create instance of WaylandCompositorBase, use WaylandCompositor instead"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",
                                                 QObject::tr("Cannot create instance of WaylandSurfaceBase, use WaylandSurface instead"));
+    qmlRegisterUncreatableType<QWaylandShell>(uri, 1, 0, "Shell",
+                                              QObject::tr("Cannot create instance of Shell"));
     qmlRegisterUncreatableType<QWaylandShellSurface>(uri, 1, 0, "ShellSurface",
                                                      QObject::tr("Cannot create instance of ShellSurface"));
     qmlRegisterUncreatableType<QWaylandWlShellSurface>(uri, 1, 0, "WlShellSurfaceBase",
