@@ -32,6 +32,7 @@
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickItem>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickSurface>
 #include <GreenIsland/QtWaylandCompositor/QWaylandClient>
+#include <GreenIsland/QtWaylandCompositor/QWaylandDrag>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 #include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickExtension>
@@ -108,6 +109,8 @@ void GreenIslandPlugin::registerTypes(const char *uri)
                                              QObject::tr("Cannot create instance of WaylandView, it can be retrieved by accessor on WaylandQuickItem"));
     qmlRegisterUncreatableType<QWaylandSeat>(uri, 1, 0, "WaylandSeat",
                                              QObject::tr("Cannot create instance of WaylandSeat"));
+    qmlRegisterUncreatableType<QWaylandDrag>(uri, 1, 0, "WaylandDrag",
+                                             QObject::tr("Cannot create instance of WaylandDrag"));
     qmlRegisterUncreatableType<QWaylandCompositor>(uri, 1, 0, "WaylandCompositorBase",
                                                    QObject::tr("Cannot create instance of WaylandCompositorBase, use WaylandCompositor instead"));
     qmlRegisterUncreatableType<QWaylandSurface>(uri, 1, 0, "WaylandSurfaceBase",
