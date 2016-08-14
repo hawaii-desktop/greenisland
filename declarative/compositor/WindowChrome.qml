@@ -145,7 +145,7 @@ ClientWindowItem {
         spread: 0.2
         color: "#80000000"
         z: -1
-        visible: decorated && !window.maximized
+        visible: decorated && !window.maximized && !window.fullscreen && width > 0 && height > 0
     }
 
     /*
