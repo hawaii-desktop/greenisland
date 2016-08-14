@@ -155,15 +155,13 @@ void XdgShellIntegration::handleMaximizedChanged()
 
 void XdgShellIntegration::handleSetTopLevel()
 {
-    QWaylandXdgShell *shell = QWaylandXdgShell::findIn(m_xdgSurface->surface()->compositor());
-    if (shell && shell->focusPolicy() == QWaylandShell::AutomaticFocus)
+    if (m_xdgSurface->shell()->focusPolicy() == QWaylandShell::AutomaticFocus)
         m_item->takeFocus();
 }
 
 void XdgShellIntegration::handleSetTransient()
 {
-    QWaylandXdgShell *shell = QWaylandXdgShell::findIn(m_xdgSurface->surface()->compositor());
-    if (shell && shell->focusPolicy() == QWaylandShell::AutomaticFocus)
+    if (m_xdgSurface->shell()->focusPolicy() == QWaylandShell::AutomaticFocus)
         m_item->takeFocus();
 }
 
