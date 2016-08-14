@@ -90,13 +90,13 @@ void WlShellIntegration::handleSetDefaultTopLevel()
 
     if (isMaximized) {
         m_item->moveItem()->setPosition(maximizedState.initialPosition);
-        m_shellSurface->sendConfigure(maximizedState.initialWindowSize, QWaylandWlShellSurface::RightEdge);
+        m_shellSurface->sendConfigure(maximizedState.initialWindowSize, QWaylandWlShellSurface::NoneEdge);
         isMaximized = false;
     }
 
     if (isFullScreen) {
         m_item->moveItem()->setPosition(fullScreenState.initialPosition);
-        m_shellSurface->sendConfigure(fullScreenState.initialWindowSize, QWaylandWlShellSurface::RightEdge);
+        m_shellSurface->sendConfigure(fullScreenState.initialWindowSize, QWaylandWlShellSurface::NoneEdge);
         isFullScreen = false;
     }
 }
@@ -112,17 +112,17 @@ void WlShellIntegration::handleSetTransient(QWaylandSurface *parentSurface, cons
 
 void WlShellIntegration::handleSetMaximized(QWaylandOutput *output)
 {
-    if (isMaximized || isFullScreen)
+    if (isMaximized)
         return;
 
-    QWaylandOutput *designedOutput = output ? output : m_item->view()->output();
+    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
 
-    maximizedState.initialWindowSize = m_shellSurface->surface()->size() / designedOutput->scaleFactor();
+    maximizedState.initialWindowSize = m_shellSurface->surface()->size() / designatedOutput->scaleFactor();
     maximizedState.initialPosition = m_item->moveItem()->position();
     isMaximized = true;
 
-    m_item->moveItem()->setPosition(designedOutput->position() + designedOutput->availableGeometry().topLeft());
-    m_shellSurface->sendConfigure(designedOutput->availableGeometry().size(), QWaylandWlShellSurface::RightEdge);
+    m_item->moveItem()->setPosition(designatedOutput->position() + designatedOutput->availableGeometry().topLeft());
+    m_shellSurface->sendConfigure(designatedOutput->availableGeometry().size(), QWaylandWlShellSurface::NoneEdge);
 }
 
 void WlShellIntegration::handleSetFullScreen(QWaylandWlShellSurface::FullScreenMethod method, uint framerate, QWaylandOutput *output)
@@ -130,17 +130,17 @@ void WlShellIntegration::handleSetFullScreen(QWaylandWlShellSurface::FullScreenM
     Q_UNUSED(method);
     Q_UNUSED(framerate);
 
-    if (isMaximized || isFullScreen)
+    if (isFullScreen)
         return;
 
-    QWaylandOutput *designedOutput = output ? output : m_item->view()->output();
+    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
 
-    fullScreenState.initialWindowSize = m_shellSurface->surface()->size() / designedOutput->scaleFactor();
+    fullScreenState.initialWindowSize = m_shellSurface->surface()->size() / designatedOutput->scaleFactor();
     fullScreenState.initialPosition = m_item->moveItem()->position();
     isFullScreen = true;
 
-    m_item->moveItem()->setPosition(designedOutput->position());
-    m_shellSurface->sendConfigure(designedOutput->geometry().size(), QWaylandWlShellSurface::RightEdge);
+    m_item->moveItem()->setPosition(designatedOutput->position());
+    m_shellSurface->sendConfigure(designatedOutput->geometry().size(), QWaylandWlShellSurface::NoneEdge);
 }
 
 void WlShellIntegration::handleSetPopup(QWaylandSeat *seat, QWaylandSurface *parent, const QPoint &relativeToParent)
