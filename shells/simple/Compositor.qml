@@ -26,9 +26,9 @@
  ***************************************************************************/
 
 import QtQuick 2.5
-import GreenIsland 1.0
+import GreenIsland 1.0 as GreenIsland
 
-WaylandCompositor {
+GreenIsland.WaylandCompositor {
     property QtObject primarySurfacesArea: null
 
     id: compositor
@@ -37,75 +37,108 @@ WaylandCompositor {
         surface.initialize(compositor, client, id, version);
     }
 
-    GlobalPointerTracker {
-        id: globalPointerTracker
-        compositor: compositor
-    }
-
-    ScreenManager {
-        id: screenManager
-        onScreenAdded: {
-            console.time("output" + d.outputs.length);
-            var view = screenComponent.createObject(
-                        compositor, {
-                            "compositor": compositor,
-                            "nativeScreen": screen
-                        });
-            d.outputs.push(view);
-            windowManager.recalculateVirtualGeometry();
-            console.timeEnd("output" + d.outputs.length - 1);
-        }
-        onScreenRemoved: {
-            var index = screenManager.indexOf(screen);
-            console.time("output" + index);
-            if (index < d.outputs.length) {
-                var output = d.outputs[index];
-                d.outputs.splice(index, 1);
-                output.destroy();
-                windowManager.recalculateVirtualGeometry();
-            }
-            console.timeEnd("output" + index);
-        }
-        onPrimaryScreenChanged: {
-            var index = screenManager.indexOf(screen);
-            if (index < d.outputs.length) {
-                compositor.primarySurfacesArea = d.outputs[index].surfacesArea;
-                compositor.defaultOutput = d.outputs[index];
-            }
-        }
-    }
-
     Shortcut {
         context: Qt.ApplicationShortcut
         sequence: "Ctrl+Alt+Backspace"
         onActivated: Qt.quit()
     }
 
-    UnifiedShell {
-        id: windowManager
-        compositor: compositor
-        onWindowCreated: {
-            var i, output, view;
-            for (i = 0; i < d.outputs.length; i++) {
-                output = d.outputs[i];
-                view = windowComponent.createObject(output.surfacesArea, {"window": window});
-                view.initialize(window, output);
+    GreenIsland.ScreenManager {
+        id: screenManager
+
+        onScreenAdded: {
+            var view = outputComponent.createObject(compositor, {
+                "compositor": compositor,
+                "nativeScreen": screen
+            })
+
+            __private.outputs.push(view)
+        }
+        onScreenRemoved: {
+            var index = screenManager.indexOf(screen)
+
+            if (index < __private.outputs.length) {
+                var output = __private.outputs[index]
+                __private.outputs.splice(index, 1)
+                output.destroy()
             }
         }
+        onPrimaryScreenChanged: {
+            var index = screenManager.indexOf(screen)
 
-        Component.onCompleted: {
-            initialize();
+            if (index < __private.outputs.length)
+                compositor.defaultOutput = __private.outputs[index]
+        }
+    }
+
+    GreenIsland.ApplicationManager {
+        id: applicationManager
+    }
+
+    GreenIsland.WlShell {
+        onWlShellSurfaceCreated: {
+            var window = applicationManager.createWindow(shellSurface.surface)
+
+            for (var i = 0; i < __private.outputs.length; i++) {
+                var view = chromeComponent.createObject(__private.outputs[i].surfacesArea, {
+                    "shellSurface": shellSurface, "window": window, "decorated": true
+                })
+
+                view.moveItem = window.moveItem
+                window.addWindowView(view)
+            }
+        }
+    }
+
+    GreenIsland.XdgShell {
+        property variant viewsBySurface: ({})
+
+        onXdgSurfaceCreated: {
+            var window = applicationManager.createWindow(xdgSurface.surface)
+
+            var i, view;
+            for (i = 0; i < __private.outputs.length; i++) {
+                view = chromeComponent.createObject(__private.outputs[i].surfacesArea, {
+                    "shellSurface": xdgSurface, "window": window, "decorated": false
+                })
+
+                view.moveItem = window.moveItem
+
+                if (viewsBySurface[xdgSurface.surface] == undefined)
+                    viewsBySurface[xdgSurface.surface] = new Array()
+
+                viewsBySurface[xdgSurface.surface].push({
+                    "output": __private.outputs[i], "view": view
+                })
+                window.addWindowView(view)
+            }
+        }
+        onXdgPopupCreated: {
+            var window = applicationManager.createWindow(xdgPopup.surface);
+
+            var i, j, parentView, view, parentViews = viewsBySurface[xdgPopup.parentSurface];
+            for (i = 0; i < __private.outputs.length; i++) {
+                for (j = 0; j < parentViews.length; j++) {
+                    if (parentViews[j].output == __private.outputs[i]) {
+                        view = chromeComponent.createObject(parentViews[j].view, {"shellSurface": xdgPopup, "window": window});
+                        view.x = xdgPopup.position.x;
+                        view.y = xdgPopup.position.y;
+                        view.moveItem = window.moveItem;
+                        window.addWindowView(view);
+                    }
+                }
+            }
         }
     }
 
     QtObject {
-        id: d
+        id: __private
 
         property variant outputs: []
     }
 
     Component {
-        id: screenComponent
+        id: outputComponent
 
         ScreenView {}
     }
@@ -113,12 +146,12 @@ WaylandCompositor {
     Component {
         id: surfaceComponent
 
-        WaylandSurface {}
+        GreenIsland.WaylandSurface {}
     }
 
     Component {
-        id: windowComponent
+        id: chromeComponent
 
-        WaylandWindow {}
+        GreenIsland.WindowChrome {}
     }
 }

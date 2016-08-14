@@ -27,9 +27,9 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.2
-import GreenIsland 1.0
+import GreenIsland 1.0 as GreenIsland
 
-WaylandOutput {
+GreenIsland.ExtendedOutput {
     property alias surfacesArea: backgroundLayer
 
     id: output
@@ -52,10 +52,10 @@ WaylandOutput {
         flags: Qt.FramelessWindowHint
         visible: false
 
-        LocalPointerTracker {
-            id: localPointerTracker
+        GreenIsland.WaylandMouseTracker {
+            id: mouseTracker
             anchors.fill: parent
-            globalTracker: globalPointerTracker
+            windowSystemCursorEnabled: true
 
             Image {
                 id: backgroundLayer
@@ -66,12 +66,12 @@ WaylandOutput {
                 fillMode: Image.Tile
             }
 
-            PointerItem {
+            GreenIsland.WaylandCursorItem {
                 id: cursor
                 seat: output.compositor.defaultSeat
-                x: localPointerTracker.mouseX - hotspotX
-                y: localPointerTracker.mouseY - hotspotY
-                visible: globalPointerTracker.output === output
+                x: mouseTracker.mouseX - hotspotX
+                y: mouseTracker.mouseY - hotspotY
+                visible: mouseTracker.containsMouse
             }
         }
     }
