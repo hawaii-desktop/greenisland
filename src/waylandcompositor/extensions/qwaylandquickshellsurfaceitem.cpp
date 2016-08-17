@@ -37,6 +37,7 @@
 #include "qwaylandquickshellsurfaceitem.h"
 #include "qwaylandquickshellsurfaceitem_p.h"
 
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositor>
 #include <GreenIsland/QtWaylandCompositor/QWaylandShellSurface>
 #include <QGuiApplication>
 
@@ -133,6 +134,45 @@ void QWaylandQuickShellSurfaceItem::setMoveItem(QQuickItem *moveItem)
         return;
     d->m_moveItem = moveItem;
     moveItemChanged();
+}
+
+QWaylandOutput *QWaylandQuickShellSurfaceItem::findOutput() const
+{
+    Q_D(const QWaylandQuickShellSurfaceItem);
+
+    if (!surface()) {
+        qWarning("Unable to find the shell surface item output without a surface");
+        return nullptr;
+    }
+
+    if (!view()) {
+        qWarning("Unable to find the shell surface item output without a view"
+                 ", using the default output");
+        return compositor()->defaultOutput();
+    }
+
+    // In a multi-output setup we have a shell integration and surface
+    // item for each output hence events such as maximizedChanged()
+    // will be sent multiple times and we can't count on the view
+    // output each time; the solution is to find the output that
+    // contains the biggest part of this surface and maximize there
+    int maxArea = 0, area = 0;
+    QWaylandOutput *main = view()->output() ? view()->output() : compositor()->defaultOutput();
+
+    for (const auto output: compositor()->outputs()) {
+        QRectF geometry(moveItem()->position(), surface()->size());
+        QRectF intersection = QRectF(output->geometry()).intersected(geometry);
+
+        if (intersection.isValid()) {
+            area = intersection.width() * intersection.height();
+            if (area >= maxArea) {
+                main = output;
+                maxArea = area;
+            }
+        }
+    }
+
+    return main;
 }
 
 void QWaylandQuickShellSurfaceItem::mouseMoveEvent(QMouseEvent *event)
