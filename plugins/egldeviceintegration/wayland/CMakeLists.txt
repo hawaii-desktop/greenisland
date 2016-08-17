@@ -5,6 +5,8 @@ include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
+add_definitions(-DQT_EGL_WAYLAND)
+
 set(SOURCES
     eglfswaylandblitter.cpp
     eglfswaylandcontext.cpp
