@@ -115,7 +115,9 @@ void WlShellIntegration::handleSetMaximized(QWaylandOutput *output)
     if (isMaximized)
         return;
 
-    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
+    QWaylandOutput *designatedOutput = output ? output : m_item->findOutput();
+    if (!designatedOutput)
+        return;
 
     maximizedState.initialWindowSize = m_shellSurface->surface()->size() / designatedOutput->scaleFactor();
     maximizedState.initialPosition = m_item->moveItem()->position();
@@ -133,7 +135,9 @@ void WlShellIntegration::handleSetFullScreen(QWaylandWlShellSurface::FullScreenM
     if (isFullScreen)
         return;
 
-    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
+    QWaylandOutput *designatedOutput = output ? output : m_item->findOutput();
+    if (!designatedOutput)
+        return;
 
     fullScreenState.initialWindowSize = m_shellSurface->surface()->size() / designatedOutput->scaleFactor();
     fullScreenState.initialPosition = m_item->moveItem()->position();
