@@ -1,6 +1,8 @@
+find_package(Qt5PlatformSupport REQUIRED)
 include_directories(
     ${CMAKE_BINARY_DIR}/headers
     ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    ${Qt5PlatformSupport_INCLUDE_DIR}
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
