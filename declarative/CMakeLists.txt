@@ -1,4 +1,5 @@
 add_subdirectory(compositor)
+add_subdirectory(client)
 if(ENABLE_XWAYLAND)
     add_subdirectory(xwayland)
 endif()
