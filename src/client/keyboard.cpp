@@ -136,7 +136,7 @@ void KeyboardPrivate::keyboard_repeat_info(int32_t rate, int32_t delay)
  */
 
 Keyboard::Keyboard(Seat *seat)
-    : QObject(*new KeyboardPrivate(), seat)
+    : QObject(*new KeyboardPrivate())
 {
     d_func()->seat = seat;
     d_func()->seatVersion = seat->version();

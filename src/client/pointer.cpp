@@ -143,7 +143,7 @@ void PointerPrivate::pointer_axis(uint32_t time, uint32_t axis, wl_fixed_t value
  */
 
 Pointer::Pointer(Seat *seat)
-    : QObject(*new PointerPrivate(), seat)
+    : QObject(*new PointerPrivate())
 {
     qRegisterMetaType<Qt::MouseButton>("Qt::MouseButton");
 
