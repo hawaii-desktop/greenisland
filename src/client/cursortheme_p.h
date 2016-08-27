@@ -68,6 +68,7 @@ public:
 
     wl_cursor *requestCursor(CursorTheme::CursorShape shape);
 
+    Registry *registry;
     Compositor *compositor;
     ShmPool *pool;
     Seat *seat;

@@ -41,6 +41,7 @@ namespace Client {
 
 class Compositor;
 class CursorThemePrivate;
+class Registry;
 class Seat;
 class ShmPool;
 
@@ -83,7 +84,7 @@ public:
     };
     Q_ENUM(CursorShape)
 
-    CursorTheme(Compositor *compositor, ShmPool *pool, Seat *seat);
+    CursorTheme(Registry *registry, Compositor *compositor, ShmPool *pool, Seat *seat);
 
     wl_cursor_image *cursorImage(CursorShape shape);
 
