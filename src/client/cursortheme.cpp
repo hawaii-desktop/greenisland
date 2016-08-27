@@ -33,6 +33,7 @@
 #include "seat.h"
 #include "shm_p.h"
 #include "shmpool.h"
+#include "surface_p.h"
 
 Q_LOGGING_CATEGORY(WLCURSORTHEME, "greenisland.client.cursortheme")
 
@@ -289,12 +290,11 @@ void CursorTheme::changeCursor(CursorShape shape)
         wl_buffer *wlBuffer = wl_cursor_image_get_buffer(image);
         if (!wlBuffer)
             return;
-        Buffer *buffer = BufferPrivate::fromWlBuffer(wlBuffer);
 
         if (!d->cursorSurface)
             d->cursorSurface = d->compositor->createSurface(this);
         d->seat->pointer()->setCursor(d->cursorSurface, QPoint(image->hotspot_x, image->hotspot_y));
-        d->cursorSurface->attach(buffer, QPoint(0, 0));
+        wl_surface_attach(SurfacePrivate::get(d->cursorSurface)->object(), wlBuffer, 0, 0);
         d->cursorSurface->damage(QRect(0, 0, image->width, image->height));
         d->cursorSurface->commit(Surface::NoCommitMode);
     }
