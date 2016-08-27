@@ -215,6 +215,8 @@ void QWaylandCompositorPrivate::init()
             QCoreApplication::sendEvent(object.data(), &polishEvent);
         }
     }
+
+    emit q->createdChanged();
 }
 
 QWaylandCompositorPrivate::~QWaylandCompositorPrivate()
@@ -510,11 +512,17 @@ bool QWaylandCompositor::isCreated() const
 void QWaylandCompositor::setSocketName(const QByteArray &name)
 {
     Q_D(QWaylandCompositor);
+
+    if (d->socket_name == name)
+        return;
+
     if (d->initialized) {
         qWarning("%s: Changing socket name after initializing the compositor is not supported.\n", Q_FUNC_INFO);
         return;
     }
+
     d->socket_name = name;
+    emit socketNameChanged(name);
 }
 
 QByteArray QWaylandCompositor::socketName() const
@@ -735,7 +743,12 @@ QWaylandTouch *QWaylandCompositor::createTouchDevice(QWaylandSeat *seat)
 void QWaylandCompositor::setRetainedSelectionEnabled(bool enabled)
 {
     Q_D(QWaylandCompositor);
+
+    if (d->retainSelection == enabled)
+        return;
+
     d->retainSelection = enabled;
+    emit retainedSelectionChanged(enabled);
 }
 
 bool QWaylandCompositor::retainedSelectionEnabled() const
