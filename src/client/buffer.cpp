@@ -55,8 +55,13 @@ BufferPrivate::BufferPrivate()
 
 Buffer *BufferPrivate::fromWlBuffer(struct ::wl_buffer *buffer)
 {
+    if (!buffer)
+        return Q_NULLPTR;
+
     QtWayland::wl_buffer *wlBuffer =
             static_cast<QtWayland::wl_buffer *>(wl_buffer_get_user_data(buffer));
+    if (!wlBuffer)
+        return Q_NULLPTR;
     return static_cast<BufferPrivate *>(wlBuffer)->q_func();
 }
 

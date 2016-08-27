@@ -58,8 +58,13 @@ KeyboardPrivate::~KeyboardPrivate()
 
 Keyboard *KeyboardPrivate::fromWlKeyboard(struct ::wl_keyboard *keyboard)
 {
+    if (!keyboard)
+        return Q_NULLPTR;
+
     QtWayland::wl_keyboard *wlKeyboard =
             static_cast<QtWayland::wl_keyboard *>(wl_keyboard_get_user_data(keyboard));
+    if (!wlKeyboard)
+        return Q_NULLPTR;
     return static_cast<KeyboardPrivate *>(wlKeyboard)->q_func();
 }
 

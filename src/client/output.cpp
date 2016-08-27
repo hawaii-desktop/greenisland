@@ -97,8 +97,13 @@ OutputPrivate::OutputPrivate()
 
 Output *OutputPrivate::fromWlOutput(struct ::wl_output *output)
 {
+    if (!output)
+        return Q_NULLPTR;
+
     QtWayland::wl_output *wlOutput =
             static_cast<QtWayland::wl_output *>(wl_output_get_user_data(output));
+    if (!wlOutput)
+        return Q_NULLPTR;
     return static_cast<OutputPrivate *>(wlOutput)->q_func();
 }
 
