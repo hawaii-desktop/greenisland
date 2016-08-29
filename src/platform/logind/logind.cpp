@@ -150,6 +150,15 @@ public:
                         QLatin1String("PrepareForShutdown"),
                         q, SIGNAL(prepareForShutdown(bool)));
 
+            // Activate the session in case we are on another vt, the
+            // call blocks on purpose because we need to get properties
+            QDBusMessage message =
+                    QDBusMessage::createMethodCall(login1Service,
+                                                   sessionPath,
+                                                   login1ManagerInterface,
+                                                   QLatin1String("Activate"));
+            bus.call(message);
+
             // Get properties
             _q_sessionPropertiesChanged();
 
