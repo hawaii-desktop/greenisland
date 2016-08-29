@@ -464,6 +464,7 @@ void LibInputHandler::suspend()
     if (d->suspended)
         return;
 
+    qCInfo(lcInput, "Suspend monitoring for new devices");
     libinput_suspend(d->li);
     d->suspended = true;
     Q_EMIT suspendedChanged(true);
@@ -476,9 +477,13 @@ void LibInputHandler::resume()
     if (!d->suspended)
         return;
 
-    libinput_resume(d->li);
-    d->suspended = false;
-    Q_EMIT suspendedChanged(false);
+    if (libinput_resume(d->li) == 0) {
+        qCInfo(lcInput, "Re-enable device monitoring");
+        d->suspended = false;
+        Q_EMIT suspendedChanged(false);
+    } else {
+        qCWarning(lcInput, "Failed to re-enable device monitoring");
+    }
 }
 
 } // namespace Platform
