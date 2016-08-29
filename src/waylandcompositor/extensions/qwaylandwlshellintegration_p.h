@@ -74,6 +74,7 @@ private Q_SLOTS:
     void handleSetPopup(QWaylandSeat *seat, QWaylandSurface *parent, const QPoint &relativeToParent);
     void handleShellSurfaceDestroyed();
     void handleSurfaceUnmapped();
+    void redraw();
     void adjustOffsetForNextFrame(const QPointF &offset);
 
 private:
@@ -105,13 +106,13 @@ private:
     } resizeState;
 
     struct {
-        QSize initialWindowSize;
         QPointF initialPosition;
+        QPointF finalPosition;
     } maximizedState;
 
     struct {
-        QSize initialWindowSize;
         QPointF initialPosition;
+        QPointF finalPosition;
     } fullScreenState;
 
     static QVector<QWaylandWlShellSurface*> popupShellSurfaces;

@@ -52,6 +52,13 @@ SeatPrivate::SeatPrivate()
 {
 }
 
+SeatPrivate::~SeatPrivate()
+{
+    delete keyboard;
+    delete pointer;
+    delete touch;
+}
+
 void SeatPrivate::seat_capabilities(uint32_t capabilities)
 {
     Q_Q(Seat);

@@ -57,8 +57,13 @@ PointerPrivate::~PointerPrivate()
 
 Pointer *PointerPrivate::fromWlPointer(struct ::wl_pointer *pointer)
 {
+    if (!pointer)
+        return Q_NULLPTR;
+
     QtWayland::wl_pointer *wlPointer =
             static_cast<QtWayland::wl_pointer *>(wl_pointer_get_user_data(pointer));
+    if (!wlPointer)
+        return Q_NULLPTR;
     return static_cast<PointerPrivate *>(wlPointer)->q_func();
 }
 
@@ -143,7 +148,7 @@ void PointerPrivate::pointer_axis(uint32_t time, uint32_t axis, wl_fixed_t value
  */
 
 Pointer::Pointer(Seat *seat)
-    : QObject(*new PointerPrivate(), seat)
+    : QObject(*new PointerPrivate())
 {
     qRegisterMetaType<Qt::MouseButton>("Qt::MouseButton");
 
@@ -167,7 +172,8 @@ void Pointer::setCursor(Surface *surface, const QPoint &hotSpot)
 {
     Q_D(Pointer);
 
-    d->set_cursor(d->enterSerial, SurfacePrivate::get(surface)->object(),
+    d->set_cursor(d->enterSerial,
+                  surface ? SurfacePrivate::get(surface)->object() : Q_NULLPTR,
                   hotSpot.x(), hotSpot.y());
 }
 

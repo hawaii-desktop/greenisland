@@ -134,8 +134,9 @@ void XdgShellIntegration::handleSetMaximized()
     maximizeState.initialWindowSize = m_xdgSurface->windowGeometry().size();
     maximizeState.initialPosition = m_item->moveItem()->position();
 
-    QWaylandOutput *output = m_item->view()->output();
-    m_xdgSurface->sendMaximized(output->availableGeometry().size() / output->scaleFactor());
+    QWaylandOutput *output = m_item->findOutput();
+    if (output)
+        m_xdgSurface->sendMaximized(output->availableGeometry().size() / output->scaleFactor());
 }
 
 void XdgShellIntegration::handleUnsetMaximized()
@@ -146,8 +147,9 @@ void XdgShellIntegration::handleUnsetMaximized()
 void XdgShellIntegration::handleMaximizedChanged()
 {
     if (m_xdgSurface->maximized()) {
-        QWaylandOutput *output = m_item->view()->output();
-        m_item->moveItem()->setPosition(output->position() + output->availableGeometry().topLeft());
+        QWaylandOutput *output = m_item->findOutput();
+        if (output)
+            m_item->moveItem()->setPosition(output->position() + output->availableGeometry().topLeft());
     } else {
         m_item->moveItem()->setPosition(maximizeState.initialPosition);
     }
@@ -170,8 +172,9 @@ void XdgShellIntegration::handleSetFullscreen(QWaylandOutput *output)
     fullscreenState.initialWindowSize = m_xdgSurface->windowGeometry().size();
     fullscreenState.initialPosition = m_item->moveItem()->position();
 
-    QWaylandOutput *designatedOutput = output ? output : m_item->view()->output();
-    m_xdgSurface->sendFullscreen(designatedOutput->geometry().size() / designatedOutput->scaleFactor());
+    QWaylandOutput *designatedOutput = output ? output : m_item->findOutput();
+    if (designatedOutput)
+        m_xdgSurface->sendFullscreen(designatedOutput->geometry().size() / designatedOutput->scaleFactor());
 }
 
 void XdgShellIntegration::handleUnsetFullscreen()
@@ -182,7 +185,9 @@ void XdgShellIntegration::handleUnsetFullscreen()
 void XdgShellIntegration::handleFullscreenChanged()
 {
     if (m_xdgSurface->fullscreen()) {
-        m_item->moveItem()->setPosition(m_item->view()->output()->geometry().topLeft());
+        QWaylandOutput *output = m_item->findOutput();
+        if (output)
+            m_item->moveItem()->setPosition(output->geometry().topLeft());
     } else {
         m_item->moveItem()->setPosition(fullscreenState.initialPosition);
     }

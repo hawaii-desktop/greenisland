@@ -96,6 +96,9 @@ void SurfacePrivate::frameCallback(void *data, wl_callback *callback, uint32_t t
 
 Surface *SurfacePrivate::fromWlSurface(struct ::wl_surface *surface)
 {
+    if (!surface)
+        return Q_NULLPTR;
+
     QtWayland::wl_surface *wlSurface =
             static_cast<QtWayland::wl_surface *>(wl_surface_get_user_data(surface));
     return static_cast<SurfacePrivate *>(wlSurface)->q_func();

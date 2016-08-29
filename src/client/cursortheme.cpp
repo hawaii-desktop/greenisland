@@ -33,6 +33,7 @@
 #include "seat.h"
 #include "shm_p.h"
 #include "shmpool.h"
+#include "surface_p.h"
 
 Q_LOGGING_CATEGORY(WLCURSORTHEME, "greenisland.client.cursortheme")
 
@@ -45,7 +46,8 @@ namespace Client {
  */
 
 CursorThemePrivate::CursorThemePrivate()
-    : compositor(Q_NULLPTR)
+    : registry(Q_NULLPTR)
+    , compositor(Q_NULLPTR)
     , pool(Q_NULLPTR)
     , seat(Q_NULLPTR)
     , cursorSurface(Q_NULLPTR)
@@ -244,9 +246,10 @@ wl_cursor *CursorThemePrivate::requestCursor(CursorTheme::CursorShape shape)
  * CursorTheme
  */
 
-CursorTheme::CursorTheme(Compositor *compositor, ShmPool *pool, Seat *seat)
+CursorTheme::CursorTheme(Registry *registry, Compositor *compositor, ShmPool *pool, Seat *seat)
     : QObject(*new CursorThemePrivate(), seat)
 {
+    d_func()->registry = registry;
     d_func()->compositor = compositor;
     d_func()->pool = pool;
     d_func()->seat = seat;
@@ -289,14 +292,16 @@ void CursorTheme::changeCursor(CursorShape shape)
         wl_buffer *wlBuffer = wl_cursor_image_get_buffer(image);
         if (!wlBuffer)
             return;
-        Buffer *buffer = BufferPrivate::fromWlBuffer(wlBuffer);
 
         if (!d->cursorSurface)
             d->cursorSurface = d->compositor->createSurface(this);
+
         d->seat->pointer()->setCursor(d->cursorSurface, QPoint(image->hotspot_x, image->hotspot_y));
-        d->cursorSurface->attach(buffer, QPoint(0, 0));
+
+        wl_surface_attach(SurfacePrivate::get(d->cursorSurface)->object(), wlBuffer, 0, 0);
         d->cursorSurface->damage(QRect(0, 0, image->width, image->height));
         d->cursorSurface->commit(Surface::NoCommitMode);
+        wl_display_flush(d->registry->display());
     }
 }
 

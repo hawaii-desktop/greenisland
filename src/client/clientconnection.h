@@ -65,6 +65,7 @@ public:
 
 public Q_SLOTS:
     void forceRoundTrip();
+    void flush();
     void flushRequests();
     void blockingReadEvents();
 

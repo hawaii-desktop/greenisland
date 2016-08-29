@@ -60,6 +60,8 @@ public:
     QQuickItem *moveItem() const;
     void setMoveItem(QQuickItem *moveItem);
 
+    QWaylandOutput *findOutput() const;
+
 Q_SIGNALS:
     void shellSurfaceChanged();
     void moveItemChanged();

@@ -65,8 +65,13 @@ TouchPoint *TouchPrivate::getPressedPoint(qint32 id) const
 
 Touch *TouchPrivate::fromWlTouch(struct ::wl_touch *touch)
 {
+    if (!touch)
+        return Q_NULLPTR;
+
     QtWayland::wl_touch *wlTouch =
             static_cast<QtWayland::wl_touch *>(wl_touch_get_user_data(touch));
+    if (!wlTouch)
+        return Q_NULLPTR;
     return static_cast<TouchPrivate *>(wlTouch)->q_func();
 }
 
@@ -157,7 +162,7 @@ TouchPointPrivate::TouchPointPrivate()
  */
 
 Touch::Touch(Seat *seat)
-    : QObject(*new TouchPrivate(), seat)
+    : QObject(*new TouchPrivate())
 {
     d_func()->seat = seat;
     d_func()->seatVersion = seat->version();

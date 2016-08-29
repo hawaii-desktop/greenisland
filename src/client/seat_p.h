@@ -55,6 +55,7 @@ class GREENISLANDCLIENT_EXPORT SeatPrivate
     Q_DECLARE_PUBLIC(Seat)
 public:
     SeatPrivate();
+    ~SeatPrivate();
 
     QString name;
     quint32 version;

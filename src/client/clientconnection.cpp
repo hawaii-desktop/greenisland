@@ -229,6 +229,16 @@ void ClientConnection::forceRoundTrip()
     wl_display_roundtrip(d->display);
 }
 
+void ClientConnection::flush()
+{
+    Q_D(ClientConnection);
+
+    if (!d->display)
+        return;
+
+    wl_display_flush(d->display);
+}
+
 void ClientConnection::flushRequests()
 {
     Q_D(ClientConnection);
