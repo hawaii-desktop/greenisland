@@ -69,9 +69,13 @@ public Q_SLOTS:
             // Power on the screen when active
             m_screen->setPowerState(EglFSScreen::PowerStateOn);
 
-            // Repaint
+            // Repaint and start painting again
             m_screen->flipFinished();
+            m_screen->resume();
         } else {
+            // Stop painting
+            m_screen->suspend();
+
             // Restore video mode
             restoreVideoMode();
         }

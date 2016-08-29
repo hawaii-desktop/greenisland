@@ -112,6 +112,9 @@ public:
     gbm_surface *createSurface();
     void destroySurface();
 
+    void suspend() { m_waitForFlipMutex.lock(); }
+    void resume() { m_waitForFlipMutex.unlock(); }
+
     void waitForFlip();
     void flip();
     void flipFinished();
