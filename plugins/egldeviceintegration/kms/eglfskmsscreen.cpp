@@ -63,15 +63,15 @@ public Q_SLOTS:
     void restoreVideoMode() { m_screen->restoreMode(); }
     void activeChanged(bool active)
     {
-        // Power on the screen when active
-        if (active)
+        qCDebug(lcKms, active ? "vt active" : "vt inactive");
+
+        if (active) {
+            // Power on the screen when active
             m_screen->setPowerState(EglFSScreen::PowerStateOn);
-        /*
-        if (active)
-            drmSetMaster(m_screen->device()->fd());
-        else
-            drmDropMaster(m_screen->device()->fd());
-        */
+        } else {
+            // Restore video mode
+            restoreVideoMode();
+        }
     }
 
 private:
