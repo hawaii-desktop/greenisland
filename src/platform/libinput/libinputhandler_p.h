@@ -62,7 +62,6 @@ public:
 
     void setup();
     void initialize();
-    void deactivate();
 
     void _q_liEventHandler();
 
@@ -79,15 +78,12 @@ public:
 
     LibInputKeyboard *keyboard;
     int keyboardCount;
-    bool keyboardSuspended;
 
     LibInputPointer *pointer;
     int pointerCount;
-    bool pointerSuspended;
 
     LibInputTouch *touch;
     int touchCount;
-    bool touchSuspended;
 
     LibInputGesture *gesture;
     int gestureCount;

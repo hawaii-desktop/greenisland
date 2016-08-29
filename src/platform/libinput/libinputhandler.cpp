@@ -54,13 +54,10 @@ LibInputHandlerPrivate::LibInputHandlerPrivate()
     , li(Q_NULLPTR)
     , keyboard(Q_NULLPTR)
     , keyboardCount(0)
-    , keyboardSuspended(false)
     , pointer(Q_NULLPTR)
     , pointerCount(0)
-    , pointerSuspended(false)
     , touch(Q_NULLPTR)
     , touchCount(0)
-    , touchSuspended(false)
     , gesture(Q_NULLPTR)
     , gestureCount(0)
     , suspended(false)
@@ -99,18 +96,10 @@ void LibInputHandlerPrivate::setup()
         if (active) {
             if (!suspended)
                 return;
-
             q->resume();
+        } else if (!suspended) {
+            q->suspend();
             _q_liEventHandler();
-
-            if (keyboardSuspended && !keyboard)
-                Q_EMIT q->capabilitiesChanged();
-            if (pointerSuspended && !pointer)
-                Q_EMIT q->capabilitiesChanged();
-            if (touchSuspended && !touch)
-                Q_EMIT q->capabilitiesChanged();
-        } else {
-            deactivate();
         }
     });
 
@@ -156,21 +145,6 @@ void LibInputHandlerPrivate::initialize()
     gesture = new LibInputGesture(q);
 
     initialized = true;
-}
-
-void LibInputHandlerPrivate::deactivate()
-{
-    Q_Q(LibInputHandler);
-
-    if (suspended)
-        return;
-
-    keyboardSuspended = keyboardCount > 0;
-    pointerSuspended = pointerCount > 0;
-    touchSuspended = touchCount > 0;
-
-    q->suspend();
-    _q_liEventHandler();
 }
 
 void LibInputHandlerPrivate::_q_liEventHandler()
