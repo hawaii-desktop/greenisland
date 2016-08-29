@@ -389,6 +389,11 @@ VtHandler::VtHandler(QObject *parent)
     });
 
 #if VT_HANDLER_LOGIND
+    // Vt is active when the session is
+    connect(d->logind, &Logind::sessionActiveChanged, this, [this, d](bool active) {
+        d->setActive(active);
+    });
+
     // Handle pause and resume of DRM devices
     connect(d->logind, &Logind::devicePaused, this, [this, d]
             (quint32 devMajor, quint32 devMinor, const QString &type) {
@@ -397,17 +402,11 @@ VtHandler::VtHandler(QObject *parent)
 
         if (type == QLatin1String("pause"))
             d->logind->pauseDeviceComplete(devMajor, devMinor);
-
-        if (devMajor == DRM_MAJOR)
-            d->setActive(false);
     });
     connect(d->logind, &Logind::deviceResumed, this, [this, d]
             (quint32 devMajor, quint32 devMinor, int) {
         qCDebug(lcLogind, "Device with major %d minor %d resumed",
                 devMajor, devMinor);
-
-        if (devMajor == DRM_MAJOR)
-            d->setActive(true);
     });
 #endif
 
