@@ -68,6 +68,9 @@ public Q_SLOTS:
         if (active) {
             // Power on the screen when active
             m_screen->setPowerState(EglFSScreen::PowerStateOn);
+
+            // Repaint
+            m_screen->flipFinished();
         } else {
             // Restore video mode
             restoreVideoMode();
