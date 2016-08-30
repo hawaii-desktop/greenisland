@@ -142,18 +142,6 @@ void EglFSIntegration::initialize()
     if (!egl_device_integration()->handlesInput())
         m_liHandler = new Platform::LibInputManager(this);
 
-    // Switch vt
-    if (!m_vtHandler.isNull() && m_liHandler) {
-        connect(m_liHandler->handler(), &LibInputHandler::keyReleased, this, [this](const LibInputKeyEvent &e) {
-            if (e.modifiers.testFlag(Qt::ControlModifier) &&
-                    e.modifiers.testFlag(Qt::AltModifier) &&
-                    e.key >= Qt::Key_F1 && e.key <= Qt::Key_F35) {
-                quint32 vt = e.key - Qt::Key_F1 + 1;
-                m_vtHandler->activate(vt);
-            }
-        });
-    }
-
     if (egl_device_integration()->usesDefaultScreen())
         addScreen(new EglFSScreen(display()));
     else
