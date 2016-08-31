@@ -15,15 +15,17 @@ set(PROJECT_VERSION "0.8.1")
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_SOVERSION 0)
 
-# Set up packaging
-set(CPACK_PACKAGE_NAME "greenisland")
-set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_GENERATOR "TGZ")
-set(CPACK_SET_DESTDIR FALSE)
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
-set(CPACK_SOURCE_IGNORE_FILES "/build/;/.git;/.tx/;CMakeLists.txt.user;~$;${CPACK_SOURCE_IGNORE_FILES}")
-include(CPack)
-add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+if(NOT USE_SUPERBUILD)
+    # Set up packaging
+    set(CPACK_PACKAGE_NAME "greenisland")
+    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+    set(CPACK_GENERATOR "TGZ")
+    set(CPACK_SET_DESTDIR FALSE)
+    set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}")
+    set(CPACK_SOURCE_IGNORE_FILES "/build/;/.git;/.tx/;CMakeLists.txt.user;~$;${CPACK_SOURCE_IGNORE_FILES}")
+    include(CPack)
+    add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
+endif()
 
 # Options
 option(ENABLE_XWAYLAND "Enables XWayland support" ON)
@@ -42,7 +44,11 @@ endif()
 
 # ECM setup
 find_package(ECM 1.4.0 REQUIRED NO_MODULE)
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR} "${CMAKE_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH
+    "${ECM_MODULE_PATH}"
+    "${ECM_KDE_MODULE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
+)
 
 # Macros
 include(FeatureSummary)

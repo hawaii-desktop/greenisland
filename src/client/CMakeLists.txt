@@ -5,8 +5,8 @@ include_directories(
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
-include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerConfigExtrasLocal.cmake)
-include(${CMAKE_SOURCE_DIR}/src/server/GreenIslandServerMacros.cmake)
+include("${CMAKE_CURRENT_SOURCE_DIR}/../server/GreenIslandServerConfigExtrasLocal.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/../server/GreenIslandServerMacros.cmake")
 
 # Avoid warnings regarding wl_buffer being deprecated
 add_definitions(-Wno-deprecated-declarations)
