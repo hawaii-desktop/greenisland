@@ -66,22 +66,32 @@ public Q_SLOTS:
         qCDebug(lcKms, active ? "vt active" : "vt inactive");
 
         if (active) {
+            // Avoid spurious flip when the application starts
+            if (m_active)
+                return;
+
+            // Save state
+            m_active = true;
+
             // Power on the screen when active
-            m_screen->setPowerState(EglFSScreen::PowerStateOn);
+            //m_screen->setPowerState(EglFSScreen::PowerStateOn);
 
             // Repaint and start painting again
             m_screen->flipFinished();
             m_screen->resume();
+            m_screen->flip();
         } else {
-            // Stop painting
-            m_screen->suspend();
+            // Save state
+            m_active = false;
 
-            // Restore video mode
+            // Stop painting and restore video mode
+            m_screen->suspend();
             restoreVideoMode();
         }
     }
 
 private:
+    bool m_active = true;
     VtHandler *m_vt;
     EglFSKmsScreen *m_screen;
 };
@@ -135,6 +145,7 @@ EglFSKmsScreen::EglFSKmsScreen(EglFSKmsIntegration *integration,
     , m_gbm_surface(Q_NULLPTR)
     , m_gbm_bo_current(Q_NULLPTR)
     , m_gbm_bo_next(Q_NULLPTR)
+    , m_suspend(false)
     , m_pendingMode(-1)
     , m_output(output)
     , m_pos(position)
@@ -307,10 +318,21 @@ void EglFSKmsScreen::destroySurface()
     }
 }
 
+void EglFSKmsScreen::suspend()
+{
+    m_suspend = true;
+    m_waitForFlipMutex.tryLock();
+}
+
+void EglFSKmsScreen::resume()
+{
+    m_suspend = false;
+}
+
 void EglFSKmsScreen::waitForFlip()
 {
     // Don't lock the mutex unless we actually need to
-    if (!m_gbm_bo_next)
+    if (!m_gbm_bo_next || m_suspend)
         return;
 
     QMutexLocker lock(&m_waitForFlipMutex);
@@ -331,6 +353,10 @@ void EglFSKmsScreen::flip()
         qCDebug(lcKms, "Avoiding flip when screen is turned off");
         return;
     }
+
+    // Don't flip when the session is inactive
+    if (m_suspend)
+        return;
 
     m_gbm_bo_next = gbm_surface_lock_front_buffer(m_gbm_surface);
     if (!m_gbm_bo_next) {

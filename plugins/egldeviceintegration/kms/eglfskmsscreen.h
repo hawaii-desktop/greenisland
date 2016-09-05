@@ -112,8 +112,8 @@ public:
     gbm_surface *createSurface();
     void destroySurface();
 
-    void suspend() { m_waitForFlipMutex.lock(); }
-    void resume() { m_waitForFlipMutex.unlock(); }
+    void suspend();
+    void resume();
 
     void waitForFlip();
     void flip();
@@ -148,6 +148,8 @@ private:
 
     gbm_bo *m_gbm_bo_current;
     gbm_bo *m_gbm_bo_next;
+
+    bool m_suspend;
 
     int m_pendingMode;
     EglFSKmsEdid m_edid;
