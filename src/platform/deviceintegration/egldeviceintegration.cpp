@@ -138,6 +138,11 @@ void EGLDeviceIntegration::saveConfiguration(const QString &fileName)
     Q_UNUSED(fileName);
 }
 
+bool EGLDeviceIntegration::needsLogind()
+{
+    return false;
+}
+
 bool EGLDeviceIntegration::handlesInput()
 {
     return false;

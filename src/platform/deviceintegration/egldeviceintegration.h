@@ -69,6 +69,7 @@ public:
     virtual void loadConfiguration(const QString &fileName);
     virtual void saveConfiguration(const QString &fileName);
 
+    virtual bool needsLogind();
     virtual bool handlesInput();
     virtual bool usesVtHandler();
     virtual bool usesDefaultScreen();
