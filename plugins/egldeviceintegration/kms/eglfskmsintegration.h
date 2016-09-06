@@ -54,6 +54,7 @@ public:
     void platformDestroy() Q_DECL_OVERRIDE;
     void loadConfiguration(const QString &fileName) Q_DECL_OVERRIDE;
     void saveConfiguration(const QString &fileName) Q_DECL_OVERRIDE;
+    bool needsLogind() Q_DECL_OVERRIDE;
     EGLNativeDisplayType platformDisplay() const Q_DECL_OVERRIDE;
     bool usesDefaultScreen() Q_DECL_OVERRIDE;
     void screenInit() Q_DECL_OVERRIDE;

@@ -37,6 +37,7 @@
 
 #include <GreenIsland/Platform/EGLDeviceIntegration>
 #include <GreenIsland/Platform/EglFSIntegration>
+#include <GreenIsland/Platform/Logind>
 
 #include "eglfskmsdevice.h"
 #include "eglfskmsscreen.h"
@@ -369,8 +370,21 @@ bool EglFSKmsDevice::open()
     Q_ASSERT(m_dri_fd == -1);
     Q_ASSERT(m_gbm_device == Q_NULLPTR);
 
+    Logind *logind = Logind::instance();
+
+    if (!logind->isConnected()) {
+        qCWarning(lcKms, "Cannot open DRM device %s: logind connection was not established",
+                  qPrintable(m_path));
+        return false;
+    }
+    if (!logind->hasSessionControl()) {
+        qCWarning(lcKms, "Cannot open DRM device %s: session control not acquired",
+                  qPrintable(m_path));
+        return false;
+    }
+
     qCDebug(lcKms) << "Opening device" << m_path;
-    m_dri_fd = qt_safe_open(m_path.toLocal8Bit().constData(), O_RDWR | O_CLOEXEC);
+    m_dri_fd = logind->takeDevice(m_path);
     if (m_dri_fd == -1) {
         qErrnoWarning("Could not open DRM device %s", qPrintable(m_path));
         return false;
@@ -381,7 +395,7 @@ bool EglFSKmsDevice::open()
     m_gbm_device = gbm_create_device(m_dri_fd);
     if (!m_gbm_device) {
         qErrnoWarning("Could not create GBM device");
-        qt_safe_close(m_dri_fd);
+        logind->releaseDevice(m_dri_fd);
         m_dri_fd = -1;
         return false;
     }
@@ -397,7 +411,8 @@ void EglFSKmsDevice::close()
     }
 
     if (m_dri_fd != -1) {
-        qt_safe_close(m_dri_fd);
+        Logind *logind = Logind::instance();
+        logind->releaseDevice(m_dri_fd);
         m_dri_fd = -1;
     }
 

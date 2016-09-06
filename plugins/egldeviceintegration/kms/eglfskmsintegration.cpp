@@ -218,6 +218,11 @@ void EglFSKmsIntegration::saveConfiguration(const QString &fileName)
     file.close();
 }
 
+bool EglFSKmsIntegration::needsLogind()
+{
+    return true;
+}
+
 EGLNativeDisplayType EglFSKmsIntegration::platformDisplay() const
 {
     Q_ASSERT(m_device);
