@@ -43,6 +43,7 @@ set(SOURCES
     deviceintegration/eglfscontext.cpp
     deviceintegration/eglfscursor.cpp
     deviceintegration/eglfsintegration.cpp
+    deviceintegration/eglfsnativeinterface.cpp
     deviceintegration/eglfsoffscreenwindow.cpp
     deviceintegration/eglfsscreen.cpp
     deviceintegration/eglfswindow.cpp
@@ -134,6 +135,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
         EglFSContext
         EglFSCursor
         EglFSIntegration
+        EglFSNativeInterface
         EglFSOffscreenWindow
         EglFSScreen
         EglFSWindow

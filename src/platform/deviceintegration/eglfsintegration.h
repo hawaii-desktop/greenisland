@@ -33,11 +33,14 @@
 #ifndef GREENISLAND_EGLFSINTEGRATION_H
 #define GREENISLAND_EGLFSINTEGRATION_H
 
+#include <QtGui/qpa/qplatformfontdatabase.h>
 #include <QtGui/qpa/qplatformintegration.h>
-#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QtGui/qpa/qplatformscreen.h>
+#include <QtGui/qpa/qplatformservices.h>
 
 #include <GreenIsland/platform/greenislandplatform_export.h>
+#include <GreenIsland/Platform/EglFSNativeInterface>
+#include <GreenIsland/Platform/VtHandler>
 
 #include <EGL/egl.h>
 
@@ -48,14 +51,15 @@ namespace Platform {
 class EglFSContext;
 class EglFSWindow;
 class LibInputManager;
-class VtHandler;
 
-class GREENISLANDPLATFORM_EXPORT EglFSIntegration : public QPlatformIntegration, public QPlatformNativeInterface
+class GREENISLANDPLATFORM_EXPORT EglFSIntegration : public QObject, public QPlatformIntegration
 {
+    Q_OBJECT
 public:
     EglFSIntegration();
 
     EGLDisplay display() const;
+    EGLNativeDisplayType nativeDisplay() const;
 
     QPlatformInputContext *inputContext() const Q_DECL_OVERRIDE;
     QPlatformFontDatabase *fontDatabase() const Q_DECL_OVERRIDE;
@@ -74,29 +78,27 @@ public:
 
     bool hasCapability(QPlatformIntegration::Capability cap) const Q_DECL_OVERRIDE;
 
-    // QPlatformNativeInterface
-    void *nativeResourceForIntegration(const QByteArray &resource) Q_DECL_OVERRIDE;
-    void *nativeResourceForScreen(const QByteArray &resource, QScreen *screen) Q_DECL_OVERRIDE;
-    void *nativeResourceForWindow(const QByteArray &resource, QWindow *window) Q_DECL_OVERRIDE;
-    void *nativeResourceForContext(const QByteArray &resource, QOpenGLContext *context) Q_DECL_OVERRIDE;
-    NativeResourceForContextFunction nativeResourceFunctionForContext(const QByteArray &resource) Q_DECL_OVERRIDE;
-
-    QFunctionPointer platformFunction(const QByteArray &function) const Q_DECL_OVERRIDE;
-
     void addScreen(QPlatformScreen *screen);
     void removeScreen(QPlatformScreen *screen);
 
     static EGLConfig chooseConfig(EGLDisplay display, const QSurfaceFormat &format);
 
+Q_SIGNALS:
+    void initialized();
+
 private:
     EGLDisplay m_display;
+
+    QScopedPointer<EglFSNativeInterface> m_nativeInterface;
     QPlatformInputContext *m_inputContext;
     QScopedPointer<QPlatformFontDatabase> m_fontDatabase;
     QScopedPointer<QPlatformServices> m_services;
     QScopedPointer<VtHandler> m_vtHandler;
     LibInputManager *m_liHandler;
 
-    EGLNativeDisplayType nativeDisplay() const;
+private Q_SLOTS:
+    void takeControl(bool connected);
+    void actualInitialization();
 };
 
 } // namespace Platform

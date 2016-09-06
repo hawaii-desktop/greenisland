@@ -54,9 +54,11 @@
 #include "deviceintegration/eglfscontext.h"
 #include "deviceintegration/eglfscursor.h"
 #include "deviceintegration/eglfsintegration.h"
+#include "deviceintegration/eglfsnativeinterface.h"
 #include "deviceintegration/eglfsoffscreenwindow.h"
 #include "deviceintegration/eglfswindow.h"
-#include "logind/vthandler.h"
+#include "logind/logind.h"
+#include "logging.h"
 #include "libinput/libinputmanager_p.h"
 #include "libinput/libinputhandler.h"
 #include "platformcompositor/openglcompositorbackingstore.h"
@@ -73,18 +75,26 @@ namespace GreenIsland {
 namespace Platform {
 
 EglFSIntegration::EglFSIntegration()
-    : m_display(EGL_NO_DISPLAY)
+    : QObject()
+    , m_display(EGL_NO_DISPLAY)
     , m_inputContext(Q_NULLPTR)
     , m_fontDatabase(new QGenericUnixFontDatabase)
     , m_services(new QGenericUnixServices)
     , m_liHandler(Q_NULLPTR)
 {
     initResources();
+
+    m_nativeInterface.reset(new EglFSNativeInterface(this));
 }
 
 EGLDisplay EglFSIntegration::display() const
 {
     return m_display;
+}
+
+EGLNativeDisplayType EglFSIntegration::nativeDisplay() const
+{
+    return egl_device_integration()->platformDisplay();
 }
 
 QPlatformInputContext *EglFSIntegration::inputContext() const
@@ -104,7 +114,7 @@ QPlatformServices *EglFSIntegration::services() const
 
 QPlatformNativeInterface *EglFSIntegration::nativeInterface() const
 {
-    return const_cast<EglFSIntegration *>(this);
+    return m_nativeInterface.data();
 }
 
 VtHandler *EglFSIntegration::vtHandler() const
@@ -117,40 +127,31 @@ void EglFSIntegration::initialize()
     if (!egl_device_integration()->configurationFileName().isEmpty())
         egl_device_integration()->loadConfiguration(egl_device_integration()->configurationFileName());
 
-    egl_device_integration()->platformInit();
+    if (egl_device_integration()->needsLogind()) {
+        // Connect to logind and take control because the device integration
+        // demands it
+        Logind *logind = Logind::instance();
+        if (logind->isConnected()) {
+            qCDebug(lcDeviceIntegration) << "logind connection already established";
+            takeControl(true);
+        } else {
+            qCDebug(lcDeviceIntegration) << "logind connection not yet established";
+            connect(logind, &Logind::connectedChanged,
+                    this, &EglFSIntegration::takeControl,
+                    Qt::QueuedConnection);
+        }
 
-    m_display = eglGetDisplay(nativeDisplay());
-    if (Q_UNLIKELY(m_display == EGL_NO_DISPLAY)) {
-        qFatal("Failed to open EGL display");
-        return;
+        // Wait for logind setup
+        QEventLoop *loop = new QEventLoop();
+        connect(this, &EglFSIntegration::initialized,
+                loop, &QEventLoop::quit);
+        loop->exec();
+        delete loop;
+    } else {
+        // proceed with synchronous initialization because logind is not needed
+        // by the device integration
+        actualInitialization();
     }
-
-    EGLint major, minor;
-    if (Q_UNLIKELY(!eglInitialize(m_display, &major, &minor))) {
-        qFatal("Failed to initialize EGL display");
-        return;
-    }
-
-    QString icStr = QPlatformInputContextFactory::requested();
-    if (icStr.isNull())
-        icStr = QLatin1String("compose");
-    m_inputContext = QPlatformInputContextFactory::create(icStr);
-
-    if (egl_device_integration()->usesVtHandler())
-        m_vtHandler.reset(new VtHandler);
-
-    if (!egl_device_integration()->handlesInput())
-        m_liHandler = new Platform::LibInputManager(this);
-
-    if (egl_device_integration()->usesDefaultScreen())
-        addScreen(new EglFSScreen(display()));
-    else
-        egl_device_integration()->screenInit();
-
-    // Set the first screen as primary
-    QScreen *firstScreen = QGuiApplication::screens().at(0);
-    if (firstScreen && firstScreen->handle())
-        setPrimaryScreen(firstScreen->handle());
 }
 
 void EglFSIntegration::destroy()
@@ -256,144 +257,6 @@ bool EglFSIntegration::hasCapability(QPlatformIntegration::Capability cap) const
     }
 }
 
-enum ResourceType {
-    EglDisplay,
-    EglWindow,
-    EglContext,
-    EglConfig,
-    NativeDisplay,
-    XlibDisplay,
-    WaylandDisplay
-};
-
-static int resourceType(const QByteArray &key)
-{
-    static const QByteArray names[] = { // match ResourceType
-                                        QByteArrayLiteral("egldisplay"),
-                                        QByteArrayLiteral("eglwindow"),
-                                        QByteArrayLiteral("eglcontext"),
-                                        QByteArrayLiteral("eglconfig"),
-                                        QByteArrayLiteral("nativedisplay"),
-                                        QByteArrayLiteral("display"),
-                                        QByteArrayLiteral("server_wl_display")
-                                      };
-    const QByteArray *end = names + sizeof(names) / sizeof(names[0]);
-    const QByteArray *result = std::find(names, end, key);
-    if (result == end)
-        result = std::find(names, end, key.toLower());
-    return int(result - names);
-}
-
-void *EglFSIntegration::nativeResourceForIntegration(const QByteArray &resource)
-{
-    void *result = 0;
-
-    switch (resourceType(resource)) {
-    case EglDisplay:
-        result = display();
-        break;
-    case NativeDisplay:
-        result = reinterpret_cast<void*>(nativeDisplay());
-        break;
-    case WaylandDisplay:
-        result = egl_device_integration()->wlDisplay();
-        break;
-    default:
-        break;
-    }
-
-    return result;
-}
-
-void *EglFSIntegration::nativeResourceForScreen(const QByteArray &resource, QScreen *)
-{
-    void *result = 0;
-
-    switch (resourceType(resource)) {
-    case XlibDisplay:
-        // Play nice when using the x11 hooks: Be compatible with xcb that allows querying
-        // the X Display pointer, which is nothing but our native display.
-        result = reinterpret_cast<void*>(nativeDisplay());
-        break;
-    default:
-        break;
-    }
-
-    return result;
-}
-
-void *EglFSIntegration::nativeResourceForWindow(const QByteArray &resource, QWindow *window)
-{
-    void *result = 0;
-
-    switch (resourceType(resource)) {
-    case EglDisplay:
-        if (window && window->handle())
-            result = static_cast<EglFSScreen *>(window->handle()->screen())->display();
-        else
-            result = display();
-        break;
-    case EglWindow:
-        if (window && window->handle())
-            result = reinterpret_cast<void*>(static_cast<EglFSWindow *>(window->handle())->eglWindow());
-        break;
-    default:
-        break;
-    }
-
-    return result;
-}
-
-void *EglFSIntegration::nativeResourceForContext(const QByteArray &resource, QOpenGLContext *context)
-{
-    void *result = 0;
-
-    switch (resourceType(resource)) {
-    case EglContext:
-        if (context->handle())
-            result = static_cast<EglFSContext *>(context->handle())->eglContext();
-        break;
-    case EglConfig:
-        if (context->handle())
-            result = static_cast<EglFSContext *>(context->handle())->eglConfig();
-        break;
-    case EglDisplay:
-        if (context->handle())
-            result = static_cast<EglFSContext *>(context->handle())->eglDisplay();
-        break;
-    default:
-        break;
-    }
-
-    return result;
-}
-
-static void *eglContextForContext(QOpenGLContext *context)
-{
-    Q_ASSERT(context);
-
-    EglFSContext *handle = static_cast<EglFSContext *>(context->handle());
-    if (!handle)
-        return 0;
-
-    return handle->eglContext();
-}
-
-QPlatformNativeInterface::NativeResourceForContextFunction EglFSIntegration::nativeResourceFunctionForContext(const QByteArray &resource)
-{
-    QByteArray lowerCaseResource = resource.toLower();
-    if (lowerCaseResource == "get_egl_context")
-        return NativeResourceForContextFunction(eglContextForContext);
-
-    return 0;
-}
-
-QFunctionPointer EglFSIntegration::platformFunction(const QByteArray &function) const
-{
-    Q_UNUSED(function);
-    return 0;
-}
-
 void EglFSIntegration::addScreen(QPlatformScreen *screen)
 {
     screenAdded(screen);
@@ -421,9 +284,72 @@ EGLConfig EglFSIntegration::chooseConfig(EGLDisplay display, const QSurfaceForma
     return chooser.chooseConfig();
 }
 
-EGLNativeDisplayType EglFSIntegration::nativeDisplay() const
+void EglFSIntegration::takeControl(bool connected)
 {
-    return egl_device_integration()->platformDisplay();
+    if (!connected)
+        return;
+
+    Logind *logind = Logind::instance();
+
+    disconnect(logind, &Logind::connectedChanged,
+            this, &EglFSIntegration::takeControl);
+
+    if (logind->hasSessionControl()) {
+        qCDebug(lcDeviceIntegration) << "Session control already acquired via logind";
+        actualInitialization();
+    } else {
+        qCDebug(lcDeviceIntegration) << "Take control of session via logind";
+        logind->takeControl();
+        connect(logind, &Logind::hasSessionControlChanged,
+                this, &EglFSIntegration::actualInitialization,
+                Qt::QueuedConnection);
+    }
+}
+
+void EglFSIntegration::actualInitialization()
+{
+    qCDebug(lcDeviceIntegration) << "Initialization";
+
+    Logind *logind = Logind::instance();
+    disconnect(logind, &Logind::hasSessionControlChanged,
+            this, &EglFSIntegration::actualInitialization);
+
+    egl_device_integration()->platformInit();
+
+    m_display = eglGetDisplay(nativeDisplay());
+    if (Q_UNLIKELY(m_display == EGL_NO_DISPLAY)) {
+        qFatal("Failed to open EGL display");
+        return;
+    }
+
+    EGLint major, minor;
+    if (Q_UNLIKELY(!eglInitialize(m_display, &major, &minor))) {
+        qFatal("Failed to initialize EGL display");
+        return;
+    }
+
+    QString icStr = QPlatformInputContextFactory::requested();
+    if (icStr.isNull())
+        icStr = QLatin1String("compose");
+    m_inputContext = QPlatformInputContextFactory::create(icStr);
+
+    if (egl_device_integration()->usesVtHandler())
+        m_vtHandler.reset(new VtHandler);
+
+    if (!egl_device_integration()->handlesInput())
+        m_liHandler = new Platform::LibInputManager(this);
+
+    if (egl_device_integration()->usesDefaultScreen())
+        addScreen(new EglFSScreen(display()));
+    else
+        egl_device_integration()->screenInit();
+
+    // Set the first screen as primary
+    QScreen *firstScreen = QGuiApplication::screens().at(0);
+    if (firstScreen && firstScreen->handle())
+        setPrimaryScreen(firstScreen->handle());
+
+    Q_EMIT initialized();
 }
 
 } // namespace Platform
