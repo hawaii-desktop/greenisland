@@ -310,9 +310,11 @@ void EglFSIntegration::actualInitialization()
 {
     qCDebug(lcDeviceIntegration) << "Initialization";
 
-    Logind *logind = Logind::instance();
-    disconnect(logind, &Logind::hasSessionControlChanged,
-            this, &EglFSIntegration::actualInitialization);
+    if (egl_device_integration()->needsLogind()) {
+        Logind *logind = Logind::instance();
+        disconnect(logind, &Logind::hasSessionControlChanged,
+                   this, &EglFSIntegration::actualInitialization);
+    }
 
     egl_device_integration()->platformInit();
 
