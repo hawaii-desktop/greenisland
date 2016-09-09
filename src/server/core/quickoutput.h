@@ -28,6 +28,8 @@
 #ifndef GREENISLAND_QUICKOUTPUT_H
 #define GREENISLAND_QUICKOUTPUT_H
 
+#include <QtQml/QQmlListProperty>
+
 #include <GreenIsland/QtWaylandCompositor/QWaylandQuickOutput>
 #include <GreenIsland/Server/Screen>
 
@@ -50,6 +52,8 @@ class GREENISLANDSERVER_EXPORT QuickOutput : public QWaylandQuickOutput
     Q_PROPERTY(QSize hotSpotSize READ hotSpotSize WRITE setHotSpotSize NOTIFY hotSpotSizeChanged)
     Q_PROPERTY(quint64 hotSpotThreshold READ hotSpotThreshold WRITE setHotSpotThreshold NOTIFY hotSpotThresholdChanged)
     Q_PROPERTY(quint64 hotSpotPushTime READ hotSpotPushTime WRITE setHotSpotPushTime NOTIFY hotSpotPushTimeChanged)
+    Q_PROPERTY(QQmlListProperty<QObject> data READ data DESIGNABLE false)
+    Q_CLASSINFO("DefaultProperty", "data")
 public:
     enum PowerState {
         PowerStateOn,
@@ -69,6 +73,8 @@ public:
 
     QuickOutput();
     QuickOutput(QWaylandCompositor *compositor);
+
+    QQmlListProperty<QObject> data();
 
     Screen *nativeScreen() const;
     void setNativeScreen(Screen *screen);

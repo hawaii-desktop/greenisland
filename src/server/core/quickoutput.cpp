@@ -160,6 +160,7 @@ public:
     QSize hotSpotSize;
     quint64 hotSpotThreshold;
     quint64 hotSpotPushTime;
+    QList<QObject *> objects;
 };
 
 /*
@@ -180,6 +181,12 @@ QuickOutput::QuickOutput(QWaylandCompositor *compositor)
 {
     // Filter events on the output window
     new WindowFilter(this);
+}
+
+QQmlListProperty<QObject> QuickOutput::data()
+{
+    Q_D(QuickOutput);
+    return QQmlListProperty<QObject>(this, d->objects);
 }
 
 Screen *QuickOutput::nativeScreen() const
