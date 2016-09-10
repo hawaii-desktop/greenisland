@@ -48,5 +48,5 @@ today=$(date +"%Y-%m-%d")
 
 mkdir -p $builddir || exit $?
 cat $curdir/bintray.json | sed -e "s,@VERSION@,$version,g" -e "s,@TODAY@,$today,g" > $builddir/bintray.json || exit $?
-make -C build install DESTDIR=$artifactsdir || exit $?
+make install DESTDIR=$artifactsdir || exit $?
 tar -cJf $builddir/binary.tar.xz -C $artifactsdir . || exit $?
