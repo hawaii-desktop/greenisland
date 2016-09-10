@@ -1,0 +1,23 @@
+{
+  "package": {
+    "name": "greenisland",
+    "repo": "ci",
+    "subject": "greenisland",
+    "desc": "QtQuick Wayland compositor and shell for desktop and mobile",
+    "website_url": "http://hawaiios.org",
+    "issue_tracker_url": "https://github.com/greenisland/greenisland",
+    "vcs_url": "https://github.com/greenisland/greenisland",
+    "licenses": ["GPL-3.0"],
+    "labels": ["qt", "qtquick", "qml", "wayland"]
+  },
+  "version": {
+    "name": "@VERSION@",
+    "desc": "Continuous integration build",
+    "released": "@TODAY@",
+    "gpgSign": false
+  },
+  "files": [
+    {"includePattern": "build/(binary.tar.xz)", "uploadPattern": "$1"}
+  ],
+  "publish": true
+}

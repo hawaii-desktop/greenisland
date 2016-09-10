@@ -24,6 +24,14 @@ arch:
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
 
+before_deploy:
+  - "./.travis/bintray.sh"
+deploy:
+  provider: bintray
+  file: build/bintray.json
+  key:
+    secure: Dzfot0czhew2bYcbMfsV3HlPekye9CNLQY+OOTImBB2SblpbMAqyeVCIjqDweETkWoC+nIH3SVU8KmHt1+mCKxKmAYHDevuWTjTYrE52IeqSUa/BX3rUX4GstyuFo8fhr+K4aeZQh60c310eVZ9R5/IY7fM7JZ3sqC4NxVY7caI=
+
 notifications:
   email: false
   irc:
