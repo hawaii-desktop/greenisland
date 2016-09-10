@@ -17,7 +17,7 @@
     "gpgSign": false
   },
   "files": [
-    {"includePattern": "build/(binary.tar.xz)", "uploadPattern": "$1"}
+    {"includePattern": "build/(greenisland.tar.xz)", "uploadPattern": "$1"}
   ],
   "publish": true
 }
