@@ -20,12 +20,11 @@ arch:
     - make
     #- sudo make install
     #- xvfb-run -a -s "-screen 0 800x600x24" make test
+    - ./.travis/bintray.sh
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
 
-before_deploy:
-  - "./.travis/bintray.sh"
 deploy:
   on: develop
   provider: bintray
