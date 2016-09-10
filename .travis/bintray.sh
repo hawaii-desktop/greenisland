@@ -41,12 +41,12 @@ fi
 curdir=$(dirname `readlink -f $0`)
 builddir=$curdir/../build
 artifactsdir=$curdir/../artifacts
-_gitdate=$(date -d @$(git log -1 --format="%at") +%Y%m%d%H%M)
-_gitver=$(git log -1 --format="%h")
+gitrev=$(git log -1 --format="%h")
+gitdate=$(date -d @$(git log -1 --format="%at") +%Y-%m-%dT%H:%M:%S%z)
 version="${_gitdate}.${_gitver}"
 today=$(date +"%Y-%m-%d")
 
 mkdir -p $builddir || exit $?
-cat $curdir/bintray.json | sed -e "s,@VERSION@,$version,g" -e "s,@TODAY@,$today,g" > $builddir/bintray.json || exit $?
+cat $curdir/bintray.json | sed -e "s,@GITREV@,$gitrev,g" -e "s,@GITDATE@,$gitdate,g" -e "s,@TODAY@,$today,g" > $builddir/bintray.json || exit $?
 make install DESTDIR=$artifactsdir || exit $?
 tar -cJf $builddir/greenisland.tar.xz -C $artifactsdir . || exit $?

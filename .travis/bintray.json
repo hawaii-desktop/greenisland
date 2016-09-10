@@ -11,9 +11,13 @@
     "labels": ["qt", "qtquick", "qml", "wayland"]
   },
   "version": {
-    "name": "@VERSION@",
+    "name": "latest_build",
     "desc": "Continuous integration build",
     "released": "@TODAY@",
+    "attributes": [
+      {"name": "gitrevision", "values": ["@GITREV@"], "type": "string"},
+      {"name": "gitdate", "values": ["@GITDATE@"], "type": "date"}
+    ],
     "gpgSign": false
   },
   "files": [
