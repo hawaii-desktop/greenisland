@@ -38,7 +38,7 @@ if [ ! -f .travis.yml ]; then
     exit 1
 fi
 
-curdir=$(dirname $0)
+curdir=$(dirname `readlink -f $0`)
 builddir=$curdir/../build
 artifactsdir=$curdir/../artifacts
 _gitdate=$(date -d @$(git log -1 --format="%at") +%Y%m%d%H%M)
@@ -48,5 +48,5 @@ today=$(date +"%Y-%m-%d")
 
 mkdir -p $builddir || exit $?
 cat $curdir/bintray.json | sed -e "s,@VERSION@,$version,g" -e "s,@TODAY@,$today,g" > $builddir/bintray.json || exit $?
-make install DESTDIR=$artifactsdir || exit $?
-tar cJf $builddir/binary.tar.xz $artifacts/*
+make -C build install DESTDIR=$artifactsdir || exit $?
+tar -cJf $builddir/binary.tar.xz -C $artifactsdir . || exit $?
