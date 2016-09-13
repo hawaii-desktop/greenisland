@@ -31,9 +31,8 @@ script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
 
 deploy:
-  on: develop
   provider: bintray
-  file: build/bintray.json
+  file: cibuild/bintray.json
   user: plfiorini
   key:
     secure: AXgDeE2nJmBEMSU0zegjeesXkRE5Z5t3bW9w7tVxdwhlqiLv3UXLHiPazdkmxGWQDFhIIwSMz+BolpaTMRwYMOgPhzBahxYyHV5Q1yN4yn4XbwHqXegcpRzPuhHBidDaWJGJZJu6Wi2+CTTZ1WwEl8iXrHxqXs/4fy1GayUQEfg=

@@ -39,14 +39,41 @@ if [ ! -f .travis.yml ]; then
 fi
 
 curdir=$(dirname `readlink -f $0`)
-builddir=$curdir/../build
-artifactsdir=$curdir/../artifacts
+builddir=$curdir/../cibuild
+arch=$(uname -m)
+gitreponame=$(basename `git rev-parse --show-toplevel`)
+gitbranch=$(git rev-parse --abbrev-ref HEAD)
 gitrev=$(git log -1 --format="%h")
 gitdate=$(date -d @$(git log -1 --format="%at") +%Y-%m-%dT%H:%M:%S%z)
+pkgver=$(git log -1 --format="%cd" --date=short | tr -d '-').$(git log -1 --format="%h")
 version="${_gitdate}.${_gitver}"
 today=$(date +"%Y-%m-%d")
 
+# Deploy only for relevant branchs
+if [ "$gitbranch" != "develop" -a "$gitbranch" != "master" ]; then
+    exit 0
+fi
+
+# Deploy only once (useful if CI builds for multiple compilers)
+if [ -f $builddir/done ]; then
+    exit 0
+fi
+
 mkdir -p $builddir || exit $?
-cat $curdir/bintray.json | sed -e "s,@GITREV@,$gitrev,g" -e "s,@GITDATE@,$gitdate,g" -e "s,@TODAY@,$today,g" > $builddir/bintray.json || exit $?
-make install DESTDIR=$artifactsdir || exit $?
-tar -cJf $builddir/greenisland.tar.xz -C $artifactsdir . || exit $?
+cat $curdir/bintray.json.in | \
+sed -e "s,@GITREV@,$gitrev,g" \
+    -e "s,@GITDATE@,$gitdate,g" \
+    -e "s,@GITBRANCH@,$gitbranch,g" \
+    -e "s,@PKGVER@,$pkgver,g" \
+    -e "s,@ARCH@,$arch,g" \
+    -e "s,@TODAY@,$today,g" \
+    > $builddir/bintray.json || exit $?
+cat $curdir/PKGBUILD.in | \
+sed -e "s,@GITBRANCH@,$gitbranch,g" \
+    > $builddir/PKGBUILD
+pushd $builddir >/dev/null
+makepkg || exit $?
+repo-add ${gitreponame}.db.tar.gz *.pkg.tar.xz || exit $?
+popd >/dev/null
+
+touch $builddir/done
