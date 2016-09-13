@@ -2,6 +2,9 @@ language: c
 
 sudo: required
 
+env:
+  - ARCH_TRAVIS_MIRROR=http://mirrors.kernel.org/archlinux
+
 arch:
   packages:
     - qt5-declarative
