@@ -3,7 +3,13 @@ language: c
 sudo: required
 
 env:
-  - ARCH_TRAVIS_MIRROR=http://mirrors.kernel.org/archlinux
+  global:
+    # BINTRAY_USER
+    - secure: QWMy89JagJKoBW5mEeHgoSUmbUKtGCaXSb0a6aVHKhXur5Ii01fMXbI8ARcRz6SSGQeAGPTcutJAMLMVne41Ph/E2pwZ9hpfkS+DSbccYfW6aFjWpyOWhR+eNKqWuD+QkmNzaPApFZWdn5tTzoYteuilPwIzEUCjqo9DALv+QlQ=
+    # BINTRAY_API_KEY
+    - secure: OofAWG/Dz1DQ6SCr3xys4djiYMgqlf/+PIg5TW9e4usTC8oP+oSE3vKMxOWLQwYYrBs4qaXODKRHXLXxy6wpFUY0cBEAC8n/T/bPQiw/4rkpC/SYbKr6L6/wd1uQsd2DFCVXqOh9DAgfz/hUwvVNZVRUdfBDKTLHQPVj8aI+oUk=
+    # BINTRAY_REPO_OWNER
+    - secure: TXxb3Jb7Ir0WTq6cAn6/F/+0keIYSN6JuUG6tedhtw59+GjuAHiBnFAS3p0ljPepky7gaP+xWqa+PUfilEMW9AhwByYwtZJFcAi5ffmtj+njOTu55g+hhnZkfy2G3aclE9gcO7OHLc8FYgQ0Tl5xCfe1B9CbdLbW9xIsty6CqOs=
 
 arch:
   packages:
@@ -19,7 +25,6 @@ arch:
     - xcb-util-cursor
     - libxcursor
     - xorg-server-xvfb
-    - git
   script:
     - cmake . -DKDE_INSTALL_USE_QT_SYS_PATHS=ON -DCMAKE_INSTALL_PREFIX=/usr
     - make
@@ -32,8 +37,12 @@ script:
 
 deploy:
   provider: bintray
+  on:
+    branch: develop
+    condition: "$CC = gcc"
   file: cibuild/bintray.json
-  user: plfiorini
+  user:
+    secure: WJkW/9+BxAXCRQf3BHmvzz4YRe2mzh6Ej0uBY7NV73zmkd7rZnuIuT5ajjBF+ndsUCxo51usRyvPkZccpGXU1+NiiWdOStd/ctHn0PJeiAL+JkzXqN+eMDPns/+E8gu/yELqqSHQBn4U5KyPmeHgqs+oybiHHJKSX1wVdqwcGgY=
   key:
     secure: AXgDeE2nJmBEMSU0zegjeesXkRE5Z5t3bW9w7tVxdwhlqiLv3UXLHiPazdkmxGWQDFhIIwSMz+BolpaTMRwYMOgPhzBahxYyHV5Q1yN4yn4XbwHqXegcpRzPuhHBidDaWJGJZJu6Wi2+CTTZ1WwEl8iXrHxqXs/4fy1GayUQEfg=
 
