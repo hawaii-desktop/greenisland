@@ -311,7 +311,9 @@ public:
                 GLuint texture;
                 glGenTextures(1, &texture);
                 glBindTexture(GL_TEXTURE_2D, texture);
+#ifdef QT_WAYLAND_COMPOSITOR_GL
                 buffer.bindToTexture();
+#endif
                 m_sgTex = surfaceItem->window()->createTextureFromId(texture , QSize(surfaceItem->width(), surfaceItem->height()), opt);
             }
         }
@@ -1122,14 +1124,20 @@ QSGNode *QWaylandQuickItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeDat
 
         if (d->newTexture) {
             d->newTexture = false;
+#ifdef QT_WAYLAND_COMPOSITOR_GL
             for (int plane = 0; plane < bufferTypes[ref.bufferFormatEgl()].planeCount; plane++)
                 if (uint texture = ref.textureForPlane(plane))
                     material->setTextureForPlane(plane, texture);
+#endif
             material->bind();
+#ifdef QT_WAYLAND_COMPOSITOR_GL
             ref.bindToTexture();
+#endif
         }
 
+#ifdef QT_WAYLAND_COMPOSITOR_GL
         ref.updateTexture();
+#endif
         QSGGeometry::updateTexturedRectGeometry(geometry, rect, QRectF(0, 0, 1, 1));
 
         node->setGeometry(geometry);

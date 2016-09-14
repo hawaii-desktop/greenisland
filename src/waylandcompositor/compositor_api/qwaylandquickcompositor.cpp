@@ -156,7 +156,9 @@ void QWaylandQuickCompositor::grabSurface(QWaylandSurfaceGrabber *grabber, const
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
             glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#ifdef QT_WAYLAND_COMPOSITOR_GL
             buffer.bindToTexture();
+#endif
             blitter.blit(texture, QMatrix4x4(), surfaceOrigin);
 
             blitter.release();
