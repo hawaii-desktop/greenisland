@@ -162,6 +162,8 @@ target_include_directories(
         PUBLIC
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
         INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
             "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
             "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
 )

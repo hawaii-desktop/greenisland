@@ -130,6 +130,8 @@ endif()
 target_include_directories(
     GreenIslandServer
         INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
             "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
             "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
 )
