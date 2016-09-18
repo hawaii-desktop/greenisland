@@ -133,7 +133,7 @@ endif()
 
 # Wayland protocols
 if(USE_LOCAL_WAYLAND_PROTOCOLS)
-    set(WAYLAND_PROTOCOLS_DIR "${CMAKE_SOURCE_DIR}/data/wayland-protocols")
+    set(WAYLAND_PROTOCOLS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/data/wayland-protocols")
 else()
     pkg_check_modules(Wayland_Protocols REQUIRED wayland-protocols)
     add_feature_info("Wayland-Protocols" Wayland_Protocols_FOUND "Required for protocols")

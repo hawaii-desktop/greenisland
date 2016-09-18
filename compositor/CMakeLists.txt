@@ -1,6 +1,6 @@
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_BINARY_DIR}/../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../headers/GreenIsland"
 )
 
 set(SOURCES

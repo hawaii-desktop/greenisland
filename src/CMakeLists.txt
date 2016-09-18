@@ -4,7 +4,7 @@ include(ECMSetupVersion)
 include(ECMGenerateHeaders)
 
 ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX GREENISLAND
-                  VERSION_HEADER "${CMAKE_BINARY_DIR}/headers/greenisland_version.h"
+                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/../headers/greenisland_version.h"
                   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandConfigVersion.cmake"
                   SOVERSION ${PROJECT_SOVERSION})
 
@@ -22,7 +22,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 
-install(FILES ${CMAKE_BINARY_DIR}/headers/greenisland_version.h
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/../headers/greenisland_version.h"
         DESTINATION ${HAWAII_INCLUDEDIR} COMPONENT Devel)
 
 include(GenerateHeaders)

@@ -19,14 +19,14 @@ foreach(_mod Qml Quick)
 endforeach()
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland/QtWaylandCompositor
-    ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api
-    ${CMAKE_CURRENT_SOURCE_DIR}/extensions
-    ${CMAKE_CURRENT_SOURCE_DIR}/global
-    ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/QtWaylandCompositor"
+    "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api"
+    "${CMAKE_CURRENT_SOURCE_DIR}/extensions"
+    "${CMAKE_CURRENT_SOURCE_DIR}/global"
+    "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper"
+    "${CMAKE_CURRENT_SOURCE_DIR}/shared"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Qml_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
@@ -98,42 +98,42 @@ add_definitions(
 )
 
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/surface-extension.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/qt/surface-extension.xml"
     BASENAME surface-extension
     PREFIX qt_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/touch-extension.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/qt/touch-extension.xml"
     BASENAME touch-extension
     PREFIX qt_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/qtkey-extension.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/qt/qtkey-extension.xml"
     BASENAME qtkey-extension
     PREFIX qt_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/qt-windowmanager.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/qt/qt-windowmanager.xml"
     BASENAME qt-windowmanager
     PREFIX qt_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/hardware-integration.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/qt/hardware-integration.xml"
     BASENAME hardware-integration
     PREFIX qt_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/wayland/wayland.xml"
     BASENAME wayland
     PREFIX wl_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/text-input-unstable-v2.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/wayland/text-input-unstable-v2.xml"
     BASENAME text-input-unstable-v2
     PREFIX wl_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/xdg-shell.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/wayland/xdg-shell.xml"
     BASENAME xdg-shell
 )
 
@@ -160,7 +160,7 @@ endif()
 target_include_directories(
     GreenIslandCompositor
         PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/headers/GreenIsland>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
         INTERFACE
             "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
             "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
@@ -196,7 +196,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     PREFIX
         QtWaylandCompositor
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandCompositor_HEADERS
     RELATIVE
@@ -216,7 +216,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     PREFIX
         QtWaylandCompositor
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandCompositor_HEADERS
     RELATIVE
@@ -231,7 +231,7 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
     PREFIX
         QtWaylandCompositor
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandCompositor_HEADERS
     RELATIVE
@@ -240,76 +240,76 @@ generate_headers(GreenIslandCompositor_CamelCase_HEADERS
 
 private_headers(GreenIslandCompositor_PRIVATE_HEADERS
     HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandcompositor_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylanddestroylistener_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandinputmethodcontrol_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandkeyboard_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandoutput_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandpointer_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandquickitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandseat_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandsurface_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandtouch_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandview_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandqtwindowmanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandquickshellsurfaceitem_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinputmanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinput_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandshell_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshellintegration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshell_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandxdgshellintegration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandxdgshell_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlextendedsurface_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlqtkey_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlqttouch_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/global/qwaylandcompositorextension_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegrationfactory_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegrationplugin_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlhwintegration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegrationfactory_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegrationplugin_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandinputmethodeventbuilder_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandmimehelper_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandshmformathelper_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandxkb_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatadevicemanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatadevice_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldataoffer_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatasource_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwlregion_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwlsurfacebuffer_p.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-hardware-integration.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-text-input-unstable-v2.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-qtkey-extension.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-surface-extension.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-text.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-touch-extension.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-wayland.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-qt-windowmanager.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-hardware-integration-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-hardware-integration-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-input-method-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-input-method-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-qtkey-extension-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-qtkey-extension-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-surface-extension-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-surface-extension-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-unstable-v2-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-unstable-v2-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-touch-extension-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-touch-extension-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-qt-windowmanager-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-qt-windowmanager-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandcompositor_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylanddestroylistener_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandinputmethodcontrol_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandkeyboard_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandoutput_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandpointer_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandquickitem_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandseat_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandsurface_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandtouch_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/compositor_api/qwaylandview_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandqtwindowmanager_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandquickshellsurfaceitem_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinputmanager_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandtextinput_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandshell_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshellintegration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandwlshell_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandxdgshellintegration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwaylandxdgshell_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlextendedsurface_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlqtkey_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/qwlqttouch_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/global/qwaylandcompositorextension_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegrationfactory_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlclientbufferintegrationplugin_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlhwintegration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegrationfactory_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/hardware_integration/qwlserverbufferintegrationplugin_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandinputmethodeventbuilder_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandmimehelper_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandshmformathelper_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shared/qwaylandxkb_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatadevicemanager_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatadevice_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldataoffer_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwldatasource_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwlregion_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/wayland_wrapper/qwlsurfacebuffer_p.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-hardware-integration.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-text-input-unstable-v2.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-qtkey-extension.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-surface-extension.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-text.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-touch-extension.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-wayland.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-qt-windowmanager.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-xdg-shell.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-hardware-integration-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-hardware-integration-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-input-method-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-input-method-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-qtkey-extension-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-qtkey-extension-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-surface-extension-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-surface-extension-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-unstable-v2-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-text-input-unstable-v2-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-touch-extension-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-touch-extension-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-qt-windowmanager-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-qt-windowmanager-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-xdg-shell-server-protocol.h"
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/QtWaylandCompositor
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/QtWaylandCompositor"
 )
 
 install(TARGETS GreenIslandCompositor

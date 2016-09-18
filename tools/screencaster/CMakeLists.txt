@@ -1,6 +1,6 @@
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_SOURCE_DIR}/src
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../../src"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 

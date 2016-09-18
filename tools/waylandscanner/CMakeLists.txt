@@ -1,5 +1,5 @@
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
 )
 
 add_executable(greenisland-wayland-scanner waylandscanner.cpp)

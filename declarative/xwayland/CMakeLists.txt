@@ -53,9 +53,9 @@ endif()
 
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland/QtWaylandCompositor
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/QtWaylandCompositor"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Qml_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
