@@ -159,6 +159,10 @@ install(FILES ${GreenIslandClient_CamelCase_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/Client
         COMPONENT Devel)
 
+install(FILES ${GreenIslandClient_PRIVATE_HEADERS}
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/client/private
+        COMPONENT Devel)
+
 install(
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/client/greenislandclient_export.h"
