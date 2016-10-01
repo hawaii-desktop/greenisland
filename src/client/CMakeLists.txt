@@ -143,7 +143,7 @@ private_headers(GreenIslandClient_PRIVATE_HEADERS
         "${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h"
         "${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screenshooter.h"
         "${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h"
-        "${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-unstable-v1-client-protocol.h"
         "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-client-protocol.h"
         "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-client-protocol.h"
         "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-client-protocol.h"
