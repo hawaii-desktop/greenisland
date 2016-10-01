@@ -324,6 +324,10 @@ install(
         Devel
 )
 
+install(FILES ${GreenIslandCompositor_PRIVATE_HEADERS}
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/QtWaylandCompositor/private
+        COMPONENT Devel)
+
 # CMake package version
 ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX GREENISLAND
                   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/GreenIslandCompositorConfigVersion.cmake"
