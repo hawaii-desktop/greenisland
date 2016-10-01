@@ -48,8 +48,9 @@
 // We mean it.
 //
 
-#include "qwaylandcompositorextension.h"
 #include <QtCore/private/qobject_p.h>
+
+#include <GreenIsland/QtWaylandCompositor/QWaylandCompositorExtension>
 
 QT_BEGIN_NAMESPACE
 
