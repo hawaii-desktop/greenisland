@@ -287,6 +287,11 @@ plugin:
   integration plugin file name without path and extension (for example
   "kms" for the DRM/KMS integration, "brcm" for Broadcom etc...).
 
+* **GREENISLAND_QPA_SHOW_CURSOR:** By default the mouse cursor is not
+  drawed because a compositor is expected to render the Wayland cursor
+  surface, set this variable to 1 if you want to draw the Green Island
+  cursor.
+
 ## Logging categories
 
 Qt 5.2 introduced logging categories and Hawaii takes advantage of

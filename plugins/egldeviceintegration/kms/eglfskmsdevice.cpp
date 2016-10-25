@@ -458,7 +458,7 @@ void EglFSKmsDevice::createScreens()
         Q_FOREACH (QPlatformScreen *screen, siblings)
             static_cast<EglFSKmsScreen *>(screen)->setVirtualSiblings(siblings);
 
-        if (primaryScreen)
+        if (primaryScreen && qEnvironmentVariableIsSet("GREENISLAND_QPA_SHOW_CURSOR"))
             m_globalCursor = new EglFSKmsCursor(primaryScreen);
     }
 }
