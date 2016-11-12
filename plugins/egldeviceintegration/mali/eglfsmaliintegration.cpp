@@ -45,7 +45,7 @@ namespace Platform {
 void EglFSMaliIntegration::platformInit()
 {
     // Keep the non-overridden base class functions based on fb0 working.
-    QEGLDeviceIntegration::platformInit();
+    EGLDeviceIntegration::platformInit();
 
     int fd = qt_safe_open("/dev/fb0", O_RDWR, 0);
     if (fd == -1)
