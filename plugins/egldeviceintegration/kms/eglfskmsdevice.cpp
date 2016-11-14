@@ -272,12 +272,12 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
 
     if (configured >= 0)
         selected_mode = configured;
+    else if (best >= 0)
+        selected_mode = best;
     else if (preferred >= 0)
         selected_mode = preferred;
     else if (current >= 0)
         selected_mode = current;
-    else if (best >= 0)
-        selected_mode = best;
 
     if (selected_mode < 0) {
         qCWarning(lcKms) << "No modes available for output" << connectorName;
