@@ -246,7 +246,13 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         if (m.type & DRM_MODE_TYPE_PREFERRED)
             preferred = i;
 
-        best = i;
+        if (best < 0) {
+            best = i;
+        } else {
+            const drmModeModeInfo &best_mode = modes.at(best);
+            if (best_mode.hdisplay < m.hdisplay && best_mode.vdisplay < m.vdisplay)
+                best = i;
+        }
     }
 
     if (configuration == OutputConfigModeline) {
@@ -280,15 +286,6 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         int width = modes[selected_mode].hdisplay;
         int height = modes[selected_mode].vdisplay;
         int refresh = modes[selected_mode].vrefresh;
-
-        // If the selected mode is too small and was not configured by the user
-        // we pick up the best mode, this will avoid defaulting to small resolutions
-        // that usually happens when running in a virtual machine
-        if (width <= 1024 && height <= 768 && selected_mode != configured && best >= 0) {
-            selected_mode = best;
-            width = modes[selected_mode].hdisplay;
-            height = modes[selected_mode].vdisplay;
-        }
 
         qCDebug(lcKms) << "Selected mode" << selected_mode << ":" << width << "x" << height
                        << "@" << refresh << "hz for output" << connectorName;
