@@ -169,6 +169,15 @@ void CompositorLauncher::detectMode()
 
 void CompositorLauncher::detectHardware()
 {
+    // TODO: Detect Mali
+    // TODO: Detect Vivante
+
+    // Detect DRM
+    if (QDir(QStringLiteral("/sys/class/drm")).exists()) {
+        m_hardware = DrmHardware;
+        return;
+    }
+
     // Detect Broadcom
     bool found = deviceModel().startsWith(QStringLiteral("Raspberry"));
     if (!found) {
@@ -180,15 +189,6 @@ void CompositorLauncher::detectHardware()
     }
     if (found) {
         m_hardware = BroadcomHardware;
-        return;
-    }
-
-    // TODO: Detect Mali
-    // TODO: Detect Vivante
-
-    // Detect DRM
-    if (QDir(QStringLiteral("/sys/class/drm")).exists()) {
-        m_hardware = DrmHardware;
         return;
     }
 
