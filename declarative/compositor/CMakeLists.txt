@@ -19,8 +19,8 @@ foreach(_mod Qml Quick)
 endforeach()
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Qml_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}

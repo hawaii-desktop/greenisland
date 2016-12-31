@@ -19,12 +19,12 @@ foreach(_mod Qml Quick)
 endforeach()
 
 include_directories(
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/src
-    ${CMAKE_BINARY_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_SOURCE_DIR}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}"
+    "${CMAKE_CURRENT_BINARY_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${Qt5Qml_PRIVATE_INCLUDE_DIRS}
     ${Qt5Quick_PRIVATE_INCLUDE_DIRS}
@@ -68,38 +68,38 @@ set(SOURCES
 )
 
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/wayland/wayland.xml"
     BASENAME wayland
     PREFIX wl_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland.xml"
     BASENAME greenisland
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screencaster.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-screencaster.xml"
     BASENAME greenisland-screencaster
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screenshooter.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-screenshooter.xml"
     BASENAME greenisland-screenshooter
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-outputmanagement.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-outputmanagement.xml"
     BASENAME greenisland-outputmanagement
     PREFIX greenisland_
 )
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/gtk/gtk-shell.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/gtk/gtk-shell.xml"
     BASENAME gtk
     PREFIX gtk_
 )
 
 add_library(GreenIslandServer SHARED ${SOURCES})
-generate_export_header(GreenIslandServer EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/server/greenislandserver_export.h)
+generate_export_header(GreenIslandServer EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/server/greenislandserver_export.h")
 add_library(GreenIsland::Server ALIAS GreenIslandServer)
 
 target_link_libraries(GreenIslandServer
@@ -130,6 +130,8 @@ endif()
 target_include_directories(
     GreenIslandServer
         INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
             "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
             "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
 )
@@ -149,7 +151,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -162,7 +164,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -178,7 +180,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -195,7 +197,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -210,7 +212,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -224,7 +226,7 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
     PREFIX
         Server
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandServer_HEADERS
     RELATIVE
@@ -233,29 +235,29 @@ ecm_generate_headers(GreenIslandServer_CamelCase_HEADERS
 
 private_headers(GreenIslandServer_PRIVATE_HEADERS
     HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/applicationmanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputchangeset_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputconfiguration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/output/outputmanagement_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/output/quickoutputconfiguration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowquickitem_p.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-outputmanagement.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-server-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/applicationmanager_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/screencaster_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/extensions/screenshooter_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/input/keymap_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/output/outputchangeset_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/output/outputconfiguration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/output/outputmanagement_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/output/quickoutputconfiguration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screen/screenbackend_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screen/screenmanager_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindow_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shell/clientwindowquickitem_p.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-outputmanagement.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screencaster.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland-screenshooter.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-gtk.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-server-greenisland.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-server-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-gtk-shell-server-protocol.h"
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/server
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/server"
 )
 
 install(TARGETS GreenIslandServer
@@ -267,7 +269,7 @@ install(FILES ${GreenIslandServer_CamelCase_HEADERS}
 
 install(
     FILES
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/server/greenislandserver_export.h
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/server/greenislandserver_export.h"
         ${GreenIslandServer_HEADERS}
     DESTINATION
         ${GREENISLAND_INCLUDEDIR}/server

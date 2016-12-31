@@ -355,6 +355,7 @@ void EGLPlatformContext::updateFormatFromGL()
                 }
             }
         }
+        runGLchecks();
         eglMakeCurrent(prevDisplay, prevSurfaceDraw, prevSurfaceRead, prevContext);
     } else {
         qCWarning(lcEglConvenience, "Failed to make temporary surface current, format not updated (%x)", eglGetError());

@@ -1,7 +1,7 @@
 {
   "package": {
     "name": "greenisland",
-    "repo": "ci",
+    "repo": "archlinux-@GITBRANCH@",
     "subject": "greenisland",
     "desc": "QtQuick Wayland compositor and shell for desktop and mobile",
     "website_url": "http://hawaiios.org",
@@ -11,8 +11,8 @@
     "labels": ["qt", "qtquick", "qml", "wayland"]
   },
   "version": {
-    "name": "latest_build",
-    "desc": "Continuous integration build",
+    "name": "@PKGVER@",
+    "desc": "Arch Linux build from CI",
     "released": "@TODAY@",
     "vcs_tag": "@GITREV@",
     "attributes": [
@@ -22,7 +22,8 @@
     "gpgSign": false
   },
   "files": [
-    {"includePattern": "build/(greenisland.tar.xz)", "uploadPattern": "$1"}
+    {"includePattern": "cibuild/(greenisland-git-.*.pkg.tar.xz)", "uploadPattern": "@ARCH@/$1", "matrixParams": {"override": 1}},
+    {"includePattern": "cibuild/(greenisland.db.tar.gz)", "uploadPattern": "@ARCH@/greenisland.db", "matrixParams": {"override": 1}}
   ],
   "publish": true
 }

@@ -246,7 +246,13 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         if (m.type & DRM_MODE_TYPE_PREFERRED)
             preferred = i;
 
-        best = i;
+        if (best < 0) {
+            best = i;
+        } else {
+            const drmModeModeInfo &best_mode = modes.at(best);
+            if (best_mode.hdisplay < m.hdisplay && best_mode.vdisplay < m.vdisplay)
+                best = i;
+        }
     }
 
     if (configuration == OutputConfigModeline) {
@@ -266,12 +272,12 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
 
     if (configured >= 0)
         selected_mode = configured;
+    else if (best >= 0)
+        selected_mode = best;
     else if (preferred >= 0)
         selected_mode = preferred;
     else if (current >= 0)
         selected_mode = current;
-    else if (best >= 0)
-        selected_mode = best;
 
     if (selected_mode < 0) {
         qCWarning(lcKms) << "No modes available for output" << connectorName;
@@ -280,6 +286,7 @@ EglFSKmsScreen *EglFSKmsDevice::screenForConnector(drmModeResPtr resources, drmM
         int width = modes[selected_mode].hdisplay;
         int height = modes[selected_mode].vdisplay;
         int refresh = modes[selected_mode].vrefresh;
+
         qCDebug(lcKms) << "Selected mode" << selected_mode << ":" << width << "x" << height
                        << "@" << refresh << "hz for output" << connectorName;
     }
@@ -458,7 +465,7 @@ void EglFSKmsDevice::createScreens()
         Q_FOREACH (QPlatformScreen *screen, siblings)
             static_cast<EglFSKmsScreen *>(screen)->setVirtualSiblings(siblings);
 
-        if (primaryScreen)
+        if (primaryScreen && qEnvironmentVariableIsSet("GREENISLAND_QPA_SHOW_CURSOR"))
             m_globalCursor = new EglFSKmsCursor(primaryScreen);
     }
 }

@@ -1,10 +1,10 @@
 include_directories(
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/src
-    ${CMAKE_BINARY_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    "${CMAKE_CURRENT_SOURCE_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}/.."
+    "${CMAKE_CURRENT_BINARY_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
 
@@ -17,7 +17,7 @@ set(SOURCES
 )
 
 greenisland_add_server_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/qt/brcm.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/data/protocols/qt/brcm.xml"
     BASENAME brcm
     PREFIX qt_
 )

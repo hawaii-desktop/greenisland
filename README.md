@@ -287,28 +287,10 @@ plugin:
   integration plugin file name without path and extension (for example
   "kms" for the DRM/KMS integration, "brcm" for Broadcom etc...).
 
-## Plugins
-
-Green Island can be extend with plugins.
-Specify a colon separated list of plugin file names (extension included)
-with the ``GREENISLAND_PLUGINS`` environment variable.
-
-List of plugins:
-
-* **plasma.so:** Wayland protocols for Plasma
-* **xwayland.so:** XWayland compatibility
-
-xwayland plugin status is currently alpha, not everything
-is guaranteed to work.
-
-Plugins are searched from the QT_PLUGIN_PATH/greenisland directory.
-
-For example to load Plasma protocols and XWayland compatibility, set the
-variable before launching a compositor powered by Green Island like this:
-
-```sh
-export GREENISLAND_PLUGINS=plasma.so:xwayland.so
-```
+* **GREENISLAND_QPA_SHOW_CURSOR:** By default the mouse cursor is not
+  drawed because a compositor is expected to render the Wayland cursor
+  surface, set this variable to 1 if you want to draw the Green Island
+  cursor.
 
 ## Logging categories
 

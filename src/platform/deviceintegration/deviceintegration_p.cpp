@@ -173,7 +173,7 @@ DeviceIntegration::DeviceIntegration()
 
     // Failed to find the preferred integration: either use the last
     // plugin we found or fall back to the default implementation
-    if (lastInstance) {
+    if (lastInstance && preferred != QLatin1String("default")) {
         qCDebug(lcDeviceIntegration,
                 "Using \"%s\" EGL device integration", qPrintable(lastKey));
         EGLDeviceIntegrationPlugin *plugin = qobject_cast<EGLDeviceIntegrationPlugin *>(lastInstance);

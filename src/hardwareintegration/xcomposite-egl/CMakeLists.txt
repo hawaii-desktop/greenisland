@@ -1,10 +1,10 @@
 include_directories(
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/src
-    ${CMAKE_BINARY_DIR}/src/waylandcompositor
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_SOURCE_DIR}/.."
+    "${CMAKE_CURRENT_SOURCE_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}/.."
+    "${CMAKE_CURRENT_BINARY_DIR}/../waylandcompositor"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../../headers/GreenIsland"
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
     ${X11_X11_INCLUDE_PATH}
     ${X11_Xcomposite_INCLUDE_PATH}

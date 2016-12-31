@@ -8,8 +8,8 @@ set_package_properties(gbm PROPERTIES
     PURPOSE "Required for DRM/KMS support")
 
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_BINARY_DIR}/../../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../../headers/GreenIsland"
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )

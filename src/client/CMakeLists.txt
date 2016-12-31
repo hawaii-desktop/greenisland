@@ -1,6 +1,6 @@
 include_directories(
-    ${CMAKE_BINARY_DIR}/headers
-    ${CMAKE_BINARY_DIR}/headers/GreenIsland
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+    "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     ${Qt5Core_PRIVATE_INCLUDE_DIRS}
     ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
 )
@@ -35,33 +35,33 @@ set(SOURCES
 )
 
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/wayland/wayland.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/wayland/wayland.xml"
     BASENAME wayland
     PREFIX wl_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${WAYLAND_PROTOCOLS_DIR}/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml
+    PROTOCOL "${WAYLAND_PROTOCOLS_DIR}/unstable/fullscreen-shell/fullscreen-shell-unstable-v1.xml"
     BASENAME fullscreen-shell-unstable-v1
     PREFIX zwp_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screencaster.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-screencaster.xml"
     BASENAME greenisland-screencaster
     PREFIX greenisland_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-screenshooter.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-screenshooter.xml"
     BASENAME greenisland-screenshooter
     PREFIX greenisland_
 )
 greenisland_add_client_protocol(SOURCES
-    PROTOCOL ${CMAKE_SOURCE_DIR}/data/protocols/greenisland/greenisland-outputmanagement.xml
+    PROTOCOL "${CMAKE_CURRENT_SOURCE_DIR}/../../data/protocols/greenisland/greenisland-outputmanagement.xml"
     BASENAME greenisland-outputmanagement
     PREFIX greenisland_
 )
 
 add_library(GreenIslandClient SHARED ${SOURCES})
-generate_export_header(GreenIslandClient EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/client/greenislandclient_export.h)
+generate_export_header(GreenIslandClient EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/client/greenislandclient_export.h")
 add_library(GreenIsland::Client ALIAS GreenIslandClient)
 
 target_link_libraries(GreenIslandClient
@@ -75,6 +75,8 @@ target_link_libraries(GreenIslandClient
 target_include_directories(
     GreenIslandClient
         INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
             "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
             "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
 )
@@ -109,44 +111,44 @@ ecm_generate_headers(GreenIslandClient_CamelCase_HEADERS
     PREFIX
         Client
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandClient_HEADERS
 )
 
 private_headers(GreenIslandClient_PRIVATE_HEADERS
     HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/buffer_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/clientconnection_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/cursortheme_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/keyboard_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/fullscreenshell_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/output_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/outputconfiguration_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/outputmanagement_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/region_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/screencaster_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/screenshooter_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shm_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shmformats_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/shmpool_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/surface_p.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell-unstable-v1.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-outputmanagement.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h
-        ${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screenshooter.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-client-protocol.h
-        ${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-client-protocol.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/buffer_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/clientconnection_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/cursortheme_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/keyboard_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/fullscreenshell_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/output_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/outputconfiguration_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/outputmanagement_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pointer_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/region_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/registry_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screencaster_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/screenshooter_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/seat_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shm_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shmformats_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/shmpool_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/surface_p.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/touch_p.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-wayland.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-fullscreen-shell-unstable-v1.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-outputmanagement.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screencaster.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/qwayland-greenisland-screenshooter.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-wayland-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-fullscreen-shell-unstable-v1-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-outputmanagement-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screencaster-client-protocol.h"
+        "${CMAKE_CURRENT_BINARY_DIR}/wayland-greenisland-screenshooter-client-protocol.h"
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/client
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/client"
 )
 
 
@@ -157,9 +159,13 @@ install(FILES ${GreenIslandClient_CamelCase_HEADERS}
         DESTINATION ${GREENISLAND_INCLUDEDIR}/Client
         COMPONENT Devel)
 
+install(FILES ${GreenIslandClient_PRIVATE_HEADERS}
+        DESTINATION ${GREENISLAND_INCLUDEDIR}/client/private
+        COMPONENT Devel)
+
 install(
     FILES
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/client/greenislandclient_export.h
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/client/greenislandclient_export.h"
         ${GreenIslandClient_HEADERS}
     DESTINATION
         ${GREENISLAND_INCLUDEDIR}/client

@@ -71,7 +71,7 @@ set(SOURCES
 qt5_add_resources(SOURCES deviceintegration/cursor.qrc)
 
 add_library(GreenIslandPlatform SHARED ${SOURCES})
-generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h)
+generate_export_header(GreenIslandPlatform EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/platform/greenislandplatform_export.h")
 add_library(GreenIsland::Platform ALIAS GreenIslandPlatform)
 
 target_include_directories(GreenIslandPlatform
@@ -80,8 +80,8 @@ target_include_directories(GreenIslandPlatform
         ${xkbcommon_INCLUDE_DIRS}
         ${gio_INCLUDE_DIR}
     PRIVATE
-        ${CMAKE_BINARY_DIR}/headers
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers"
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
         ${Qt5Core_PRIVATE_INCLUDE_DIRS}
         ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
         ${Libdl_INCLUDE_DIR}
@@ -119,6 +119,8 @@ endif()
 target_include_directories(
     GreenIslandPlatform
         INTERFACE
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland>"
 	    "$<INSTALL_INTERFACE:${HAWAII_INCLUDEDIR}>"
 	    "$<INSTALL_INTERFACE:${GREENISLAND_INCLUDEDIR}>"
 )
@@ -143,7 +145,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -159,7 +161,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -175,7 +177,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -189,7 +191,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -202,7 +204,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -216,7 +218,7 @@ ecm_generate_headers(GreenIslandPlatform_CAMELCASE_HEADERS
     PREFIX
         Platform
     OUTPUT_DIR
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland"
     REQUIRED_HEADERS
         GreenIslandPlatform_HEADERS
     RELATIVE
@@ -229,7 +231,7 @@ install(FILES ${GreenIslandPlatform_CAMELCASE_HEADERS}
 
 install(
     FILES
-        ${CMAKE_BINARY_DIR}/headers/GreenIsland/platform/greenislandplatform_export.h
+        "${CMAKE_CURRENT_BINARY_DIR}/../../headers/GreenIsland/platform/greenislandplatform_export.h"
         ${GreenIslandPlatform_HEADERS}
     DESTINATION
         ${GREENISLAND_INCLUDEDIR}/platform

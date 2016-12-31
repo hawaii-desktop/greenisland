@@ -1,4 +1,6 @@
-include_directories(${CMAKE_BINARY_DIR}/headers)
+include_directories(
+    "${CMAKE_CURRENT_BINARY_DIR}/../headers"
+)
 
 set(SOURCES
     main.cpp

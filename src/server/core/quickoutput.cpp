@@ -181,6 +181,14 @@ QuickOutput::QuickOutput(QWaylandCompositor *compositor)
 {
     // Filter events on the output window
     new WindowFilter(this);
+
+    // We cannot have multiple top level windows on the same screen
+    // with our QPA plugin, hence set the screen as soon as possible
+    connect(this, &QuickOutput::windowChanged, this, [this] {
+        QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window());
+        if (quickWindow && d_func()->nativeScreen)
+            quickWindow->setScreen(d_func()->nativeScreen->screen());
+    });
 }
 
 QQmlListProperty<QObject> QuickOutput::data()
@@ -211,6 +219,12 @@ void QuickOutput::setNativeScreen(Screen *screen)
 
     d->nativeScreen = screen;
     Q_EMIT nativeScreenChanged();
+
+    // We cannot have multiple top level windows on the same screen
+    // with our QPA plugin, hence set the screen as soon as possible
+    QQuickWindow *quickWindow = qobject_cast<QQuickWindow *>(window());
+    if (quickWindow)
+        quickWindow->setScreen(d->nativeScreen->screen());
 }
 
 bool QuickOutput::isEnabled() const
@@ -334,14 +348,6 @@ void QuickOutput::initialize()
                   "GreenIsland::Server::Output %p.\n", this);
         return;
     }
-
-    // By default windows use the primary screen, but this will make
-    // the compositor fail when using the eglfs or greenisland QPA plugins
-    // because they both need one window for each screen.
-    // Avoid failures by setting the screen from the native screen
-    // that comes from our screen manager.
-    if (d->nativeScreen)
-        quickWindow->setScreen(d->nativeScreen->screen());
 
     // We want to read contents for the screencaster
     connect(quickWindow, &QQuickWindow::afterRendering,

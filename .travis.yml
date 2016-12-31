@@ -2,6 +2,15 @@ language: c
 
 sudo: required
 
+env:
+  global:
+    # BINTRAY_USER
+    - secure: "QWMy89JagJKoBW5mEeHgoSUmbUKtGCaXSb0a6aVHKhXur5Ii01fMXbI8ARcRz6SSGQeAGPTcutJAMLMVne41Ph/E2pwZ9hpfkS+DSbccYfW6aFjWpyOWhR+eNKqWuD+QkmNzaPApFZWdn5tTzoYteuilPwIzEUCjqo9DALv+QlQ="
+    # BINTRAY_API_KEY
+    - secure: "OofAWG/Dz1DQ6SCr3xys4djiYMgqlf/+PIg5TW9e4usTC8oP+oSE3vKMxOWLQwYYrBs4qaXODKRHXLXxy6wpFUY0cBEAC8n/T/bPQiw/4rkpC/SYbKr6L6/wd1uQsd2DFCVXqOh9DAgfz/hUwvVNZVRUdfBDKTLHQPVj8aI+oUk="
+    # BINTRAY_REPO_OWNER
+    - secure: "TXxb3Jb7Ir0WTq6cAn6/F/+0keIYSN6JuUG6tedhtw59+GjuAHiBnFAS3p0ljPepky7gaP+xWqa+PUfilEMW9AhwByYwtZJFcAi5ffmtj+njOTu55g+hhnZkfy2G3aclE9gcO7OHLc8FYgQ0Tl5xCfe1B9CbdLbW9xIsty6CqOs="
+
 arch:
   packages:
     - qt5-declarative
@@ -16,24 +25,26 @@ arch:
     - xcb-util-cursor
     - libxcursor
     - xorg-server-xvfb
-    - git
   script:
     - cmake . -DKDE_INSTALL_USE_QT_SYS_PATHS=ON -DCMAKE_INSTALL_PREFIX=/usr
     - make
     #- sudo make install
     #- xvfb-run -a -s "-screen 0 800x600x24" make test
-    - ./.travis/bintray.sh
+    - if [ "$CC" = "gcc" -a "$TRAVIS_BRANCH" = "develop" ]; then ./.travis/bintray.sh; fi
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
 
 deploy:
-  on: develop
   provider: bintray
-  file: build/bintray.json
-  user: plfiorini
+  on:
+    branch: develop
+    condition: "$CC = gcc"
+  file: cibuild/bintray.json
+  user:
+    secure: "WJkW/9+BxAXCRQf3BHmvzz4YRe2mzh6Ej0uBY7NV73zmkd7rZnuIuT5ajjBF+ndsUCxo51usRyvPkZccpGXU1+NiiWdOStd/ctHn0PJeiAL+JkzXqN+eMDPns/+E8gu/yELqqSHQBn4U5KyPmeHgqs+oybiHHJKSX1wVdqwcGgY="
   key:
-    secure: AXgDeE2nJmBEMSU0zegjeesXkRE5Z5t3bW9w7tVxdwhlqiLv3UXLHiPazdkmxGWQDFhIIwSMz+BolpaTMRwYMOgPhzBahxYyHV5Q1yN4yn4XbwHqXegcpRzPuhHBidDaWJGJZJu6Wi2+CTTZ1WwEl8iXrHxqXs/4fy1GayUQEfg=
+    secure: "AXgDeE2nJmBEMSU0zegjeesXkRE5Z5t3bW9w7tVxdwhlqiLv3UXLHiPazdkmxGWQDFhIIwSMz+BolpaTMRwYMOgPhzBahxYyHV5Q1yN4yn4XbwHqXegcpRzPuhHBidDaWJGJZJu6Wi2+CTTZ1WwEl8iXrHxqXs/4fy1GayUQEfg="
 
 notifications:
   email: false
@@ -45,6 +56,6 @@ notifications:
     on_success: always
     on_failure: change
   slack:
-    secure: EGWF118PTfBj/Oktmr20fc17JTM5gt7/j24k6HkiOI1J8S+sJyxhhtSjV54cgmsaEURJ7zUD/xi2wSSigi82k2F29wpELInfty/+j95vuY+7QO7nyVIINHjKranLUogKai9evHU2cvlNTq6e27pjkDbRO2HNKyzTb+Lb6D3VEOk=
+    secure: "EGWF118PTfBj/Oktmr20fc17JTM5gt7/j24k6HkiOI1J8S+sJyxhhtSjV54cgmsaEURJ7zUD/xi2wSSigi82k2F29wpELInfty/+j95vuY+7QO7nyVIINHjKranLUogKai9evHU2cvlNTq6e27pjkDbRO2HNKyzTb+Lb6D3VEOk="
     on_success: always
     on_failure: change
