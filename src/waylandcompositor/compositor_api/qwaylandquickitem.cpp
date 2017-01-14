@@ -1215,5 +1215,10 @@ void QWaylandQuickItem::handleDragStarted(QWaylandDrag *drag)
     d->isDragging = true;
 }
 
+qreal QWaylandQuickItemPrivate::scaleFactor() const
+{
+    return (view->output() ? view->output()->scaleFactor() : 1) / window->devicePixelRatio();
+}
+
 QT_END_NAMESPACE
 
