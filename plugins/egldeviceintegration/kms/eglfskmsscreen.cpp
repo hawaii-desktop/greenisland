@@ -43,6 +43,8 @@
 #include "eglfskmsdevice.h"
 #include "eglfskmscursor.h"
 
+#include <math.h>
+
 namespace GreenIsland {
 
 namespace Platform {
@@ -249,7 +251,7 @@ QDpi EglFSKmsScreen::logicalDpi() const
 
 qreal EglFSKmsScreen::pixelDensity() const
 {
-    return qRound(logicalDpi().first / qreal(100));
+    return floor(logicalDpi().first / qreal(100));
 }
 
 Qt::ScreenOrientation EglFSKmsScreen::nativeOrientation() const

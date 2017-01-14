@@ -122,7 +122,8 @@ void WlShellIntegration::handleSetMaximized(QWaylandOutput *output)
     maximizedState.finalPosition = designatedOutput->position() + designatedOutput->availableGeometry().topLeft();
     isMaximized = true;
 
-    m_shellSurface->sendConfigure(designatedOutput->availableGeometry().size(), QWaylandWlShellSurface::NoneEdge);
+    auto scaleFactor = m_item->view()->output()->scaleFactor();
+    m_shellSurface->sendConfigure(designatedOutput->availableGeometry().size() / scaleFactor, QWaylandWlShellSurface::NoneEdge);
 }
 
 void WlShellIntegration::handleSetFullScreen(QWaylandWlShellSurface::FullScreenMethod method, uint framerate, QWaylandOutput *output)
@@ -168,8 +169,9 @@ void WlShellIntegration::handleSetPopup(QWaylandSeat *seat, QWaylandSurface *par
         t.clear(&t);
         m_item->setRotation(0);
         m_item->setScale(1.0);
-        m_item->setX(relativeToParent.x());
-        m_item->setY(relativeToParent.y());
+	auto scaleFactor = m_item->view()->output()->scaleFactor() / devicePixelRatio();
+        m_item->setX(relativeToParent.x() * scaleFactor);
+        m_item->setY(relativeToParent.y() * scaleFactor);
         m_item->setParentItem(parentItem);
     }
 
@@ -227,7 +229,7 @@ void WlShellIntegration::adjustOffsetForNextFrame(const QPointF &offset)
 {
     float scaleFactor = m_item->view()->output()->scaleFactor();
     QQuickItem *moveItem = m_item->moveItem();
-    moveItem->setPosition(moveItem->position() + offset * scaleFactor);
+    moveItem->setPosition(moveItem->position() + offset * scaleFactor / devicePixelRatio());
 }
 
 bool WlShellIntegration::mouseMoveEvent(QMouseEvent *event)
@@ -240,7 +242,7 @@ bool WlShellIntegration::mouseMoveEvent(QMouseEvent *event)
             return true;
         }
         float scaleFactor = m_item->view()->output()->scaleFactor();
-        QPointF delta = (event->windowPos() - resizeState.initialMousePos) / scaleFactor;
+        QPointF delta = (event->windowPos() - resizeState.initialMousePos) / scaleFactor * devicePixelRatio();
         QSize newSize = m_shellSurface->sizeForResize(resizeState.initialSize, delta, resizeState.resizeEdges);
         m_shellSurface->sendConfigure(newSize, resizeState.resizeEdges);
     } else if (grabberState == GrabberState::Move) {
@@ -279,6 +281,11 @@ void WlShellIntegration::closePopups()
         }
         popupShellSurfaces.clear();
     }
+}
+
+qreal WlShellIntegration::devicePixelRatio() const
+{
+    return m_item->window() ? m_item->window()->devicePixelRatio() : 1;
 }
 
 }

@@ -86,6 +86,7 @@ private:
 
     void handlePopupClosed();
     void handlePopupRemoved();
+    qreal devicePixelRatio() const;
 
     static void closePopups();
 
