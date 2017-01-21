@@ -142,7 +142,7 @@ else()
 endif()
 
 # systemd
-pkg_check_modules(systemd libsystemd-daemon)
+pkg_check_modules(systemd libsystemd)
 if(systemd_FOUND)
     set(HAVE_SYSTEMD 1)
 else()
